@@ -27,7 +27,7 @@ have had multiple teams' test benches pass before with their entire design comme
 
 1. [**CAUTION:** Only 1 person in your team should complete this step!] Create a fork of this repository. Call your fork `nebula-iii-team-##`, where ## is your 2-digit team number in decimal, and make sure it is owned by the **STARS-Design-Track-2025** organization. If you don't know how to create a fork or what your team number is, ask your peer mentor.
 
-2. Within your Purdue ECN career account, open a terminal and clone your fork repository. Then, locally change the name of your directory from `nebula-iii-team-##` to `nebula-iii`. This seems like a pointless change, but many of our GitHub action checks require the directory name to be `nebula-iii`. Your remote repository name will still be `nebula-iii-team-##`, so there's nothing to worry about.
+2. Within your Purdue ECN career account, open a terminal and clone your fork repository. If you have any issues doing this, you may need to create and set up SSH keys. If needed, ask your peer mentor for help.
 
 3. To create the initial files for your team, run `make init_team_##`. The created files are contained within the following folders:
 * `docs/team_##` - Will contain documentation about your project, functionality description, and RTL block diagrams.
@@ -36,7 +36,7 @@ have had multiple teams' test benches pass before with their entire design comme
 * `verilog/rtl/team_projects/team_##` - Will contain all the RTL SystemVerilog/Verilog code files, including your team's top-level module, sub-modules, and the team's wrapper files.<br>
 **NOTE:** The files for a sample project, `team_00`, are available. Do NOT modify them, but feel free to review them if you want to understand what it does. This project should be able to be run through all of the steps outlined here.
 
-4. If you haven't already, run `make bus-wrap-setup` (you only need to this once).
+4. If you haven't already, run `make bus-wrap-setup` (you only need to do this once).
 
 5. Navigate to `verilog/rtl/team_projects/team_##/team_##.yml`
 This file contains configuration information that our targets will use to generate top level and wrapper files.

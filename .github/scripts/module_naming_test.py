@@ -54,15 +54,20 @@ def validate_modules(module_list):
             error_count += 1
             print(f"Error in {os.path.basename(file)}: Module '{module}' does not match 't##_module_name' format.")
 
-def find_root_directory(start_path, target_root="nebula-iii"):
-    current_path = start_path
-    
-    while current_path != os.path.dirname(current_path):  # Loop until we reach the root
-        if os.path.basename(current_path) == target_root:
+def find_root_directory(start_path):
+    # Check if running in GitHub Actions
+    github_workspace = os.getenv("GITHUB_WORKSPACE")
+    if github_workspace:
+        return github_workspace
+
+    # Fallback to local method
+    current_path = os.path.abspath(os.path.dirname(__file__))
+    while current_path != os.path.dirname(current_path):
+        if os.path.isdir(os.path.join(current_path, '.git')):
             return current_path
         current_path = os.path.dirname(current_path)
-    
-    return None  # Return None if "nebula-iii" is not found
+    print("Project directory not found")
+    return None  # Return None if project directory is not found
 
 verilog_directory = find_root_directory(os.getcwd()) + "/verilog"
 
