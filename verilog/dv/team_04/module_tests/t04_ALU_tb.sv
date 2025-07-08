@@ -1,4 +1,4 @@
-module ALU_tb;
+module t04_ALU_tb;
   logic [31:0] src_A, src_B, instruction;
   logic [1:0]  ALU_control;
   logic [31:0] ALU_result;
@@ -10,7 +10,7 @@ module ALU_tb;
     src_A = 32'b0; src_B = 32'b0; instruction = 32'b0;
     ALU_control = 2'b0;
 
-    $dumpfile("waves/ALU.vcd");
+    $dumpfile("ALU.vcd");
     $dumpvars(0, ALU_tb);
 
     src_A = 32'd10; src_B = 32'd15;

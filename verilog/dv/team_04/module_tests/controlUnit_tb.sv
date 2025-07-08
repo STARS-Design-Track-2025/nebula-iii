@@ -7,7 +7,7 @@ module controlUnit_tb;
     control_unit control(.BranchConditionFlag(branchCondition), .instruction(instruction));
 
     initial begin
-        $dumpfile("waves/controlUnit.vcd");
+        $dumpfile("controlUnit.vcd");
         $dumpvars(0, controlUnit_tb);
 
         branchCondition = 0;
