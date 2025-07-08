@@ -5,3 +5,8 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/ALU.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/fa32.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/fa.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/datapath.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/control_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/PC.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/register_file.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/request_unit.sv
