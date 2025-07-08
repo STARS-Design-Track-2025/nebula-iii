@@ -4,7 +4,7 @@ input  logic rst,
 input  logic i_ack,
 input  logic d_ack,
 input  logic [31:0] instruction,
-input  logic [31:0] mem_address,
+input  logic [31:0] memload,
 output logic [31:0] i_address,
 output logic [31:0] d_address,
 output logic [31:0] mem_store
