@@ -11,10 +11,14 @@ BUILD = sim_build
 	-g2012 \
 	-f$(USER_PROJECT_VERILOG)/includes/includes.rtl.caravel_user_project -o $@ $<
 
-%.vcd: %.vvp
+.PHONY: sim_%_src:
+sim_%_src: %.vvp
 	vvp  $<
-	mv $@ RTL-$@
-	rm -f $<
+	if [ -f $*.gtkw ]; then \
+		gtkwave $*.gtkw; \
+	else \
+		gtkwave $*.vcd; \
+	fi
 
 
 # Create file that lists the RTL code and testbench files to compile

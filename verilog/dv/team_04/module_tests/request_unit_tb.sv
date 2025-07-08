@@ -42,7 +42,6 @@ module request_unit_tb;
     $dumpfile("waves/request_unit.vcd");
     $dumpvars(0, request_unit_tb);
 
-<<<<<<< HEAD:verilog/rtl/team_projects/team_04/testbench/request_unit_tb.sv
     // initialize signals
     clk = 0;
     rst = 0;
@@ -58,6 +57,4 @@ module request_unit_tb;
     $finish;
   end
 
-=======
->>>>>>> be3638c090a2f1cc496dcb03c63ea518cbb27755:verilog/dv/team_04/module_tests/request_unit_tb.sv
 endmodule
