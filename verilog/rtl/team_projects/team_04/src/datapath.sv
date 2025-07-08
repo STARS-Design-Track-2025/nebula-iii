@@ -97,17 +97,19 @@ PC pc_module(
 );
 
 request_unit ru(
-.clk(clk),
-.rst(rst),
-.i_ack(i_ack),
-.d_ack(d_ack),
-.PC(PC),
-.mem_address(ALU_result),
-.stored_data(src_B),
-.i_address(i_address),
-.d_address(d_address),
-.mem_store(mem_store),
-.freeze(Freeze)
+    .clk(clk),
+    .rst(rst),
+    .i_ack(i_ack),
+    .d_ack(d_ack),
+    .PC(PC),
+    .mem_address(ALU_result),
+    .stored_data(src_B),
+    .MemRead(MemRead),
+    .MemWrite(MemWrite),
+    .i_address(i_address),
+    .d_address(d_address),
+    .mem_store(mem_store),
+    .freeze(Freeze)
 );
 
 endmodule
