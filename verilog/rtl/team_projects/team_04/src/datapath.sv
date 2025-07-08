@@ -22,7 +22,7 @@ logic ALUSrc;
 logic Branch;
 logic MemRead;
 logic MemWrite;
-logic [1:0] ALU_control;
+logic ALU_control;
 logic Freeze;
 logic [31:0] PC;
 logic [31:0] PC_plus4;

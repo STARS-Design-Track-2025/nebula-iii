@@ -1,6 +1,6 @@
 module ALU(
   input  logic [31:0] src_A, src_B, instruction,
-  input  logic [1:0]  ALU_control,
+  input  logic  ALU_control,
   output logic [31:0] ALU_result,
   output logic        BranchConditionFlag
 );

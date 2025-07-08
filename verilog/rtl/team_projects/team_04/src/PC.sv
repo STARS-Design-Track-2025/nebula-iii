@@ -1,7 +1,7 @@
 module PC (
     input logic clk,
     input logic rst,
-    input logic PC_Jalr,
+    input logic [31:0] PC_Jalr,
     input logic Jalr,
     input logic Jal,
     input logic Branch,
