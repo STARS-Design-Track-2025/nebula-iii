@@ -4,7 +4,7 @@ module request_unit(
     input logic i_ack,
     input logic d_ack,
     input logic [31:0] PC,
-    input logic [31:0] memload,
+    input logic [31:0] mem_address,
     input logic [31:0] stored_data,
     output logic [31:0] i_address,
     output logic [31:0] d_address,
@@ -20,7 +20,7 @@ module request_unit(
             freeze <= 1;
         end else begin
             i_address <= PC;
-            d_address <= memload;
+            d_address <= mem_address;
             mem_store <= stored_data;
             freeze <= ~(i_ack || d_ack);
         end

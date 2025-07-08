@@ -4,11 +4,10 @@ input  logic rst,
 input  logic i_ack,
 input  logic d_ack,
 input  logic [31:0] instruction,
-input  logic [31:0] memload,
+input  logic [31:0] mem_address,
 output logic [31:0] i_address,
 output logic [31:0] d_address,
-output logic [31:0] mem_store,
-output logic freeze
+output logic [31:0] mem_store
 );
 
 logic [4:0] Reg1;
@@ -92,7 +91,7 @@ PC pc_module(
 .Jalr(Jalr),
 .Jal(Jal),
 .Branch(Branch),
-.Freeze(freeze),
+.Freeze(Freeze),
 .imm(Imm),
 .PC(PC)
 );
@@ -103,12 +102,12 @@ request_unit ru(
 .i_ack(i_ack),
 .d_ack(d_ack),
 .PC(PC),
-.memload(ALU_result),
+.mem_address(ALU_result),
 .stored_data(src_B),
 .i_address(i_address),
 .d_address(d_address),
 .mem_store(mem_store),
-.freeze(freeze)
+.freeze(Freeze)
 );
 
 endmodule
