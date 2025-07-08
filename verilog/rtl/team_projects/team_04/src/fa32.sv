@@ -1,13 +1,4 @@
 module fa32 (
-<<<<<<< HEAD
-  input logic [31:0] A, B,
-  input logic Cin,
-  output logic Cout,
-  output logic [31:0] S
-);
-  assign {Cout, S} = A + B + {31'b0, Cin};
-endmodule
-=======
   input  logic [31:0] A, B,
   input  logic Cin,
   output logic Cout,
@@ -51,4 +42,3 @@ endmodule
   fa fa31 (.A(A[31]), .B(B[31]), .Cin(C[30]), .Cout(Cout),  .S(S[31]));
 
 endmodule
->>>>>>> a71e555e5c7f0c655ef566e9ea7adba670e17709
