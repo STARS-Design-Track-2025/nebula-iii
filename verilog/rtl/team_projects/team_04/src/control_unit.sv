@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> a71e555e5c7f0c655ef566e9ea7adba670e17709
 module control_unit (
   input logic BranchConditionFlag,
   input logic [31:0] instruction,
