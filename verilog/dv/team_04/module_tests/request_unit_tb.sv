@@ -12,6 +12,4 @@ always #5 clk = ~clk;
 
 
 
-
-
 endmodule
