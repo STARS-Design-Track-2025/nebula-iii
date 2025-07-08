@@ -1,4 +1,3 @@
-
 module control_unit (
   input logic BranchConditionFlag,
   input logic [31:0] instruction,
