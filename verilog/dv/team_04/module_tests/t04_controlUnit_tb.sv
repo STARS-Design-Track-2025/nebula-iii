@@ -1,14 +1,14 @@
 `timescale 1ms/10ps
-module controlUnit_tb;
+module t04_controlUnit_tb;
 
     logic branchCondition;
     logic [31:0] instruction;
 
-    control_unit control(.BranchConditionFlag(branchCondition), .instruction(instruction));
+    t04_control_unit control(.BranchConditionFlag(branchCondition), .instruction(instruction));
 
     initial begin
-        $dumpfile("controlUnit.vcd");
-        $dumpvars(0, controlUnit_tb);
+        $dumpfile("t04_controlUnit.vcd");
+        $dumpvars(0, t04_controlUnit_tb);
 
         branchCondition = 0;
         instruction = 32'b0;

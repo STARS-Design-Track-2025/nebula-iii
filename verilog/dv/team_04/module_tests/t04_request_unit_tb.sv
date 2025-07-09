@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
-module request_unit_tb;
+module t04_request_unit_tb;
 
   logic clk, rst, i_ack, d_ack, freeze;
   logic [31:0] PC, mem_address, stored_data, i_address, d_address, mem_store;
 
-  request_unit r1(
+  t04_request_unit r1(
     .clk(clk),
     .rst(rst),
     .i_ack(i_ack),
@@ -39,8 +39,8 @@ module request_unit_tb;
 
   initial begin
     // dump signals to see them in waveform
-    $dumpfile("waves/request_unit.vcd");
-    $dumpvars(0, request_unit_tb);
+    $dumpfile("t04_request_unit.vcd");
+    $dumpvars(0, t04_request_unit_tb);
 
     // initialize signals
     clk = 0;

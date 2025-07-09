@@ -1,4 +1,4 @@
-module datapath(
+module t04_datapath(
 input  logic clk,
 input  logic rst,
 input  logic i_ack,
@@ -34,7 +34,7 @@ logic BranchConditionFlag;
 
 assign PC_plus4 = PC + 32'd4;
 
-register_file rf(
+t04_register_file rf(
 .clk(clk),
 .rst(rst),
 .reg_write(RegWrite),
@@ -46,7 +46,7 @@ register_file rf(
 .read_data2(src_B)
 );
 
-control_unit cu(
+t04_control_unit cu(
 .BranchConditionFlag(BranchConditionFlag),
 .instruction(instruction),
 .ALU_result(ALU_result),
@@ -68,7 +68,7 @@ control_unit cu(
 logic [31:0] ALU_input_B;
 assign ALU_input_B = (ALUSrc || Jalr) ? Imm : src_B;
 
-ALU alu(
+t04_ALU alu(
 .src_A(src_A),
 .src_B(ALU_input_B),
 .instruction(instruction),
@@ -84,7 +84,7 @@ assign result_or_pc4 = (Jal || Jalr) ? PC_plus4 : ALU_result;
 
 assign write_back_data = (MemToReg) ? memload : result_or_pc4;
 
-PC pc_module(
+t04_PC pc_module(
 .clk(clk),
 .rst(rst),
 .PC_Jalr(PC_Jalr),
@@ -96,7 +96,7 @@ PC pc_module(
 .PC(PC)
 );
 
-request_unit ru(
+t04_request_unit ru(
     .clk(clk),
     .rst(rst),
     .i_ack(i_ack),

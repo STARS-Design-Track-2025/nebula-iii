@@ -1,5 +1,5 @@
 `default_nettype none
-module fa (
+module t04_fa (
   input Cin, A, B,
   output Cout, S
 );

@@ -1,4 +1,4 @@
-module control_unit (
+module t04_control_unit (
   input logic BranchConditionFlag,
   input logic [31:0] instruction,
   input logic [31:0] ALU_result,

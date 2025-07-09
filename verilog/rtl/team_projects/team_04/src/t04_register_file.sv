@@ -1,4 +1,4 @@
-module register_file(
+module t04_register_file(
   input logic clk, rst, reg_write,
   input logic [4:0] reg1, reg2, regd,
   input logic [31:0] write_data,

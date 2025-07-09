@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module datapath_tb;
+module t04_datapath_tb;
 
     logic clk;
     logic rst;
@@ -13,7 +13,7 @@ module datapath_tb;
     logic [31:0] mem_store;
 
     // Instantiate DUT
-    datapath dut (
+    t04_datapath dut (
         .clk(clk),
         .rst(rst),
         .i_ack(i_ack),
@@ -29,8 +29,8 @@ module datapath_tb;
     always #5 clk = ~clk;
 
     initial begin
-        $dumpfile("datapath.vcd");
-        $dumpvars(0, datapath_tb);
+        $dumpfile("t04_datapath.vcd");
+        $dumpvars(0, t04_datapath_tb);
         clk = 0;
         rst = 1;
         i_ack = 0;

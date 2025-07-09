@@ -1,4 +1,4 @@
-module request_unit(
+module t04_request_unit(
     input  logic clk,
     input  logic rst,
     input  logic i_ack,

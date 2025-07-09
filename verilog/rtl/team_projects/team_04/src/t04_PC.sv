@@ -1,4 +1,4 @@
-module PC (
+module t04_PC (
     input logic clk,
     input logic rst,
     input logic [31:0] PC_Jalr,
