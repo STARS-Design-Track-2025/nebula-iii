@@ -1,6 +1,6 @@
-module ALU(
+module t04_ALU(
   input  logic [31:0] src_A, src_B, instruction,
-  input  logic [1:0]  ALU_control,
+  input  logic  ALU_control,
   output logic [31:0] ALU_result,
   output logic        BranchConditionFlag
 );
@@ -13,7 +13,7 @@ module ALU(
   assign funct7 = instruction[31:25];
 
   // Subtract B from A using fa32 (A - B)
-  fa32 subtractor (
+  t04_fa32 subtractor (
     .A(src_A),
     .B(~src_B),            // A + (~B + 1) = A - B
     .Cin(1'b1),

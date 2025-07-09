@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module register_file_tb;
+module t04_register_file_tb;
 
   logic clk, rst, reg_write;
   logic [4:0] reg1, reg2, regd;
@@ -8,7 +8,7 @@ module register_file_tb;
   logic [31:0] read_data1, read_data2;
 
 
-  register_file r1 (
+  t04_register_file r1 (
     .clk(clk),
     .rst(rst),
     .reg_write(reg_write),
@@ -25,8 +25,8 @@ module register_file_tb;
 
 
   initial begin
-    $dumpfile("waves/register_file.vcd");
-    $dumpvars(0, register_file_tb);
+    $dumpfile("t04_register_file.vcd");
+    $dumpvars(0, t04_register_file_tb);
 
 
     clk = 0;

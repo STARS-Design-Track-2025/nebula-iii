@@ -1,10 +1,10 @@
 `timescale 1ms/10ps
-module program_counter_tb;
+module t04_program_counter_tb;
   
   logic clk, rst, Jalr, Jal, Branch, Freeze;
   logic [31:0] PC_Jalr, imm, PC_out, expected_PC_out;
 
-  program_counter DUT (.clk(clk), .rst(rst), .PC_Jalr(PC_Jalr), .Jalr(Jalr), .Jal(Jal), .Branch(Branch), .Freeze(Freeze), .imm(imm), .PC_out(PC_out));
+  t04_program_counter DUT (.clk(clk), .rst(rst), .PC_Jalr(PC_Jalr), .Jalr(Jalr), .Jal(Jal), .Branch(Branch), .Freeze(Freeze), .imm(imm), .PC_out(PC_out));
 
   always begin
     #1
@@ -28,8 +28,8 @@ module program_counter_tb;
 
   initial begin
     // make sure to dump the signals so we can see them in the waveform
-    $dumpfile("waves/program_counter.vcd"); //change the vcd vile name to your source file name
-    $dumpvars(0, program_counter_tb);
+    $dumpfile("t04_program_counter.vcd"); //change the vcd vile name to your source file name
+    $dumpvars(0, t04_program_counter_tb);
 
     // initializze variables
     clk = 0;

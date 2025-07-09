@@ -1,17 +1,17 @@
-module ALU_tb;
+module t04_ALU_tb;
   logic [31:0] src_A, src_B, instruction;
   logic [1:0]  ALU_control;
   logic [31:0] ALU_result;
   logic BranchConditionFlag;
 
-  ALU dut (.*);
+  t04_ALU dut (.*);
 
   initial begin
     src_A = 32'b0; src_B = 32'b0; instruction = 32'b0;
     ALU_control = 2'b0;
 
-    $dumpfile("waves/ALU.vcd");
-    $dumpvars(0, ALU_tb);
+    $dumpfile("t04_ALU.vcd");
+    $dumpvars(0, t04_ALU_tb);
 
     src_A = 32'd10; src_B = 32'd15;
     instruction = {7'b0000000, 5'd2, 5'd1, 3'b000, 5'd3, 7'b0110011};
