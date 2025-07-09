@@ -8,24 +8,32 @@ module t04_request_unit(
     input  logic [31:0] stored_data,
     input  logic MemRead,
     input  logic MemWrite,
-    output logic [31:0] i_address,
-    output logic [31:0] d_address,
+    output logic [31:0] final_address,
     output logic [31:0] mem_store,
     output logic freeze
 );
 
-    always_ff @(posedge clk or posedge rst) begin
+    logic [31:0] n_final_address;
+
+    always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
-        i_address <= 32'b0;
-        d_address <= 32'b0;
+        final_address <= 32'b0;
         mem_store <= 32'b0;
-        freeze    <= 1;
+        freeze <= 1;
     end else begin
-        i_address <= PC;
-        d_address <= (MemRead || MemWrite) ? mem_address : 32'b0;
-        mem_store <= (MemWrite) ? stored_data : 32'b0;
-        freeze    <= ~(i_ack || d_ack);
+        mem_store <= stored_data;
+        freeze <= ~(i_ack || d_ack);
+        final_address <= n_final_address;
     end
-end
+    end
+
+    always_comb begin
+        if (MemWrite || MemRead) begin
+            n_final_address = mem_address;
+        end
+        else begin
+            n_final_address = PC;
+        end
+    end
 
 endmodule

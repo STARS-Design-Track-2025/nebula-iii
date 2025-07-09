@@ -5,8 +5,7 @@ input  logic i_ack,
 input  logic d_ack,
 input  logic [31:0] instruction,
 input  logic [31:0] memload,
-output logic [31:0] i_address,
-output logic [31:0] d_address,
+output logic [31:0] final_address,
 output logic [31:0] mem_store
 );
 
@@ -106,8 +105,7 @@ t04_request_unit ru(
     .stored_data(src_B),
     .MemRead(MemRead),
     .MemWrite(MemWrite),
-    .i_address(i_address),
-    .d_address(d_address),
+    .final_address(final_address),
     .mem_store(mem_store),
     .freeze(Freeze)
 );
