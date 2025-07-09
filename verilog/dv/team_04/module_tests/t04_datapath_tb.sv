@@ -26,9 +26,30 @@ module t04_datapath_tb;
     // Clock generation
     always #5 clk = ~clk;
 
+    task apply_instr(input [31:0] instr, input bit use_d_ack = 0, input [31:0] load_val = 0, input string label = "");
+        $display("\n--- Executing: %s ---", label);
+        instruction = instr;
+        i_ack = 1;
+        #10;  // Drive instruction in
+        i_ack = 0;
+        #10;  // Allow PC and control to update
+
+        if (use_d_ack) begin
+            memload = load_val;
+            d_ack = 1;
+            #10;
+            d_ack = 0;
+        end
+
+        #10; // Final delay to let data settle
+
+        $display("PC: %0d | RegD: x%0d | write_back_data: %0d", dut.PC, dut.RegD, dut.write_back_data);
+    endtask
+
     initial begin
         $dumpfile("t04_datapath.vcd");
         $dumpvars(0, t04_datapath_tb);
+
         clk = 0;
         rst = 1;
         i_ack = 0;
@@ -42,76 +63,26 @@ module t04_datapath_tb;
         dut.rf.registers[1] = 32'd10;
         dut.rf.registers[2] = 32'd20;
 
-        // === TEST 1: ADD x3, x1, x2 ===
-        instruction = 32'b0000000_00010_00001_000_00011_0110011;
-        i_ack = 1;
-        #10;
-        $display("PC = %0d", dut.PC);
+        // === TESTS ===
+        apply_instr(32'b0000000_00010_00001_000_00011_0110011, 0, 0, "ADD x3 = x1 + x2");
+        apply_instr(32'b0100000_00001_00010_000_00110_0110011, 0, 0, "SUB x6 = x2 - x1");
+        apply_instr(32'b0000000_00010_00001_111_00111_0110011, 0, 0, "AND x7 = x1 & x2");
+        apply_instr(32'b0000000_00010_00001_110_01000_0110011, 0, 0, "OR x8 = x1 | x2");
+        apply_instr(32'b000000000101_00001_000_01001_0010011, 0, 0, "ADDI x9 = x1 + 5");
+        apply_instr(32'b0000000_00010_00001_010_01010_0110011, 0, 0, "SLT x10 = (x1 < x2)");
+        apply_instr(32'b0000000_00010_00001_011_01011_0110011, 0, 0, "SLTU x11 = (x1 < x2 unsigned)");
 
-        // === TEST 2: SUB x6, x2, x1 ===
-        instruction = 32'b0100000_00001_00010_000_00110_0110011;
-        #10;
-        $display("PC = %0d", dut.PC);
+        apply_instr(32'b0000000_00011_00000_010_00000_0100011, 0, 0, "SW x3 → mem[0]");
+        apply_instr(32'b000000000000_00000_010_00100_0000011, 1, 32'd30, "LW x4 ← mem[0] (expect 30)");
 
-        // === TEST 3: AND x7, x1, x2 ===
-        instruction = 32'b0000000_00010_00001_111_00111_0110011;
-        #10;
-        $display("PC = %0d", dut.PC);
+        // apply_instr(32'b0000000_00010_00001_000_00000_1100011, 0, 0, "BEQ x1 != x2 (no branch)");
+        // apply_instr(32'b0000000_00001_00001_000_00000_1100011, 0, 0, "BEQ x1 == x1 (should branch)");
 
-        // === TEST 4: OR x8, x1, x2 ===
-        instruction = 32'b0000000_00010_00001_110_01000_0110011;
-        #10;
-        $display("PC = %0d", dut.PC);
+        apply_instr(32'h004002ef, 0, 0, "JAL x5, 4");
+        apply_instr(32'h00828667, 0, 0, "JALR x12, x5, 8");
 
-        // === TEST 5: ADDI x9, x1, 5 ===
-        instruction = 32'b000000000101_00001_000_01001_0010011;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === TEST 6: SLT x10, x1, x2 ===
-        instruction = 32'b0000000_00010_00001_010_01010_0110011;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === TEST 7: SLTU x11, x1, x2 ===
-        instruction = 32'b0000000_00010_00001_011_01011_0110011;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === TEST 8: SW x3, 0(x0) ===
-        instruction = 32'b0000000_00011_00000_010_00000_0100011;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === TEST 9: LW x4, 0(x0) ===
-        instruction = 32'b000000000000_00000_010_00100_0000011;
-        memload = 32'd30;
-        d_ack = 1;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === TEST 10: BEQ x1, x2 (should not branch) ===
-        instruction = 32'b0000000_00010_00001_000_00000_1100011;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === TEST 11: BEQ x1, x1 (should branch) ===
-        instruction = 32'b0000000_00001_00001_000_00000_1100011;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === TEST 12: JAL x5, 4 ===
-        instruction = 32'b000000000100_00000_000_00101_1101111;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === TEST 13: JALR x12, x1, 8 ===
-        instruction = 32'b000000001000_00001_000_01100_1100111;
-        #10;
-        $display("PC = %0d", dut.PC);
-
-        // === Display Final Results ===
-        $display("\n--- REGISTER FILE CHECKS ---");
+        // === Final Register Check ===
+        $display("\n--- FINAL REGISTER FILE CHECKS ---");
         $display("x3  = %0d (expect 30)", dut.rf.registers[3]);
         $display("x4  = %0d (expect 30)", dut.rf.registers[4]);
         $display("x5  = %0d (expect PC + 4)", dut.rf.registers[5]);

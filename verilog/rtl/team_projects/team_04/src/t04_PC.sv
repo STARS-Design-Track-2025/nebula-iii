@@ -14,7 +14,7 @@ logic [31:0] n_PC;
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
-        PC <= 0;
+        PC <= 32'h33000000;
     end
     else begin
         PC <= n_PC;
@@ -30,7 +30,7 @@ always_comb begin
         n_PC = PC_Jalr;
     end
     else if (Branch || Jal) begin
-        n_PC += imm;
+        n_PC = PC + imm;
     end
     
 end
