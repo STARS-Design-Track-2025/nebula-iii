@@ -24,7 +24,10 @@ module t04_request_unit(
         end else begin
             if (freeze)
                 latched_instruction <= instruction_in;
-        end
+            end
+            else begin
+                latched_instruction <= 32'd0;
+            end
     end
 
     always_comb begin
@@ -35,7 +38,7 @@ module t04_request_unit(
             freeze = 0;
         end
         else begin
-            freeze = (MemRead | MemWrite);
+            freeze = (MemRead || MemWrite);
         end
     end
 
