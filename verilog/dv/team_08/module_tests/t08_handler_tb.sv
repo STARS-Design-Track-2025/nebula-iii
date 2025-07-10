@@ -1,7 +1,7 @@
 `timescale 1ms/10ps
 module t08_handler_tb;
 logic [31:0] rs1=0,  mem=0, mem_address=0;
-logic write=0, read=0, clk=0, nrst=0;
+logic write=0, read=0, clk=0, nrst=0, writeout, readout;
 logic [2:0] func3=0;
 logic [31:0] data_reg,  data_mem, addressnew;
 
@@ -12,7 +12,7 @@ endtask
     
 always #1 clk = ~clk;
 
-t08_handler blockhandle(.rs1(rs1), .mem(mem), .mem_address(mem_address), .write(write), .read(read), .clk(clk),.nrst(nrst), .func3(func3), .data_reg(data_reg), . data_mem(data_mem), .addressnew(addressnew));
+t08_handler blockhandle(.readout(readout), .writeout(writeout), .rs1(rs1), .mem(mem), .mem_address(mem_address), .write(write), .read(read), .clk(clk),.nrst(nrst), .func3(func3), .data_reg(data_reg), . data_mem(data_mem), .addressnew(addressnew));
 
 initial begin
     $dumpfile("waves/t08_handler.vcd"); 
