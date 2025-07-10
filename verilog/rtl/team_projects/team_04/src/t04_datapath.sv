@@ -48,7 +48,7 @@ t04_register_file rf(
 
 t04_control_unit cu(
     .BranchConditionFlag(BranchConditionFlag),
-    .instruction(instruction),
+    .instruction(instruction_out),
     .ALU_result(ALU_result),
     .RegWrite(RegWrite),
     .ALUSrc(ALUSrc),
@@ -71,7 +71,7 @@ assign ALU_input_B = (ALUSrc || Jalr) ? Imm : src_B;
 t04_ALU alu(
     .src_A(src_A),
     .src_B(ALU_input_B),
-    .instruction(instruction),
+    .instruction(instruction_out),
     .ALU_control(ALU_control),
     .ALU_result(ALU_result),
     .BranchConditionFlag(BranchConditionFlag)
