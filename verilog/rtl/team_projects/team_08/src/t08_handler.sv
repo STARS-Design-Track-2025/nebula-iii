@@ -7,13 +7,16 @@ module t08_handler(
     input logic [31:0] rs1, mem, mem_address, 
     input logic write, read, clk, nrst,
     input logic [2:0] func3,
-    output logic [31:0] data_reg,  data_mem, addressnew
+    output logic [31:0] data_reg,  data_mem, addressnew,
+    output logic writeout, readout
 );
 logic [31:0] regs = 0, mems = 0, address, nextregs, nextmem; //tempo var
 
 assign addressnew = mem_address; 
 assign data_mem = mems;
 assign data_reg = regs;
+assign writeout = write;
+assign readout = read;
 
 always_ff@(posedge clk, negedge nrst) begin
     if(nrst) begin
@@ -38,7 +41,7 @@ always_comb begin
             nextmem = {{16{rs1[31]}},rs1[15:0]}; end //SH     
         2: begin
             nextmem = rs1; end  //sw
-            default:;
+        default:;
         endcase
     end
     else if (read) begin
