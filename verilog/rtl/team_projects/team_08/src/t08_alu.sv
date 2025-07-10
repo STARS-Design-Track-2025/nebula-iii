@@ -36,32 +36,35 @@ module t08_alu(
         SRA =   6'd8,
         OR =    6'd9,
         AND =   6'd10,
+        
+        ADDI =   6'd11, //I type
+        SLTI =   6'd12,
+        SLTIU =  6'd13,
+        XORI =   6'd14,
+        ORI =    6'd15,
+        ANDI =   6'd16,
+        SLLI =   6'd17,
+        SRLI =   6'd18,
+        SRAI =   6'd19,
 
-        ADDI =  6'd11, //I type
-        SLTI =  6'd12, 
-        SLTIU = 6'd13, 
-        XORI =  6'd14,
-        ORI =   6'd15,
-        ANDI =  6'd16, 
+        LB =     6'd20, //I type continued
+        LH =     6'd21,
+        LW =     6'd22,
+        LBU =    6'd23,
+        LHU =    6'd24,
 
-        LB =    6'd17, //I type continued
-        LBU =   6'd18,
-        LH =    6'd19,
-        LHU =   6'd20,
-        LW =    6'd21,
+        SB = 6'd25, //S type
+        SH = 6'd26,
+        SW = 6'd27,
 
-        SB = 6'd22, //S type
-        SH = 6'd23,
-        SW = 6'd24,
+        BEQ = 6'd28, //B type
+        BNE = 6'd29,
+        BLT = 6'd30,
+        BGE = 6'd31,
+        BLTU = 6'd32,
+        BGEU = 6'd33,
 
-        BEQ = 6'd25, //B type
-        BGE = 6'd26,
-        BGEU = 6'd27,
-        BLT = 6'd28,
-        BLTU = 6'd29,
-        BNE = 6'd30,    
-
-        AUIPC = 6'd31 //U type
+        AUIPC = 6'd35 // U type
 
     } alu_operations;
 
@@ -69,7 +72,7 @@ module t08_alu(
 
         case (alu_operations'(alu_control))
 
-            ADDI, SLTI, SLTIU, XORI, ORI, ANDI, LB, LBU, LH, LHU, LW, SB, SH, SW: begin
+            ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI, LB, LBU, LH, LHU, LW, SB, SH, SW: begin
                 in1 = reg1;
                 in2 = immediate;
             end
@@ -98,12 +101,12 @@ module t08_alu(
             LW, SB, SH, 
             SW, AUIPC:        data_out_n =    in1 + in2;
             SUB:              data_out_n =    in1 - in2;
-            SLL:              data_out_n =    in1 << (in2[4:0]);
+            SLL, SLLI:        data_out_n =    in1 << (in2[4:0]);
             SLT, SLTI:        data_out_n =    {31'b0, $signed(in1) < $signed(in2)};
             SLTU, SLTIU:      data_out_n =    {31'b0, in1 < in2};
             XOR, XORI:        data_out_n =    in1 ^ in2;
-            SRL:              data_out_n =    in1 >> (in2[4:0]);
-            SRA:              data_out_n =    in1 >>> (in2[4:0]);
+            SRL, SRLI:        data_out_n =    in1 >> (in2[4:0]);
+            SRA, SRAI:        data_out_n =    in1 >>> (in2[4:0]);
             OR, ORI:          data_out_n =    in1 | in2;
             AND, ANDI:        data_out_n =    in1 & in2;
 
