@@ -1,0 +1,282 @@
+`default_nettype none
+//control unit: [description]
+
+module control_unit(
+    input reset,                    //Reset signal       
+    input [31:0] instruction,          
+    output read,                  //to memory handler
+    output write,                 //to memory handler
+    output [2:0] funct3,              ////function 3 field, to memory handler
+    output [1:0] data_in_control,        //to registers
+    output [4:0] reg1,
+    output [4:0] reg2,
+    output [4:0] regd,              //destination register
+    output en_read_1,
+    output en_read_2,
+    output [31:0] immediate,
+    output [5:0] alu_control,     //to ALU: for controlling the alu module
+    output [3:0] shamt            //to ALU
+    output jump,                //to program counter: control signal for enabling jump operation
+);
+
+logic [6:0] funct7;            //function 7 field 
+logic [6:0] opcode;             //opcode field               
+
+ ////////////////////////////////////////// Logic for reset operation ///////////////////////////////////////////////////////////////////////
+    
+always_ff@(negedge reset) begin
+    if(reset)
+        alu_control = 0;
+end
+
+//Logic for analyzing the type of the instruction 
+always_comb begin
+    opcode = instruction[6:0];
+    read = 0;                   //to memory handler
+    write = 0;                  //to memory handler
+    funct3 = 0;                 //to memory handler
+    data_in_control = 0;        //to registers
+    reg1 = 0;                   //register 1
+    reg2 = 0;                   //register 2
+    regd = 0;                   //destination register
+    en_read_1 = 0;              //to registers
+    en_read_2 = 0;              //to registers
+    immediate = 0;              //to ALU
+    alu_control = 0;            //to ALU: for controlling the alu module
+    shamt = 0;                  //to ALU
+    jump = 0;                   //to instruction fetch/ program counter
+
+    //R-TYPE INSTRUCTIONS  
+    if (opcode == 7'b0110011) begin  
+        funct7 = instruction[31:25];
+        funct3 = instruction[14:12];
+        reg1 = instruction[19:15];
+        reg2 = instruction[24:20]
+        regd = instruction[11:7];
+
+        case(funct3)
+            3'b000: begin                                      
+                if (funct7 == 0) begin // ADDITION
+                    alu_control = 6'd1;                     
+                else if(funct7 == 64) //SUBTRACTION
+                    alu_control = 6'd2; 
+                end
+            end
+            3'b001: begin
+                if (funct7 == 0) begin // SLL: SHIFT LEFT LOGICAL
+                    alu_control = 6'd3;
+                end                           
+            end
+
+            3'b010: begin
+                if (funct7 == 0) begin // SLT: SET LESS THAN
+                    alu_control = 6'd4;
+                end 
+            end
+
+            3'b011: begin
+                if (funct7 == 0) begin // SLTU: SET LESS THAN UNSIGNED
+                    alu_control = 6'd5;
+                end 
+            end
+                        
+            3'b100: begin
+                if (funct7 == 0) begin // XOR
+                    alu_control = 6'd6; 
+                end
+            end
+            
+            3'b101: begin
+                if (funct7 == 0) begin // SRL: SHIFT RIGHT LOGICAL 
+                    alu_control = 6'd7;
+                end else if (funct7 == 64) begin 
+                        alu_control = 6'd8;   // SRA: SHIFT RIGHT ARITHMETIC
+                end
+            end
+                        
+            3'b110: begin
+                if (funct7 == 0) begin //  OR 
+                    alu_control = 6'd9;
+                end 
+            end
+                        
+            3'b111: begin
+                if (funct7 == 0) begin // AND
+                    alu_control = 6'd10;
+                end
+            end
+            endcase
+    end
+    // I-TYPE              
+    else if (opcode == 7'b0010011) begin
+        funct3 = instruction[14:12];
+        immediate[11:0] = instruction[31:20];
+        reg1 = instruction[19:15];
+        regd = instruction[11:7];
+
+        case (funct3)
+            3'b000: begin
+                alu_control = 6'd11; // ADDI: ADD IMMEDIATE
+            end
+
+            3'b010 : begin
+                alu_control = 6'd12; // SLTI: SET LESS THAN IMMEDIATE
+            end
+                                
+            3'b011: begin
+                alu_control = 6'd13; // SLTIU: SET LESS THAN IMMEDIATE UNSIGNED
+            end
+            
+            3'b100: begin
+                alu_control = 6'd14; // XORI: XOR IMMEDIATE
+            end                
+
+            3'b110: begin
+                alu_control = 6'd15; // ORI: OR IMMEDIATE
+            end
+            
+            3'b111: begin
+                alu_control = 6'd16; // ANDI: AND IMMEDIATE
+            end
+
+            3'b001: begin
+                alu_control = 6'd17; //SLLI
+                funct7 = instruction[31:25];
+                shamt = instruction[24:20];
+            end
+            3'b101: begin
+                funct7 = instruction[31:25];
+                shamt = instruction[24:20];
+                if (funct7 == 0) begin
+                    alu_control = 6'd18; //  SRLI
+                end else if (funct == 64) begin
+                    alu_control = 6'd19; //  SRAI
+                end
+            end
+        endcase
+    end
+            
+    else if(opcode == 7'b0000011) begin // I type (load instructions)   
+        funct3 = instruction[14:12];
+        immediate[11:0] = instruction[31:20];
+        reg1 = instruction[19:15];
+        regd = instruction[11:7];
+        read = 1;
+
+        case(funct3)
+            3'b000: begin             
+                alu_control = 6'd20; // LB: LOAD BYTE
+            end
+
+            3'b001: begin
+                alu_control = 6'd21; // LH: LOAD HALF          
+            end
+
+            3'b010: begin
+                alu_control = 6'd22; // LW: LOAD WORD
+            end 
+            
+            3'b100: begin              
+                alu_control = 6'd23;// LBU: LOAD BYTE UNSIGNED
+            end
+                                                         
+            
+            3'b101: begin
+                alu_control = 6'd24; // LHU: LOAD HALF UNSIGNED
+            end
+             
+        endcase
+    end
+                        
+    else if (opcode == 7'b0100011) begin //S-TYPE
+        funct3 = instruction[14:12];
+        immediate[6:0] = instruction[31:25];
+        reg1 = instruction[19:15];
+        reg2 = instruction[24:20];
+        regd = instruction[11:7];
+        write = 1;
+
+        case(funct3)
+            3'b010: begin
+                alu_control = 6'd25; // SB: STORE BYTE
+            end        
+            3'b001: begin
+                alu_control = 6'd26; // SH: STORE HALF
+            end
+            3'b010: begin
+                alu_control = 6'd27; // SWl STORE WORD
+            end
+        endcase
+    end
+
+    //BRANCHING INSTRUCTION
+    else if(opcode == 7'b1100011) begin
+        funct3 = instruction[14:12];
+        immediate[12] = instruction[31];
+        immediate[10:5] = instruction[30:25];
+        immediate[4:1] = instruction[11:8];
+        immediate[11] = instruction[7];
+        reg1 = instruction[19:15];
+        reg2 = instruction[24:20];
+
+        case(funct3)
+            3'b000: begin //BEQ: BRANCH EQUAL
+                alu_control = 6'd28; 
+            end
+            3'b001: begin //BNE: BRANCH NOTE EQUAL
+                alu_control = 6'd29; 
+            end
+                
+            3'b100: begin
+                alu_control = 6'd30; //BLT: BRANCH LESS THAN
+            end    
+            
+            3'b101: begin
+                alu_control = 6'd31; // BGE: BRANCH IF GREATER THAN OR EQUAL TO 
+            end
+            
+            3'b110: begin
+                alu_control = 6'd32; //BLTU: BRANCH LESS THAN UNISIGNED
+            end
+                
+            3'b111: begin
+                alu_control = 6'd33; // BGEU: BRANCH GREATER THAN OR EQUAL UNSIGNED 
+            end
+        endcase
+    end
+    //U-TYPE: LUI
+    else if (opcode == 7'b0110111) begin
+        immediate[31:12] = instruction[31:12];
+        regd = instruction[11:7];
+        alu_control = 6'd34;
+        read = 1;
+        funct3 = 1; //to enable memory handler
+    end
+    //U-TYPE: AUIPC: ADD UPPER IMMEDIATE TO COUNTER
+    else if (opcode == 7'b0010111) begin
+        immediate[31:12] = instruction[31:12];
+        regd = instruction[11:7];
+        alu_control = 6'd35;
+    end
+    //J-TYPE: JAL: JUMP AND LINK OPERATION
+    else if (opcode == 7'b1101111) begin
+        immediate[20] = instruction[31];
+        immediate[10:1] = instruction[30:21];
+        immediate[11] = instruction[20];
+        immediate[19:12] = instruction[19:12];
+        regd = instruction[11:7];
+        alu_control = 6'd36;
+        jump = 1;
+    end
+    //I-TYPE: JALR: JUMP AND LINK REGISTER
+    else if (opcode == 7'b1100111) begin
+        immediate[11:0] = instruction[31:20];
+        reg1 = instruction[19:15];
+        funct3 = instruction[14:12];
+        regd = instruction[11:7];
+        alu_control = 6'd37;
+    end                    
+end 
+                
+        
+endmodule
