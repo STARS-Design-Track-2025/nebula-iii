@@ -21,13 +21,15 @@ module t04_request_unit(
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             latched_instruction <= 32'd0;
-        end else begin
-            if (freeze)
+        end 
+        else begin
+            if (freeze) begin
                 latched_instruction <= instruction_in;
             end
             else begin
                 latched_instruction <= 32'd0;
             end
+        end
     end
 
     always_comb begin
