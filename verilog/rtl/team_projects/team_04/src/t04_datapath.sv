@@ -6,7 +6,9 @@ module t04_datapath(
     input  logic [31:0] instruction,
     input  logic [31:0] memload,
     output logic [31:0] final_address,
-    output logic [31:0] mem_store
+    output logic [31:0] mem_store,
+    output logic MemRead_O,
+    output logic MemWrite_O
 );
 
 logic [4:0] Reg1;
@@ -109,5 +111,8 @@ t04_request_unit ru(
     .mem_store(mem_store),
     .freeze(Freeze)
 );
+
+assign MemRead_O = MemRead;
+assign MemWrite_O = MemWrite;
 
 endmodule
