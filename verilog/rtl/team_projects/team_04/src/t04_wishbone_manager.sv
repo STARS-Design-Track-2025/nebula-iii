@@ -6,7 +6,7 @@ Author: Matthew Erlichson
 
 //states for the 3 state bus state machine
 
-module wishbone_manager(
+module t04_wishbone_manager(
     //clock and reset of course
     input logic nRST, CLK,
     
