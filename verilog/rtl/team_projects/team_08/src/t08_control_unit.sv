@@ -1,7 +1,7 @@
 `default_nettype none
 //control unit: [description]
 
-module control_unit(
+module t08_control_unit(
     input reset,                    //Reset signal       
     input [31:0] instruction,       //32 bit instruction   
     output read,                    //to memory handler
