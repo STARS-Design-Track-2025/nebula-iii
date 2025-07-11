@@ -23,7 +23,7 @@ module t04_request_unit(
             latched_instruction <= 32'd0;
         end 
         else begin
-            if (freeze) begin
+            if ((MemRead || MemWrite)) begin
                 latched_instruction <= instruction_in;
             end
             else begin
@@ -33,7 +33,7 @@ module t04_request_unit(
     end
 
     always_comb begin
-        instruction_out = (freeze) ? latched_instruction : instruction_in;
+        instruction_out = (freeze && (MemRead || MemWrite)) ? latched_instruction : instruction_in;
         final_address = (MemRead || MemWrite) ? mem_address : PC;
         mem_store = stored_data;
         if (i_ack || d_ack) begin

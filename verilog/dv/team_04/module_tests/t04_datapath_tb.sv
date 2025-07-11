@@ -24,7 +24,7 @@ module t04_datapath_tb;
     );
 
     // Clock: 10ns period
-    always #5 clk = ~clk;
+    always #10 clk = ~clk;
 
     // Task to apply instruction
     task automatic apply_instr(input [31:0] instr, input bit is_loadstore = 0, input [31:0] load_val = 0, input string label = "");
@@ -35,8 +35,6 @@ module t04_datapath_tb;
         i_ack = 0;
 
         if (is_loadstore) begin
-            // Stall 2 cycles for memory wait
-            #20;
             d_ack = 1;
             memload = load_val;
             #10;           // 3rd cycle

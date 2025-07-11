@@ -30,7 +30,7 @@ module t04_mmio (
 
 
 
-t04_wishbone_manager wishbone()
+t04_wishbone_manager wishbone(.CLK(clk),.nRST(reset),.DAT_I(),.ACK_I(),.CPU_DAT_I());
 
 
 
