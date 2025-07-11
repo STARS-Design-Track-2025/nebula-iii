@@ -24,7 +24,7 @@ module t04_datapath_tb;
     );
 
     // Clock: 10ns period
-    always #10 clk = ~clk;
+    always #5 clk = ~clk;
 
     // Task to apply instruction
     task automatic apply_instr(input [31:0] instr, input bit is_loadstore = 0, input [31:0] load_val = 0, input string label = "");
