@@ -42,9 +42,9 @@ module t08_registers(
 
         case (data_in_control) 
 
-            2'b00: data_in = data_in_frommemory;
-            2'b01: data_in = data_in_frominstructionfetch;
-            2'b10: data_in = data_in_fromalu;
+            2'b01: data_in = data_in_frommemory;
+            2'b10: data_in = data_in_frominstructionfetch;
+            2'b11: data_in = data_in_fromalu;
             default: data_in = 0;
 
         endcase

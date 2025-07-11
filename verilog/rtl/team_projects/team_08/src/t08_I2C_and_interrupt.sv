@@ -24,6 +24,13 @@ module t08_I2C_and_interrupt(
     logic SDAout_n;
     logic scl_n;
 
+    typedef enum logic [7:0] {
+        XH = 8'h03,
+        XL = 8'h04,
+        YH = 8'h05,
+        YL = 8'd06
+    } high_steps; //I AM NOT SURE IF IT IS REALLY 8 BITS OR 7 BITS OR 10 BITS THOUGH
+
     typedef enum logic [2:0] {
         IDLE, 
         START,
@@ -33,28 +40,42 @@ module t08_I2C_and_interrupt(
         READ_DATA_FRAME,
         SEND_ACK,
         STOP
-    } steps;
+    } mid_steps;
 
-    steps step_counter; //Counter for which step in the process of reading from an address the module is at 
+    //Counters for levels of the state machine
+    logic [1:0] high_step_counter; //Counter for which address to request data from the touchscreen from
+    mid_steps mid_step_counter; //Counter for which step in the I2C protocol the module is at 
+    logic [2:0] low_step_address_counter; //Counter for which bit within the requested address is currently being sent. 
+    logic [4:0] low_step_register_counter; //Counter for where in the output register to put the data that is obtained 
 
-    logic [2:0] within_address_counter; //Counter for which bit within the requested address is currently being sent. 
-    logic [1:0] which_address_counter; //Counter for which address to request data from the touchscreen from
-    logic [4:0] register_counter; //Counter for where in the output register to put the data that is obtained 
+    //Next states for the counters for the levels of the state machine
+    logic [1:0] high_step_counter_n; //Counter for which address to request data from the touchscreen from
+    mid_steps mid_step_counter_n; //Counter for which step in the I2C protocol the module is at 
+    logic [2:0] low_step_address_counter_n; //Counter for which bit within the requested address is currently being sent. 
+    logic [4:0] low_step_register_counter_n; //Counter for where in the output register to put the data that is obtained 
 
-    logic [7:0] scl_counter; //For determining the frequency of the SCL clock
+    //For determining the frequency of the SCL clock
+    logic [7:0] scl_counter; 
     logic [7:0] scl_counter_n;
 
-    logic [7:0] address; //The address in the touchscreen that data is currently being pulled from
+    //logic [7:0] address; //The address in the touchscreen that data is currently being pulled from
 
     always_ff @ (posedge clk, negedge nRst) begin
+
         if (!nRst) begin
 
             inter_prev <= 0;
             data_out <= 0;
             done <= 0;
             SDAout <= 1;
+
             scl <= 0;
             scl_counter <= 0;
+
+            high_step_counter <= 0;
+            mid_step_counter <= IDLE;
+            low_step_address_counter <= 0;
+            low_step_register_counter <= 0;
 
         end else begin
 
@@ -62,8 +83,14 @@ module t08_I2C_and_interrupt(
             data_out <= data_out_n;
             done <= done_n;
             SDAout <= SDAout_n;
+
             scl <= scl_n;
             scl_counter <= scl_counter_n;
+
+            high_step_counter <= high_step_counter_n;
+            mid_step_counter <= mid_step_counter_n;
+            low_step_address_counter <= low_step_address_counter_n;
+            low_step_register_counter <= low_step_register_counter_n;
 
         end
 
@@ -71,7 +98,7 @@ module t08_I2C_and_interrupt(
 
     always_comb begin : SCL_control
 
-        if (step_counter == IDLE || step_counter == STOP) begin //In idle or stop state, SCL remains high. 
+        if (mid_step_counter == IDLE || mid_step_counter == STOP) begin //In idle or stop state, SCL remains high. 
 
             scl_n = 1;
             scl_counter_n = 0;
@@ -96,12 +123,12 @@ module t08_I2C_and_interrupt(
 
     always_comb begin : determine_address
 
-        case (which_address_counter)
+        case (high_step_counter)
 
-            2'b00: address = 8'h03;
-            2'b01: address = 8'h04;
-            2'b10: address = 8'h05;
-            2'b11: address = 8'h06;
+            2'b00: high_step_counter_n = XH;
+            2'b01: high_step_counter_n = XL;
+            2'b10: high_step_counter_n = YH;
+            2'b11: high_step_counter_n = YL;
 
         endcase
 
@@ -109,22 +136,22 @@ module t08_I2C_and_interrupt(
 
     always_comb begin
 
-        case (step_counter) 
+        case (mid_step_counter) 
 
             IDLE: begin
 
-                which_address_counter = 0;
-                within_address_counter = 0;
-                register_counter = 0;
+                high_step_counter_n = 0;
+                low_step_address_counter_n = 0;
+                low_step_register_counter_n = 0;
                 done_n = 1;
 
                 if (inter && !inter_prev) begin //Edge detector for interrupt signal
 
                     //Reset counters
-                    step_counter = START;
-                    which_address_counter = 0;
-                    within_address_counter = 0;
-                    register_counter = 0;
+                    mid_step_counter_n = START;
+                    high_step_counter_n = 0;
+                    low_step_address_counter_n = 0;
+                    low_step_register_counter_n = 0;
                     done_n = 0;
                     
                 end
@@ -135,19 +162,19 @@ module t08_I2C_and_interrupt(
                 //"Start Condition: The SDA line switches from a high voltage level to a low voltage level before the SCL line switches from high to low."
                 SDAout_n = 0;
 
-                step_counter = SEND_ADDRESS;
+                mid_step_counter_n = SEND_ADDRESS;
 
             end
 
             SEND_ADDRESS: begin
 
-                SDAout_n = address[within_address_counter];
-                within_address_counter++;
+                SDAout_n = address[low_step_address_counter];
+                low_step_address_counter++;
 
-                if (within_address_counter == 3'd7) begin
-                    step_counter = SEND_READ_BIT;
+                if (low_step_address_counter == 3'd7) begin
+                    mid_step_counter = SEND_READ_BIT;
                 end else begin
-                    step_counter = SEND_ADDRESS;
+                    mid_step_counter = SEND_ADDRESS;
                 end
             end
 
@@ -162,22 +189,22 @@ module t08_I2C_and_interrupt(
 
                 //Should wait for a low voltage
                 if (SDAin) begin
-                    step_counter = WAIT_ACK;
+                    mid_step_counter = WAIT_ACK;
                 end else begin
-                    step_counter = READ_DATA_FRAME;
+                    mid_step_counter = READ_DATA_FRAME;
                 end
 
             end
 
             READ_DATA_FRAME: begin
 
-                data_out_n[register_counter] = SDAin;
-                register_counter++;
+                data_out_n[low_step_register_counter] = SDAin;
+                low_step_register_counter++;
 
-                if (register_counter == 5'd7 || register_counter == 5'd15 || register_counter == 5'd23 || register_counter == 5'd31) begin
-                    step_counter = SEND_ACK;
+                if (low_step_register_counter == 5'd7 || low_step_register_counter == 5'd15 || low_step_register_counter == 5'd23 || low_step_register_counter == 5'd31) begin
+                    mid_step_counter = SEND_ACK;
                 end else begin
-                    step_counter = READ_DATA_FRAME;
+                    mid_step_counter = READ_DATA_FRAME;
                 end
 
             end
@@ -194,17 +221,17 @@ module t08_I2C_and_interrupt(
                 //"Stop Condition: The SDA line switches from a low voltage level to a high voltage level after the SCL line switches from low to high."
                 SDAout_n = 1;
 
-                if (which_address_counter == 2'b11) begin
-                    step_counter = IDLE;
+                if (high_step_counter == 2'b11) begin
+                    mid_step_counter = IDLE;
                 end else begin
-                    step_counter = START;
+                    mid_step_counter = START;
                 end
 
             end
 
             default: begin
 
-                step_counter = IDLE;
+                mid_step_counter = IDLE;
 
             end
 
