@@ -7,48 +7,58 @@ module control_unit(
     output read,                    //to memory handler
     output write,                   //to memory handler
     output [2:0] funct3,            //funct3 field and enabler passed to memory handler
-    output [1:0] data_in_control,   //to registers
+   
     output [4:0] reg1,              //register 1
     output [4:0] reg2,              //register 2
     output [4:0] regd,              //destination register
     output en_read_1,               //to registers: register 1 reading enabler
     output en_read_2,               //to registers: register 2 reading enabler
     output en_write,                //to registers: register writing enabler
-    output [31:0] immediate,        //32 bit immediate
+    output [1:0] data_in_control,   //to registers
+
+    output [31:0] immediate,        //to ALU: 32 bit immediate
     output [5:0] alu_control,       //to ALU: 6-bit command for controlling the alu module
+    
     output jump,                    //to program counter: control signal enabling jump operation
 );
 
-logic [6:0] funct7;                //function 7 field 
 logic [6:0] opcode;                //opcode field               
+
+logic [6:0] funct7;                //function 7 field 
 
 //reset
 always_ff@(negedge reset) begin
-    if(reset)
+    if (reset)
         alu_control = 0;
 end
 
 //Logic for analyzing the type of the instruction 
 always_comb begin
     opcode = instruction[6:0];
+
     read = 0;                   //to memory handler
     write = 0;                  //to memory handler
     funct3 = 0;                 //to memory handler
-    data_in_control = 0;        //to registers
+
     reg1 = 0;                   //register 1
     reg2 = 0;                   //register 2
     regd = 0;                   //destination register
     en_read_1 = 0;              //to registers
     en_read_2 = 0;              //to registers
-    en_write = 0;
+    en_write = 0;               //to registers
+    data_in_control = 0;        //to registers
+
     immediate = 0;              //to ALU
     alu_control = 0;            //to ALU: for controlling the alu module
+
     jump = 0;                   //to instruction fetch/ program counter
 
     //R-TYPE INSTRUCTIONS  
     if (opcode == 7'b0110011) begin  
         funct7 = instruction[31:25];
+
         funct3 = instruction[14:12];
+        
         reg1 = instruction[19:15];
         reg2 = instruction[24:20];
         regd = instruction[11:7];
@@ -113,11 +123,13 @@ always_comb begin
     // I-TYPE              
     else if (opcode == 7'b0010011) begin
         funct3 = instruction[14:12];
-        immediate[11:0] = instruction[31:20];
+
         reg1 = instruction[19:15];
         regd = instruction[11:7];
         en_read_1 = 1;
         en_write = 1;
+        
+        immediate[11:0] = instruction[31:20];
 
         case (funct3)
             3'b000: begin
@@ -145,8 +157,8 @@ always_comb begin
             end
 
             3'b001: begin
-                alu_control = 6'd17;                //SLLI: SHIFT LEFT LOGICAL IMMEDIATE
                 funct7 = instruction[31:25];
+                alu_control = 6'd17;                //SLLI: SHIFT LEFT LOGICAL IMMEDIATE
             end
 
             3'b101: begin
@@ -154,7 +166,8 @@ always_comb begin
 
                 if (funct7 == 0) begin
                     alu_control = 6'd18;            // SRLI: SHIFT RIGHT LOGICAL IMMEDIATE
-                end else if (funct == 64) begin
+                end 
+                else if (funct == 64) begin
                     alu_control = 6'd19;            // SRAI: SHIFT RIGHT ARITHMETIC IMMEDIATE
                 end
             end
@@ -162,15 +175,17 @@ always_comb begin
     end
 
     // I-TYPE (LOAD INSTRUCTIONS)  
-    else if(opcode == 7'b0000011) begin   
+    else if(opcode == 7'b0000011) begin
+        read = 1;   
         funct3 = instruction[14:12];
-        immediate[11:0] = instruction[31:20];
+    
         reg1 = instruction[19:15];
         regd = instruction[11:7];
-        read = 1;
         en_read_1 = 1;
         en_write = 1;
         data_in_control = 1; //plex to datareg from memory handler
+
+        immediate[11:0] = instruction[31:20];
 
         case(funct3)
             3'b000: begin             
@@ -192,49 +207,58 @@ always_comb begin
             
             3'b101: begin
                 alu_control = 6'd24;                // LHU: LOAD HALF UNSIGNED
-            end
-             
+            end  
+
         endcase
     end
 
     //S-TYPE  
     else if (opcode == 7'b0100011) begin 
+        write = 1;
         funct3 = instruction[14:12];
-        immediate[6:0] = instruction[31:25];
+
         reg1 = instruction[19:15];
         reg2 = instruction[24:20];
-        regd = instruction[11:7];
-        write = 1;
+        regd = instruction[11:7];    
+        data_in_control = 2'd3;
+
+        immediate[6:0] = instruction[31:25];
 
         case(funct3)
             3'b010: begin
                 alu_control = 6'd25;                // SB: STORE BYTE
             end        
+            
             3'b001: begin
                 alu_control = 6'd26;                // SH: STORE HALF
             end
+            
             3'b010: begin
                 alu_control = 6'd27;                // SW: STORE WORD
             end
+
         endcase
     end
 
     //BRANCHING INSTRUCTION
     else if(opcode == 7'b1100011) begin
         funct3 = instruction[14:12];
-        immediate[12] = instruction[31];
-        immediate[10:5] = instruction[30:25];
-        immediate[4:1] = instruction[11:8];
-        immediate[11] = instruction[7];
+
         reg1 = instruction[19:15];
         reg2 = instruction[24:20];
         en_read_1 = 1;
         en_read_2 = 1;
 
+        immediate[12] = instruction[31];
+        immediate[10:5] = instruction[30:25];
+        immediate[4:1] = instruction[11:8];
+        immediate[11] = instruction[7];
+        
         case(funct3)
             3'b000: begin                           //BEQ: BRANCH EQUAL
                 alu_control = 6'd28; 
             end
+
             3'b001: begin                           //BNE: BRANCH NOTE EQUAL
                 alu_control = 6'd29; 
             end
@@ -254,48 +278,62 @@ always_comb begin
             3'b111: begin
                 alu_control = 6'd33;                // BGEU: BRANCH GREATER THAN OR EQUAL UNSIGNED 
             end
+        
         endcase
     end
+
     //U-TYPE: LUI
-    else if (opcode == 7'b0110111) begin
-        immediate[31:12] = instruction[31:12];
-        regd = instruction[11:7];
-        alu_control = 6'd34;
+    else if (opcode == 7'b0110111) begin 
         read = 1;
         funct3 = 1; //to enable memory handler
+
+        regd = instruction[11:7];
         en_write = 1;
         data_in_control = 2'd1;
+
+        immediate[31:12] = instruction[31:12];
+        alu_control = 6'd34;
     end
     
     //U-TYPE: AUIPC: ADD UPPER IMMEDIATE TO COUNTER
     else if (opcode == 7'b0010111) begin
-        immediate[31:12] = instruction[31:12];
         regd = instruction[11:7];
-        alu_control = 6'd35;
         en_write = 1;
+        data_in_control = 2'd3;
+
+        immediate[31:12] = instruction[31:12];
+        alu_control = 6'd35;
     end
     
     //J-TYPE: JAL: JUMP AND LINK OPERATION
     else if (opcode == 7'b1101111) begin
+        regd = instruction[11:7];
+        en_write = 1;
+        data_in_control = 2'd2;
+
         immediate[20] = instruction[31];
         immediate[10:1] = instruction[30:21];
         immediate[11] = instruction[20];
         immediate[19:12] = instruction[19:12];
-        regd = instruction[11:7];
         alu_control = 6'd36;
-        en_write = 1;
+
         jump = 1;
     end
     
     //I-TYPE: JALR: JUMP AND LINK REGISTER
     else if (opcode == 7'b1100111) begin
-        immediate[11:0] = instruction[31:20];
-        reg1 = instruction[19:15];
         funct3 = instruction[14:12];
+        
+        reg1 = instruction[19:15];
         regd = instruction[11:7];
-        alu_control = 6'd37;
         en_read_1 = 1;
         en_write = 1;
+        data_in_control =2'd2;
+
+        immediate[11:0] = instruction[31:20];
+        alu_control = 6'd37;
+        
+        jump = 1;
     end                    
 end 
                 
