@@ -24,7 +24,7 @@ module t04_datapath_tb;
     );
 
     // Clock: 10ns period
-    always #5 clk = ~clk;
+    always #10 clk = ~clk;
 
     // Task to apply instruction
     task automatic apply_instr(input [31:0] instr, input bit is_loadstore = 0, input [31:0] load_val = 0, input string label = "");
@@ -83,6 +83,8 @@ module t04_datapath_tb;
         apply_instr(32'h004002ef, 0, 0, "JAL x5, 4");
         apply_instr(32'h00828667, 0, 0, "JALR x12, x5, 8");
 
+        @(posedge clk);
+
         // === Final Register Dump ===
         $display("\n--- FINAL REGISTER FILE CHECKS ---");
         $display("x3  = %0d (expect 30)", dut.rf.registers[3]);
@@ -100,6 +102,8 @@ module t04_datapath_tb;
         $display("final_address = %0d", final_address);
         $display("mem_store     = %0d", mem_store);
         $display("Freeze        = %0b", dut.Freeze);
+        $display("write_back_data = %0d", dut.write_back_data);
+        $display("desitination reg = %0d", dut.RegD);
 
         #50 $finish;
     end
