@@ -83,6 +83,88 @@ module t04_datapath_tb;
         apply_instr(32'h004002ef, 0, 0, "JAL x5, 4");
         apply_instr(32'h00828667, 0, 0, "JALR x12, x5, 8");
 
+                // === Extra LW Test: Simulate MMIO-style response ===
+        $display("\n--- Simulating Multi-Cycle LW (MMIO-Style) ---");
+
+        // Apply LW instruction: LW x13, 0(x1)
+        instruction = 32'b000000000000_00001_010_01101_0000011; // x13 = mem[x1 + 0]
+        memload = 32'b000000000000_00001_010_01101_0000011; 
+        i_ack = 1;
+        #10;
+        i_ack = 0;
+
+        // Wait one cycle (datapath computes address)
+        #50;
+
+                $display("  [MMIO DEBUG] src_A        = %0d (should be x1 = 10)", dut.src_A);
+            $display("  [MMIO DEBUG] ALU_input_B  = %0d (should be imm = 0)", dut.ALU_input_B);
+            $display("  [MMIO DEBUG] ALU_result   = %0d", dut.ALU_result);
+            $display("  [MMIO DEBUG] ALU_control   = %0d", dut.ALU_control);
+            $display("  [MMIO DEBUG] branch_condition   = %0d", dut.alu.BranchConditionFlag);
+            $display("  [MMIO DEBUG] funct3   = %b", dut.alu.funct3);
+            $display("  [MMIO DEBUG] final_address= %0d", final_address);
+        $display("  [MMIO DEBUG] MemRead      = %b", dut.MemRead_O);
+        $display("  [MMIO DEBUG] RegD         = x%0d", dut.RegD);
+        $display("  [MMIO DEBUG] ALUSrc         = %d", dut.ALUSrc);
+
+
+        // Now check if final_address is correct (x1 == 10)
+        instruction = 32'd42;
+        if (final_address == 32'd10) begin
+            $display("  final_address matched!!!!!!!!!: %0d", final_address);
+            memload = 32'd42;
+            d_ack = 1;
+            #10;
+            d_ack = 0;
+        end else begin
+            memload = 32'd0;
+            $display("  ERROR: Unexpected address: %0d (expected 10)", final_address);
+            $display("  ALU_result    = %0d", dut.ALU_result);
+        end
+
+        // Wait for writeback
+        #10;
+
+                $display("\n--- Simulating Multi-Cycle SW (MMIO-Style) ---");
+
+        // SW x3, 0(x1): Store the value in x3 (30) into memory at address x1 (10)
+        instruction = 32'b0000000_00011_00001_010_00000_0100011; // SW x3 → mem[x1 + 0]
+        i_ack = 1;
+        #10;
+        i_ack = 0;
+
+        // Wait for address computation (usually 2 cycles due to Freeze)
+        #50;
+
+        // Debug prints for SW
+        $display("  [MMIO DEBUG] src_A        = %0d (should be x1 = 10)", dut.src_A);
+        $display("  [MMIO DEBUG] ALU_input_B  = %0d (should be imm = 0)", dut.ALU_input_B);
+        $display("  [MMIO DEBUG] ALU_result   = %0d", dut.ALU_result);
+        $display("  [MMIO DEBUG] ALU_control   = %0d", dut.ALU_control);
+        $display("  [MMIO DEBUG] final_address= %0d", final_address);
+        $display("  [MMIO DEBUG] MemWrite     = %b", dut.MemWrite_O);
+        $display("  [MMIO DEBUG] mem_store    = %0d (should be x3 = 30)", mem_store);
+
+        // Now check if final_address is correct and mem_store has correct value
+        if (final_address == 32'd10 && mem_store == 32'd30) begin
+            $display("  SW address/data matched correctly!");
+        end else begin
+            $display("  ERROR: Unexpected SW address or value");
+            $display("    final_address = %0d (expected 10)", final_address);
+            $display("    mem_store     = %0d (expected 30)", mem_store);
+        end
+
+        @(posedge clk);
+
+
+        // Observe datapath
+        $display("  PC    = %0d", dut.PC);
+        $display("  memload    = %0d", dut.memload);
+        $display("  RegD  = x%0d", dut.RegD);
+        $display("  WB    = %0d", dut.write_back_data);
+        $display("  x13   = %0d (expect 42)", dut.rf.registers[13]);
+
+
         @(posedge clk);
 
         // === Final Register Dump ===
