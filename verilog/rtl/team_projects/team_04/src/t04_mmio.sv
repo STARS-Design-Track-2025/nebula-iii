@@ -42,7 +42,7 @@ module t04_mmio (
         // CPU-side input
         .CPU_DAT_I(mem_store),
         .ADR_I(final_address),
-        .SEL_I(4'b1),                  // full word access
+        .SEL_I(4'b15),                  // full word access
         .WRITE_I(MemWrite && RAM_en),
         .READ_I(MemRead && RAM_en),
 
@@ -84,7 +84,8 @@ module t04_mmio (
         .key_en(key_en),
         .Ram_En(RAM_en),
         .busy(busy),
-        .d_ack(d_ack)
+        .d_ack(d_ack),
+        .i_ack(i_ack)
     );
 
     // === Mux for memload / instruction ===
@@ -100,6 +101,6 @@ module t04_mmio (
     assign instruction = memload;  // simple connection unless you separate fetch/load later
     assign display_address = final_address;
     assign mem_store_display = mem_store;
-    //REMEMBER TO CREATE THE ACKNOWLEDGEMENT CENTER
+    
 
 endmodule

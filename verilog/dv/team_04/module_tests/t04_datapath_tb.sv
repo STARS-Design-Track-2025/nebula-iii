@@ -24,11 +24,12 @@ module t04_datapath_tb;
     );
 
     // Clock: 10ns period
-    always #10 clk = ~clk;
+    always #5 clk = ~clk;
 
     // Task to apply instruction
     task automatic apply_instr(input [31:0] instr, input bit is_loadstore = 0, input [31:0] load_val = 0, input string label = "");
         $display("\n[Cycle %0t] --- %s ---", $time, label);
+        $display("  PC    = %0d", dut.PC);
         instruction = instr;
         i_ack = 1;
         #10;               // 1 cycle
@@ -43,11 +44,30 @@ module t04_datapath_tb;
 
         #10; // 1 more cycle to observe datapath writeback
 
-        $display("  PC    = %0d", dut.PC);
         $display("  RegD  = x%0d", dut.RegD);
         $display("  WB    = %0d", dut.write_back_data);
         $display("  Freeze= %0b", dut.Freeze);
+        $display("is branch taken from pc_module = %0d", dut.pc_module.Branch);
+        $display("ALU output of branch condition = %0d", dut.alu.BranchConditionFlag);
+        $display("sub result = %0d", dut.alu.sub_result);
+        $display("src A = %0d", dut.alu.src_A);
+        $display("src B = %0d", dut.alu.src_B);
+        $display("ALU SOURCE = %0d", dut.ALUSrc);
+        $display("reg1 coming from control= %0d", dut.Reg1);
+        $display("reg2 coming from control = %0d", dut.Reg2);
+        $display("reg1 coming from regFile= %0d", dut.src_A);
+        $display("reg2 coming from regFile = %0d", dut.src_B);
+        $display("imm = %0d", dut.Imm);
+        $display(" NEXT PC    = %0d", dut.PC);
     endtask
+
+    task automatic check_pc(input [31:0] expected_pc, input string label = "");
+    if (dut.PC !== expected_pc)
+        $display("  [FAIL] %s: PC = %0d (expected %0d)", label, dut.PC, expected_pc);
+    else
+        $display("  [PASS] %s: PC = %0d", label, dut.PC);
+    endtask
+
 
     initial begin
         $dumpfile("t04_datapath.vcd");
@@ -187,7 +207,58 @@ module t04_datapath_tb;
         $display("write_back_data = %0d", dut.write_back_data);
         $display("desitination reg = %0d", dut.RegD);
 
+
+
+
+
+    rst = 1; 
+    #10
+    rst = 0;
+    #10
+$display("Reset PC = %0d", dut.PC);
+$display("Reset PC inside module = %0d", dut.pc_module.PC);
+$display("n_PC inside module = %0d", dut.pc_module.n_PC);
+        // Initialize registers for comparison
+
+dut.rf.registers[5] = 32'd50;
+dut.rf.registers[6] = 32'd50;
+dut.rf.registers[7] = 32'd30;
+dut.rf.registers[8] = 32'd40;
+
+
+// === Branch: BEQ x5, x6, +8 (PC should jump ahead by 8) BRANCH
+apply_instr(32'b0000000_00110_00101_000_00001_1100011, 0, 0, "BEQ x5 == x6 → PC += 8");
+#10;  // Wait a cycle
+check_pc(32'h33000000 + 8, "BEQ Taken");
+
+// === Branch: BNE x7, x8, +8 (x7 != x8 so should branch) BRANCH
+apply_instr(32'b0000000_01000_00111_001_00010_1100011, 0, 0, "BNE x7 != x8 → PC += 8");
+#10;
+check_pc(32'h33000000 + 16, "BNE Taken");
+
+// === Branch: BEQ x5, x7, +8 (x5 != x7 so should not branch) NOT BRANCH
+apply_instr(32'b0000000_00111_00101_000_00011_1100011, 0, 0, "BEQ x5 != x7 → PC += 4");
+#10;
+check_pc(32'h33000000 + 20, "BEQ Not Taken");
+
+// === Branch: BNE x5, x6, +8 (x5 == x6 so should NOT branch) NOT BRANCH
+apply_instr(32'b0000000_00110_00101_001_00100_1100011, 0, 0, "BNE x5 == x6 → PC += 4");
+#10;
+check_pc(32'h33000000 + 24, "BNE Not Taken");
+
+
+$display("\n--- BRANCH INSTRUCTION TESTS COMPLETE ---");
+$display("Final PC = %0d", dut.PC);
+
+
         #50 $finish;
     end
 
 endmodule
+
+
+
+
+//FIX IMMEDIATE GENERATOR FOR BRANCHES
+//WHY DOES IT GO INTO AN INFINITE LOOP IF I PUT #10 on line 33?
+//WHY DOES IT GO INTO AN INFINITE LOOP IF I CHANGE FREEZE LOGIC?
