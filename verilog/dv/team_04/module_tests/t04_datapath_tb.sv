@@ -58,7 +58,7 @@ module t04_datapath_tb;
         $display("reg1 coming from regFile= %0d", dut.src_A);
         $display("reg2 coming from regFile = %0d", dut.src_B);
         $display("imm = %0d", dut.Imm);
-        $display(" NEXT PC    = %0d", dut.PC);
+        $display(" NEXT PC    = %0d", dut.pc_module.n_PC);
     endtask
 
     task automatic check_pc(input [31:0] expected_pc, input string label = "");
@@ -214,8 +214,9 @@ module t04_datapath_tb;
     rst = 1; 
     #10
     rst = 0;
-    #10
+
 $display("Reset PC = %0d", dut.PC);
+#10
 $display("Reset PC inside module = %0d", dut.pc_module.PC);
 $display("n_PC inside module = %0d", dut.pc_module.n_PC);
         // Initialize registers for comparison
@@ -255,10 +256,7 @@ $display("Final PC = %0d", dut.PC);
     end
 
 endmodule
-
-
-
-
 //FIX IMMEDIATE GENERATOR FOR BRANCHES
 //WHY DOES IT GO INTO AN INFINITE LOOP IF I PUT #10 on line 33?
-//WHY DOES IT GO INTO AN INFINITE LOOP IF I CHANGE FREEZE LOGIC?
+//WHY DOES IT GO INTO AN INFINITE LOOP IF I CHANGE FREEZE LOGIC? 
+//NOT INCREMENTING PC OR FREEZING PROPERLY

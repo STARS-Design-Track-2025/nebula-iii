@@ -36,11 +36,11 @@ module t04_request_unit(
         instruction_out = (freeze && (MemRead || MemWrite)) ? latched_instruction : instruction_in;
         final_address = (MemRead || MemWrite) ? mem_address : PC;
         mem_store = stored_data;
-        if (i_ack || d_ack || rst) begin
+        if (i_ack || d_ack) begin
             freeze = 0;
         end
         else begin
-            freeze = (1);
+            freeze = (MemRead || MemWrite);
         end
     end
 
