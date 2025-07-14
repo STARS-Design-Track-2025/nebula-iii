@@ -7,17 +7,21 @@ module external_mem (
 );
 
 always_ff @(posedge clk, posedge rst) begin //check that pos rst is correct
-    if (rwi_in == 000) begin //read to memory
+    if (rwi_in == 00) begin //read from memory
         rwi_out <= 2'd2;
         addr_out <= addr_in;
-        //CPUData_out <= memData_in[addr_in];
+        if (addr_in < 32'd1024) begin //access wishbone
+            //wishbone
+        end else begin //access register
+            //register
+        end
     end
-    if (rwi_in == 001) begin //write to memory
+    if (rwi_in == 01) begin //write to memory
         rwi_out <= 2'd1;
         addr_out <= addr_in;
         writeData_out <= regData_in;
     end else begin
-        rwi_out = '0;
+        rwi_out <= '0;
         addr_out <= addr_in;
         writeData_out <= 0;
     end
