@@ -45,7 +45,7 @@ module t04_control_unit (
     unique case (opcode)
       i, l, jalr: Imm = {{20{instruction[31]}}, instruction[31:20]};
       s:          Imm = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
-      b:          Imm = 32'd0;
+      b:          Imm = {{20{instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
       jal:        Imm = {{11{instruction[31]}}, instruction[31], instruction[19:12], instruction[20], instruction[30:21], 1'b0};
       default:    Imm = 32'b0;
     endcase
