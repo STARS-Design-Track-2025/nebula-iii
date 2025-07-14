@@ -2,7 +2,7 @@ module t07_control_unit (
 input logic [6:0] Op, //from decoder
 input logic [2:0] funct3, //from decoder
 input logic [6:0] funct7, //from decoder
-output logic [2:0] ALUOp, //to ALU
+output logic [3:0] ALUOp, //to ALU
 output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, memToReg, FPUSrc, regEnable, 
 output logic [4:0] FPUOp, FPURnd, //to FPU
 output logic [1:0] FPUWrite //to FPUReg
@@ -30,6 +30,17 @@ always_comb begin
             FPUOp = '0;
             FPUSrc = 0;
             FPURnd = '0;
+
+            case (funct3) 
+                000: if(funct7 == 0000000) begin ALUOp = 4'd0; end else if (funct7 == 0100000) begin ALUOp = 4'd9; end
+                001: ALUOp = 4'd3;
+                010: ALUOp = 4'd4;
+                011: ALUOp = 4'd5;
+                100: ALUOp = 4'd9;
+                101: if(funct7 == 0000000) begin ALUOp = 4'd7; end else if (funct7 == 0100000) begin ALUOp = 4'd6; end
+                110: ALUOp = 4'd2;
+                111: ALUOp = 4'd1;
+            endcase
         end
 
         7'b 0000011: begin /*(I-Type)*/
@@ -61,7 +72,7 @@ always_comb begin
         end
         7'b1100011: begin /*(B-Type)*/
             ALUSrc = 0;
-            regWrite = 0;
+            regWrite = 0;complement
             branch = 1;
             memWrite = 0;
             memRead = 0;
@@ -124,46 +135,48 @@ always_comb begin
             FPUSrc = 0;
             FPURnd = '0;
         end
+
+        /*
         //FPU Cases
-        7'b000011: begin/*(FLW - load word)*/
+        7'b000011: begin//(FLW - load word)
             FPUOp = 5'b1;
             FPUSrc = 0;
             FPURnd = 010;
             regEnable: 0;
             FPUWrite: //add
         end 
-        7'b0100111: begin /*(FSW - store word)*/
+        7'b0100111: begin //(FSW - store word)
             FPUOp = 5'd2;
             FPUSrc = 0;
             FPURnd = 010;
             regEnable: 0;
             FPUWrite: //add
         end
-        7'b1000011: begin /*(FMADD.S)*/
+        7'b1000011: begin //(FMADD.S)
             FPUOp = 5'd3;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: //add
         end
-        7'b1000111: begin /*(FMSUB.S)*/
+        7'b1000111: begin //(FMSUB.S)
             FPUOp = 5'd4;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: //add
         end
-        7'b1001011: begin /*(FNMSUB.S)*/
+        7'b1001011: begin //(FNMSUB.S)
             FPUOp = 5'd5;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite:
         end 
-        7'b1001111: begin /*(FNMADD.S)*/
+        7'b1001111: begin //(FNMADD.S)
             FPUOp = 5'd6;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: 
         end
-        7'b1010011: begin /*Math*/
+        7'b1010011: begin //Math
             regEnable = 0;
             case(funct7)
                 0000000: begin FPUOp = 5'd7; end //ADD
@@ -188,7 +201,7 @@ always_comb begin
                 1111000: begin FPURnd = 000; FPUOp = 5'd20; end //FMV
             endcase
 
-        end
+        end */
 
 
     endcase
