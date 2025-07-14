@@ -24,7 +24,7 @@ module t04_datapath_tb;
     );
 
     // Clock: 10ns period
-    always #5 clk = ~clk;
+    always #10 clk = ~clk;
 
     // Task to apply instruction
     task automatic apply_instr(input [31:0] instr, input bit is_loadstore = 0, input [31:0] load_val = 0, input string label = "");
@@ -58,6 +58,7 @@ module t04_datapath_tb;
         $display("reg1 coming from regFile= %0d", dut.src_A);
         $display("reg2 coming from regFile = %0d", dut.src_B);
         $display("imm = %0d", dut.Imm);
+        $display("  PC    = %0d", dut.PC);
         $display(" NEXT PC    = %0d", dut.pc_module.n_PC);
     endtask
 
