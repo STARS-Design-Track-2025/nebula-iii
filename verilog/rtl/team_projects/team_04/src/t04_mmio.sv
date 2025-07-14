@@ -75,7 +75,7 @@ module t04_mmio (
         .rising(rising),
         .key_en(key_en),
         .data_out(key_data),
-        .keypad_ack(key_ack)
+        .key_ack(key_ack)
     );
 
     // === Acknowledgment Center ===
