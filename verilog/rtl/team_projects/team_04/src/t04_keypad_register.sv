@@ -12,10 +12,12 @@ module t04_keypad_register (
     logic [31:0] key_reg;
 
     always_ff @(posedge clk, posedge reset) begin
-        if (reset)
+        if (reset) begin
             key_reg <= 32'b0;
-        else if (key_en && rising)
+        end
+        else if (key_en && rising && app == 2'b00) begin
             key_reg <= {27'b0, button_pressed};  
+        end
     end
 
     assign key_ack = rising;
