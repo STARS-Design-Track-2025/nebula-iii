@@ -70,8 +70,12 @@ assign data = currentData;
     
   endfunction
 
-
-// clear x y on off r g b bl wh
+//reseton : swreset - 5ms - sleep out - 120ms - pixel format(3A set rgb565) - pixel param - orientation(36) - orientation param - dispOn - 5 commands total
+// clear : caset (full screen) paset (full screen) memwrite for all pixels send 8'b0 for black - 3 commands total
+//x y
+// on : sleep out - 120 ms - disp on- 5 ms
+//off : disp off - 10 ms - sleep in - 10 ms 
+//r g b bl wh
 
 always_comb begin
   nextData = currentData;
@@ -242,7 +246,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00100000000: begin
+    11'b00100000000: begin //caset
         case (ct)
             0: begin 
                 nextWrx = 1;
@@ -301,7 +305,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00010000000: begin
+    11'b00010000000: begin //paset
         case (ct)
             0: begin 
                 nextWrx = 1;
@@ -360,7 +364,7 @@ always_comb begin
             end
         endcase
     end
-    11'b10000000000: begin
+    11'b10000000000: begin //reseton
         case (ct) 
             0: begin 
                 nextCsx = 1;
@@ -436,7 +440,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00000100000: begin
+    11'b00000100000: begin //dispoff
         case (ct)
             0: begin
                 nextCsx = 1;
@@ -473,7 +477,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00001000000: begin
+    11'b00001000000: begin //disp on
         case (ct)
             0: begin
                 nextCsx = 1;
