@@ -2,16 +2,17 @@ module t08_spi(
 //input logic [31:0] parameters,
 input logic [7:0] command,
 input logic [31:0] parameters,
-input logic enable, clk, nrst, readwrite, type, counter,
+input logic enable, clk, nrst, readwrite, 
+input logic [3:0] counter,
 output logic [7:0] outputs,
-output logic wrx, rdx, csx, dcx
+output logic wrx, rdx, csx, dcx, busy
 );
 
-logic [32:0] paroutput;
-logic [7:0] currentout, nextout, getout;
-logic state, nextstate, nextdcx, busy, nextbusy;
-logic [3:0] count = 0, percount;
-//logic [2:0] parcount;
+logic [31:0] paroutput, nextparoutput;
+logic [7:0] currentout, nextout;
+logic [1:0] state, nextstate; 
+logic nextdcx, nextbusy;
+logic [3:0] count = 0, percount, nextcount;
 
 assign outputs = currentout;
 
@@ -20,18 +21,19 @@ always_ff@(posedge clk, negedge nrst) begin
         currentout <= '0;
         csx <= 1;
         dcx <= 0; 
-        state <= 0; end
+        state <= 0;
+        busy <=0; 
+        paroutput <= 0; 
+        count <= 0; end
     else if (enable) begin
         currentout <= nextout;
         dcx<=nextdcx;
         state <=nextstate;
         csx <= 0;
         busy <= nextbusy;
-        
-        if (state == 2) begin
-            paroutput <= {parameters[23:0], 8'b0};
-            count <= count + 1;
-        end
+        count <= nextcount;
+        paroutput <= nextparoutput;
+
     end
 end
 
@@ -42,28 +44,31 @@ always_comb begin
     rdx = 1;
     nextbusy = 1;
     nextout = currentout;
+    nextparoutput = paroutput;
+    nextcount = count;
     case(state)
         0: begin //command
             nextstate = 1; 
             nextdcx = 0;
+            nextparoutput = parameters;
             nextout = command; //getting the output ready
             if (readwrite) wrx = 0; else rdx = 0;
         end
 
         1: begin //clock
             if (count >= percount) begin 
-                nextstate = 0; 
+                nextstate = 3; 
                 nextbusy =0;
                 end
             else begin nextstate = 2; end
             if (readwrite) wrx = 1; else rdx = 1;
-            nextout = getout;
+            nextout = paroutput[31:24];
         end
 
 
         2: begin //param
-            getout = paroutput[31:24];
-            // count = count + 1;
+            nextparoutput = {paroutput[23:0], 8'b0};
+            nextcount = count + 1;
             nextdcx = 1;
             nextstate = 1;
             if (readwrite) wrx = 0; else rdx = 0;
@@ -80,10 +85,6 @@ always_comb begin
         end
     endcase
 end
-
-
-            
-            
 
 
 always_comb begin
