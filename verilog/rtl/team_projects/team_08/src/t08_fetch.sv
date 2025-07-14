@@ -6,7 +6,7 @@ module t08_fetch(
 );
 logic [32:0] next_pc, next_ra, current_pc = 0, current_ra = 0, prev_pc = 0;
 always_ff@(posedge clk, negedge nrst) begin
-    if (nrst) begin
+    if (!nrst) begin
         current_pc <= '0;
         current_ra <= '0;
     end
