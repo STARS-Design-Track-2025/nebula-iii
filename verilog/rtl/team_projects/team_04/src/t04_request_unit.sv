@@ -16,7 +16,6 @@ module t04_request_unit(
 );
 
     logic [31:0] latched_instruction;
-    logic n_freeze;
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -34,7 +33,12 @@ module t04_request_unit(
 
     always_comb begin
         instruction_out = (freeze && (MemRead || MemWrite)) ? latched_instruction : instruction_in;
-        final_address = (MemRead || MemWrite) ? mem_address : PC;
+        if (rst) begin
+            final_address = PC;
+        end
+        else begin
+            final_address = (MemRead || MemWrite) ? mem_address : PC;
+        end
         mem_store = stored_data;
         if (i_ack || d_ack) begin
             freeze = 0;

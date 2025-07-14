@@ -81,7 +81,7 @@ module t04_mmio (
         .display_ack(d_ack_display),
         .busy(busy),
         .WEN(WEN),
-        .Ram_En(Ram_En),
+        .Ram_En(RAM_en),
         .key_en(key_en),
         .MemRead(MemRead),
         .MemWrite(MemWrite),

@@ -15,3 +15,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_acknowledgement_center.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_keypad_register.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_wishbone_manager.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_datapathxmmio.sv

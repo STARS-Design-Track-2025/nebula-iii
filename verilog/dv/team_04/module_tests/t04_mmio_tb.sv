@@ -21,7 +21,7 @@ module t04_mmio_tb;
     logic d_ack_display;
     logic WEN;
 
-    // DUT
+    // DUT instance
     t04_mmio dut (
         .clk(clk),
         .reset(reset),
@@ -42,25 +42,22 @@ module t04_mmio_tb;
         .WEN(WEN)
     );
 
-    // Clock generation
+    // Clock
     always #5 clk = ~clk;
 
-    // Internal test signals (mocked wishbone manager)
+    // Internal test signals to force internal MMIO signals
     logic [31:0] mock_mem_data;
     logic mock_busy;
 
-    // Force internal values
-    initial begin
-        force dut.memload_or_instruction = mock_mem_data;
-        force dut.busy = mock_busy;
-    end
-
-    // Test Procedure
     initial begin
         $dumpfile("t04_mmio.vcd");
         $dumpvars(0, t04_mmio_tb);
 
-        // Init
+        // Force internal wires
+        force dut.memload_or_instruction = mock_mem_data;
+        force dut.busy = mock_busy;
+
+        // === Init ===
         clk = 0;
         reset = 1;
         final_address = 0;
@@ -94,16 +91,16 @@ module t04_mmio_tb;
         MemWrite = 0;
 
         // === 3. Keypad Read ===
-        final_address = 32'h0000000C;
+        final_address = 32'h0000000C;  // keypad addr
         MemRead = 1;
         button_pressed = 5'b10110;
-        app = 2'b01;
+        app = 2'b00;
         rising = 1;
         #10;
-        $display("\n[KEYPAD READ] memload = %h (should reflect keypad encoded value)", memload);
+        $display("\n[KEYPAD READ] memload = %h (should reflect 00000016)", memload);
         MemRead = 0;
 
-        // === 4. Display Write at DISPLAY_ADDR1 ===
+        // === 4. Display Write 1 ===
         final_address = 32'h00000008;
         mem_store = 32'hFACE1234;
         MemWrite = 1;
@@ -113,7 +110,7 @@ module t04_mmio_tb;
         $display("  mem_store_display = %h (expect FACE1234)", mem_store_display);
         MemWrite = 0;
 
-        // === 5. Display Write at DISPLAY_ADDR2 ===
+        // === 5. Display Write 2 ===
         final_address = 32'h40000004;
         mem_store = 32'hBABE9999;
         MemWrite = 1;
@@ -122,9 +119,9 @@ module t04_mmio_tb;
         $display("  mem_store_display = %h (expect BABE9999)", mem_store_display);
         MemWrite = 0;
 
-        // === 6. Ack Center test ===
+        // === 6. Ack Test ===
         MemRead = 1;
-        final_address = 32'h33000000; // RAM again
+        final_address = 32'h33000000; // RAM
         d_ack_display = 1;
         mock_busy = 0;
         #10;
