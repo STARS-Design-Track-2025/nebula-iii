@@ -38,7 +38,7 @@ module t08_CPU (
         .read(mem_en_read), .clk(clk), .nrst(nRst), .func3(func3), .data_reg(mem_to_reg), .data_mem(data_out), 
         .addressnew(), .writeout(write_out), .readout(read_out));
 
-    t08_control_unit control_unit(.reset(nRst), .instruction(instruction), .read(mem_en_read), .write(mem_en_write), 
+    t08_control_unit control_unit(.instruction(instruction), .read(mem_en_read), .write(mem_en_write), 
         .funct3(func3), .data_in_control(data_in_control), .reg1(reg1), .reg2(reg2), .regd(regd), .en_read_1(reg_en_read_1), 
         .en_read_2(reg_en_read_2), .en_write(reg_en_write), .immediate(immediate), .alu_control(alu_control), .jump(jump));
 

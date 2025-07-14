@@ -1,36 +1,28 @@
 `default_nettype none
 //control unit: [description]
 
-module t08_control_unit(
-    input reset,                    //Reset signal       
-    input [31:0] instruction,       //32 bit instruction   
-    output read,                    //to memory handler
-    output write,                   //to memory handler
-    output [2:0] funct3,            //funct3 field and enabler passed to memory handler
-   
-    output [4:0] reg1,              //register 1
-    output [4:0] reg2,              //register 2
-    output [4:0] regd,              //destination register
-    output en_read_1,               //to registers: register 1 reading enabler
-    output en_read_2,               //to registers: register 2 reading enabler
-    output en_write,                //to registers: register writing enabler
-    output [1:0] data_in_control,   //to registers
+module t08_control_unit(  
+    input logic [31:0] instruction,       //32 bit instruction   
+    output logic read,                    //to memory handler
+    output logic write,                   //to memory handler
+    output logic [2:0] funct3,            //funct3 field and enabler passed to memory handler
 
-    output [31:0] immediate,        //to ALU: 32 bit immediate
-    output [5:0] alu_control,       //to ALU: 6-bit command for controlling the alu module
+    output logic [4:0] reg1,              //register 1
+    output logic [4:0] reg2,              //register 2
+    output logic [4:0] regd,              //destination register
+    output logic en_read_1,               //to registers: register 1 reading enabler
+    output logic en_read_2,               //to registers: register 2 reading enabler
+    output logic en_write,                //to registers: register writing enabler
+    output logic [1:0] data_in_control,   //to registers
+
+    output logic [31:0] immediate,        //to ALU: 32 bit immediate
+    output logic [5:0] alu_control,       //to ALU: 6-bit command for controlling the alu module
     
-    output jump,                    //to program counter: control signal enabling jump operation
+    output logic jump                   //to program counter: control signal enabling jump operation
 );
 
 logic [6:0] opcode;                //opcode field               
-
 logic [6:0] funct7;                //function 7 field 
-
-//reset
-always_ff@(negedge reset) begin
-    if (reset)
-        alu_control = 0;
-end
 
 //Logic for analyzing the type of the instruction 
 always_comb begin
@@ -69,8 +61,9 @@ always_comb begin
         case(funct3)
             3'b000: begin                                      
                 if (funct7 == 0) begin              // ADDITION
-                    alu_control = 6'd1;                     
-                else if(funct7 == 64)               //SUBTRACTION
+                    alu_control = 6'd1; 
+                end                    
+                else if(funct7 == 32) begin            //SUBTRACTION
                     alu_control = 6'd2; 
                 end
             end
@@ -101,7 +94,7 @@ always_comb begin
             3'b101: begin
                 if (funct7 == 0) begin              // SRL: SHIFT RIGHT LOGICAL 
                     alu_control = 6'd7;
-                end else if (funct7 == 64) begin 
+                end else if (funct7 == 32) begin 
                         alu_control = 6'd8;         // SRA: SHIFT RIGHT ARITHMETIC
                 end
             end
@@ -167,7 +160,7 @@ always_comb begin
                 if (funct7 == 0) begin
                     alu_control = 6'd18;            // SRLI: SHIFT RIGHT LOGICAL IMMEDIATE
                 end 
-                else if (funct == 64) begin
+                else if (funct7 == 32) begin
                     alu_control = 6'd19;            // SRAI: SHIFT RIGHT ARITHMETIC IMMEDIATE
                 end
             end
@@ -225,7 +218,7 @@ always_comb begin
         immediate[6:0] = instruction[31:25];
 
         case(funct3)
-            3'b010: begin
+            3'b000: begin
                 alu_control = 6'd25;                // SB: STORE BYTE
             end        
             

@@ -1,6 +1,8 @@
 `default_nettype none
 //memory map input/ output: [description]
 
+
+//interface with wishbone
 module t08_mmio (
     //from memory handler
     input read,
