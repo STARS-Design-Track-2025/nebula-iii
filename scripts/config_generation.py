@@ -105,7 +105,7 @@ f"""
 
         f.write(\
 """                
-        "dir::../../verilog/rtl/sram/sram_32_1024_sky130.v"
+        "dir::../../verilog/rtl/sram/sky130_sram_8kbyte_1r1w_32x2048_8.v"
     ],
     "EXTRA_LEFS": [
 """\
@@ -121,7 +121,7 @@ f"""
 
         f.write(\
 """                
-        "dir::../../lef/sram_32_1024_sky130.lef"
+        "dir::../../lef/sky130_sram_8kbyte_1r1w_32x2048_8.lef"
     ],
     "EXTRA_GDS_FILES": [
 """\
@@ -137,7 +137,7 @@ f"""
 
         f.write(\
 """                
-        "dir::../../gds/sram_32_1024_sky130.gds"
+        "dir::../../gds/sky130_sram_8kbyte_1r1w_32x2048_8.gds"
     ],
     "EXTRA_LIBS": [
 """\
@@ -152,7 +152,7 @@ f"""
                 
         f.write(\
 """     
-        "dir::../../lib/sram_32_1024_sky130_TT_1p8V_25C.lib"
+        "dir::../../lib/sky130_sram_8kbyte_1r1w_32x2048_8_TT_1p8V_25C.lib"
     ],
     "EXTRA_SPEFS": [
 """\

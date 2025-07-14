@@ -11,7 +11,7 @@ BUILD = sim_build
 	-g2012 \
 	-f$(USER_PROJECT_VERILOG)/includes/includes.rtl.caravel_user_project -o $@ $<
 
-.PHONY: sim_%_src:
+.PHONY: sim_%_src
 sim_%_src: %.vvp
 	vvp  $<
 	if [ -f $*.gtkw ]; then \

@@ -4,6 +4,7 @@
 */*/tmp
 *.hex*
 *.lst
+*.vvp
 *.vcd
 *.gtkw
 *.o
