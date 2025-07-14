@@ -5,8 +5,8 @@ module t04_keypad_register (
     input  logic [1:0]  app,              // Unused but reserved for future use
     input  logic        rising,           // Treated as sync signal (should already be edge-detector output)
     input  logic        key_en,
-    output logic [31:0] data_out,
-    output logic key_ack
+    output logic [31:0] data_out
+
 );
 
     logic [31:0] key_reg;
@@ -16,11 +16,11 @@ module t04_keypad_register (
             key_reg <= 32'b0;
         end
         else if (key_en && rising && app == 2'b00) begin
-            key_reg <= {27'b0, button_pressed};  
+            key_reg <= {27'b0, button_pressed}; 
         end
     end
 
-    assign key_ack = rising;
+
     assign data_out = key_reg;
 
 endmodule

@@ -1,12 +1,13 @@
-module acknowledgement_center (
+module t04_acknowledgement_center (
     // from wishbone
     input logic busy,
+    input logic WEN,
+    input logic Ram_En,
+    input logic key_en,
+
     
     // from display
     input logic display_ack,
-
-    // from keypad
-    input logic keypad_ack,
 
     // from datapath
     input logic MemRead,
@@ -16,9 +17,17 @@ module acknowledgement_center (
     output logic d_ack,
     output logic i_ack
 );
-
-    assign d_ack = ~busy && (MemRead || MemWrite) && (display_ack | keypad_ack);
-    assign i_ack = 1'b0;
-
+always_comb begin
+    if (Ram_En) begin
+        d_ack = (~busy);
+    end
+    else if (WEN) begin
+        d_ack = (MemRead || MemWrite) && (display_ack);
+    end
+    else begin
+        d_ack = key_en;
+    end
+    i_ack = 0;
+end
 
 endmodule

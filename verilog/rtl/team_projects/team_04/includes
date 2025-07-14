@@ -10,3 +10,8 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_PC.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_register_file.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_request_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_mmio.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_addressDecoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_acknowledgement_center.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_keypad_register.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_wishbone_manager.sv
