@@ -19,7 +19,7 @@ assign writeout = write;
 assign readout = read;
 
 always_ff@(posedge clk, negedge nrst) begin
-    if(nrst) begin
+    if(!nrst) begin
         regs <= '0;
         mems <= '0;
     end
