@@ -14,6 +14,55 @@ logic [7:0] xCommand, yCommand, fullX3, fullX4, fullX1, fullX2, fullY1, fullY2, 
 assign control = controlBus[10:0];
 assign pixel = paramBus[16:0];
 
+ function automatic logic [11:0] caller (
+    input logic [7:0] command,
+    input byte unsigned params[]
+  );
+
+    case (ct)
+      0: begin caller = {1'b0, 1'b1, 1'b1, 1'b1, 8'b0}; end
+      1: begin caller = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0}; end
+      2: begin caller = {1'b0, 1'b0, 1'b0, 1'b0, command}; end
+      3: begin caller = {1'b0, 1'b0, 1'b0, 1'b1, command}; end
+      4: begin caller = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0}; end
+      default: begin
+        if (ct >= 5) begin
+          int unsigned size = params.size();
+          logic [22:0] counter = ct - 5;
+
+          if ({9'b0, counter} < size * 2) begin
+            logic [22:0] idx = counter >> 1;
+            logic wrx = counter[0];
+            caller = {1'b0, 1'b0, 1'b1, wrx, params[idx]};
+          end
+          
+          if ({9'b0, counter} == (5 + size * 2)) begin
+            caller[11] = 1'b1;
+          end
+        end
+      end
+    endcase
+
+  endfunction
+
+  function automatic int build_load (
+    input logic [31:0] count,
+    input byte unsigned pattern[],
+    output byte unsigned load[]
+  );
+    int size = count * pattern.size();
+    load = new[size];
+
+    for (int i = 0; i < count; i++) begin
+      for (int j = 0; j < pattern.size(); j++) begin
+        load[i * pattern.size() + j] = pattern[j];
+      end
+    end
+
+    build_load = 1;
+    
+  endfunction
+
 
 // clear x y on off r g b bl wh
 
@@ -454,6 +503,41 @@ always_comb begin
                     ack = 0;
                 end
             endcase
+        end
+        11'b00000010000: begin
+          byte unsigned load[];
+          int chain = build_load(paramBus, '{8'b11111000, 8'b0}, load);
+          //void'(build_load(controlBus, '{8'b11111000, 8'b0}, load));
+          logic [11:0] out = caller(8'h2C, load);
+          {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+        end
+
+        11'b00000001000: begin
+          byte unsigned load[];
+          int chain = build_load(paramBus, '{8'b00000111, 8'b11100000}, load);
+          logic [11:0] out = caller(8'h2C, load);
+          {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+        end
+
+        11'b00000000100: begin
+          byte unsigned load[];
+          int chain = build_load(paramBus, '{8'b0, 8'b00011111}, load);
+          logic [11:0] out = caller(8'h2C, load);
+          {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+        end
+
+        11'b00000000010: begin
+          byte unsigned load[];
+          int chain = build_load(paramBus, '{8'b0, 8'b0}, load);
+          logic [11:0] out = caller(8'h2C, load);
+          {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+        end
+
+        11'b00000000001: begin
+          byte unsigned load[];
+          int chain = build_load(paramBus, '{8'b11111111, 8'b11111111}, load);
+          logic [11:0] out = caller(8'h2C, load);
+          {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
         end
         default:;
     endcase
