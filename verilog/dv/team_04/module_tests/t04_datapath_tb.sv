@@ -238,6 +238,23 @@ check_pc(32'h33000000 + 8, "BEQ Taken");
 $display("\n--- BRANCH INSTRUCTION TESTS COMPLETE ---");
 $display("Final PC = %0d", dut.PC);
 
+// === Additional Tests ===
+$display("\n--- ADDITIONAL TESTS ---");
+// Test illegal and undefined instructions
+apply_instr(32'b1111111_00000_00000_000_00000_0110011, 0, 0, "Illegal Instruction (should not affect PC)");
+#10;
+check_pc(32'h33000000 + 8, "Illegal Instruction");
+apply_instr(32'b0000000_00000_00000_000_00000_0110011, 0, 0, "Undefined Instruction (should not affect PC)");
+#10; 
+check_pc(32'h33000000 + 8, "Undefined Instruction");
+
+// test failed branch condition
+apply_instr(32'b0000000_00110_00101_000_01000_1100011, 0, 0, "BEQ x5 != x6 → PC += 0 (should not branch)");
+#10; 
+check_pc(32'h33000000 + 8, "BEQ Not Taken");
+
+// Test back to back load/store
+// Test back to back load/store with mmio delays
 
         #50 $finish;
     end
