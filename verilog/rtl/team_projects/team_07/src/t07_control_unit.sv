@@ -4,6 +4,7 @@ input logic [2:0] funct3, //from decoder
 input logic [6:0] funct7, //from decoder
 output logic [3:0] ALUOp, //to ALU
 output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, memToReg, FPUSrc, regEnable, 
+output logic [1:0] regWriteSrc //regWriteSrc goes to mux outside PC/memory handler/ALU/FPU/ImmGen -> registers, 000 = PC, 001 = MH, 010 = ALU, 011 = FPU, 100 = ImmGen
 output logic [4:0] FPUOp, FPURnd, //to FPU
 output logic [1:0] FPUWrite //to FPUReg
 //outputs:
@@ -44,6 +45,7 @@ always_comb begin
         end
 
         7'b 0000011: begin /*(I-Type)*/
+            regWriteSrc = 01;
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
@@ -84,6 +86,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b0110111: begin /*(U-type, lui)*/ 
+            regWriteSrc = 100; //from immGen
             ALUSrc = 0;
             regWrite = 1;
             branch = 0;
@@ -97,6 +100,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b0010111: begin /*(U-Type, auipc)*/
+            regWriteSrc = 011; //from ALU
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
@@ -110,6 +114,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b1101111: begin /*(J-type, jal)*/
+            regWriteSrc = 000; //from PC
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
@@ -123,6 +128,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b1100111: begin /*(J-type, jalr)*/
+            regWriteSrc = 000; //from PC
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
