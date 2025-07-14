@@ -28,6 +28,7 @@ module t04_mmio (
     logic [31:0] memload_or_instruction;
     logic busy;
     logic RAM_en, key_en;
+    logic key_ack;
     logic [31:0] key_data;
 
     // === Wishbone Manager ===
@@ -73,17 +74,17 @@ module t04_mmio (
         .app(app),
         .rising(rising),
         .key_en(key_en),
-        .final_address(final_address),
-        .data_out(key_data)
+        .data_out(key_data),
+        .keypad_ack(key_ack)
     );
 
     // === Acknowledgment Center ===
     t04_acknowledgement ack_center (
-        .clk(clk),
-        .reset(reset),
-        .key_en(key_en),
-        .Ram_En(RAM_en),
+        .keypad_ack(key_ack),
+        .display_ack(d_ack_display),
         .busy(busy),
+        .MemRead(MemRead),
+        .MemWrite(MemWrite),
         .d_ack(d_ack),
         .i_ack(i_ack)
     );
