@@ -1,5 +1,7 @@
 // SRAM Wishbone Wrapper
 
+`timescale 1ns/1ps
+
 module sram_WB_Wrapper #(
 	parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 10

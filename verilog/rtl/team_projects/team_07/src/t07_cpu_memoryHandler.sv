@@ -13,17 +13,17 @@ module t07_cpu_memoryHandler (
     // Inputs
     input logic reset,
     input logic clk,
-    input logic [31:0]write_data,
-    input logic [31:0]address,
-    input logic MemWrite,
-    input logic MemRead,
-    input logic [31:0]memReadData, // Data read from external memory
-
-    // Outputs
-    output logic [31:0]readData,
-    output logic [31:0]memWriteData,
-    output logic [31:0]memAddress,
-    output logic [1:0]rwi // 00: Read, 01: Write, 10: IDLE
+    input logic memWrite, memRead,
+    input logic memSource,          //if we are writing from the FPU or ALU
+    input logic [31:0] ALU_address, // Address for memory operations that comes from the ALU
+    input logic [31:0] FPU_data,    // Data from the FPU to store in memory
+    input logic [31:0] Register_data, // Data from the internal register file to store in memory
+    input logic [31:0] ExtData,     // Data from external memory to read/write
+    
+    //outputs
+    output logic [31:0] write_data, // Data to write to external memory
+    output logic [31:0] ExtAddress, // Address to write to external memory
+    output logic [1:0] rwi          // Read/Write/Idle control signal for external memory operations
 
 );
 
@@ -32,13 +32,22 @@ logic [31:0] memory;
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         rwi <= 2'b10; // IDLE
-        readData <= 32'b0;
-        memWriteData <= 32'b0;
-        memAddress <= 32'b0;
+        memWrite <= 32'b0;
+        memRead <= 32'b0;
     end else begin
+        if(memSource) begin
+            // If memSource is set, we are writing from the FPU
+            write_data <= FPU_data;
+            ExtAddress <= ALU_address; // Use ALU address for memory operations
+        end else begin
+            // Otherwise, we are writing from the Register file
+            write_data <= Register_data;
+            ExtAddress <= ALU_address; // Use ALU address for memory operations
+        end
+
         if (MemWrite) begin
             rwi <= 2'b01; // Write operation
-            memWriteData <= write_data;
+            write_data <= write_data;
             memAddress <= address;
         end else if (MemRead) begin
             rwi <= 2'b00; // Read operation
