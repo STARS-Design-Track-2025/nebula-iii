@@ -518,35 +518,35 @@ always_comb begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b11111000, 8'b0}, load);
       //void'(build_load(controlBus, '{8'b11111000, 8'b0}, load));
-      logic [11:0] out = caller(8'h2C, load);
+      logic [11:0] out = caller(memCommand, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
 
     11'b00000001000: begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b00000111, 8'b11100000}, load);
-      logic [11:0] out = caller(8'h2C, load);
+      logic [11:0] out = caller(memCommand, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
 
     11'b00000000100: begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b0, 8'b00011111}, load);
-      logic [11:0] out = caller(8'h2C, load);
+      logic [11:0] out = caller(memCommand, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
 
     11'b00000000010: begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b0, 8'b0}, load);
-      logic [11:0] out = caller(8'h2C, load);
+      logic [11:0] out = caller(memCommand, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
 
     11'b00000000001: begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b11111111, 8'b11111111}, load);
-      logic [11:0] out = caller(8'h2C, load);
+      logic [11:0] out = caller(memCommand, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
     default:;
