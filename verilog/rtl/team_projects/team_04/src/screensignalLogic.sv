@@ -1,6 +1,7 @@
 module screensignalLogic (
     input logic [31:0] controlBus, paramBus,
     input logic [22:0] ct,
+    input logic clk, rst,
     output logic ack, dcx, wrx, csx,
     output logic [7:0] data  
 );
@@ -13,6 +14,10 @@ logic [7:0] xCommand, yCommand, fullX3, fullX4, fullX1, fullX2, fullY1, fullY2, 
 
 assign control = controlBus[10:0];
 assign pixel = paramBus[16:0];
+assign csx = currentCsx;
+assign wrx = currentWrx;
+assign dcx = currentDcx;
+assign data = currentData;
 
  function automatic logic [11:0] caller (
     input logic [7:0] command,
@@ -541,6 +546,20 @@ always_comb begin
         end
         default:;
     endcase
+end
+
+always_ff @(posedge clk, posedge rst) begin
+    if (rst) begin
+        currentCsx <= 1;
+        currentWrx <= 1;
+        currentDcx <= 1;
+        currentData <= 8'b0;
+    end else begin
+        currentCsx <= nextCsx;
+        currentWrx <= nextWrx;
+        currentDcx <= nextDcx;
+        currentData <= nextData;
+    end
 end
 
 endmodule
