@@ -18,7 +18,7 @@ module program_counter (
     input logic clk, rst,
     input logic forceJump,
     input logic condJump,
-    input logic [2:0] ALU_flags,
+    input logic [5:0] ALU_flags,
     input logic [31:0] JumpDist,
 
     //outputs
