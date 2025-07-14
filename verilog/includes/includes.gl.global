@@ -19,7 +19,7 @@
 -v $(USER_PROJECT_VERILOG)/gl/user_project_wrapper.v
 
 # SRAM (not really GL module, but needed)
--v $(USER_PROJECT_VERILOG)/rtl/sram/sram_32_1024_sky130.v
+-v $(USER_PROJECT_VERILOG)/rtl/sram/sky130_sram_8kbyte_1r1w_32x2048_8.v
 
 -v $(USER_PROJECT_VERILOG)/../caravel/verilog/gl/caravel_core.v
 
