@@ -124,46 +124,47 @@ always_comb begin
             FPUSrc = 0;
             FPURnd = '0;
         end
+        /*
         //FPU Cases
-        7'b000011: begin/*(FLW - load word)*/
+        7'b000011: begin/*(FLW - load word)
             FPUOp = 5'b1;
             FPUSrc = 0;
             FPURnd = 010;
             regEnable: 0;
             FPUWrite: //add
         end 
-        7'b0100111: begin /*(FSW - store word)*/
+        7'b0100111: begin /*(FSW - store word)
             FPUOp = 5'd2;
             FPUSrc = 0;
             FPURnd = 010;
             regEnable: 0;
             FPUWrite: //add
         end
-        7'b1000011: begin /*(FMADD.S)*/
+        7'b1000011: begin /*(FMADD.S)
             FPUOp = 5'd3;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: //add
         end
-        7'b1000111: begin /*(FMSUB.S)*/
+        7'b1000111: begin /*(FMSUB.S)
             FPUOp = 5'd4;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: //add
         end
-        7'b1001011: begin /*(FNMSUB.S)*/
+        7'b1001011: begin /*(FNMSUB.S)
             FPUOp = 5'd5;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite:
         end 
-        7'b1001111: begin /*(FNMADD.S)*/
+        7'b1001111: begin /*(FNMADD.S)
             FPUOp = 5'd6;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: 
         end
-        7'b1010011: begin /*Math*/
+        7'b1010011: begin /*Math
             regEnable = 0;
             case(funct7)
                 0000000: begin FPUOp = 5'd7; end //ADD
@@ -189,7 +190,7 @@ always_comb begin
             endcase
 
         end
-
+        */
 
     endcase
 end
