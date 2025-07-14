@@ -13,7 +13,7 @@
 // In all other cases, the link address is zero and the program counter
 // is set to the current program counter value plus 4.
 
-module program_counter (
+module t07_program_counter (
     //inputs
     input logic clk, rst,
     input logic freeze, // Freeze signal to pause CPU operations
