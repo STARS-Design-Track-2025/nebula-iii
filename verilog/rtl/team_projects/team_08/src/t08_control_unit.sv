@@ -1,8 +1,7 @@
 `default_nettype none
 //control unit: [description]
 
-module t08_control_unit(
-    input logic reset,                    //Reset signal       
+module t08_control_unit(  
     input logic [31:0] instruction,       //32 bit instruction   
     output logic read,                    //to memory handler
     output logic write,                   //to memory handler
@@ -23,14 +22,7 @@ module t08_control_unit(
 );
 
 logic [6:0] opcode;                //opcode field               
-
 logic [6:0] funct7;                //function 7 field 
-
-//reset
-always_ff@(negedge reset) begin
-    if (reset)
-        alu_control = 0;
-end
 
 //Logic for analyzing the type of the instruction 
 always_comb begin

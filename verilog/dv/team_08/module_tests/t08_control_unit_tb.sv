@@ -1,6 +1,5 @@
 `timescale 1ms/10ps
 module t08_control_unit_tb;
-  logic reset;
   logic [31:0] instruction;
   logic read, write;
   logic [2:0] funct3;
@@ -11,7 +10,7 @@ module t08_control_unit_tb;
   logic [5:0] alu_control;
   logic jump;
   
-  t08_control_unit control_unit(.reset(reset), .instruction(instruction), .read(read), .write(write), 
+  t08_control_unit control_unit(.instruction(instruction), .read(read), .write(write), 
         .funct3(funct3), .data_in_control(data_in_control), .reg1(reg1), .reg2(reg2), .regd(regd), .en_read_1(en_read_1), 
         .en_read_2(en_read_2), .en_write(en_write), .immediate(immediate), .alu_control(alu_control), .jump(jump));
 
