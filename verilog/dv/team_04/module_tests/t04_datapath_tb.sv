@@ -36,10 +36,10 @@ module t04_datapath_tb;
         i_ack = 0;
 
         if (is_loadstore) begin
-            d_ack = 1;
+            i_ack = 1;
             memload = load_val;
             #10;           // 3rd cycle
-            d_ack = 0;
+            i_ack = 0;
         end
 
         #10; // 1 more cycle to observe datapath writeback
@@ -135,9 +135,9 @@ module t04_datapath_tb;
         if (final_address == 32'd10) begin
             $display("  final_address matched!!!!!!!!!: %0d", final_address);
             memload = 32'd42;
-            d_ack = 1;
+            i_ack = 1;
             #10;
-            d_ack = 0;
+            i_ack = 0;
         end else begin
             memload = 32'd0;
             $display("  ERROR: Unexpected address: %0d (expected 10)", final_address);

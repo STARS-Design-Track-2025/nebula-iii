@@ -42,7 +42,7 @@ module t04_mmio (
         // CPU-side input
         .CPU_DAT_I(mem_store),
         .ADR_I(final_address),
-        .SEL_I(4'b15),                  // full word access
+        .SEL_I(4'd15),                  // full word access
         .WRITE_I(MemWrite && RAM_en),
         .READ_I(MemRead && RAM_en),
 
