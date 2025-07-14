@@ -45,7 +45,7 @@ always_comb begin
         end
 
         7'b 0000011: begin /*(I-Type)*/
-            regWriteSrc = 01;
+            regWriteSrc = 001; //PC
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
@@ -60,7 +60,7 @@ always_comb begin
         end
 
         7'b0010011: begin /*I-Type*/
-            regWriteSrc = 01;
+            regWriteSrc = 010; //ALU
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
