@@ -15,25 +15,21 @@ module t08_registers(
     logic [31:0] data_in;
     logic [31:0] data_out_r1_n, data_out_r2_n;
 
-    logic [31:0] data [31:0];
-    logic [31:0] data_n [31:0];
+    logic [31:0] [31:0] data;
+    logic [31:0] [31:0] data_n;
 
     always_ff @ (posedge clk, negedge nRst) begin
         if (!nRst) begin
             
             data_out_r1 <= 0;
             data_out_r2 <= 0;
-            for (int i = 0; i < 32; i++) begin
-                data[i] <= 0;
-            end
+            data <= '{default:32'b0};
 
         end else begin
 
             data_out_r1 <= data_out_r1_n;
             data_out_r2 <= data_out_r2_n;
-            for (int i = 0; i < 32; i++) begin
-                data[i] <= data_n[i];
-            end
+            data <= data_n;
 
         end
     end
@@ -79,9 +75,7 @@ module t08_registers(
 
         end else begin
 
-            for (int i = 0; i < 32; i++) begin
-                data_n[i] = data[i];
-            end
+            data_n = data;
 
         end
 
