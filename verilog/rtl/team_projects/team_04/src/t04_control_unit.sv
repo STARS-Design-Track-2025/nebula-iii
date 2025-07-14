@@ -3,7 +3,7 @@ module t04_control_unit (
   input logic [31:0] instruction,
   input logic [31:0] ALU_result,
   output logic RegWrite, ALUSrc, Branch, MemRead, MemWrite, MemToReg, Jal, Jalr,
-  output logic [31:0] Imm,
+  output logic signed [31:0] Imm,
   output logic ALU_control,
   output logic [4:0] RegD, Reg2, Reg1
 );
@@ -25,6 +25,7 @@ module t04_control_unit (
   assign Reg2 = instruction[24:20];
 
   always_comb begin
+    Imm = 32'd0;
     Jal = (opcode == jal);
     Jalr = (opcode == jalr);
     Branch = (opcode == b && BranchConditionFlag);
@@ -42,12 +43,12 @@ module t04_control_unit (
     end
     
 
-    unique case (opcode)
-      i, l, jalr: Imm = {{20{instruction[31]}}, instruction[31:20]};
-      s:          Imm = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
-      b:          Imm = {{19{instruction[31]}}, instruction[31], instruction[7], instruction[30:25], instruction[11:8], 1'b0};
-      jal:        Imm = {{11{instruction[31]}}, instruction[31], instruction[19:12], instruction[20], instruction[30:21], 1'b0};
-      default:    Imm = 32'b0;
+    case (opcode)
+      i, l, jalr: begin Imm = {{20{instruction[31]}}, instruction[31:20]}; end
+      s:          begin Imm = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]}; end
+      b:          begin Imm = ({{19{instruction[31]}}, instruction[31], instruction[7], instruction[30:25], instruction[11:8], 1'b0}); end
+      jal:        begin Imm = {{11{instruction[31]}}, instruction[31], instruction[19:12], instruction[20], instruction[30:21], 1'b0}; end
+      // default:    begin Imm = 32'b0; end
     endcase
   end
 endmodule

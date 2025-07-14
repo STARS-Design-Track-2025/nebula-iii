@@ -22,7 +22,7 @@ jobs:
         # When merging teams' files together, common editing of files causes issues.
 
         # Commit with most up to date common files. Do not change unless you are working on the post-program integration team or have explicit permission from someone who is.
-        BASE_COMMIT="7319c08566e794ab0a556ccc231ebd5d3c966586" # 07/08/2025
+        BASE_COMMIT="872a2b06f6531f267f9fda7c60e46fc82496015b" # 07/14/2025
 
         # Get list of changed files between the base commit and current commit
         git diff --name-only $BASE_COMMIT > changed_files.txt
@@ -103,9 +103,13 @@ jobs:
                         "spi/team_00.spi" \
                         "signoff/team_00/" \
 
-                        "gds/sram_32_1024_sky130*" \
-                        "lef/sram_32_1024_sky130.lef" \
-                        "lib/sram_32_1024_sky130_TT_1p8V_25C.lib" \
+                        "gds/sky130_sram_4kbyte_1r1w_32x1024_8*" \
+                        "lef/sky130_sram_4kbyte_1r1w_32x1024_8.lef" \
+                        "lib/sky130_sram_4kbyte_1r1w_32x1024_8_TT_1p8V_25C.lib" \
+
+                        "gds/sky130_sram_8kbyte_1r1w_32x2048_8*" \
+                        "lef/sky130_sram_8kbyte_1r1w_32x2048_8.lef" \
+                        "lib/sky130_sram_8kbyte_1r1w_32x2048_8_TT_1p8V_25C.lib" \
                         )
 
         # Initialize a flag to detect if any disallowed files were changed
