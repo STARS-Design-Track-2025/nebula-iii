@@ -2,7 +2,7 @@ module t07_control_unit (
 input logic [6:0] Op, //from decoder
 input logic [2:0] funct3, //from decoder
 input logic [6:0] funct7, //from decoder
-output logic [2:0] ALUOp, //to ALU
+output logic [3:0] ALUOp, //to ALU
 output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, memToReg, FPUSrc, regEnable, 
 output logic [4:0] FPUOp, FPURnd, //to FPU
 output logic [1:0] FPUWrite //to FPUReg
