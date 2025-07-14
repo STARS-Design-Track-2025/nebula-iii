@@ -4,3 +4,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/team_08.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_alu.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_registers.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_I2C_and_interrupt.sv
