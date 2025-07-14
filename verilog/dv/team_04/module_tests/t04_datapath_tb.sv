@@ -57,7 +57,8 @@ module t04_datapath_tb;
         $display("reg2 coming from control = %0d", dut.Reg2);
         $display("reg1 coming from regFile= %0d", dut.src_A);
         $display("reg2 coming from regFile = %0d", dut.src_B);
-        $display("imm = %0d", dut.Imm);
+        $display("imm = %0d", dut.cu.Imm);
+        $display("immediate from PC = %0d", dut.pc_module.imm);
         $display("  PC    = %0d", dut.PC);
         $display(" NEXT PC    = %0d", dut.pc_module.n_PC);
     endtask
@@ -257,7 +258,5 @@ $display("Final PC = %0d", dut.PC);
     end
 
 endmodule
-//FIX IMMEDIATE GENERATOR FOR BRANCHES
-//WHY DOES IT GO INTO AN INFINITE LOOP IF I PUT #10 on line 33?
-//WHY DOES IT GO INTO AN INFINITE LOOP IF I CHANGE FREEZE LOGIC? 
+//FIX IMMEDIATE GENERATOR FOR BRANCHES. NEED NEED NEED TO DEBUG CONTROL UNIT
 //NOT INCREMENTING PC OR FREEZING PROPERLY

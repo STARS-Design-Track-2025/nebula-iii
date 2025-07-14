@@ -3,7 +3,7 @@ module t04_control_unit (
   input logic [31:0] instruction,
   input logic [31:0] ALU_result,
   output logic RegWrite, ALUSrc, Branch, MemRead, MemWrite, MemToReg, Jal, Jalr,
-  output logic [31:0] Imm,
+  output logic signed [31:0] Imm,
   output logic ALU_control,
   output logic [4:0] RegD, Reg2, Reg1
 );
@@ -45,7 +45,7 @@ module t04_control_unit (
     unique case (opcode)
       i, l, jalr: Imm = {{20{instruction[31]}}, instruction[31:20]};
       s:          Imm = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
-      b:          Imm = {{19{instruction[31]}}, instruction[31], instruction[7], instruction[30:25], instruction[11:8], 1'b0};
+      b:          Imm = 32'd0;
       jal:        Imm = {{11{instruction[31]}}, instruction[31], instruction[19:12], instruction[20], instruction[30:21], 1'b0};
       default:    Imm = 32'b0;
     endcase
