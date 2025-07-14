@@ -231,14 +231,15 @@ module wishbone_manager_tb();
     // Write Task
     task wb_write(
         input logic [31:0] addr,
-        input logic [31:0] data
+        input logic [31:0] data,
+        input logic [3:0] sel
     );
     begin
         tb_write_occur = 1'b1;
         @(negedge tb_CLK);
         
         tb_WRITE_I   = '1;
-        tb_SEL_I     = '1;
+        tb_SEL_I     = sel;
         tb_ADR_I     = addr;
         tb_CPU_DAT_I = data;
 
@@ -256,44 +257,18 @@ module wishbone_manager_tb();
     end
     endtask
 
-    // task wb_write_limited(
-    //     input logic [31:0] addr,
-    //     input logic [31:0] data
-    // );
-    // begin
-    //     tb_write_occur = 1'b1;
-    //     @(negedge tb_CLK);
-        
-    //     tb_WRITE_I   = '1;
-    //     tb_SEL_I     = '1;
-    //     tb_ADR_I     = addr;
-    //     tb_CPU_DAT_I = data;
-
-    //     #(CLK_PERIOD);
-    //     tb_WRITE_I   = '0;
-
-    //     #(CLK_PERIOD * 4);
-
-    //     tb_WRITE_I   = '0;
-    //     tb_SEL_I     = '0;
-    //     tb_ADR_I     = '0;
-    //     tb_CPU_DAT_I = '0;
-
-    //     tb_write_occur = 1'b0;
-    // end
-    // endtask
-
     // Read Task
     task wb_read(
         input logic [31:0] addr,
-        input logic [31:0] data
+        input logic [31:0] data,
+        input logic [3:0] sel
     );
     begin
         tb_read_occur = 1'b1;
         @(negedge tb_CLK);
         
         tb_READ_I   = '1;
-        tb_SEL_I     = '1;
+        tb_SEL_I     = sel;
         tb_ADR_I     = addr;
 
         @(negedge tb_CLK);
@@ -318,6 +293,7 @@ module wishbone_manager_tb();
 
     // Main testbench task
     initial begin
+        // Initialize signals
         tb_write_occur = 1'b0;
         tb_read_occur  = 1'b0;
 
@@ -329,18 +305,45 @@ module wishbone_manager_tb();
         tb_CPU_DAT_I = '0;
         tb_SEL_I = '0;
 
+        // Perform reset
         reset();
 
-        wb_write(32'h33000000, 32'h12345678);
+        // Write and read from address 0x0 in SRAM
+        wb_write(32'h33000000, 32'h12345678, 'b1111);
+        repeat (5) @(posedge tb_CLK);
+        wb_read(32'h33000000, 32'h12345678, 'b1111);
+        repeat (5) @(posedge tb_CLK);
 
-        #(CLK_PERIOD * 10);
-
-        wb_read(32'h33000000, 32'h12345678);
+        // Modify Byte 0 in address 0x0 in SRAM
+        wb_write(32'h33000000, 32'hAAAAAAAA, 'b0001);
+        repeat (5) @(posedge tb_CLK);
+        wb_read(32'h33000000, 32'hAA, 'b0001);
+        repeat (5) @(posedge tb_CLK);
+        wb_read(32'h33000000, 32'h123456AA, 'b1111);
+        repeat (5) @(posedge tb_CLK);
         
+        // Modify Byte 2 in address 0x0 in SRAM
+        wb_write(32'h33000000, 32'hBBBBBBBB, 'b0100);
+        repeat (5) @(posedge tb_CLK);
+        wb_read(32'h33000000, 32'h00BB0000, 'b0100);
+        repeat (5) @(posedge tb_CLK);
+        wb_read(32'h33000000, 32'h12BB56AA, 'b1111);
+        repeat (5) @(posedge tb_CLK);
+
+        // Write and read from last address in SRAM
+        wb_write(32'h33001FFF, 32'h22334455, 'b1111);
+        repeat (5) @(posedge tb_CLK);
+        wb_read(32'h33001FFF, 32'h22334455, 'b1111);
+        repeat (5) @(posedge tb_CLK);
+
+        // Write and read from address 0x0 in LA Controller
+        wb_write(32'h31000000, 32'h12345678, 'b1111);
+        repeat (5) @(posedge tb_CLK);
+        wb_read(32'h31000000, 32'h8, 'b1111);
+        repeat (5) @(posedge tb_CLK);
+
+        // Done!
         $info("TESTBENCH DONE!!");
-
-        #(CLK_PERIOD * 10);
-
         $finish;
     end
     endmodule

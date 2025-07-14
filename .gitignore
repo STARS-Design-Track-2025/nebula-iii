@@ -4,6 +4,7 @@
 */*/tmp
 *.hex*
 *.lst
+*.vvp
 *.vcd
 *.gtkw
 *.o
@@ -26,9 +27,7 @@
 /verilog/dv/*/module_tests/.restartSimSession.tcl.old
 /verilog/dv/*/*.log
 /verilog/dv/*/.nfs*
-/verilog/dv/*.vvp
 /verilog/dv/team_*/team*.h
-/verilog/dv/team_*/team*.vvp
 /verilog/dv/team_*/team*.vcd.hier
 /verilog/gl/user_project_wrapper.v
 /verilog/includes/includes.rtl.caravel_user_project
