@@ -24,30 +24,62 @@ module program_counter (
     //outputs
     output logic [31:0] programCounter, linkAddress
 );
+logic [31:0] n_programCounter, n_linkAddress; // Next values for program counter and link address
 
 always_ff @(posedge clk or posedge rst) begin
     if (rst) begin
         programCounter <= 32'b0; // Reset PC to 0
         linkAddress <= 32'b0; // Reset link address to 0
     end else begin
-        if (forceJump) begin
-            // If force jump is requested, set link address to next programCounter and move programCounter by the jump
-            linkAddress <= programCounter + 4;
-            programCounter <= programCounter + JumpDist;
-        end else if (condJump) begin 
-            if (ALU_flags[2]) begin // Assuming ALU_flags[2] indicates a condition met for a branch
-                // If condition is met, set link address and jump
-                linkAddress <= 32'b0;
-                programCounter <= programCounter + JumpDist;
-            end else begin
-                linkAddress <= 32'b0;
-                programCounter <= programCounter + 4; // No jump, just increment PC
-            end
-        end else begin
-            //Normal operation, just increment program counter
-            linkAddress <= 32'b0;
-            programCounter <= programCounter + 4;
-        end
+        programCounter <= n_programCounter; // Default increment
+        linkAddress <= n_linkAddress; // Default link address
     end
 end
+
+always_comb begin
+    if (forceJump) begin
+        // If force jump is requested, set link address to next programCounter and move programCounter by the jump
+        n_linkAddress = programCounter + 4;
+        n_programCounter = programCounter + JumpDist;
+    end else if (condJump) begin 
+        if (ALU_flags[2]) begin // Assuming ALU_flags[2] indicates a condition met for a branch
+            // If condition is met, set link address and jump
+            n_linkAddress = 32'b0;
+            n_programCounter = programCounter + JumpDist;
+        end else begin
+            n_linkAddress = 32'b0;
+            n_programCounter = programCounter + 4; // No jump, just increment PC
+        end
+    end else begin
+        //Normal operation, just increment program counter
+        n_linkAddress = 32'b0;
+        n_programCounter = programCounter + 4;
+    end
+end
+
+// always_ff @(posedge clk or posedge rst) begin
+//     if (rst) begin
+//         programCounter <= 32'b0; // Reset PC to 0
+//         linkAddress <= 32'b0; // Reset link address to 0
+//     end else begin
+//         if (forceJump) begin
+//             // If force jump is requested, set link address to next programCounter and move programCounter by the jump
+//             linkAddress <= programCounter + 4;
+//             programCounter <= programCounter + JumpDist;
+//         end else if (condJump) begin 
+//             if (ALU_flags[2]) begin // Assuming ALU_flags[2] indicates a condition met for a branch
+//                 // If condition is met, set link address and jump
+//                 linkAddress <= 32'b0;
+//                 programCounter <= programCounter + JumpDist;
+//             end else begin
+//                 linkAddress <= 32'b0;
+//                 programCounter <= programCounter + 4; // No jump, just increment PC
+//             end
+//         end else begin
+//             //Normal operation, just increment program counter
+//             linkAddress <= 32'b0;
+//             programCounter <= programCounter + 4;
+//         end
+//     end
+// end
 endmodule
