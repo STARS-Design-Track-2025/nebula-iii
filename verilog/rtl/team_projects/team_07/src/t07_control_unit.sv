@@ -72,7 +72,7 @@ always_comb begin
         end
         7'b1100011: begin /*(B-Type)*/
             ALUSrc = 0;
-            regWrite = 0;complement
+            regWrite = 0;
             branch = 1;
             memWrite = 0;
             memRead = 0;
