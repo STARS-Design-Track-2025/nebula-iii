@@ -19,7 +19,6 @@ module CPU(
     logic [2:0] regWriteSrc;
     //PC output
     logic [31:0] pc_out, linkAddress;
-    logic freeze;
     //ALU output
     logic [2:0] ALUFlags;
     logic [31:0] ALUResult;
