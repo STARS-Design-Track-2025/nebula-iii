@@ -19,53 +19,39 @@ assign wrx = currentWrx;
 assign dcx = currentDcx;
 assign data = currentData;
 
- function automatic logic [11:0] caller (
+  function automatic logic [11:0] signal_call (
     input logic [7:0] command,
-    input byte unsigned params[]
+    input logic [7:0] pat0,
+    input logic [7:0] pat1,
+    input int unsigned pixel_cnt
   );
+    int unsigned total_bytes = pixel_cnt << 1;
+    int unsigned byte_idx = (ct >= 5) ? ({8'b0, ct} - 5) : 0;
 
     case (ct)
-      0: begin caller = {1'b0, 1'b1, 1'b1, 1'b1, 8'b0}; end
-      1: begin caller = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0}; end
-      2: begin caller = {1'b0, 1'b0, 1'b0, 1'b0, command}; end
-      3: begin caller = {1'b0, 1'b0, 1'b0, 1'b1, command}; end
-      4: begin caller = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0}; end
-      default: begin
-        if (ct >= 5) begin
-          int unsigned size = params.size();
-          logic [22:0] counter = ct - 5;
+      0 : signal_call = {1'b0, 1'b1, 1'b1, 1'b1, 8'b0};
+      1 : signal_call = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0};
+      2 : signal_call = {1'b0, 1'b0, 1'b0, 1'b0, command};
+      3 : signal_call = {1'b0, 1'b0, 1'b0, 1'b1, command};
+      4 : signal_call = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0};
 
-          if ({9'b0, counter} < size * 2) begin
-            logic [22:0] idx = counter >> 1;
-            logic wrx = counter[0];
-            caller = {1'b0, 1'b0, 1'b1, wrx, params[idx]};
-          end
-          
-          if ({9'b0, counter} == (5 + size * 2)) begin
-            caller[11] = 1'b1;
+      default : begin
+        if (ct >= 5) begin
+          signal_call = 12'b0;
+
+          if (byte_idx < total_bytes) begin
+            logic wrx = byte_idx[0];
+            logic [7:0] data = wrx ? pat1 : pat0;
+
+            signal_call = {1'b0, 1'b0, 1'b0, wrx, data};
+
+            if (byte_idx == total_bytes - 1) begin
+              signal_call[11] = 1'b1;
+            end
           end
         end
       end
     endcase
-
-  endfunction
-
-  function automatic int build_load (
-    input logic [31:0] count,
-    input byte unsigned pattern[],
-    output byte unsigned load[]
-  );
-    int size = count * pattern.size();
-    load = new[size];
-
-    for (int i = 0; i < count; i++) begin
-      for (int j = 0; j < pattern.size(); j++) begin
-        load[i * pattern.size() + j] = pattern[j];
-      end
-    end
-
-    build_load = 1;
-    
   endfunction
 
 //reseton : swreset - 5ms - sleep out - 120ms - pixel format(3A set rgb565) - pixel param - orientation(36) - orientation param - dispOn - 5 commands total
@@ -510,42 +496,33 @@ always_comb begin
                 ack = 0;
             end
         endcase
-    end
-    11'b00000010000: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b11111000, 8'b0}, load);
-      //void'(build_load(controlBus, '{8'b11111000, 8'b0}, load));
-      logic [11:0] out = caller(8'h2C, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-    end
+      end
 
-    11'b00000001000: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b00000111, 8'b11100000}, load);
-      logic [11:0] out = caller(8'h2C, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-    end
+      11'b00000010000: begin
+        logic [11:0] out = signal_call(memCommand, 8'b11111000, 8'b0, paramBus);
+        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+      end
 
-    11'b00000000100: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b0, 8'b00011111}, load);
-      logic [11:0] out = caller(8'h2C, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-    end
+      11'b00000001000: begin
+        logic [11:0] out = signal_call(memCommand, 8'b00000111, 8'b11100000, paramBus);
+        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+      end
 
-    11'b00000000010: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b0, 8'b0}, load);
-      logic [11:0] out = caller(8'h2C, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-    end
+      11'b00000000100: begin
+        logic [11:0] out = signal_call(memCommand, 8'b0, 8'b00011111, paramBus);
+        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+      end
 
-    11'b00000000001: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b11111111, 8'b11111111}, load);
-      logic [11:0] out = caller(8'h2C, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-    end
+      11'b00000000010: begin
+        logic [11:0] out = signal_call(memCommand, 8'b11111111, 8'b11111111, paramBus);
+        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+      end
+
+      11'b00000000001: begin
+        logic [11:0] out = signal_call(memCommand, 8'b0, 8'b0, paramBus);
+        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+      end
+
     default:;
   endcase
 end
