@@ -93,7 +93,7 @@ module t08_alu(
             SLTU, SLTIU:      data_out =    {31'b0, in1 < in2};
             XOR, XORI:        data_out =    in1 ^ in2;
             SRL, SRLI:        data_out =    in1 >> (in2[4:0]);
-            SRA, SRAI:        data_out =    in1 >>> (in2[4:0]);
+            SRA, SRAI:        data_out =    $signed(in1) >>> (in2[4:0]);
             OR, ORI:          data_out =    in1 | in2;
             AND, ANDI:        data_out =    in1 & in2;
 

@@ -13,32 +13,35 @@ module t08_alu_tb;
         SRA =   6'd8,
         OR =    6'd9,
         AND =   6'd10,
+        
+        ADDI =   6'd11, //I type
+        SLTI =   6'd12,
+        SLTIU =  6'd13,
+        XORI =   6'd14,
+        ORI =    6'd15,
+        ANDI =   6'd16,
+        SLLI =   6'd17,
+        SRLI =   6'd18,
+        SRAI =   6'd19,
 
-        ADDI =  6'd11, //I type
-        SLTI =  6'd12, 
-        SLTIU = 6'd13, 
-        XORI =  6'd14,
-        ORI =   6'd15,
-        ANDI =  6'd16, 
+        LB =     6'd20, //I type continued
+        LH =     6'd21,
+        LW =     6'd22,
+        LBU =    6'd23,
+        LHU =    6'd24,
 
-        LB =    6'd17, //I type continued
-        LBU =   6'd18,
-        LH =    6'd19,
-        LHU =   6'd20,
-        LW =    6'd21,
+        SB = 6'd25, //S type
+        SH = 6'd26,
+        SW = 6'd27,
 
-        SB = 6'd22, //S type
-        SH = 6'd23,
-        SW = 6'd24,
+        BEQ = 6'd28, //B type
+        BNE = 6'd29,
+        BLT = 6'd30,
+        BGE = 6'd31,
+        BLTU = 6'd32,
+        BGEU = 6'd33,
 
-        BEQ = 6'd25, //B type
-        BGE = 6'd26,
-        BGEU = 6'd27,
-        BLT = 6'd28,
-        BLTU = 6'd29,
-        BNE = 6'd30,    
-
-        AUIPC = 6'd31 //U type
+        AUIPC = 6'd35 // U type
 
     } alu_operations;
 
@@ -56,6 +59,7 @@ module t08_alu_tb;
     logic [31:0] actualresult;
 
     integer wrongCount = 0;
+    logic wrong = 0;
 
     t08_alu alu(.clk(clk), .nRst(nRst), .reg1(reg1), .reg2(reg2), .immediate(immediate), .program_counter(program_counter), .alu_control(alu_control), .data_out(data_out), .branch(branch));
 
@@ -67,7 +71,7 @@ module t08_alu_tb;
     task run_operation(logic [5:0] operation);
         alu_control = operation; @ (negedge clk); @ (negedge clk);
         verify_operation(operation); @ (negedge clk); @ (negedge clk);
-        if (operation >= 6'd25 && operation <= 6'd30) begin
+        if (operation >= 6'd28 && operation <= 6'd33) begin
             print_test_result(testname, (expectedresult == {31'b0, branch}), expectedresult, {31'b0, branch});
         end else begin
             print_test_result(testname, (expectedresult == data_out), expectedresult, data_out);
@@ -150,6 +154,18 @@ module t08_alu_tb;
                 testname = "and immediate";
                 expectedresult =    reg1 & immediate;
             end
+            SLLI: begin
+                testname = "shift left logical immediate";
+                expectedresult =    reg1 << immediate[4:0];
+            end
+            SRLI: begin
+                testname = "shift right logical immediate";
+                expectedresult =    reg1 >> immediate[4:0];
+            end
+            SRAI: begin
+                testname = "shift right arithmetic immediate";
+                expectedresult =    reg1 >>> immediate[4:0];
+            end
             LB, LBU, LH, LHU, LW: begin   
                 testname = "load operations";
                 expectedresult =    reg1 + immediate;
@@ -205,12 +221,14 @@ module t08_alu_tb;
         if (!pass) begin
             $display("TEST FAIL: %s. Expected %B and got %B", name, expectedresult, actualresult);
             wrongCount++;
+            wrong = 1; #1
+            wrong = 0;
         end
     endtask
 
     initial begin
 
-        $dumpfile("waves/t08_alu.vcd");
+        $dumpfile("t08_alu.vcd");
         $dumpvars(0, t08_alu_tb);
 
         //Power on reset
@@ -224,7 +242,7 @@ module t08_alu_tb;
 
         run_all_operations;
 
-        //Test set 2
+        // //Test set 2
         reg1 = -32'sd500;
         reg2 = 32'sd200;
         immediate = 32'sd300;
@@ -232,7 +250,7 @@ module t08_alu_tb;
 
         run_all_operations;
 
-        //Test set 3
+        // //Test set 3
         reg1 = -32'sd100000;
         reg2 = -32'sd7;
         immediate = 32'sd300;
@@ -240,7 +258,7 @@ module t08_alu_tb;
 
         run_all_operations;
 
-        //Test set 4
+        // //Test set 4
         reg1 = 32'sd0;
         reg2 = 32'sd0;
         immediate = -32'sd389;
@@ -249,6 +267,9 @@ module t08_alu_tb;
         run_all_operations;
 
         $display("Wrong count: %-4d", wrongCount);
+
+        $display($signed(4'b1100 >> 1'b1));
+        $display($signed($signed(4'b1100) >>> 1'b1));
 
         #1 $finish;
 
