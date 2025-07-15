@@ -56,7 +56,7 @@ initial begin
     @ (posedge clk);
     //SLTU: determine whether r5 is less than r4 (unsigned), store result in r8
     //r8 should now be 0
-    instruction = 32'b0000000_00100_00101_011_00010_0110011;
+    instruction = 32'b0000000_00100_00101_011_01000_0110011;
 
     @ (posedge clk);
     //XOR: store (r4 ^ r7) in r9
@@ -65,29 +65,32 @@ initial begin
 
     @ (posedge clk);
     //SRL: store (r5 >> r7) in r10
-    //r10 should now be 1073741821
-    instruction = 32'b0000000_00111_00101_101_01010_0110011; //PROBLEM IDENTIFIED: This appears to be behaving as SRA
+    //r10 should now be 2147483645
+    instruction = 32'b0000000_00111_00101_101_01010_0110011; 
 
     @ (posedge clk);
     //SRA: store (r5 >>> r7) in r11
-    //r11 should now be 2147483645
+    //r11 should now be -3
     instruction = 32'b0100000_00111_00101_101_01011_0110011; 
 
-    /*
     @ (posedge clk);
-    //or
-    instruction = 32'b0000000_00000_00001_110_00010_0110011; //
+    //OR: store (r2 | r4) in r12
+    //r12 should now be 7
+    instruction = 32'b0000000_00100_00010_110_01100_0110011; 
 
     @ (posedge clk);
-    //and
-    instruction = 32'b0000000_00000_00001_001_00010_0110011; //
+    //AND: store (r5 & r12) in r13
+    //r13 should now be 3
+    instruction = 32'b0000000_01100_00101_111_01101_0110011; 
 
     //I-Type
 
     @ (posedge clk);
-    //addi
-    instruction = 32'b000000000011_00001_000_00010_0010011; //
+    //ADDI: store (50 + r11) in r14
+    //r14 should now be 47
+    instruction = 32'b000000110010_01011_000_00010_0010011; 
 
+    /*
     @ (posedge clk);
     //slti
     instruction = 32'b000000000011_00001_010_00010_0010011; //
@@ -119,11 +122,13 @@ initial begin
     @ (posedge clk);
     //srai
     instruction = 32'b0100000_00000_00001_101_00010_0010011; //
+    */
 
     @ (posedge clk);
-    //lb
-    instruction = 32'b000000000011_00001_000_00010_0000011; //
+    //LB: 
+    instruction = 32'b000000000011_00001_000_01111_0000011; //
 
+    /*
     @ (posedge clk);
     //lh
     instruction = 32'b000000000011_00001_001_00010_0000011; //
