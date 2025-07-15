@@ -1,6 +1,5 @@
 /*
 Communicates with the touchscreen via I2C and obtains the coordinates of a touch event whenever a touch event occurs. 
-THIS MODULE IS STILL UNFINISHED. 
 */
 
 module t08_I2C_and_interrupt(
@@ -139,18 +138,6 @@ module t08_I2C_and_interrupt(
             scl_counter_n = 0;
 
         end else begin //Otherwise, SCL will oscilllate at a frequency of 2.5 MHz (1/4 of clock frequency). 
-
-            // if (scl_counter < 8'd2) begin //Dividing by 4 is just a placeholder until the optimal frequency is figured out. 
-
-            //     scl_counter_n = scl_counter + 8'd1;
-            //     scl_n = scl;
-                
-            // end else begin
-
-            //     scl_counter_n = 0;
-            //     scl_n = ~scl;
-
-            // end
 
             scl_counter_n = scl_wouldbe_counter_n;
             scl_n = scl_wouldbe_n;
