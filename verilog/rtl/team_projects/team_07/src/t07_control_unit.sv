@@ -6,7 +6,8 @@ input logic [4:0] rs2, //from decoder, for differentiating FPU convert functions
 output logic [3:0] ALUOp, //to ALU
 output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, memToReg, FPUSrc, regEnable, 
 output logic [2:0] regWriteSrc, //regWriteSrc goes to mux outside PC/memory handler/ALU/FPU/ImmGen -> registers, 000 = PC, 001 = MH, 010 = ALU, 011 = FPU, 100 = ImmGen
-output logic [4:0] FPUOp, FPURnd, //to FPU
+output logic [4:0] FPUOp, 
+output logic [2:0] FPURnd, //to FPU
 output logic [1:0] FPUWrite, //to FPUReg
 output logic [4:0] rs3 //to FPU registers
 //outputs:
@@ -22,6 +23,7 @@ always_comb begin
     case(Op)
         //ALU Cases
         7'b0110011: begin /*(R-type)*/
+            regWriteSrc = 3'b010;
             ALUSrc = 0;
             regWrite = 1;
             branch = 0;
@@ -34,19 +36,19 @@ always_comb begin
             FPUSrc = 0;
             FPURnd = '0;
             case(funct3) 
-                000: if(funct7 == 0000000) begin ALUOp = 4'd0; end else if (funct7 == 0100000) begin ALUOp = 4'd9; end
-                001: ALUOp = 4'd3;
-                010: ALUOp = 4'd4;
-                011: ALUOp = 4'd5;
-                100: ALUOp = 4'd9;
-                101: if(funct7 == 0000000) begin ALUOp = 4'd7; end else if (funct7 == 0100000) begin ALUOp = 4'd6; end
-                110: ALUOp = 4'd2;
-                111: ALUOp = 4'd1;
+                3'b000: if(funct7 == 0000000) begin ALUOp = 4'd0; end else if (funct7 == 0100000) begin ALUOp = 4'd9; end
+                3'b001: ALUOp = 4'd3;
+                3'b010: ALUOp = 4'd4;
+                3'b011: ALUOp = 4'd5;
+                3'b100: ALUOp = 4'd9;
+                3'b101: if(funct7 == 0000000) begin ALUOp = 4'd7; end else if (funct7 == 0100000) begin ALUOp = 4'd6; end
+                3'b110: ALUOp = 4'd2;
+                3'b111: ALUOp = 4'd1;
             endcase
         end
 
         7'b 0000011: begin /*(I-Type)*/
-            regWriteSrc = 01;
+            regWriteSrc = 3'b100;
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
@@ -101,7 +103,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b0110111: begin /*(U-type, lui)*/ 
-            regWriteSrc = 100; //from immGen
+            regWriteSrc = 3'b100; //from immGen
             ALUSrc = 0;
             regWrite = 1;
             FPUSrc = 0;
@@ -117,7 +119,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b0010111: begin /*(U-Type, auipc)*/
-            regWriteSrc = 011; //from ALU
+            regWriteSrc = 3'b011; //from ALU
             ALUSrc = 0;
             regWrite = 1;
             branch = 0;
@@ -132,7 +134,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b1101111: begin /*(J-type, jal)*/
-            regWriteSrc = 000; //from PC
+            regWriteSrc = 3'b000; //from PC
             ALUSrc = 0;
             regWrite = 1;
             branch = 0;
@@ -146,7 +148,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b1100111: begin /*(J-type, jalr)*/
-            regWriteSrc = 000; //from PC
+            regWriteSrc = 3'b000; //from PC
             ALUSrc = 0;
             regWrite = 1;
             branch = 0;
@@ -208,38 +210,38 @@ always_comb begin
             regEnable = 0;
             FPUWrite = 1;
             case(funct7)
-                0000000: begin FPUOp = 5'd7; end //ADD
-                0000100: begin FPUOp = 5'd8; end //SUB
-                0001000: begin FPUOp = 5'd9; end //MUL
-                0001100: begin FPUOp = 5'd10; end //DIV
-                0101100: begin FPUOp = 5'd11; end //SQRT
-                0010000: begin 
-                    if(funct3 == 000) begin FPURnd = 000; FPUOp = 5'd12; end //FSGNJ
-                    if(funct3 == 001) begin FPURnd = 001; FPUOp = 5'd13; end //FSGNJN
-                    if(funct3 == 010) begin FPURnd = 010; FPUOp = 5'd14; end //FSGNJX
+                'b0000000: begin FPUOp = 5'd7; end //ADD
+                'b0000100: begin FPUOp = 5'd8; end //SUB
+                'b0001000: begin FPUOp = 5'd9; end //MUL
+                'b0001100: begin FPUOp = 5'd10; end //DIV
+                'b0101100: begin FPUOp = 5'd11; end //SQRT
+                'b0010000: begin 
+                    if(funct3 == 'b000) begin FPURnd = 'b000; FPUOp = 5'd12; end //FSGNJ
+                    if(funct3 == 'b001) begin FPURnd = 'b001; FPUOp = 5'd13; end //FSGNJN
+                    if(funct3 == 'b010) begin FPURnd = 'b010; FPUOp = 5'd14; end //FSGNJX
                 end 
-                0010100: begin
-                    if(funct3 == 000) begin FPURnd = 000; FPUOp = 5'd15; end //FMIN
-                    if(funct3 == 001) begin FPURnd = 001; FPUOp = 5'd16; end //FMAX
+                7'b0010100: begin
+                    if(funct3 == 3'b000) begin FPURnd = 3'b000; FPUOp = 5'd15; end //FMIN
+                    if(funct3 == 3'b001) begin FPURnd = 3'b001; FPUOp = 5'd16; end //FMAX
                 end
-                1010000: begin
-                    if(funct3 == 010) begin FPURnd = 010; FPUOp = 5'd17; end //FEQ
-                    if(funct3 == 001) begin FPURnd = 001; FPUOp = 5'd18; end //FLT
-                    if(funct3 == 000) begin FPURnd = 000; FPUOp = 5'd19; end //FLE
+                7'b1010000: begin
+                    if(funct3 == 3'b010) begin FPURnd = 3'b010; FPUOp = 5'd17; end //FEQ
+                    if(funct3 == 3'b001) begin FPURnd = 3'b001; FPUOp = 5'd18; end //FLT
+                    if(funct3 == 3'b000) begin FPURnd = 3'b000; FPUOp = 5'd19; end //FLE
                 end
-                1111000: begin FPURnd = 000; FPUOp = 5'd20; end //FMV
-                1010011: begin 
-                    if(funct7 == 1100000) begin
+                7'b1111000: begin FPURnd = 3'b000; FPUOp = 5'd20; end //FMV
+                7'b1010011: begin 
+                    if(funct7 == 7'b1100000) begin
                         if(rs2 == '0) begin FPUOp = 5'd21; end //FCVT.W
-                        if(rs2 == 00001) begin FPUOp = 5'd22; end //FCVT.WU
+                        if(rs2 == 5'b00001) begin FPUOp = 5'd22; end //FCVT.WU
                     end
-                    else if(funct7 == 1101000) begin
+                    else if(funct7 == 'b1101000) begin
                         if(rs2 == '0) begin FPUOp = 5'd23; end //FCVT.S.W
-                        if(rs2 == 00001) begin FPUOp = 5'd24; end //FCVT.S.WU 
+                        if(rs2 == 5'b00001) begin FPUOp = 5'd24; end //FCVT.S.WU 
                     end
                 end
-                1110000: begin FPURnd = 001; FPUOp = 5'd25; end //FCLASS.S
-                1111000: begin FPURnd = 000; FPUOp = 5'd26; end //FMV.S
+                7'b1110000: begin FPURnd = 3'b001; FPUOp = 5'd25; end //FCLASS.S
+                7'b1111000: begin FPURnd = 3'b000; FPUOp = 5'd26; end //FMV.S
                 
             endcase
 
