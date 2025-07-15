@@ -1,5 +1,5 @@
 module screensignalLogic (
-    input logic [31:0] controlBus, paramBus,
+    input logic [31:0] controlBus, xBus, yBus,
     input logic [22:0] ct,
     input logic clk, rst,
     output logic ack, dcx, wrx, csx,
@@ -7,71 +7,55 @@ module screensignalLogic (
 );
   logic [7:0] nextData, currentData;
   logic nextDcx, nextCsx, nextWrx, currentDcx, currentCsx, currentWrx, oeCt;
-  logic [10:0] control;
+  logic [8:0] control;
   logic [16:0] pixel;
   logic [7:0] xCommand, yCommand, fullX3, fullX4, fullX1, fullX2, fullY1, fullY2, fullY3, fullY4, rgbParam, rgbCommand, oriCommand, oriParam, sleepoCommand, sleepiCommand, swrstCommand, dispoffCommand, disponCommand, memCommand;
 
-assign control = controlBus[10:0];
-assign pixel = paramBus[16:0];
+assign control = controlBus[8:0];
 
-//output
+//outputs
 assign csx = currentCsx;
 assign wrx = currentWrx;
 assign dcx = currentDcx;
 assign data = currentData;
 
- function automatic logic [11:0] caller (
+  function automatic logic [11:0] signal_call (
     input logic [7:0] command,
-    input byte unsigned params[]
+    input logic [7:0] pat0,
+    input logic [7:0] pat1,
+    input int unsigned pixel_cnt
   );
+    int unsigned total_bytes = pixel_cnt << 1;
+    int unsigned byte_idx = (ct >= 5) ? ({8'b0, ct} - 5) : 0;
 
     case (ct)
-      0: begin caller = {1'b0, 1'b1, 1'b1, 1'b1, 8'b0}; end
-      1: begin caller = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0}; end
-      2: begin caller = {1'b0, 1'b0, 1'b0, 1'b0, command}; end
-      3: begin caller = {1'b0, 1'b0, 1'b0, 1'b1, command}; end
-      4: begin caller = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0}; end
-      default: begin
-        if (ct >= 5) begin
-          int unsigned size = params.size();
-          logic [22:0] counter = ct - 5;
+      0 : signal_call = {1'b0, 1'b1, 1'b1, 1'b1, 8'b0};
+      1 : signal_call = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0};
+      2 : signal_call = {1'b0, 1'b0, 1'b0, 1'b0, command};
+      3 : signal_call = {1'b0, 1'b0, 1'b0, 1'b1, command};
+      4 : signal_call = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0};
 
-          if ({9'b0, counter} < size * 2) begin
-            logic [22:0] idx = counter >> 1;
-            logic wrx = counter[0];
-            caller = {1'b0, 1'b0, 1'b1, wrx, params[idx]};
-          end
-          
-          if ({9'b0, counter} == (5 + size * 2)) begin
-            caller[11] = 1'b1;
+      default : begin
+        if (ct >= 5) begin
+          signal_call = 12'b0;
+
+          if (byte_idx < total_bytes) begin
+            logic wrx = byte_idx[0];
+            logic [7:0] data = wrx ? pat1 : pat0;
+
+            signal_call = {1'b0, 1'b0, 1'b0, wrx, data};
+
+            if (byte_idx == total_bytes - 1) begin
+              signal_call[11] = 1'b1;
+            end
           end
         end
       end
     endcase
-
-  endfunction
-
-  function automatic int build_load (
-    input logic [31:0] count,
-    input byte unsigned pattern[],
-    output byte unsigned load[]
-  );
-    int size = count * pattern.size();
-    load = new[size];
-
-    for (int i = 0; i < count; i++) begin
-      for (int j = 0; j < pattern.size(); j++) begin
-        load[i * pattern.size() + j] = pattern[j];
-      end
-    end
-
-    build_load = 1;
-    
   endfunction
 
 //reseton : swreset - 5ms - sleep out - 120ms - pixel format(3A set rgb565) - pixel param - orientation(36) - orientation param - dispOn - 5 commands total
 // clear : caset (full screen) paset (full screen) memwrite for all pixels send 8'b0 for black - 3 commands total
-//x y
 // on : sleep out - 120 ms - disp on- 5 ms
 //off : disp off - 10 ms - sleep in - 10 ms 
 //r g b bl wh
@@ -104,11 +88,10 @@ always_comb begin
   dispoffCommand = 8'h28;
   memCommand = 8'h2C;
 
-
   oeCt = ct[0];
 
   case (control)
-    11'b01000000000: begin //clear
+    9'b100000000: begin //clear
         case (ct)
             0: begin 
                 nextWrx = 1;
@@ -229,141 +212,23 @@ always_comb begin
                 nextData = 8'b0;
             end
             default: begin
-                if (ct > 30 && ct < 614431) begin
+                if (ct > 30 && ct < 307231) begin
                     if (oeCt) begin
                         nextWrx = 1;
                     end else begin
                         nextWrx = 0;
                     end
-                end else if (ct == 614431) begin
+                end else if (ct == 307231) begin
                     nextCsx = 1;
-                end else if (ct == 614432) begin
+                end else if (ct == 307232) begin
                     ack = 1;
-                end else if (ct == 614433) begin
+                end else if (ct == 307233) begin
                     ack = 0;
                 end
             end
         endcase
     end
-    11'b00100000000: begin //caset
-        case (ct)
-            0: begin 
-                nextWrx = 1;
-                nextDcx = 1;
-                nextCsx = 1;
-                nextData = 0;
-            end
-            1: begin
-                nextCsx = 0;
-            end
-            2: begin
-                nextDcx = 0;
-                nextWrx = 0;
-                nextData = xCommand;
-            end
-            3: begin
-                nextWrx = 1;
-            end
-            4: begin
-                nextDcx = 1;
-                nextData = paramBus[31:24];
-                nextWrx = 0;
-            end
-            5: begin 
-                nextWrx = 1;
-            end
-            6: begin
-                nextWrx = 0;
-                nextData = paramBus[23:16];
-            end
-            7: begin
-                nextWrx = 1;
-            end
-            8: begin
-                nextWrx = 0;
-                nextData = paramBus[15:8];
-            end
-            9: begin
-                nextWrx = 1;
-            end
-            10: begin
-                nextWrx = 0;
-                nextData = paramBus[7:0];
-            end
-            11: begin
-                nextWrx = 1;
-            end
-            12: begin
-                nextCsx = 1;
-            end
-            13: begin
-                ack = 1;
-            end
-            14: begin
-                ack = 0;
-            end
-        endcase
-    end
-    11'b00010000000: begin //paset
-        case (ct)
-            0: begin 
-                nextWrx = 1;
-                nextDcx = 1;
-                nextCsx = 1;
-                nextData = 0;
-            end
-            1: begin
-                nextCsx = 0;
-            end
-            2: begin
-                nextDcx = 0;
-                nextWrx = 0;
-                nextData = yCommand;
-            end
-            3: begin
-                nextWrx = 1;
-            end
-            4: begin
-                nextDcx = 1;
-                nextData = paramBus[31:24];
-                nextWrx = 0;
-            end
-            5: begin 
-                nextWrx = 1;
-            end
-            6: begin
-                nextWrx = 0;
-                nextData = paramBus[23:16];
-            end
-            7: begin
-                nextWrx = 1;
-            end
-            8: begin
-                nextWrx = 0;
-                nextData = paramBus[15:8];
-            end
-            9: begin
-                nextWrx = 1;
-            end
-            10: begin
-                nextWrx = 0;
-                nextData = paramBus[7:0];
-            end
-            11: begin
-                nextWrx = 1;
-            end
-            12: begin
-                nextCsx = 1;
-            end
-            13: begin
-                ack = 1;
-            end
-            14: begin
-                ack = 0;
-            end
-        endcase
-    end
-    11'b10000000000: begin //reseton
+    9'b10000000: begin //reseton
         case (ct) 
             0: begin 
                 nextCsx = 1;
@@ -439,7 +304,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00000100000: begin //dispoff
+    9'b100000: begin //dispoff
         case (ct)
             0: begin
                 nextCsx = 1;
@@ -476,7 +341,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00001000000: begin //disp on
+    9'b1000000: begin //disp on
         case (ct)
             0: begin
                 nextCsx = 1;
@@ -512,41 +377,671 @@ always_comb begin
                 ack = 0;
             end
         endcase
+      end
+      9'b10000: begin //red
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b11111000;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b0;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
     end
-    11'b00000010000: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b11111000, 8'b0}, load);
-      //void'(build_load(controlBus, '{8'b11111000, 8'b0}, load));
-      logic [11:0] out = caller(memCommand, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+      9'b100: begin //blue
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b0;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b00011111;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
     end
-
-    11'b00000001000: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b00000111, 8'b11100000}, load);
-      logic [11:0] out = caller(memCommand, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+      9'b10: begin //black
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b0;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b0;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
     end
-
-    11'b00000000100: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b0, 8'b00011111}, load);
-      logic [11:0] out = caller(memCommand, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+      9'b1000: begin //green
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b00000111;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b11100000;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
     end
-
-    11'b00000000010: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b0, 8'b0}, load);
-      logic [11:0] out = caller(memCommand, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-    end
-
-    11'b00000000001: begin
-      byte unsigned load[];
-      int chain = build_load(paramBus, '{8'b11111111, 8'b11111111}, load);
-      logic [11:0] out = caller(memCommand, load);
-      {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
+    9'b1: begin //white
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b11111111;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b11111111;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
     end
     default:;
   endcase
