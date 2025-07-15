@@ -5,7 +5,6 @@ module screensignalLogic (
     output logic ack, dcx, wrx, csx,
     output logic [7:0] data  
 );
-
   logic [7:0] nextData, currentData;
   logic nextDcx, nextCsx, nextWrx, currentDcx, currentCsx, currentWrx, oeCt;
   logic [10:0] control;
