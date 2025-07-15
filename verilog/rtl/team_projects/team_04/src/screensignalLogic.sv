@@ -12,7 +12,6 @@ module screensignalLogic (
   logic [7:0] xCommand, yCommand, fullX3, fullX4, fullX1, fullX2, fullY1, fullY2, fullY3, fullY4, rgbParam, rgbCommand, oriCommand, oriParam, sleepoCommand, sleepiCommand, swrstCommand, dispoffCommand, disponCommand, memCommand;
 
 assign control = controlBus[10:0];
-assign pixel = paramBus[16:0];
 
 //output
 assign csx = currentCsx;
@@ -103,7 +102,6 @@ always_comb begin
   disponCommand = 8'h29;
   dispoffCommand = 8'h28;
   memCommand = 8'h2C;
-
 
   oeCt = ct[0];
 
@@ -229,17 +227,17 @@ always_comb begin
                 nextData = 8'b0;
             end
             default: begin
-                if (ct > 30 && ct < 614431) begin
+                if (ct > 30 && ct < 307231) begin
                     if (oeCt) begin
                         nextWrx = 1;
                     end else begin
                         nextWrx = 0;
                     end
-                end else if (ct == 614431) begin
+                end else if (ct == 307231) begin
                     nextCsx = 1;
-                end else if (ct == 614432) begin
+                end else if (ct == 307232) begin
                     ack = 1;
-                end else if (ct == 614433) begin
+                end else if (ct == 307233) begin
                     ack = 0;
                 end
             end
@@ -517,35 +515,35 @@ always_comb begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b11111000, 8'b0}, load);
       //void'(build_load(controlBus, '{8'b11111000, 8'b0}, load));
-      logic [11:0] out = caller(memCommand, load);
+      logic [11:0] out = caller(8'h2C, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
 
     11'b00000001000: begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b00000111, 8'b11100000}, load);
-      logic [11:0] out = caller(memCommand, load);
+      logic [11:0] out = caller(8'h2C, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
 
     11'b00000000100: begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b0, 8'b00011111}, load);
-      logic [11:0] out = caller(memCommand, load);
+      logic [11:0] out = caller(8'h2C, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
 
     11'b00000000010: begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b0, 8'b0}, load);
-      logic [11:0] out = caller(memCommand, load);
+      logic [11:0] out = caller(8'h2C, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
 
     11'b00000000001: begin
       byte unsigned load[];
       int chain = build_load(paramBus, '{8'b11111111, 8'b11111111}, load);
-      logic [11:0] out = caller(memCommand, load);
+      logic [11:0] out = caller(8'h2C, load);
       {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
     end
     default:;
