@@ -1,5 +1,5 @@
 module screensignalLogic (
-    input logic [31:0] controlBus, paramBus,
+    input logic [31:0] controlBus, xBus, yBus,
     input logic [22:0] ct,
     input logic clk, rst,
     output logic ack, dcx, wrx, csx,
@@ -7,11 +7,11 @@ module screensignalLogic (
 );
   logic [7:0] nextData, currentData;
   logic nextDcx, nextCsx, nextWrx, currentDcx, currentCsx, currentWrx, oeCt;
-  logic [10:0] control;
+  logic [8:0] control;
   logic [16:0] pixel;
   logic [7:0] xCommand, yCommand, fullX3, fullX4, fullX1, fullX2, fullY1, fullY2, fullY3, fullY4, rgbParam, rgbCommand, oriCommand, oriParam, sleepoCommand, sleepiCommand, swrstCommand, dispoffCommand, disponCommand, memCommand;
 
-assign control = controlBus[10:0];
+assign control = controlBus[8:0];
 
 //outputs
 assign csx = currentCsx;
@@ -56,7 +56,6 @@ assign data = currentData;
 
 //reseton : swreset - 5ms - sleep out - 120ms - pixel format(3A set rgb565) - pixel param - orientation(36) - orientation param - dispOn - 5 commands total
 // clear : caset (full screen) paset (full screen) memwrite for all pixels send 8'b0 for black - 3 commands total
-//x y
 // on : sleep out - 120 ms - disp on- 5 ms
 //off : disp off - 10 ms - sleep in - 10 ms 
 //r g b bl wh
@@ -92,7 +91,7 @@ always_comb begin
   oeCt = ct[0];
 
   case (control)
-    11'b01000000000: begin //clear
+    9'b100000000: begin //clear
         case (ct)
             0: begin 
                 nextWrx = 1;
@@ -229,125 +228,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00100000000: begin //caset
-        case (ct)
-            0: begin 
-                nextWrx = 1;
-                nextDcx = 1;
-                nextCsx = 1;
-                nextData = 0;
-            end
-            1: begin
-                nextCsx = 0;
-            end
-            2: begin
-                nextDcx = 0;
-                nextWrx = 0;
-                nextData = xCommand;
-            end
-            3: begin
-                nextWrx = 1;
-            end
-            4: begin
-                nextDcx = 1;
-                nextData = paramBus[31:24];
-                nextWrx = 0;
-            end
-            5: begin 
-                nextWrx = 1;
-            end
-            6: begin
-                nextWrx = 0;
-                nextData = paramBus[23:16];
-            end
-            7: begin
-                nextWrx = 1;
-            end
-            8: begin
-                nextWrx = 0;
-                nextData = paramBus[15:8];
-            end
-            9: begin
-                nextWrx = 1;
-            end
-            10: begin
-                nextWrx = 0;
-                nextData = paramBus[7:0];
-            end
-            11: begin
-                nextWrx = 1;
-            end
-            12: begin
-                nextCsx = 1;
-            end
-            13: begin
-                ack = 1;
-            end
-            14: begin
-                ack = 0;
-            end
-        endcase
-    end
-    11'b00010000000: begin //paset
-        case (ct)
-            0: begin 
-                nextWrx = 1;
-                nextDcx = 1;
-                nextCsx = 1;
-                nextData = 0;
-            end
-            1: begin
-                nextCsx = 0;
-            end
-            2: begin
-                nextDcx = 0;
-                nextWrx = 0;
-                nextData = yCommand;
-            end
-            3: begin
-                nextWrx = 1;
-            end
-            4: begin
-                nextDcx = 1;
-                nextData = paramBus[31:24];
-                nextWrx = 0;
-            end
-            5: begin 
-                nextWrx = 1;
-            end
-            6: begin
-                nextWrx = 0;
-                nextData = paramBus[23:16];
-            end
-            7: begin
-                nextWrx = 1;
-            end
-            8: begin
-                nextWrx = 0;
-                nextData = paramBus[15:8];
-            end
-            9: begin
-                nextWrx = 1;
-            end
-            10: begin
-                nextWrx = 0;
-                nextData = paramBus[7:0];
-            end
-            11: begin
-                nextWrx = 1;
-            end
-            12: begin
-                nextCsx = 1;
-            end
-            13: begin
-                ack = 1;
-            end
-            14: begin
-                ack = 0;
-            end
-        endcase
-    end
-    11'b10000000000: begin //reseton
+    9'b10000000: begin //reseton
         case (ct) 
             0: begin 
                 nextCsx = 1;
@@ -423,7 +304,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00000100000: begin //dispoff
+    9'b100000: begin //dispoff
         case (ct)
             0: begin
                 nextCsx = 1;
@@ -460,7 +341,7 @@ always_comb begin
             end
         endcase
     end
-    11'b00001000000: begin //disp on
+    9'b1000000: begin //disp on
         case (ct)
             0: begin
                 nextCsx = 1;
@@ -497,32 +378,671 @@ always_comb begin
             end
         endcase
       end
-
-      11'b00000010000: begin
-        logic [11:0] out = signal_call(memCommand, 8'b11111000, 8'b0, paramBus);
-        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-      end
-
-      11'b00000001000: begin
-        logic [11:0] out = signal_call(memCommand, 8'b00000111, 8'b11100000, paramBus);
-        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-      end
-
-      11'b00000000100: begin
-        logic [11:0] out = signal_call(memCommand, 8'b0, 8'b00011111, paramBus);
-        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-      end
-
-      11'b00000000010: begin
-        logic [11:0] out = signal_call(memCommand, 8'b11111111, 8'b11111111, paramBus);
-        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-      end
-
-      11'b00000000001: begin
-        logic [11:0] out = signal_call(memCommand, 8'b0, 8'b0, paramBus);
-        {ack, nextCsx, nextDcx, nextWrx, nextData} = out;
-      end
-
+      9'b10000: begin //red
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b11111000;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b0;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
+    end
+      9'b100: begin //blue
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b0;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b00011111;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
+    end
+      9'b10: begin //black
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b0;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b0;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
+    end
+      9'b1000: begin //green
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b00000111;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b11100000;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
+    end
+    9'b1: begin //white
+        case (ct)
+            0: begin 
+                nextWrx = 1;
+                nextDcx = 1;
+                nextCsx = 1;
+                nextData = 0;
+            end
+            1: begin
+                nextCsx = 0;
+            end
+            2: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = xCommand;
+            end
+            3: begin
+                nextWrx = 1;
+            end
+            4: begin
+                nextDcx = 1;
+                nextData = xBus[31:24];
+                nextWrx = 0;
+            end
+            5: begin 
+                nextWrx = 1;
+            end
+            6: begin
+                nextWrx = 0;
+                nextData = xBus[23:16];
+            end
+            7: begin
+                nextWrx = 1;
+            end
+            8: begin
+                nextWrx = 0;
+                nextData = xBus[15:8];
+            end
+            9: begin
+                nextWrx = 1;
+            end
+            10: begin
+                nextWrx = 0;
+                nextData = xBus[7:0];
+            end
+            11: begin
+                nextWrx = 1;
+            end
+            12: begin 
+                nextCsx = 1;
+                nextData = 0;
+            end
+            13: begin
+                nextCsx = 0;
+            end
+            14: begin
+                nextDcx = 0;
+                nextWrx = 0;
+                nextData = yCommand;
+            end
+            15: begin
+                nextWrx = 1;
+            end
+            16: begin
+                nextDcx = 1;
+                nextData = yBus[31:24];
+                nextWrx = 0;
+            end
+            17: begin 
+                nextWrx = 1;
+            end
+            18: begin
+                nextWrx = 0;
+                nextData = yBus[23:16];
+            end
+            19: begin
+                nextWrx = 1;
+            end
+            20: begin
+                nextWrx = 0;
+                nextData = yBus[15:8];
+            end
+            21: begin
+                nextWrx = 1;
+            end
+            22: begin
+                nextWrx = 0;
+                nextData = yBus[7:0];
+            end
+            23: begin
+                nextWrx = 1;
+            end
+            24: begin
+                nextCsx = 1;
+                nextData = 0;
+            end
+            25: begin
+                nextCsx = 0;
+            end
+            26: begin
+                nextDcx = 0;
+                nextData = memCommand;
+                nextWrx = 0;
+            end
+            27: begin
+                nextWrx = 1;
+            end
+            28: begin
+                nextWrx = 0;
+                nextDcx = 1;
+                nextData = 8'b11111111;
+            end
+            29: begin
+                nextWrx = 1;
+            end
+            30: begin
+                nextWrx = 0;
+                nextData = 8'b11111111;
+            end
+            31: begin
+                nextWrx = 1;
+            end
+            32: begin
+                nextCsx = 1;
+            end
+            33: begin
+                ack = 1;
+            end
+            34: begin
+                ack = 0;
+            end
+        endcase
+    end
     default:;
   endcase
 end

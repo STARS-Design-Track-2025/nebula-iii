@@ -1,5 +1,5 @@
 module screenEnableEdge (
-    input logic [31:0] coord, control, 
+    input logic [31:0] xBus, yBus, control, 
     input logic clk, rst,
     output logic enableEdge
 );
@@ -7,7 +7,7 @@ module screenEnableEdge (
 logic enableIn, enable1, enable2, enable3;
 
 always_comb begin
-    if (|control && |coord) begin
+    if (|control && |xBus && |yBus) begin
         enableIn = 1;
     end else begin
         enableIn = 0;
