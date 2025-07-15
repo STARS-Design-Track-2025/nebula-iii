@@ -13,7 +13,7 @@ module screensignalLogic (
 
 assign control = controlBus[10:0];
 
-//output
+//outputs
 assign csx = currentCsx;
 assign wrx = currentWrx;
 assign dcx = currentDcx;
