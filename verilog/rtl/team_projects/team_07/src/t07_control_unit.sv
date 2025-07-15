@@ -106,8 +106,6 @@ always_comb begin
             regWrite = 1;
             FPUSrc = 0;
             FPURnd = '0;
-            case(funct3) 
-                000: if(funct7 == 0000000) begin ALUOp = 4'd0; end else if (funct7 ==
             branch = 0;
             memWrite = 0;
             memRead = 0;
@@ -132,8 +130,6 @@ always_comb begin
             FPUSrc = 0;
             FPUSrc = 0;
             FPURnd = '0;
-            case(funct3) 
-                000: if(funct7 == 0000000) begin ALUOp = 4'd0; end else if (funct7 ==
         end
         7'b1101111: begin /*(J-type, jal)*/
             regWriteSrc = 000; //from PC
