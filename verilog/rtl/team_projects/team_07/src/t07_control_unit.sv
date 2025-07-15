@@ -104,6 +104,10 @@ always_comb begin
             regWriteSrc = 100; //from immGen
             ALUSrc = 0;
             regWrite = 1;
+            FPUSrc = 0;
+            FPURnd = '0;
+            case(funct3) 
+                000: if(funct7 == 0000000) begin ALUOp = 4'd0; end else if (funct7 ==
             branch = 0;
             memWrite = 0;
             memRead = 0;
@@ -126,7 +130,10 @@ always_comb begin
             regEnable = 1;
             FPUOp = '0;
             FPUSrc = 0;
+            FPUSrc = 0;
             FPURnd = '0;
+            case(funct3) 
+                000: if(funct7 == 0000000) begin ALUOp = 4'd0; end else if (funct7 ==
         end
         7'b1101111: begin /*(J-type, jal)*/
             regWriteSrc = 000; //from PC
@@ -162,43 +169,43 @@ always_comb begin
             FPUOp = 5'b1;
             FPUSrc = 0;
             FPURnd = 010;
-            regEnable: 0;
-            FPUWrite: 1;
+            regEnable = 0;
+            FPUWrite = 1;
         end 
         7'b0100111: begin //(FSW - store word)
             FPUOp = 5'd2;
             FPUSrc = 0;
             FPURnd = 010;
-            regEnable: 0;
-            FPUWrite: //add - stores value from register into memory
+            regEnable = 0;
+            FPUWrite = 0; //reading value from register -> goes to internal mem
         end
-        7'b1000011: begin //(FMADD.S)
+        7'b1000011: begin //(FMADD.S) rs1 x rs2 + rs3
             FPUOp = 5'd3;
             FPUSrc = 1;
-            regEnable: 0;
-            FPUWrite: //add
+            regEnable = 0;
+            FPUWrite = 1;
             rs3 = funct7[6:2];
 
         end
-        7'b1000111: begin //(FMSUB.S)
+        7'b1000111: begin //(FMSUB.S) rs1 x rs2 - rs3
             FPUOp = 5'd4;
             FPUSrc = 1;
-            regEnable: 0;
-            FPUWrite: //add
+            regEnable = 0;
+            FPUWrite = 1;
             rs3 = funct7[6:2];
         end
-        7'b1001011: begin //(FNMSUB.S)
+        7'b1001011: begin //(FNMSUB.S) -(rs1 x rs2 - rs3)
             FPUOp = 5'd5;
             FPUSrc = 1;
-            regEnable: 0;
-            FPUWrite:
+            regEnable = 0;
+            FPUWrite = 1;
             rs3 = funct7[6:2];
         end 
-        7'b1001111: begin //(FNMADD.S)
+        7'b1001111: begin //(FNMADD.S) -(rs1 x rs2 + rs3)
             FPUOp = 5'd6;
             FPUSrc = 1;
-            regEnable: 0;
-            FPUWrite: 
+            regEnable = 0;
+            FPUWrite = 1;
             rs3 = funct7[6:2];
         end
         7'b1010011: begin //Math
@@ -226,10 +233,18 @@ always_comb begin
                 end
                 1111000: begin FPURnd = 000; FPUOp = 5'd20; end //FMV
                 1010011: begin 
-                    if(rs2 == '0) begin FPUOp = 5'd21; end //FCVT.W
-                    if(rs2 == 00001) begin FPUOp = 5'd22; end //FCVT.WU
+                    if(funct7 == 1100000) begin
+                        if(rs2 == '0) begin FPUOp = 5'd21; end //FCVT.W
+                        if(rs2 == 00001) begin FPUOp = 5'd22; end //FCVT.WU
+                    end
+                    else if(funct7 == 1101000) begin
+                        if(rs2 == '0) begin FPUOp = 5'd23; end //FCVT.S.W
+                        if(rs2 == 00001) begin FPUOp = 5'd24; end //FCVT.S.WU 
+                    end
                 end
-                //add class function
+                1110000: begin FPURnd = 001; FPUOp = 5'd25; end //FCLASS.S
+                1111000: begin FPURnd = 000; FPUOp = 5'd26; end //FMV.S
+                
             endcase
 
         end 
