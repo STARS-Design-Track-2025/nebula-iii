@@ -15,7 +15,7 @@ module t04_datapathxmmio_tb;
     logic [31:0] mem_store_display;
     logic WEN;
 
-    // DUT instance
+    // DUT instance (no .busy connection here)
     t04_datapathxmmio dut (
         .clk(clk),
         .rst(rst),
@@ -34,8 +34,32 @@ module t04_datapathxmmio_tb;
     // Clock generation
     always #5 clk = ~clk;
 
+    // === Busy simulation ===
+    logic [1:0] busy_counter;
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            force dut.mmio.busy = 0;
+            busy_counter <= 0;
+        end else if (dut.datapath.MemRead_O || dut.datapath.MemWrite_O) begin
+            if (busy_counter == 0) begin
+                force dut.mmio.busy = 1;
+                busy_counter <= 2;
+            end else if (busy_counter == 1) begin
+                force dut.mmio.busy = 0;
+                busy_counter <= 0;
+            end else begin
+                busy_counter <= busy_counter - 1;
+            end
+        end else begin
+            force dut.mmio.busy = 0;
+            busy_counter <= 0;
+        end
+    end
+
     // === Force RAM output into MMIO interface dynamically ===
     always @(posedge clk) begin
+        force dut.mmio.RAM_en = 1;
         if (dut.final_address !== 32'bx) begin
             force dut.mmio.instruction = ram[dut.final_address[9:2]];
             force dut.mmio.memload     = ram[dut.final_address[9:2]];
@@ -45,12 +69,15 @@ module t04_datapathxmmio_tb;
             force dut.mmio.memload     = 32'h00000000;
         end
 
-        // Print final_address every cycle for debugging
-        $display("[Cycle %0t] final_address = %h", $time, dut.final_address);
-
-        // Optional: hardcode initial value if it's X at time 0
-        if ($time == 0 && dut.final_address === 32'bx)
-            force dut.final_address = 32'h33000000;
+        // Debug prints
+        $display("[Cycle %0t] final_address = %h", $time, dut.datapath.final_address);
+        $display("[Cycle %0t] instruction_in = %b", $time, dut.datapath.ru.instruction_in);
+        $display("[Cycle %0t] instruction_out = %h", $time, dut.datapath.ru.instruction_out);
+        $display("[Cycle %0t] PC = %h", $time, dut.datapath.PC);
+        $display("[Cycle %0t] FREEZE = %h", $time, dut.datapath.Freeze);
+        $display("[Cycle %0t] MemRead = %h", $time, dut.datapath.MemRead_O);
+        $display("[Cycle %0t] MemWrite = %h", $time, dut.datapath.MemWrite_O);
+        $display("[Cycle %0t] busy = %b, d_ack = %b", $time, dut.mmio.busy, dut.d_ack);
     end
 
     // === Initialize test ===
