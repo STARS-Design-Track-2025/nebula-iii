@@ -37,7 +37,7 @@ module t04_request_unit(
             final_address = PC;
         end
         else begin
-            final_address = (MemRead || MemWrite) ? mem_address : PC;
+            final_address = ((MemRead || MemWrite) && ~(i_ack || d_ack)) ? mem_address : PC;
         end
         mem_store = stored_data;
         if (i_ack || d_ack) begin

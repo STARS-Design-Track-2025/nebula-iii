@@ -78,6 +78,9 @@ module t04_datapathxmmio_tb;
         $display("[Cycle %0t] MemRead = %h", $time, dut.datapath.MemRead_O);
         $display("[Cycle %0t] MemWrite = %h", $time, dut.datapath.MemWrite_O);
         $display("[Cycle %0t] busy = %b, d_ack = %b", $time, dut.mmio.busy, dut.d_ack);
+        $display("[Cycle %0t] memload %b", $time, dut.mmio.memload);
+        $display("[Cycle %0t] instruction %b", $time, dut.mmio.instruction);
+        $display("x4  = %0h (expect cafebabe)", dut.datapath.rf.registers[4]);
     end
 
     // === Initialize test ===
