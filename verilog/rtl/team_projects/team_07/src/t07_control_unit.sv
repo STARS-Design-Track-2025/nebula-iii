@@ -2,18 +2,20 @@ module t07_control_unit (
 input logic [6:0] Op, //from decoder
 input logic [2:0] funct3, //from decoder
 input logic [6:0] funct7, //from decoder
+input logic [4:0] rs2, //from decoder, for differentiating FPU convert functions
 output logic [3:0] ALUOp, //to ALU
 output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, memToReg, FPUSrc, regEnable, 
 output logic [2:0] regWriteSrc, //regWriteSrc goes to mux outside PC/memory handler/ALU/FPU/ImmGen -> registers, 000 = PC, 001 = MH, 010 = ALU, 011 = FPU, 100 = ImmGen
 output logic [4:0] FPUOp, FPURnd, //to FPU
-output logic [1:0] FPUWrite //to FPUReg
+output logic [1:0] FPUWrite, //to FPUReg
+output logic [4:0] rs3 //to FPU registers
 //outputs:
 //to register: regWrite (register read/write), regEnable
 //pc: branch (condJump), jump (forceJump)
 //memory: memRead, memWrite, memToReg
 //ALU: ALUOp, ALUSrc
 //FPU: FPUOp, FPUSrc, FPURnd
-//FPU Reg: FPUWrite
+//FPU Reg: FPUWrite, rs3 (for 3 input operations)
 );
 
 always_comb begin
@@ -31,8 +33,7 @@ always_comb begin
             FPUOp = '0;
             FPUSrc = 0;
             FPURnd = '0;
-
-            case (funct3) 
+            case(funct3) 
                 000: if(funct7 == 0000000) begin ALUOp = 4'd0; end else if (funct7 == 0100000) begin ALUOp = 4'd9; end
                 001: ALUOp = 4'd3;
                 010: ALUOp = 4'd4;
@@ -45,7 +46,7 @@ always_comb begin
         end
 
         7'b 0000011: begin /*(I-Type)*/
-            regWriteSrc = 001; //PC
+            regWriteSrc = 01;
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
@@ -60,7 +61,7 @@ always_comb begin
         end
 
         7'b0010011: begin /*I-Type*/
-            regWriteSrc = 010; //ALU
+            regWriteSrc = 01;
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
@@ -156,48 +157,53 @@ always_comb begin
             FPURnd = '0;
         end
 
-        /*
         //FPU Cases
         7'b000011: begin//(FLW - load word)
             FPUOp = 5'b1;
             FPUSrc = 0;
             FPURnd = 010;
             regEnable: 0;
-            FPUWrite: //add
+            FPUWrite: 1;
         end 
         7'b0100111: begin //(FSW - store word)
             FPUOp = 5'd2;
             FPUSrc = 0;
             FPURnd = 010;
             regEnable: 0;
-            FPUWrite: //add
+            FPUWrite: //add - stores value from register into memory
         end
         7'b1000011: begin //(FMADD.S)
             FPUOp = 5'd3;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: //add
+            rs3 = funct7[6:2];
+
         end
         7'b1000111: begin //(FMSUB.S)
             FPUOp = 5'd4;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: //add
+            rs3 = funct7[6:2];
         end
         7'b1001011: begin //(FNMSUB.S)
             FPUOp = 5'd5;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite:
+            rs3 = funct7[6:2];
         end 
         7'b1001111: begin //(FNMADD.S)
             FPUOp = 5'd6;
             FPUSrc = 1;
             regEnable: 0;
             FPUWrite: 
+            rs3 = funct7[6:2];
         end
         7'b1010011: begin //Math
             regEnable = 0;
+            FPUWrite = 1;
             case(funct7)
                 0000000: begin FPUOp = 5'd7; end //ADD
                 0000100: begin FPUOp = 5'd8; end //SUB
@@ -219,9 +225,14 @@ always_comb begin
                     if(funct3 == 000) begin FPURnd = 000; FPUOp = 5'd19; end //FLE
                 end
                 1111000: begin FPURnd = 000; FPUOp = 5'd20; end //FMV
+                1010011: begin 
+                    if(rs2 == '0) begin FPUOp = 5'd21; end //FCVT.W
+                    if(rs2 == 00001) begin FPUOp = 5'd22; end //FCVT.WU
+                end
+                //add class function
             endcase
 
-        end */
+        end 
 
 
     endcase
