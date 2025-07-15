@@ -6,3 +6,14 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_cpu_memoryHandler.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxes.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_ExternalRegister.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_control_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_decoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxForPC.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_MuxWD.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_SPI_ESP32.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_ALU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_registers.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_immGen.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_fp_fcsr.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_external_memory.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_CPU.sv
