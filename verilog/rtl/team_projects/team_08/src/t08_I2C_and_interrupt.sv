@@ -8,8 +8,9 @@ module t08_I2C_and_interrupt(
 
     input logic SDAin, //Input on the SDA line from the touchscreen
     output logic SDAout, //Output on the SDA line to the touchscreen
+    output logic SDAoeb, //is 1 whenever the SDA pin is an input and is 0 whenver it is an output
 
-    input logic inter, //Interrupt signal from the touchscreen
+    input logic inter, //Interrupt signal from the touchscreen. NOTE: IT IS ACTIVE LOW. 
     output logic scl, //Clock for I2C sent to the touchscreen
 
     output logic [31:0] data_out, //All of the coordinate data sent to memory
@@ -22,7 +23,14 @@ module t08_I2C_and_interrupt(
     logic done_n;
 
     logic SDAout_n;
+    logic SDAoeb_n;
+
     logic scl_n;
+    logic scl_prev;
+
+    logic scl_wouldbe_n;
+    logic scl_wouldbe; //What scl would be if it was always in an oscillating state. To help with the timing of the module even when SCl oscillation is not being outputted.
+    logic scl_wouldbe_prev;
 
     typedef enum logic [7:0] {
         XH = 8'h03,
@@ -43,13 +51,13 @@ module t08_I2C_and_interrupt(
     } mid_steps;
 
     //Counters for levels of the state machine
-    logic [1:0] high_step_counter; //Counter for which address to request data from the touchscreen from
+    high_steps high_step_counter; //Counter for which address to request data from the touchscreen from
     mid_steps mid_step_counter; //Counter for which step in the I2C protocol the module is at 
     logic [2:0] low_step_address_counter; //Counter for which bit within the requested address is currently being sent. 
     logic [4:0] low_step_register_counter; //Counter for where in the output register to put the data that is obtained 
 
     //Next states for the counters for the levels of the state machine
-    logic [1:0] high_step_counter_n; //Counter for which address to request data from the touchscreen from
+    high_steps high_step_counter_n; //Counter for which address to request data from the touchscreen from
     mid_steps mid_step_counter_n; //Counter for which step in the I2C protocol the module is at 
     logic [2:0] low_step_address_counter_n; //Counter for which bit within the requested address is currently being sent. 
     logic [4:0] low_step_register_counter_n; //Counter for where in the output register to put the data that is obtained 
@@ -58,7 +66,8 @@ module t08_I2C_and_interrupt(
     logic [7:0] scl_counter; 
     logic [7:0] scl_counter_n;
 
-    //logic [7:0] address; //The address in the touchscreen that data is currently being pulled from
+    logic [7:0] scl_wouldbe_counter;
+    logic [7:0] scl_wouldbe_counter_n;
 
     always_ff @ (posedge clk, negedge nRst) begin
 
@@ -69,12 +78,19 @@ module t08_I2C_and_interrupt(
             done <= 0;
             SDAout <= 1;
 
-            scl <= 0;
+            SDAoeb <= 1; //Acts as an input by default
+
+            scl <= 1;
+            scl_prev <= 1;
             scl_counter <= 0;
 
-            high_step_counter <= 0;
+            scl_wouldbe <= 1;
+            scl_wouldbe_prev <= 1;
+            scl_wouldbe_counter <= 0;
+
+            high_step_counter <= XH;
             mid_step_counter <= IDLE;
-            low_step_address_counter <= 0;
+            low_step_address_counter <= 3'd7; //Counts backwards
             low_step_register_counter <= 0;
 
         end else begin
@@ -84,8 +100,15 @@ module t08_I2C_and_interrupt(
             done <= done_n;
             SDAout <= SDAout_n;
 
+            SDAoeb <= SDAoeb_n;
+
             scl <= scl_n;
             scl_counter <= scl_counter_n;
+            scl_prev <= scl;
+
+            scl_wouldbe <= scl_wouldbe_n;
+            scl_wouldbe_prev <= scl_wouldbe;
+            scl_wouldbe_counter <= scl_wouldbe_counter_n;
 
             high_step_counter <= high_step_counter_n;
             mid_step_counter <= mid_step_counter_n;
@@ -98,144 +121,242 @@ module t08_I2C_and_interrupt(
 
     always_comb begin : SCL_control
 
-        if (mid_step_counter == IDLE || mid_step_counter == STOP) begin //In idle or stop state, SCL remains high. 
+        if (scl_wouldbe_counter < 8'd2) begin //So that the process can continue to move forward in a synchronized way even when SCL is not oscillating
+
+            scl_wouldbe_counter_n = scl_wouldbe_counter + 8'd1;
+            scl_wouldbe_n = scl_wouldbe;
+                
+        end else begin
+
+            scl_wouldbe_counter_n = 0;
+            scl_wouldbe_n = ~scl_wouldbe;
+
+        end
+
+        if (mid_step_counter == IDLE || mid_step_counter == START) begin //In idle state, SCL remains high. 
 
             scl_n = 1;
             scl_counter_n = 0;
 
-        end else begin //Otherwise, SCL will oscilllate at a frequency of ___ Hz. 
+        end else begin //Otherwise, SCL will oscilllate at a frequency of 2.5 MHz (1/4 of clock frequency). 
 
-            if (scl_counter < 8'd50) begin //50 is just a placeholder. Change to what it should actually be. 
+            // if (scl_counter < 8'd2) begin //Dividing by 4 is just a placeholder until the optimal frequency is figured out. 
 
-                scl_counter_n++;
-                scl_n = scl;
+            //     scl_counter_n = scl_counter + 8'd1;
+            //     scl_n = scl;
                 
-            end else begin
+            // end else begin
 
-                scl_counter_n = 0;
-                scl_n = ~scl;
+            //     scl_counter_n = 0;
+            //     scl_n = ~scl;
 
-            end
+            // end
+
+            scl_counter_n = scl_wouldbe_counter_n;
+            scl_n = scl_wouldbe_n;
 
         end
 
     end
 
-    always_comb begin : determine_address
+    always_comb begin : state_machine
 
-        case (high_step_counter)
+        if ((!scl_wouldbe && scl_wouldbe_prev) || mid_step_counter == IDLE) begin //Negative edge detector for SCL (output and sampling of bits synchronized to SCL falling edge)
 
-            2'b00: high_step_counter_n = XH;
-            2'b01: high_step_counter_n = XL;
-            2'b10: high_step_counter_n = YH;
-            2'b11: high_step_counter_n = YL;
+            //To avoid latches
+            SDAoeb_n = SDAoeb;
+            high_step_counter_n = high_step_counter;
+            mid_step_counter_n = mid_step_counter;
+            low_step_address_counter_n = low_step_address_counter;
+            low_step_register_counter_n = low_step_register_counter;
+            done_n = done;
 
-        endcase
+            case (mid_step_counter) 
 
-    end
+                IDLE: begin
 
-    always_comb begin
+                    SDAout_n = 1;
 
-        case (mid_step_counter) 
+                    SDAoeb_n = 1; //SDA line taking input
 
-            IDLE: begin
-
-                high_step_counter_n = 0;
-                low_step_address_counter_n = 0;
-                low_step_register_counter_n = 0;
-                done_n = 1;
-
-                if (inter && !inter_prev) begin //Edge detector for interrupt signal
-
-                    //Reset counters
-                    mid_step_counter_n = START;
-                    high_step_counter_n = 0;
-                    low_step_address_counter_n = 0;
+                    high_step_counter_n = XH;
+                    low_step_address_counter_n = 3'd7; //Counts backwards
                     low_step_register_counter_n = 0;
-                    done_n = 0;
-                    
+                    data_out_n = data_out; //Not changing data_out
+
+                    done_n = 1;
+
+                    if (!inter && inter_prev) begin //Negative edge detector for interrupt signal
+
+                        //Initiate the I2C protocol
+                        mid_step_counter_n = START;
+                        done_n = 0;
+
+                    end
+
                 end
 
-            end
+                START: begin
 
-            START: begin
-                //"Start Condition: The SDA line switches from a high voltage level to a low voltage level before the SCL line switches from high to low."
-                SDAout_n = 0;
+                    //"Start Condition: The SDA line switches from a high voltage level to a low voltage level before the SCL line switches from high to low."
 
-                mid_step_counter_n = SEND_ADDRESS;
+                    SDAoeb_n = 0; //SDA line giving output
 
-            end
+                    SDAout_n = 0; //Tell SDAout to go low. 
 
-            SEND_ADDRESS: begin
+                    data_out_n = data_out; //Not changing data_out
 
-                SDAout_n = address[low_step_address_counter];
-                low_step_address_counter++;
+                    if (!SDAout) begin //Wait until SDAout is confirmed to be low. 
 
-                if (low_step_address_counter == 3'd7) begin
-                    mid_step_counter = SEND_READ_BIT;
-                end else begin
-                    mid_step_counter = SEND_ADDRESS;
-                end
-            end
+                        mid_step_counter_n = SEND_ADDRESS; //This shuld cause SCL to start toggling and thus to go low. 
 
-            SEND_READ_BIT: begin
+                    end
 
-                //Requesting data (read) = high voltage level
-                SDAout_n = 1;
-
-            end
-
-            WAIT_ACK: begin
-
-                //Should wait for a low voltage
-                if (SDAin) begin
-                    mid_step_counter = WAIT_ACK;
-                end else begin
-                    mid_step_counter = READ_DATA_FRAME;
                 end
 
-            end
+                SEND_ADDRESS: begin
 
-            READ_DATA_FRAME: begin
+                    data_out_n = data_out; //Not changing data_out
 
-                data_out_n[low_step_register_counter] = SDAin;
-                low_step_register_counter++;
+                    SDAout_n = high_step_counter[low_step_address_counter]; //Output the current bit of the address. 
 
-                if (low_step_register_counter == 5'd7 || low_step_register_counter == 5'd15 || low_step_register_counter == 5'd23 || low_step_register_counter == 5'd31) begin
-                    mid_step_counter = SEND_ACK;
-                end else begin
-                    mid_step_counter = READ_DATA_FRAME;
+                    if (low_step_address_counter == 3'd0) begin 
+
+                        low_step_address_counter_n = 3'd7;
+                        mid_step_counter_n = SEND_READ_BIT; //If this was the last bit, move to the next state. 
+
+                    end else begin
+
+                        low_step_address_counter_n--; //Move to the next bit. 
+                        mid_step_counter_n = SEND_ADDRESS; //Continue sending the address. 
+
+                    end
+
                 end
 
-            end
+                SEND_READ_BIT: begin
 
-            SEND_ACK: begin
+                    data_out_n = data_out; //Not changing data_out
 
-                //Should send a low voltage
-                SDAout_n = 0;
+                    //Requesting data (read) = high voltage level
+                    SDAout_n = 1;
 
-            end
+                    if (SDAout) begin
 
-            STOP: begin
+                        mid_step_counter_n = WAIT_ACK; //Move to the next state. 
 
-                //"Stop Condition: The SDA line switches from a low voltage level to a high voltage level after the SCL line switches from low to high."
-                SDAout_n = 1;
+                    end
 
-                if (high_step_counter == 2'b11) begin
-                    mid_step_counter = IDLE;
-                end else begin
-                    mid_step_counter = START;
                 end
 
-            end
+                WAIT_ACK: begin
 
-            default: begin
+                    SDAoeb_n = 1; //SDA line taking input
 
-                mid_step_counter = IDLE;
+                    SDAout_n = 1; //Not using the output right now
+                    data_out_n = data_out; //Not changing data_out
 
-            end
+                    //Should wait for a low voltage
+                    if (SDAin) begin
 
-        endcase
+                        mid_step_counter_n = WAIT_ACK;
+
+                    end else begin
+
+                        mid_step_counter_n = READ_DATA_FRAME;
+
+                    end
+
+                end
+
+                READ_DATA_FRAME: begin
+
+                    SDAout_n = 1; //Not using the output right now
+
+                    data_out_n = data_out;
+                    data_out_n[low_step_register_counter] = SDAin;
+
+                    if (low_step_register_counter == 5'd7 || low_step_register_counter == 5'd15 || low_step_register_counter == 5'd23 || low_step_register_counter == 5'd31) begin
+
+                        mid_step_counter_n = SEND_ACK;
+
+                    end else begin
+
+                        mid_step_counter_n = READ_DATA_FRAME;
+
+                    end
+
+                    low_step_register_counter_n++;
+
+                end
+
+                SEND_ACK: begin
+
+                    SDAoeb_n = 0; //SDA line giving output
+
+                    data_out_n = data_out; //Not changing data_out
+
+                    //Should send a low voltage
+                    SDAout_n = 0;
+
+                    if (SDAout) begin
+                        SDAout_n = 1; //Bring it back to high voltage
+                        mid_step_counter_n = STOP; //Go to stop condition
+                    end
+
+                end
+
+                STOP: begin
+
+                    //"Stop Condition: The SDA line switches from a low voltage level to a high voltage level after the SCL line switches from low to high."
+                    SDAout_n = 1;
+
+                    data_out_n = data_out; //Not changing data_out
+
+                    if (high_step_counter == YL) begin
+
+                        mid_step_counter_n = IDLE; //The process has been finished so return to idle state
+
+                    end else begin
+
+                        high_step_counter_n = high_steps'(int'(high_step_counter) + 1); //Increment high step counter
+                        mid_step_counter_n = START; //Return to start state
+
+                    end
+
+                end
+
+                default: begin
+
+                    mid_step_counter_n = IDLE;
+
+                    SDAout_n = 1;
+
+                    high_step_counter_n = XH;
+                    low_step_address_counter_n = 3'd7;
+                    low_step_register_counter_n = 0;
+
+                    data_out_n = data_out; 
+
+                    done_n = 1;
+
+                end
+
+            endcase
+
+        end else begin //If it isn't a rising edge of SCL, don't change any outputs or states. 
+
+            data_out_n = data_out;
+            done_n = done;
+            SDAout_n = SDAout;
+            SDAoeb_n = SDAoeb;
+
+            high_step_counter_n = high_step_counter;
+            mid_step_counter_n = mid_step_counter;
+            low_step_address_counter_n = low_step_address_counter;
+            low_step_register_counter_n = low_step_register_counter;
+
+        end
 
     end
 

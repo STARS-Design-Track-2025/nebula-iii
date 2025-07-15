@@ -23,7 +23,7 @@ module t08_registers(
             
             data_out_r1 <= 0;
             data_out_r2 <= 0;
-            data <= '{default:32'b0};
+            data <= {1024'b0};
 
         end else begin
 
