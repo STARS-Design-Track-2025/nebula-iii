@@ -21,18 +21,19 @@ initial begin
     #2;
     nRst = 1;
     data_in = 0;
-    //addi 
+    //addi: immediate(3) + r1(0) => r2, r2 = 3
     @ (posedge clk);
     instruction = 32'b000000000011_00001_000_00010_0010011;
     
+    //addi: immediate(5) + r1(0) => r4, r4 = 5
     @ (posedge clk);
-    //addi
     instruction = 32'b000000000101_00001_000_00100_0010011;
     
     @ (posedge clk);
-    //add
+    //add: r2(3) + r4(5) => r3, r3 = 8
     instruction = 32'b0000000_00010_00100_000_00011_0110011;
     #10;
+
     /*
     //sub
     instruction = 32'b0100000_00000_00001_000_00010_0110011;
