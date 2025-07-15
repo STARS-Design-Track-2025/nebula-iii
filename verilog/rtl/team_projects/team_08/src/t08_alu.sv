@@ -10,20 +10,7 @@ module t08_alu(
     output logic branch //Whether the branch condition has been met
 );
 
-    logic [31:0] data_out_n;
-    logic branch_n;
-
     logic [31:0] in1, in2; //Which inputs the operation will ultimately be done on 
-
-    always_ff @ (posedge clk, negedge nRst) begin
-        if (!nRst) begin
-            data_out <= 0;
-            branch <= 0;
-        end else begin
-            data_out <= data_out_n;
-            branch <= branch_n;
-        end
-    end
 
     typedef enum logic [5:0] {
         ADD =   6'd1, //R type
@@ -91,35 +78,35 @@ module t08_alu(
 
     always_comb begin : operation_select
 
-        data_out_n = 32'b0; //Default value
-        branch_n = 1'b0; //Default value
+        data_out = 32'b0; //Default value
+        branch = 1'b0; //Default value
 
         case (alu_operations'(alu_control))
 
             ADD, ADDI, LB, 
             LBU, LH, LHU, 
             LW, SB, SH, 
-            SW, AUIPC:        data_out_n =    in1 + in2;
-            SUB:              data_out_n =    in1 - in2;
-            SLL, SLLI:        data_out_n =    in1 << (in2[4:0]);
-            SLT, SLTI:        data_out_n =    {31'b0, $signed(in1) < $signed(in2)};
-            SLTU, SLTIU:      data_out_n =    {31'b0, in1 < in2};
-            XOR, XORI:        data_out_n =    in1 ^ in2;
-            SRL, SRLI:        data_out_n =    in1 >> (in2[4:0]);
-            SRA, SRAI:        data_out_n =    in1 >>> (in2[4:0]);
-            OR, ORI:          data_out_n =    in1 | in2;
-            AND, ANDI:        data_out_n =    in1 & in2;
+            SW, AUIPC:        data_out =    in1 + in2;
+            SUB:              data_out =    in1 - in2;
+            SLL, SLLI:        data_out =    in1 << (in2[4:0]);
+            SLT, SLTI:        data_out =    {31'b0, $signed(in1) < $signed(in2)};
+            SLTU, SLTIU:      data_out =    {31'b0, in1 < in2};
+            XOR, XORI:        data_out =    in1 ^ in2;
+            SRL, SRLI:        data_out =    in1 >> (in2[4:0]);
+            SRA, SRAI:        data_out =    in1 >>> (in2[4:0]);
+            OR, ORI:          data_out =    in1 | in2;
+            AND, ANDI:        data_out =    in1 & in2;
 
-            BEQ:    branch_n =     (in1 == in2);
-            BGE:    branch_n =     ($signed(in1) >= $signed(in2));
-            BGEU:   branch_n =     (reg1 >= reg2);
-            BLT:    branch_n =     ($signed(in1) < $signed(in2));
-            BLTU:   branch_n =     (in1 < in2);
-            BNE:    branch_n =     (in1 != in2);
+            BEQ:    branch =     (in1 == in2);
+            BGE:    branch =     ($signed(in1) >= $signed(in2));
+            BGEU:   branch =     (reg1 >= reg2);
+            BLT:    branch =     ($signed(in1) < $signed(in2));
+            BLTU:   branch =     (in1 < in2);
+            BNE:    branch =     (in1 != in2);
 
             default: begin
-                data_out_n = 32'b0;
-                branch_n = 1'b0;
+                data_out = 32'b0;
+                branch = 1'b0;
             end
 
         endcase

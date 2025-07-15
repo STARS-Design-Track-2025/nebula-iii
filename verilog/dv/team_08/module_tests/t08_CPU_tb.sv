@@ -22,11 +22,14 @@ initial begin
     nRst = 1;
     data_in = 0;
     //addi 
+    @ (posedge clk);
     instruction = 32'b000000000011_00001_000_00010_0010011;
-    #10;
+    
+    @ (posedge clk);
     //addi
     instruction = 32'b000000000101_00001_000_00100_0010011;
-    #10;
+    
+    @ (posedge clk);
     //add
     instruction = 32'b0000000_00010_00100_000_00011_0110011;
     #10;

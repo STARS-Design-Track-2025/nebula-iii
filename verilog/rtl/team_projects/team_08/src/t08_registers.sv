@@ -13,22 +13,26 @@ module t08_registers(
 );
 
     logic [31:0] data_in;
-    logic [31:0] data_out_r1_n, data_out_r2_n;
+    //logic [31:0] data_out_r1_n, data_out_r2_n;
 
     logic [31:0] [31:0] data;
     logic [31:0] [31:0] data_n;
 
-    always_ff @ (posedge clk, negedge nRst) begin
+    always_ff @ (/*posedge clk, */negedge clk, negedge nRst) begin
         if (!nRst) begin
             
-            data_out_r1 <= 0;
-            data_out_r2 <= 0;
+            //data_out_r1 <= 0;
+            //data_out_r2 <= 0;
             data <= {1024'b0};
 
+        // end else if (clk == 1) begin
+
+        //     data_out_r1 <= data_out_r1_n;
+        //     data_out_r2 <= data_out_r2_n;
+
+        // 
         end else begin
 
-            data_out_r1 <= data_out_r1_n;
-            data_out_r2 <= data_out_r2_n;
             data <= data_n;
 
         end
@@ -49,23 +53,26 @@ module t08_registers(
 
     always_comb begin : read_and_write
 
+        data_out_r1 = 0;
+        data_out_r2 = 0;
+        
         if (en_read_1) begin //Read from one register
 
-            data_out_r1_n = data[address_r1];
+            data_out_r1 = data[address_r1];
 
         end else begin
 
-            data_out_r1_n = data_out_r1;
+            data_out_r1 = data_out_r1;
 
         end
 
         if (en_read_2) begin //Read from a second register
 
-            data_out_r2_n = data[address_r2];
+            data_out_r2 = data[address_r2];
 
         end else begin
 
-            data_out_r2_n = data_out_r2;
+            data_out_r2 = data_out_r2;
 
         end
 

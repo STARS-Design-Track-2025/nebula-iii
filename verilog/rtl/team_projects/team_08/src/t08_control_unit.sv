@@ -57,6 +57,7 @@ always_comb begin
         en_read_1 = 1;
         en_read_2 = 1;
         en_write = 1;
+        data_in_control = 2'd3;
 
         case(funct3)
             3'b000: begin                                      
@@ -121,7 +122,7 @@ always_comb begin
         regd = instruction[11:7];
         en_read_1 = 1;
         en_write = 1;
-        
+        data_in_control = 2'd3;
         immediate[11:0] = instruction[31:20];
 
         case (funct3)
