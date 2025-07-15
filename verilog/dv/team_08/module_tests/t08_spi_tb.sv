@@ -55,4 +55,5 @@ initial begin
 endmodule
 // outputs only on rising edge so its ok, but the actual output bus is outputting extra paarameter
 //problems: need to send command only one time, when send continiously needs to ignore?
+//turn registers to all0s at busy 0.
 //doen . enable off: csx??? percount, count, busy. wtf.
