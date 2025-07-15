@@ -1,4 +1,4 @@
-module external_mem (
+module t07_external_mem (
     input logic [31:0] addr_in, inst, memData_in, regData_in, //inst - instruction, addr_in - address in from CPU,
     input logic [1:0] rwi_in, //read write or idle
     input logic clk, rst,
