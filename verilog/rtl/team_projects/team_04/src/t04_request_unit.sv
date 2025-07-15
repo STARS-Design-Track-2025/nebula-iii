@@ -16,35 +16,48 @@ module t04_request_unit(
 );
 
     logic [31:0] latched_instruction;
+    logic n_freeze;
+    logic last_freeze;
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
-            latched_instruction <= 32'd0;
+            latched_instruction <= instruction_in;
+            freeze <= 0;
+            last_freeze <= 0;
         end 
         else begin
-            if ((MemRead || MemWrite)) begin
+            if ((!freeze)) begin
                 latched_instruction <= instruction_in;
             end
-            else begin
-                latched_instruction <= 32'd0;
-            end
+            freeze <= n_freeze;
+            last_freeze <= freeze;
         end
     end
 
     always_comb begin
-        instruction_out = (freeze && (MemRead || MemWrite)) ? latched_instruction : instruction_in;
+        instruction_out = (freeze || last_freeze)? latched_instruction : instruction_in;
         if (rst) begin
             final_address = PC;
         end
         else begin
-            final_address = ((MemRead || MemWrite) && ~(i_ack || d_ack)) ? mem_address : PC;
+            final_address = (freeze) ? mem_address : PC;
         end
         mem_store = stored_data;
-        if (i_ack || d_ack) begin
-            freeze = 0;
+        if (freeze == 0) begin
+            if (i_ack || d_ack) begin
+                n_freeze = 0;
+            end
+            else begin
+                n_freeze = (MemRead || MemWrite);
+            end 
         end
         else begin
-            freeze = (MemRead || MemWrite);
+            if (i_ack || d_ack) begin
+                n_freeze = 0;
+            end
+            else begin
+                n_freeze = 1;
+            end 
         end
     end
 
