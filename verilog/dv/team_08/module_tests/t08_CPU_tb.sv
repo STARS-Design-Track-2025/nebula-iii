@@ -27,6 +27,7 @@ initial begin
     //r2 should now be 3
     instruction = 32'b000000000011_00001_000_00010_0010011;
     
+    //addi: immediate(5) + r1(0) => r4, r4 = 5
     @ (posedge clk);
     //ADDI: store (5 + r1) in r4
     //r4 should now be 5
