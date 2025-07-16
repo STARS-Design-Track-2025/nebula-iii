@@ -33,6 +33,12 @@ module t08_CPU_tb;
 
     endtask
 
+    task do_jump_instruction(logic [20:0] imm, logic [4:0] rd);
+
+        instruction = {imm[20], imm[10:1], imm[11], imm[19:12], rd, 7'b1101111};
+
+    endtask
+
     initial begin
 
         $dumpfile("t08_CPU.vcd"); 
@@ -46,7 +52,7 @@ module t08_CPU_tb;
         Setup
         */
 
-        @ (posedge clk);
+        @ (negedge clk);
         test_phase = SETUP;
 
         //ADDI: store (3 + r1) in r2
@@ -55,7 +61,7 @@ module t08_CPU_tb;
         instruction = 32'b000000000011_00001_000_00010_0010011;
         
         //addi: immediate(5) + r1(0) => r4, r4 = 5
-        @ (posedge clk);
+        @ (negedge clk);
         //ADDI: store (5 + r1) in r4
         //r4 should now be 5
         subtestNumber = 2;
@@ -65,7 +71,7 @@ module t08_CPU_tb;
         Register command tests
         */
         
-        @ (posedge clk);
+        @ (negedge clk);
         test_phase = R_TYPE;
 
         //ADD: store (r2 + r4) in r3
@@ -73,55 +79,55 @@ module t08_CPU_tb;
         subtestNumber = 1;
         instruction = 32'b0000000_00010_00100_000_00011_0110011;
         
-        @ (posedge clk);
+        @ (negedge clk);
         //SUB: store (r2 - r3) in r5
         //r5 should now be -5
         subtestNumber = 2;
         instruction = 32'b0100000_00011_00010_000_00101_0110011;
         
-        @ (posedge clk);
+        @ (negedge clk);
         //SLL: store (r3 << (r2[4:0])) in r6
         //r6 should now be 64
         subtestNumber = 3;
         instruction = 32'b0000000_00010_00011_001_00110_0110011;
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SLT: determine whether r5 is less than r4, store result in r7
         //r7 should now be 1
         subtestNumber = 4;
         instruction = 32'b0000000_00100_00101_010_00111_0110011;
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SLTU: determine whether r5 is less than r4 (unsigned), store result in r8
         //r8 should now be 0
         subtestNumber = 5;
         instruction = 32'b0000000_00100_00101_011_01000_0110011;
 
-        @ (posedge clk);
+        @ (negedge clk);
         //XOR: store (r4 ^ r7) in r9
         //r9 should now be 4
         subtestNumber = 6;
         instruction = 32'b0000000_00111_00100_100_01001_0110011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SRL: store (r5 >> r7) in r10
         //r10 should now be 2147483645
         subtestNumber = 7;
         instruction = 32'b0000000_00111_00101_101_01010_0110011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SRA: store (r5 >>> r7) in r11
         //r11 should now be -3
         subtestNumber = 8;
         instruction = 32'b0100000_00111_00101_101_01011_0110011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //OR: store (r2 | r4) in r12
         //r12 should now be 7
         subtestNumber = 9;
         instruction = 32'b0000000_00100_00010_110_01100_0110011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //AND: store (r5 & r12) in r13
         //r13 should now be 3
         subtestNumber = 10;
@@ -131,7 +137,7 @@ module t08_CPU_tb;
         Immediate command tests
         */
 
-        @ (posedge clk);
+        @ (negedge clk);
         test_phase = I_TYPE;
 
         //ADDI: store (50 + r11 (-3)) in r14
@@ -139,49 +145,49 @@ module t08_CPU_tb;
         subtestNumber = 1;
         instruction = 32'b000000110010_01011_000_01110_0010011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SLTI: determine whether r7 (1) is less than -2, store result in r15
         //r15 should now be 0
         subtestNumber = 2;
         instruction = 32'b111111111110_00111_010_01111_0010011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SLTIU: determine whether r7 (1) is less than -2 (unsigned), store result in r16
         //r16 should now be 1
         subtestNumber = 3;
         instruction = 32'b111111111110_00111_011_10000_0010011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //XORI: store (r12 (7) ^ 30) in r17
         //r17 should now be 25
         subtestNumber = 4;
         instruction = 32'b000000011110_01100_100_10001_0010011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //ORI: store (r12 (7) ^ 17) in r18
         //r18 should now be 23
         subtestNumber = 5;
         instruction = 32'b000000010001_01100_110_10010_0010011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //ANDI: store (r12 (7) ^ 17) in r19
         //r19 should now be 1
         subtestNumber = 6;
         instruction = 32'b000000010001_01100_111_10011_0010011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SLLI: store (r18 (23) << 10) in r20
         //r20 should now be 23552
         subtestNumber = 7;
         instruction = 32'b0000000_01010_10010_001_10100_0010011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SRLI: store (r5 (-5) >> 2) in r21
         //r21 should now be 1073741822
         subtestNumber = 8;
         instruction = 32'b0000000_00010_00101_101_10101_0010011; 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //SRAI: store (r5 (-5) >>> 2) in r22
         //r22 should now be -2
         subtestNumber = 9;
@@ -192,41 +198,41 @@ module t08_CPU_tb;
         */
 
         /*
-        @ (posedge clk);
+        @ (negedge clk);
         //LB: 
         instruction = 32'b000000000011_00001_000_01111_0000011; //
 
-        @ (posedge clk);
+        @ (negedge clk);
         //lh
         instruction = 32'b000000000011_00001_001_00010_0000011; //
 
-        @ (posedge clk);
+        @ (negedge clk);
         //lw
         instruction = 32'b000000000011_00001_010_00010_0000011; //
 
-        @ (posedge clk);
+        @ (negedge clk);
         //lbu
         instruction = 32'b000000000011_00001_100_00010_0000011; //
 
-        @ (posedge clk);
+        @ (negedge clk);
         //lhu
         instruction = 32'b000000000011_00001_101_00010_0000011; //
-
+        */
     
+        /*
         Store command types
         */
     
         /*
-        //S-TYPE
-        @ (posedge clk);
+        @ (negedge clk);
         //sb
         instruction = 32'b0000100_00000_00001_000_00010_0100011; //
 
-        @ (posedge clk);
+        @ (negedge clk);
         //sh
         instruction = 32'b0000100_00000_00001_001_00010_0100011; //
 
-        @ (posedge clk);
+        @ (negedge clk);
         //sw
         instruction = 32'b0000100_00000_00001_010_00010_0100011; //
         */
@@ -300,7 +306,6 @@ module t08_CPU_tb;
         @ (negedge clk);
         //BLTU test 1: Test if register 4 (5) is less than register 5 (-5 = 4294967291) and if so, increase the program counter by 0 on the next instruction.
         //The condition is true so the program counter should be unchanged. 
-        //This one is not behaving as expected right now
         subtestNumber = 11;
         do_branch_instruction(3'b110, 5'b00101, 5'b00100, 13'd0); 
 
@@ -333,29 +338,45 @@ module t08_CPU_tb;
         //The condition is true so the program counter should be unchanged. 
         subtestNumber = 16;
         do_branch_instruction(3'b111, 5'b00100, 5'b00101, 13'd0); 
-        
+
         /*
-        //U-TYPE
-        @ (posedge clk);
-        //lui
-        instruction = 32'b00001000000000001000_00010_0110111; //
-
-        @ (posedge clk);
-        //auipc
-        instruction = 32'b00001000000000001000_00010_0010111; //
-
-        //J-TYPE
-        @ (posedge clk);
-        //jal
-        instruction = 32'b00001000000000001000_00010_1101111; //
-    
-        //I-TYPE
-        @ (posedge clk);
-        //jalr
-        instruction = 32'b00001000000000001000_00010_1100111; //
+        Upper immediate command tests
         */
+
+        @ (negedge clk);
+        test_phase = U_TYPE;
+
+        //AUIPC: store (PC + 285245440) in r31
+        //r31 should now be 285245576
+        subtestNumber = 1;
+        instruction = 32'b0010001000000001000_11111_0010111; 
+
+        // @ (negedge clk);
+        // //lui
+        // instruction = 32'b00001000000000001000_00010_0110111; //
+
+        /*
+        Jump command tests
+        */
+
+        @ (negedge clk);
+        test_phase = J_TYPE;
+
+        //JAL: store (PC + 4) in r30, then add 32776 to the program counter
+        //TODO: The correct result goes to r30 on the posedge but then on the negedge it increases by 4. 
+        //TODO: When an error was made in the do_jump_instruction function earlier (have imm be 20 bits instead of 21) it caused the PC to go metastable. 
+        subtestNumber = 1;
+        do_jump_instruction(21'b00001000000000001000, 5'b11110);
+
+        @ (negedge clk);
+        //JALR: store (PC + 4) in r31, then set the program counter to (r22 (-2) + 316)
+        //r31 should now hold 4 more than the previous pc
+        //The program counter should now be 314
+        //TODO: Neither of the parts of the instruction are working right now. Does the ALU need to have JALR added to it? 
+        subtestNumber = 2;
+        instruction = 32'b000100111100_10110_000_11111_1100111; 
     
-        #1 $finish;
+        #2 $finish;
 
     end
 

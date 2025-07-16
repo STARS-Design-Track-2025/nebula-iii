@@ -42,7 +42,7 @@ module t08_CPU (
         .funct3(func3), .data_in_control(data_in_control), .reg1(reg1), .reg2(reg2), .regd(regd), .en_read_1(reg_en_read_1), 
         .en_read_2(reg_en_read_2), .en_write(reg_en_write), .immediate(immediate), .alu_control(alu_control), .jump(jump));
 
-    t08_alu alu(.clk(clk), .nRst(nRst), .reg1(reg_out_1), .reg2(reg_out_2), .immediate(immediate), 
+    t08_alu alu(.reg1(reg_out_1), .reg2(reg_out_2), .immediate(immediate), 
         .program_counter(program_counter), .alu_control(alu_control), .data_out(alu_data_out), .branch(branch));
 
     t08_registers registers(.clk(clk), .nRst(nRst), .address_r1(reg1), .address_r2(reg2), .address_rd(regd), 

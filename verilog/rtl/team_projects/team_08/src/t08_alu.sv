@@ -1,5 +1,4 @@
 module t08_alu(
-    input logic clk, nRst, //Clock and active-low reset
 
     input logic [31:0] reg1, reg2, immediate, program_counter, //Inputs that operations may be done on (from two registers, an immediate value, or the program counter)
 
@@ -8,6 +7,7 @@ module t08_alu(
     output logic [31:0] data_out, //Result outputted from an operation
 
     output logic branch //Whether the branch condition has been met
+    
 );
 
     logic [31:0] in1, in2; //Which inputs the operation will ultimately be done on 
