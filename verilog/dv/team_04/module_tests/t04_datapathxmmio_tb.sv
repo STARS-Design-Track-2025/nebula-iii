@@ -13,7 +13,7 @@ module t04_datapathxmmio_tb;
     // Outputs from MMIO
     logic [31:0] display_address;
     logic [31:0] mem_store_display;
-    logic WEN;
+    logic WEN;  
 
     // DUT instance (no .busy connection here)
     t04_datapathxmmio dut (
@@ -32,30 +32,29 @@ module t04_datapathxmmio_tb;
     logic [31:0] ram [0:255];
 
     // Clock generation
-    always #5 clk = ~clk;
+    always #10 clk = ~clk;
 
 
     // === Force RAM output into MMIO interface dynamically ===
     always @(posedge clk) begin
-        force dut.mmio.RAM_en = 1;
-        force dut.mmio.instruction = ram[(dut.final_address - 32'h33000000) >> 2];
-        force dut.mmio.memload     = ram[(dut.final_address - 32'h33000000) >> 2];
-
 
         // Debug output
         $display("[Cycle %0t] final_address = %h", $time, dut.datapath.final_address);
         $display("[Cycle %0t] instruction_in = %h", $time, dut.datapath.ru.instruction_in);
         $display("[Cycle %0t] instruction_out = %h", $time, dut.datapath.ru.instruction_out);
+        $display("[Cycle %0t] instruction_latched = %h", $time, dut.datapath.ru.latched_instruction);
         $display("[Cycle %0t] PC = %h", $time, dut.datapath.PC);
         $display("[Cycle %0t] FREEZE = %h", $time, dut.datapath.Freeze);
-        $display("[Cycle %0t] n_freeze %b", $time, dut.datapath.ru.n_freeze);
-        $display("[Cycle %0t] last_freeze %b", $time, dut.datapath.ru.last_freeze);
+        // $display("[Cycle %0t] n_freeze %b", $time, dut.datapath.ru.n_freeze);
+        // $display("[Cycle %0t] last_freeze %b", $time, dut.datapath.ru.last_freeze);
         $display("[Cycle %0t] MemRead = %h", $time, dut.datapath.MemRead_O);
         $display("[Cycle %0t] MemWrite = %h", $time, dut.datapath.MemWrite_O);
         $display("[Cycle %0t] busy = %b, d_ack = %b", $time, dut.mmio.busy, dut.d_ack);
         $display("[Cycle %0t] memload %b", $time, dut.mmio.memload);
         $display("[Cycle %0t] datapath memload %b", $time, dut.datapath.memload);
         $display("[Cycle %0t] instruction %b", $time, dut.mmio.instruction);
+        $display("x1  = %0h (expect c)", dut.datapath.rf.registers[1]);
+        $display("x2  = %0h (expect 1)", dut.datapath.rf.registers[2]);
         $display("x4  = %0h (expect cafebabe)", dut.datapath.rf.registers[4]);
         $display("write back  = %0h (expect cafebabe)", dut.datapath.write_back_data);
         $display("mem_store from ru = %0h (expect cafebabe)", dut.datapath.ru.mem_store);
@@ -65,7 +64,6 @@ module t04_datapathxmmio_tb;
     // === Initialize test ===
     initial begin
         force dut.mmio.RAM_en = 1;
-        force dut.mmio.busy = 1;
         $dumpfile("t04_datapathxmmio.vcd");
         $dumpvars(0, t04_datapathxmmio_tb);
 
@@ -76,62 +74,24 @@ module t04_datapathxmmio_tb;
         rising = 0;
         d_ack_display = 0;
 
-                // === Preload instructions ===
-        ram[0] = 32'b000000000000_00001_010_00100_0000011;   // lw x4, 0(x1)        → 0x0000A203
-        ram[1] = 32'b0000000_00100_00001_010_00100_0100011;  // sw x4, 4(x1)        → 0x0040A223
-        //ram[2] = 32'b0000000_00100_00001_010_00100_0100011;  // sw x4, 4(x1)        → 0x0040A223
-        //ram[3] = 32'b00000000000000000000000001101111;       // jal x0, 0           → 0x0000006F
-        //ram[4] = 32'b1;
-
-        // === Put CAFEBABE far in memory at address 0x33000100 ===
-        // index = (0x33000100 - 0x33000000) >> 2 = 0x100 >> 2 = 0x40 = 64
-        ram[64] = 32'hCAFEBABE;  // actual data to be loaded
-
-        // === After sw x4, 4(x1), it should write here:
-        // 0x33000104 → index = 0x104 >> 2 = 65
-
 
         // === Release reset ===
-        #10 rst = 0;
+        #15 rst = 0;
 
-        // x1 should point to 0x33000100, which is RAM[64]
-        dut.datapath.rf.registers[1] = 32'h33000100;
+        #10000;
 
-
-        #10;
-        force dut.mmio.busy = 0;
-        #10;
-        force dut.mmio.busy = 1;
-
-
-        // === Simulate keypad input ===
-        #20;
-        button_pressed = 5'b10101;
-        app = 2'b00;
-        rising = 1;
-        #10 rising = 0;
-
-        // === Simulate display ack ===
-        #100;
-        d_ack_display = 1;
-        #10 d_ack_display = 0;
-
-        // === Observe display write ===
-        #20;
-        $display("\n[DISPLAY OUTPUT]");
-        $display("  WEN = %b", WEN);
-        $display("  display_address = %h", display_address);
-        $display("  mem_store_display = %h", mem_store_display);
-
-        $display("\n[RAM STATE]");
-        $display("  ram[0]  = %h (lw)", ram[0]);
-        $display("  ram[1]  = %h (sw)", ram[1]);
-        $display("  ram[2]  = %h (sw)", ram[2]);
-        $display("  ram[64] = %h (CAFEBABE data)", ram[64]);
-        $display("  ram[65] = %h (should get cafebabe from sw)", ram[65]);
-
-
-        #50;
+       $display("\nFINAL REGISTER VALUES");
+        $display("----------------------");
+        $display("x1  = %0h (expect 00000024)", dut.datapath.rf.registers[1]);   // address of data start
+        $display("x2  = %0h (expect cafebabe)", dut.datapath.rf.registers[2]);   // loaded from 0x24
+        $display("x3  = %0h (expect deadbeef)", dut.datapath.rf.registers[3]);   // loaded from 0x28
+        $display("x4  = %0h (expect 00ff00ff)", dut.datapath.rf.registers[4]);   // loaded from 0x2C
+        $display("x5  = %0h (expect 12345678)", dut.datapath.rf.registers[5]);   // hardcoded value (set manually in CPU or TB)
+        $display("x10 = %0h (expect ec531ecf)", dut.datapath.rf.registers[10]);  // x2 - x3
+        $display("x11 = %0h (expect 00340078)", dut.datapath.rf.registers[11]);  // x4 & x5
+        $display("x12 = %0h (expect dafebefe)", dut.datapath.rf.registers[12]);  // x5 | x2
+        $display("x13 = %0h (expect 00000001)", dut.datapath.rf.registers[13]);  // x2 < x4 (signed)
+        $display("x14 = %0h (expect 80000000)", dut.datapath.rf.registers[14]);  // x3 << (x4 & 0x1F)
         $finish;
     end
 

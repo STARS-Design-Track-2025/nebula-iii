@@ -29,6 +29,16 @@ module t04_mmio (
     logic busy;
     logic RAM_en, key_en;
     logic [31:0] key_data;
+    logic stb;
+    logic cyc;
+    logic we;
+    logic [31:0] dat_o;
+    logic ack;
+    logic [31:0] dat_i;
+    logic [3:0] sel;
+    logic [31:0] adr;
+    logic MemRead_Wishbone;
+
 
     // === Wishbone Manager ===
     t04_wishbone_manager wishbone (
@@ -36,23 +46,36 @@ module t04_mmio (
         .nRST(~reset),
 
         // Wishbone bus input from RAM
-        .DAT_I(),   // data from RAM
-        .ACK_I(),                    // done signal (inverted busy)
+        .DAT_I(dat_i),   // data from RAM
+        .ACK_I(ack),                    // done signal (inverted busy)
 
         // CPU-side input
         .CPU_DAT_I(mem_store),
         .ADR_I(final_address),
         .SEL_I(4'd15),                  // full word access
-        .WRITE_I(MemWrite && RAM_en),
-        .READ_I(MemRead && RAM_en),
+        .WRITE_I(MemWrite),
+        .READ_I(MemRead_Wishbone),
 
         // Unconnected Wishbone bus outputs (to be wired in full system)
-        .ADR_O(), .DAT_O(), .SEL_O(),
-        .WE_O(), .STB_O(), .CYC_O(),
+        .ADR_O(adr), .DAT_O(dat_o), .SEL_O(sel),
+        .WE_O(we), .STB_O(stb), .CYC_O(cyc),
 
         // CPU-side output
         .CPU_DAT_O(memload_or_instruction),
         .BUSY_O(busy)
+    );
+
+    sram_WB_Wrapper sram (
+    .wb_clk_i(clk),
+    .wb_rst_i(reset),
+    .wbs_stb_i(stb),
+    .wbs_cyc_i(cyc),
+    .wbs_we_i(we),
+    .wbs_sel_i(sel),
+    .wbs_dat_i(dat_o),
+    .wbs_adr_i(adr),
+    .wbs_ack_o(ack),
+    .wbs_dat_o(dat_i)
     );
 
     // === Address Decoder ===
@@ -102,6 +125,9 @@ module t04_mmio (
     assign instruction = memload;  // simple connection unless you separate fetch/load later
     assign display_address = final_address;
     assign mem_store_display = mem_store;
+    always_comb begin
+        MemRead_Wishbone = !(MemWrite);
+    end
     
 
 endmodule

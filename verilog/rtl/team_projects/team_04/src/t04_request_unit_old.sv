@@ -1,4 +1,4 @@
-module t04_request_unit(
+module t04_request_unit_old(
     input  logic clk,
     input  logic rst,
     input  logic i_ack,
@@ -12,40 +12,80 @@ module t04_request_unit(
     output logic [31:0] final_address,
     output logic [31:0] instruction_out,
     output logic [31:0] mem_store,
-    output logic freeze
+    output logic freeze,
+    output logic MemRead_request,
+    output logic MemWrite_request
 );
 
     logic [31:0] latched_instruction;
+    logic [31:0] n_latched_instruction;
+    logic n_memread;
+    logic n_memread2;
+    logic n_memwrite;
+    logic n_memwrite2;
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             latched_instruction <= 32'd0;
+            n_memread <= 0;
+            n_memwrite <= 0;
+            n_memread2 <= 0;
+            n_memwrite2 <= 0;
         end 
         else begin
-            if ((MemRead || MemWrite)) begin
-                latched_instruction <= instruction_in;
-            end
-            else begin
-                latched_instruction <= 32'd0;
-            end
+            latched_instruction <= n_latched_instruction;
+            n_memread <= MemRead;
+            n_memwrite <= MemWrite;
+            n_memread2 <= n_memread;
+            n_memwrite2 <= n_memwrite;
         end
     end
 
     always_comb begin
-        instruction_out = (freeze && (MemRead || MemWrite)) ? latched_instruction : instruction_in;
+        MemRead_request = MemRead;
+        MemWrite_request = MemWrite;
+        if (n_memread == 1 || n_memwrite == 1) begin
+            instruction_out = latched_instruction;
+        end
+        else if ((latched_instruction == instruction_in && (!(MemRead || MemWrite))) || (latched_instruction != 32'b0 && instruction_in == 32'hBAD1BAD1 && !(MemRead || MemWrite))) begin
+            instruction_out = 32'b0;
+        end
+        else begin
+            instruction_out = (instruction_in == 32'hBAD1BAD1) ? latched_instruction : instruction_in;
+        end
         if (rst) begin
             final_address = PC;
         end
         else begin
-            final_address = ((MemRead || MemWrite) && ~(i_ack || d_ack)) ? mem_address : PC;
+            final_address = (((MemRead || MemWrite)) && (!(n_memread2 || n_memwrite2))) ? mem_address : PC;
         end
         mem_store = stored_data;
         if (i_ack || d_ack) begin
-            freeze = 0;
+            if ((MemRead || MemWrite) && (!(n_memread2 || n_memwrite2))) begin
+                freeze = 1;
+            end
+            else begin
+                freeze = 0;
+            end
         end
         else begin
-            freeze = (MemRead || MemWrite);
+            freeze = 1;
+        end
+        if (((n_memread == 1 && MemRead == 1) || (n_memwrite == 1 && MemWrite == 1))) begin
+            if ((n_memread2 == 1 || n_memwrite2 == 1) && !freeze) begin
+                n_latched_instruction = 32'd0; 
+            end
+            else begin                   
+                n_latched_instruction = latched_instruction;
+            end
+        end
+        else if (instruction_in != 32'hBAD1BAD1) begin
+            n_latched_instruction = instruction_in;
+        end
+        else begin
+            n_latched_instruction = 32'd0;
         end
     end
+
 
 endmodule

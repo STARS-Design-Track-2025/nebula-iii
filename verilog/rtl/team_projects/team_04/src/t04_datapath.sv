@@ -98,7 +98,7 @@ t04_PC pc_module(
     .PC(PC)
 );
 
-t04_request_unit ru(
+t04_request_unit_old ru(
     .clk(clk), .rst(rst),
     .i_ack(i_ack), .d_ack(d_ack),
     .instruction_in(instruction),
@@ -109,10 +109,10 @@ t04_request_unit ru(
     .final_address(final_address),
     .instruction_out(instruction_out),
     .mem_store(mem_store),
-    .freeze(Freeze)
+    .freeze(Freeze),
+    .MemRead_request(MemRead_O),
+    .MemWrite_request(MemWrite_O)
 );
 
-assign MemRead_O = MemRead;
-assign MemWrite_O = MemWrite;
 
 endmodule

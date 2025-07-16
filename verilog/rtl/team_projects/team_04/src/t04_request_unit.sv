@@ -12,7 +12,9 @@ module t04_request_unit(
     output logic [31:0] final_address,
     output logic [31:0] instruction_out,
     output logic [31:0] mem_store,
-    output logic freeze
+    output logic freeze,
+    output logic MemRead_request,
+    output logic MemWrite_request
 );
 
     logic [31:0] latched_instruction;
@@ -21,9 +23,11 @@ module t04_request_unit(
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
-            latched_instruction <= instruction_in;
-            freeze <= 0;
+            latched_instruction <= 0;
+            freeze <= 1;
             last_freeze <= 0;
+            MemRead_request <= 0;
+            MemWrite_request <= 0;
         end 
         else begin
             if ((!freeze)) begin
@@ -31,6 +35,8 @@ module t04_request_unit(
             end
             freeze <= n_freeze;
             last_freeze <= freeze;
+            MemRead_request <= MemRead;
+            MemWrite_request <= MemWrite;
         end
     end
 

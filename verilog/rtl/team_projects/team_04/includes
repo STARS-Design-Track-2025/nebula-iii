@@ -16,3 +16,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_keypad_register.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_wishbone_manager.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_datapathxmmio.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_request_unit_old.sv
