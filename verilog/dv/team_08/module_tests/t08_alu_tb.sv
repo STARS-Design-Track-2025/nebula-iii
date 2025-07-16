@@ -233,7 +233,7 @@ module t08_alu_tb;
 
         run_all_operations;
 
-        // //Test set 2
+        //Test set 2
         testsetnum++;
         reg1 = -32'sd500;
         reg2 = 32'sd200;
@@ -242,7 +242,7 @@ module t08_alu_tb;
 
         run_all_operations;
 
-        // //Test set 3
+        //Test set 3
         testsetnum++;
         reg1 = -32'sd100000;
         reg2 = -32'sd7;
@@ -251,7 +251,7 @@ module t08_alu_tb;
 
         run_all_operations;
 
-        // //Test set 4
+        //Test set 4
         testsetnum++;
         reg1 = 32'sd0;
         reg2 = 32'sd0;

@@ -20,7 +20,8 @@ module t08_CPU_tb;
         S_TYPE,
         B_TYPE,
         U_TYPE,
-        J_TYPE
+        J_TYPE,
+        INVALID
     } instruction_types;
 
     //To help keep track of which test is being done in the waveforms. 
@@ -378,7 +379,12 @@ module t08_CPU_tb;
         subtestNumber = 3;
         instruction = 32'b000000000000_11111_000_11111_0010011;
 
+        /*
+        Invalid commands
+        */
         @ (negedge clk);
+        test_phase = INVALID;
+
         //invalid command, all bits to 0;
         subtestNumber = 1;
         instruction = 32'd0;
