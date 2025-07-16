@@ -6,7 +6,7 @@ input logic [4:0] rs2, //from decoder, for differentiating FPU convert functions
 output logic [3:0] ALUOp, //to ALU
 output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, memToReg, FPUSrc, regEnable, 
 output logic [2:0] regWriteSrc, //regWriteSrc goes to mux outside PC/memory handler/ALU/FPU/ImmGen -> registers, 000 = PC, 001 = MH, 010 = ALU, 011 = FPU, 100 = ImmGen
-output logic [4:0] FPUOp, 
+output logic [4:0] FPUOp, //to FPU
 output logic [2:0] FPURnd, //to FPU
 output logic [1:0] FPUWrite, //to FPUReg
 output logic [4:0] rs3, //to FPU registers
@@ -15,7 +15,7 @@ output logic [3:0] memOp //to internal memory
 //outputs:
 //to register: regWrite (register read/write), regEnable
 //pc: branch (condJump), jump (forceJump)
-//memory: memRead, memWrite, memToReg
+//memory: memRead, memWrite, memToReg, memOp (tells memory what instruction type)
 //ALU: ALUOp, ALUSrc
 //FPU: FPUOp, FPUSrc, FPURnd
 //FPU Reg: FPUWrite, rs3 (for 3 input operations)
@@ -275,12 +275,7 @@ always_comb begin
                 7'b1111000: begin FPURnd = 3'b000; FPUOp = 5'd26; end //FMV.S
                 
             endcase
-
         end 
-
-
     endcase
 end
-
-
 endmodule
