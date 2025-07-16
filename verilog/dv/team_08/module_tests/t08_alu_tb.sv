@@ -61,7 +61,7 @@ module t08_alu_tb;
     integer wrongCount = 0;
     logic wrong = 0;
 
-    t08_alu alu(.clk(clk), .nRst(nRst), .reg1(reg1), .reg2(reg2), .immediate(immediate), .program_counter(program_counter), .alu_control(alu_control), .data_out(data_out), .branch(branch));
+    t08_alu alu(.reg1(reg1), .reg2(reg2), .immediate(immediate), .program_counter(program_counter), .alu_control(alu_control), .data_out(data_out), .branch(branch));
 
     task reset();
         nRst = 0; #1;
