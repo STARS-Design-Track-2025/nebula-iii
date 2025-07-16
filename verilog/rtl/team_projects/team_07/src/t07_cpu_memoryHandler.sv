@@ -11,6 +11,7 @@
 module t07_cpu_memoryHandler (
 
     // Inputs
+    input logic [3:0] memOp,
     input logic memWrite, memRead,
     input logic memSource,          //if we are writing from the FPU or ALU
     input logic [31:0] ALU_address, // Address for memory operations that comes from the ALU
@@ -21,7 +22,7 @@ module t07_cpu_memoryHandler (
     //outputs
     output logic [31:0] write_data, // Data to write to external memory
     output logic [31:0] ExtAddress, // Address to write to external memory   
-    output logic [31:0] dataToCPU, 
+    output logic [31:0] dataToCPU,  // Data to the register
     output logic freeze,            // Freeze signal to pause CPU operations during memory access
     output logic [1:0] rwi          // Read/Write/Idle control signal for external memory operations
 
@@ -45,8 +46,20 @@ always_comb begin
         freeze = 1; // Freeze the CPU during memory read operation
         rwi = 2'b10; //Read operation
         ExtAddress = ALU_address; // Use ALU address for memory operations
-        dataToCPU = ExtData; // Read data from external memory
         write_data = 32'b0; // No data to write in read operation
+        if (memOp == 4'd1) begin //
+            dataToCPU = {{24{ExtData[7]}}, ExtData[7:0]}; // Read data from external memory
+        end else if (memOp == 4'd2) begin
+            dataToCPU = {{16{ExtData[15]}}, ExtData[15:0]}; // Read half-word from external memory
+        end else if (memOp == 4'd3) begin // Read full word from external memory
+            dataToCPU = ExtData; 
+        end else if (memOp == 4'd4) begin // Read byte unsigned
+            dataToCPU = {24'b0, ExtData[7:0]}; 
+        end else if (memOp == 4'd5) begin // Read half-word unsigned
+            dataToCPU = {16'b0, ExtData[15:0]};
+        end else begin
+            dataToCPU = 32'b0; // Default case, no valid operation
+        end
     end else begin
         rwi = 2'b00; // Idle state
         freeze = 0; // CPU is not frozen
