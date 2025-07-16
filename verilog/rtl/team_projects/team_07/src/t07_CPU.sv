@@ -13,7 +13,7 @@ module t07_CPU(
     logic [4:0] rs1, rs2, rd;
     //control out
     logic [3:0] ALUOp;
-    logic ALUSrc, regWrite, branch, jump, memWrite, memRead, memToReg, FPUSrc, regEnable;
+    logic ALUSrc, regWrite, branch, jump, memWrite, memRead, FPUSrc, regEnable;
     logic [4:0] FPUOp, FPURnd;
     logic [1:0] FPUWrite;
     logic [2:0] regWriteSrc;
@@ -39,7 +39,7 @@ module t07_CPU(
     
 
     t07_decoder decoder(.instruction(instruction), .Op(Op), .funct7(funct7), .funct3(funct3), .rs1(rs1), .rs2(rs2), .rd(rd));
-    t07_control_unit control(.rs2(rs2), .regWriteSrc(regWriteSrc), .Op(Op), .funct7(funct7), .funct3(funct3), .ALUOp(ALUOp), .ALUSrc(ALUSrc), .regWrite(regWrite), .branch(branch), .jump(jump), .memWrite(memWrite), .memRead(memRead), .memToReg(memToReg), .FPUSrc(FPUSrc), .regEnable(regEnable), .FPUOp(FPUOp), .FPURnd(FPURnd), .FPUWrite(FPUWrite));
+    t07_control_unit control(.rs2(rs2), .regWriteSrc(regWriteSrc), .Op(Op), .funct7(funct7), .funct3(funct3), .ALUOp(ALUOp), .ALUSrc(ALUSrc), .regWrite(regWrite), .branch(branch), .jump(jump), .memWrite(memWrite), .memRead(memRead), .FPUSrc(FPUSrc), .regEnable(regEnable), .FPUOp(FPUOp), .FPURnd(FPURnd), .FPUWrite(FPUWrite));
     t07_program_counter pc(.clk(clk), .func3(funct3), .rst(rst), .forceJump(jump), .condJump(branch), .ALU_flags(ALUFlags), .JumpDist(PCJumpDist), .programCounter(pc_out), .linkAddress(linkAddress), .freeze(freeze));
     t07_immGen immediate0(.clk(clk), .instruction(instruction), .immediate(immediate));
     t07_registers register(.clk(clk), .rst(rst), .read_reg1(rs1), .read_reg2(rs2), .write_reg(rd), .write_data(regData_in), .reg_write(regWrite), .enable(regEnable), .read_data1(dataRead1), .read_data2(dataRead2));
