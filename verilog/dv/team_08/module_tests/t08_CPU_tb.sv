@@ -373,11 +373,20 @@ module t08_CPU_tb;
         //The program counter should now be 314
         subtestNumber = 2;
         instruction = 32'b000100111100_10110_000_11111_1100111; 
-    
         //Verifying that r31 holds the correct value by adding it to 0 and outputting it from the ALU. 
         @ (negedge clk);
         subtestNumber = 3;
         instruction = 32'b000000000000_11111_000_11111_0010011;
+
+        @ (negedge clk);
+        //invalid command, all bits to 0;
+        subtestNumber = 1;
+        instruction = 32'd0;
+
+        @ (negedge clk);
+        //invalid command, all bits to 1;
+        subtestNumber = 2;
+        instruction = 32'd1;
 
         #2 $finish;
 
