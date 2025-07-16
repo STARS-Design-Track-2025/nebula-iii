@@ -4,7 +4,7 @@ module t08_fetch(
     input logic clk, nrst, jump, branch,
     output logic [31:0] program_counter, ret_address
 );
-logic [32:0] next_pc, next_ra, current_pc = 0, current_ra = 0, prev_pc = 0;
+logic [31:0] next_pc, next_ra, current_pc = 0, current_ra = 0, prev_pc = 0;
 always_ff@(posedge clk, negedge nrst) begin
     if (!nrst) begin
         current_pc <= '0;

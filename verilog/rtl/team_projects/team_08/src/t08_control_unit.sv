@@ -39,8 +39,12 @@ always_comb begin
     en_read_2 = 0;              //to registers
     en_write = 0;               //to registers
     data_in_control = 0;        //to registers
-
-    immediate = 0;              //to ALU
+    if (instruction[31] == 0) begin
+        immediate = 0;              //to ALU
+    end else begin
+        immediate = {32{1'b1}};
+    end
+    
     alu_control = 0;            //to ALU: for controlling the alu module
 
     jump = 0;                   //to instruction fetch/ program counter
@@ -247,6 +251,7 @@ always_comb begin
         immediate[10:5] = instruction[30:25];
         immediate[4:1] = instruction[11:8];
         immediate[11] = instruction[7];
+        immediate[0] = 0;
         
         case(funct3)
             3'b000: begin                           //BEQ: BRANCH EQUAL
@@ -286,6 +291,7 @@ always_comb begin
         data_in_control = 2'd1;
 
         immediate[31:12] = instruction[31:12];
+        immediate[0] = 0;
         alu_control = 6'd34;
     end
     
@@ -296,6 +302,7 @@ always_comb begin
         data_in_control = 2'd3;
 
         immediate[31:12] = instruction[31:12];
+        immediate[0] = 0;
         alu_control = 6'd35;
     end
     
@@ -309,6 +316,7 @@ always_comb begin
         immediate[10:1] = instruction[30:21];
         immediate[11] = instruction[20];
         immediate[19:12] = instruction[19:12];
+        immediate[0] = 0;
         alu_control = 6'd36;
 
         jump = 1;

@@ -10,140 +10,188 @@ module t08_CPU_tb;
 
     always #1 clk = ~clk;
 
-    int testNumber = 0; //To help keep track of which test is being done in the waveforms. 
-
     t08_CPU t08_CPU1(.clk(clk), .nRst(nRst), .data_in(data_in), .instruction(instruction), 
                     .data_out(data_out), .mem_address(mem_address), .read_out(read_out), .write_out(write_out));
 
-    task do_branch_instruction(logic [2:0] func3, logic [4:0] rs1, logic [4:0] rs2, logic [12:0] imm);
+    typedef enum logic [2:0] {
+        SETUP,
+        R_TYPE,
+        I_TYPE,
+        S_TYPE,
+        B_TYPE,
+        U_TYPE,
+        J_TYPE
+    } instruction_types;
+
+    //To help keep track of which test is being done in the waveforms. 
+    instruction_types test_phase = SETUP; 
+    int subtestNumber = 0; 
+
+    task do_branch_instruction(logic [2:0] func3, logic [4:0] rs2, logic [4:0] rs1, logic [12:0] imm);
 
         instruction = {imm[12], imm[10:5], rs2, rs1, func3, imm[4:1], imm[11], 7'b1100011};
 
     endtask
 
     initial begin
-        // make sure to dump the signals so we can see them in the waveform
-        $dumpfile("t08_CPU.vcd"); //change the vcd vile name to your source file name
+
+        $dumpfile("t08_CPU.vcd"); 
         $dumpvars(0, t08_CPU_tb);
 
         nRst = 0; #1;
         nRst = 1;
         data_in = 0;
 
+        /*
+        Setup
+        */
+
         @ (posedge clk);
+        test_phase = SETUP;
+
         //ADDI: store (3 + r1) in r2
         //r2 should now be 3
-        testNumber = 1;
+        subtestNumber = 1;
         instruction = 32'b000000000011_00001_000_00010_0010011;
         
         //addi: immediate(5) + r1(0) => r4, r4 = 5
         @ (posedge clk);
         //ADDI: store (5 + r1) in r4
         //r4 should now be 5
-        testNumber = 2;
+        subtestNumber = 2;
         instruction = 32'b000000000101_00001_000_00100_0010011;
+
+        /*
+        Register command tests
+        */
         
         @ (posedge clk);
+        test_phase = R_TYPE;
+
         //ADD: store (r2 + r4) in r3
         //r3 should now be 8
-        testNumber = 3;
+        subtestNumber = 1;
         instruction = 32'b0000000_00010_00100_000_00011_0110011;
         
         @ (posedge clk);
         //SUB: store (r2 - r3) in r5
         //r5 should now be -5
-        testNumber = 4;
+        subtestNumber = 2;
         instruction = 32'b0100000_00011_00010_000_00101_0110011;
         
         @ (posedge clk);
         //SLL: store (r3 << (r2[4:0])) in r6
         //r6 should now be 64
-        testNumber = 5;
+        subtestNumber = 3;
         instruction = 32'b0000000_00010_00011_001_00110_0110011;
 
         @ (posedge clk);
         //SLT: determine whether r5 is less than r4, store result in r7
         //r7 should now be 1
-        testNumber = 6;
+        subtestNumber = 4;
         instruction = 32'b0000000_00100_00101_010_00111_0110011;
 
         @ (posedge clk);
         //SLTU: determine whether r5 is less than r4 (unsigned), store result in r8
         //r8 should now be 0
-        testNumber = 7;
+        subtestNumber = 5;
         instruction = 32'b0000000_00100_00101_011_01000_0110011;
 
         @ (posedge clk);
         //XOR: store (r4 ^ r7) in r9
         //r9 should now be 4
-        testNumber = 8;
+        subtestNumber = 6;
         instruction = 32'b0000000_00111_00100_100_01001_0110011; 
 
         @ (posedge clk);
         //SRL: store (r5 >> r7) in r10
         //r10 should now be 2147483645
-        testNumber = 9;
+        subtestNumber = 7;
         instruction = 32'b0000000_00111_00101_101_01010_0110011; 
 
         @ (posedge clk);
         //SRA: store (r5 >>> r7) in r11
         //r11 should now be -3
-        testNumber = 10;
+        subtestNumber = 8;
         instruction = 32'b0100000_00111_00101_101_01011_0110011; 
 
         @ (posedge clk);
         //OR: store (r2 | r4) in r12
         //r12 should now be 7
-        testNumber = 11;
+        subtestNumber = 9;
         instruction = 32'b0000000_00100_00010_110_01100_0110011; 
 
         @ (posedge clk);
         //AND: store (r5 & r12) in r13
         //r13 should now be 3
-        testNumber = 12;
+        subtestNumber = 10;
         instruction = 32'b0000000_01100_00101_111_01101_0110011; 
 
-        //I-Type
+        /*
+        Immediate command tests
+        */
 
         @ (posedge clk);
-        //ADDI: store (50 + r11) in r14
+        test_phase = I_TYPE;
+
+        //ADDI: store (50 + r11 (-3)) in r14
         //r14 should now be 47
-        testNumber = 13;
+        subtestNumber = 1;
         instruction = 32'b000000110010_01011_000_01110_0010011; 
 
+        @ (posedge clk);
+        //SLTI: determine whether r7 (1) is less than -2, store result in r15
+        //r15 should now be 0
+        subtestNumber = 2;
+        instruction = 32'b111111111110_00111_010_01111_0010011; 
+
+        @ (posedge clk);
+        //SLTIU: determine whether r7 (1) is less than -2 (unsigned), store result in r16
+        //r16 should now be 1
+        subtestNumber = 3;
+        instruction = 32'b111111111110_00111_011_10000_0010011; 
+
+        @ (posedge clk);
+        //XORI: store (r12 (7) ^ 30) in r17
+        //r17 should now be 25
+        subtestNumber = 4;
+        instruction = 32'b000000011110_01100_100_10001_0010011; 
+
+        @ (posedge clk);
+        //ORI: store (r12 (7) ^ 17) in r18
+        //r18 should now be 23
+        subtestNumber = 5;
+        instruction = 32'b000000010001_01100_110_10010_0010011; 
+
+        @ (posedge clk);
+        //ANDI: store (r12 (7) ^ 17) in r19
+        //r19 should now be 1
+        subtestNumber = 6;
+        instruction = 32'b000000010001_01100_111_10011_0010011; 
+
+        @ (posedge clk);
+        //SLLI: store (r18 (23) << 10) in r20
+        //r20 should now be 23552
+        subtestNumber = 7;
+        instruction = 32'b0000000_01010_10010_001_10100_0010011; 
+
+        @ (posedge clk);
+        //SRLI: store (r5 (-5) >> 2) in r21
+        //r21 should now be 1073741822
+        subtestNumber = 8;
+        instruction = 32'b0000000_00010_00101_101_10101_0010011; 
+
+        @ (posedge clk);
+        //SRAI: store (r5 (-5) >>> 2) in r22
+        //r22 should now be -2
+        subtestNumber = 9;
+        instruction = 32'b0100000_00010_00101_101_10110_0010011;
+
         /*
-        @ (posedge clk);
-        //slti
-        instruction = 32'b000000000011_00001_010_00010_0010011; //
+        Load command tests
+        */
 
-        @ (posedge clk);
-        //sltiu 
-        instruction = 32'b000000000011_00001_011_00010_0010011; //
-
-        @ (posedge clk);
-        //xori
-        instruction = 32'b000000000011_00001_100_00010_0010011; //
-
-        @ (posedge clk);
-        //ori
-        instruction = 32'b000000000011_00001_110_00010_0010011; //
-
-        @ (posedge clk);
-        //andi
-        instruction = 32'b000000000011_00001_111_00010_0010011; //
-
-        @ (posedge clk);
-        //slli
-        instruction = 32'b0000000_00000_00001_001_00010_0010011; //
-
-        @ (posedge clk);
-        //srli
-        instruction = 32'b0000000_00000_00001_101_00010_0010011; //
-
-        @ (posedge clk);
-        //srai
-        instruction = 32'b0100000_00000_00001_101_00010_0010011; //
-
+        /*
         @ (posedge clk);
         //LB: 
         instruction = 32'b000000000011_00001_000_01111_0000011; //
@@ -163,7 +211,12 @@ module t08_CPU_tb;
         @ (posedge clk);
         //lhu
         instruction = 32'b000000000011_00001_101_00010_0000011; //
+
     
+        Store command types
+        */
+    
+        /*
         //S-TYPE
         @ (posedge clk);
         //sb
@@ -182,100 +235,103 @@ module t08_CPU_tb;
         Branch command tests
         */
 
-        @ (posedge clk);
+        @ (negedge clk);
+        test_phase = B_TYPE;
+        
         //BEQ test 1: Test if registers 2 (3) and 13 (3) are equal and if so, increase the program counter by 20 on the next instruction.
         //The condition is true so the program counter should increase by 20. 
-        testNumber = 14;
+        subtestNumber = 1;
         do_branch_instruction(3'b000, 5'b00010, 5'b01101, 13'd20);
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BEQ test 2: Test if registers 4 (5) and 5 (-5) are equal and if so, increase the program counter by 20 on the next instruction.
         //The condition is false so the program counter should only increase by 4. 
-        testNumber = 15;
+        subtestNumber = 2;
         do_branch_instruction(3'b000, 5'b00100, 5'b00101, 13'd20); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BNE test 1: Test if registers 2 (3) and 13 (3) are NOT equal and if so, increase the program counter by 20 on the next instruction.
         //The condition is false so the program counter should only increase by 4. 
-        testNumber = 16;
+        subtestNumber = 3;
         do_branch_instruction(3'b001, 5'b00010, 5'b01101, 13'd20);
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BNE test 2: Test if registers 4 (5) and 5 (-5) are NOT equal and if so, increase the program counter by 20 on the next instruction.
         //The condition is true so the program counter should increase by 20. 
-        testNumber = 17;
+        subtestNumber = 4;
         do_branch_instruction(3'b001, 5'b00100, 5'b00101, 13'd20); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BLT test 1: Test if register 5 (-5) is less than register 4 (5) and if so, increase the program counter by -8 on the next instruction.
         //The condition is true so the program counter should decrease by 8. 
-        testNumber = 18;
-        do_branch_instruction(3'b100, 5'b00100, 5'b00101, -13'd8); 
+        subtestNumber = 5;
+        do_branch_instruction(3'b100, 5'b00100, 5'b00101, $signed(-13'd8)); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BLT test 2: Test if register 5 (-5) is less than register 5 (-5) and if so, increase the program counter by -8 on the next instruction.
         //The condition is false so the program counter should increase by 4. 
-        testNumber = 19;
+        subtestNumber = 6;
         do_branch_instruction(3'b100, 5'b00101, 5'b00101, -13'd8); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BLT test 3: Test if register 4 (5) is less than register 5 (-5) and if so, increase the program counter by -8 on the next instruction.
         //The condition is false so the program counter should increase by 4. 
-        testNumber = 20;
+        subtestNumber = 7;
         do_branch_instruction(3'b100, 5'b00101, 5'b00100, -13'd8); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BGE test 1: Test if register 5 (-5) is greater than or equal to register 4 (5) and if so, increase the program counter by -8 on the next instruction.
         //The condition is false so the program counter should increase by 4. 
-        testNumber = 21;
+        subtestNumber = 8;
         do_branch_instruction(3'b101, 5'b00100, 5'b00101, -13'd8); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BGE test 2: Test if register 5 (-5) is greater than or equal to register 5 (-5) and if so, increase the program counter by -8 on the next instruction.
         //The condition is true so the program counter should decrease by 8. 
-        testNumber = 22;
+        subtestNumber = 9;
         do_branch_instruction(3'b101, 5'b00101, 5'b00101, -13'd8); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BGE test 3: Test if register 4 (5) is greater than or equal to register 5 (-5) and if so, increase the program counter by -8 on the next instruction.
         //The condition is true so the program counter should decrease by 8. 
-        testNumber = 23;
+        subtestNumber = 10;
         do_branch_instruction(3'b101, 5'b00101, 5'b00100, -13'd8); 
     
-        @ (posedge clk);
+        @ (negedge clk);
         //BLTU test 1: Test if register 4 (5) is less than register 5 (-5 = 4294967291) and if so, increase the program counter by 0 on the next instruction.
         //The condition is true so the program counter should be unchanged. 
-        testNumber = 24;
+        //This one is not behaving as expected right now
+        subtestNumber = 11;
         do_branch_instruction(3'b110, 5'b00101, 5'b00100, 13'd0); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BLTU test 2: Test if register 5 (-5 = 4294967291) is less than register 5 (-5 = 4294967291) and if so, increase the program counter by 0 on the next instruction.
         //The condition is false so the program counter should increase by 4. 
-        testNumber = 25;
+        subtestNumber = 12;
         do_branch_instruction(3'b110, 5'b00101, 5'b00101, 13'd0); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BLTU test 3: Test if register 5 (-5 = 4294967291) is less than register 4 (5) and if so, increase the program counter by 0 on the next instruction.
         //The condition is false so the program counter should increase by 4. 
-        testNumber = 26;
+        subtestNumber = 13;
         do_branch_instruction(3'b110, 5'b00100, 5'b00101, 13'd0); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BGEU test 1: Test if register 4 (5) is greater than or equal to register 5 (-5 = 4294967291) and if so, increase the program counter by 0 on the next instruction.
         //The condition is false so the program counter should increase by 4. 
-        testNumber = 27;
+        subtestNumber = 14;
         do_branch_instruction(3'b111, 5'b00101, 5'b00100, 13'd0); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BGEU test 2: Test if register 5 (-5 = 4294967291) is greater than or equal to register 5 (-5 = 4294967291) and if so, increase the program counter by 0 on the next instruction.
         //The condition is true so the program counter should be unchanged. 
-        testNumber = 28;
+        subtestNumber = 15;
         do_branch_instruction(3'b111, 5'b00101, 5'b00101, 13'd0); 
 
-        @ (posedge clk);
+        @ (negedge clk);
         //BGEU test 3: Test if register 5 (-5 = 4294967291) is greater than or equal to register 4 (5) and if so, increase the program counter by 0 on the next instruction.
         //The condition is true so the program counter should be unchanged. 
-        testNumber = 29;
+        subtestNumber = 16;
         do_branch_instruction(3'b111, 5'b00100, 5'b00101, 13'd0); 
         
         /*
