@@ -47,7 +47,7 @@ initial begin
    $dumpfile("t07_registers.vcd");
    $dumpvars(0, t07_registers_tb);
    clk = 0;
-   rst = 1;
+   rst = 0;
    read_reg1 = 0;
    read_reg2 = 0;
    write_reg = 0;
@@ -58,7 +58,7 @@ initial begin
 
    //apply rst
    #10
-   rst = 0;
+   rst = 1;
 
 
    // testcases
@@ -71,40 +71,28 @@ initial begin
    enable = 1;
    #10;
    #10;
-   // dont need but reassures correct output
-   //assert(read_data1 == 32'b0 && read_data2 == 32'b0) else $fatal("Read data should be zero before write");
-   //assert(dut.registers[write_reg] == write_data) else $fatal("Register 5 should contain A5A5A5A5 after write");
-
-
+   
    // test 2: read from register 5
    read_reg1 = 5;
    read_reg2 = 0; // read from zero register
    reg_write = 0; // disable write
    #10;
    #10;
-   // dont need but reassures correct output
-   //assert(read_data1 == write_data) else $fatal("Read data1 should be A5A5A5A5 from register 5");
-   //assert(read_data2 == 32'b0) else $fatal("Read data2 should be zero from zero register");
-
-
-   // test 3: x0 hardwired to zero
-   write_reg = 6; // write to zero register
+   
+   // test 3: enable off, but try to write to register 6
+   write_reg = 6; // write to register
    write_data = 32'hFFFFFFFF; // try to write a value
    reg_write = 1; // enable write
-   enable = 1;
+   enable = 0;
    #10;
    #10
 
-   //test 4: read from x0 register
-   write_reg = 6; // read from zero register
-   read_reg1 = 6; // read from zero register
+   //test 4: read from register 0
+   read_reg1 = 0;
+   read_reg2 = 0;
    reg_write = 0; // disable write
-
-
-   #10;
-   // dont need but reassures correct output
-   //assert(read_data1 == 32'b0) else $fatal("Read data1 should be zero from zero register after write attempt");
-   //assert(dut.registers[0] == 32'b0) else $fatal("Register 0 should remain zero after write attempt");
+    #10;
+    #10;
 
 
    //disable writing
@@ -115,10 +103,7 @@ initial begin
    #10;
    read_reg1 = 10; // read from register 10
    #10;
-  // dont need but reassures correct output
-  //assert(read_data1 == 32'b0) else $fatal("Read data1 should be zero from register 10 when writing is disabled");
-   //assert(dut.registers[10] == 32'b0) else $fatal("Register 10 should remain zero when writing is disabled");
-
+  
 
    $display("all tests passed");
    $finish;
@@ -128,3 +113,4 @@ end
 
 
 endmodule
+// 
