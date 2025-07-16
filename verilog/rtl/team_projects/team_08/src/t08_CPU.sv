@@ -50,4 +50,6 @@ module t08_CPU (
         .data_in_fromalu(alu_data_out), .data_in_control(data_in_control), .en_read_1(reg_en_read_1), 
         .en_read_2(reg_en_read_2), .en_write(reg_en_write), .data_out_r1(reg_out_1), .data_out_r2(reg_out_2));
 
+    wishbone_manager wm(.)
+
 endmodule

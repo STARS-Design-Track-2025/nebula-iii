@@ -4,27 +4,35 @@
 
 //interface with wishbone
 module t08_mmio (
+    input logic nRst, clk,
     //from memory handler
     input logic read,                   //command to read, source specified by address
     input logic write,                  //command to write, destination specified by address
     input logic [31:0] address,         //location to read from or write to
     input logic [31:0] mh_data,         //data to write
     //from I2C
-    input logic [7:0] xh,               //
-    input logic [7:0] xl,         
-    input logic [7:0] yh,
-    input logic [7:0] yl,
+    input logic [31:0] xy,
     input logic done,
+    //from SPI
+    input logic spi_busy,
     //from Memory: data
-    input logic [31:0] mem_data,
+    input logic [31:0] mem_data_i,      //data read from memory
+    input logic mem_busy,               //whether memory is busy or not
     //to memory handler
     output logic [31:0] mh_data_o,      //data read
-    output logic busy,
+    output logic busy,                  //whether mmio is busy or not
+    output logic done_o,                //whether I2C data is ready to be read
     //to SPI
-    output logic [31:0] parameters,
+    output logic [31:0] parameters,     //
     output logic [7:0] command,
     output logic readwrite,
-    output logic enable 
+    output logic enable,
+    //to Memory: data / wishbone
+    output logic [31:0] mem_data_o,     //data to write to memory
+    output logic [31:0] mem_address,    //address to put data
+    output logic [3:0]  select,         //
+    output logic        mem_write,      //tell memory to receive writing
+    output logic        mem_read        //tell memory to output reading
 );
 
 typedef enum logic[1:0] {
@@ -33,55 +41,56 @@ typedef enum logic[1:0] {
     READ
  } state;
 
+assign done_o = done;
+logic [31:0] data, next_data;
+assign mh_data_o = data;
 state curr_state, next_state;
 logic next_busy;
+
+logic [31:0][9:0] sr;
 
 always_ff@(posedge clk, posedge reset) begin
     if (reset) begin
         curr_state <= IDLE;
-    end else if (done) begin
-        curr_State <= next_state;
+    end else begin
+        curr_state <= next_state;
         busy <= next_busy;
+        data <= next_data;
     end
 end
 
 always_comb begin
-   case(curr_state)
+    next_busy = 0;
+    next_state = IDLE;
+    next_data = 0;
+    case (curr_state)
         IDLE: begin
-            if(WRITE_I && !READ_I) begin
-                next_BUSY_O = 1'b1;
+            if (write && !read) begin
+                next_busy = 1'b1;
                 next_state  = WRITE;
-            end
-            if(!WRITE_I && READ_I) begin
-                next_BUSY_O = 1'b1;
+            end else if (!write && read) begin
+                next_busy= 1'b1;
                 next_state  = READ;
             end
+        end
+        READ: begin
+           if (address == I2C) begin
+                next_data = {xh, xl, yh, yl};
+            end else if (address == MEM) begin
+                //wishbone shenanigans
+            end  
         end     
         WRITE: begin
-            next_ADR_O  = ADR_I;
-            next_DAT_O  = CPU_DAT_I;
-            next_SEL_O  = SEL_I;
-            next_WE_O   = 1'b1;
-            next_STB_O  = 1'b1;
-            next_CYC_O  = 1'b1;
-            next_BUSY_O = 1'b1;
-
-            if(ACK_I) begin
-                next_state = IDLE;
-
-                next_ADR_O  = '0;
-                next_DAT_O  = '0;
-                next_SEL_O  = '0;
-                next_WE_O   = '0;
-                next_STB_O  = '0;
-                next_CYC_O  = '0;
-                next_BUSY_O = '0;
+            if (address == SPI) begin
+                if (!spi_busy) begin
+                    //why not just send 40 bits??
+                end
+            end else if (address == MEM) begin
+                //wishbone shenanigans
             end
         end
-        READ: begin 
+    endcase
 end
-
-
 
 endmodule
 
