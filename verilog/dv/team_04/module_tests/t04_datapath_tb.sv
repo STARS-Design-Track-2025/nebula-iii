@@ -2,6 +2,7 @@
 
 module t04_datapath_tb;
 
+    // logic signals
     logic clk;
     logic rst;
     logic i_ack;
@@ -26,43 +27,53 @@ module t04_datapath_tb;
     // Clock: 10ns period
     always #10 clk = ~clk;
 
+    // Reset
+    task automatic reset_dut();
+        rst = 1;
+        #20;
+        rst = 0;
+    endtask
+
     // Task to apply instruction
     task automatic apply_instr(input [31:0] instr, input bit is_loadstore = 0, input [31:0] load_val = 0, input string label = "");
         $display("\n[Cycle %0t] --- %s ---", $time, label);
-        $display("  PC    = %0d", dut.PC);
+        $display("\nPC         = %0d", dut.PC);
+        $display("NEXT PC    = %0d", dut.pc_module.n_PC);
+        $display("difference between PC and next PC = %0d\n", dut.pc_module.n_PC - dut.PC);
         instruction = instr;
         i_ack = 1;
-        #10;               // 1 cycle
+        #10;
         i_ack = 0;
 
         if (is_loadstore) begin
             i_ack = 1;
             memload = load_val;
-            #10;           // 3rd cycle
+            #10;
             i_ack = 0;
         end
 
         #10; // 1 more cycle to observe datapath writeback
 
-        $display("  RegD  = x%0d", dut.RegD);
-        $display("  WB    = %0d", dut.write_back_data);
-        $display("  Freeze= %0b", dut.Freeze);
+        // display all information
+        $display("RegD   = x%0d", dut.RegD);
+        $display("WB     = %0d", dut.write_back_data);
+        $display("Freeze = %0b", dut.Freeze);
         $display("is branch taken from pc_module = %0d", dut.pc_module.Branch);
-        $display("ALU output of branch condition = %0d", dut.alu.BranchConditionFlag);
+        $display("branch condition flag (from ALU) = %0d", dut.alu.BranchConditionFlag);
         $display("sub result = %0d", dut.alu.sub_result);
         $display("src A = %0d", dut.alu.src_A);
         $display("src B = %0d", dut.alu.src_B);
         $display("ALU SOURCE = %0d", dut.ALUSrc);
-        $display("reg1 coming from control= %0d", dut.Reg1);
+        $display("reg1 coming from control = %0d", dut.Reg1);
         $display("reg2 coming from control = %0d", dut.Reg2);
-        $display("reg1 coming from regFile= %0d", dut.src_A);
+        $display("reg1 coming from regFile = %0d", dut.src_A);
         $display("reg2 coming from regFile = %0d", dut.src_B);
         $display("imm = %0d", dut.cu.Imm);
         $display("immediate from PC = %0d", dut.pc_module.imm);
-        $display("  PC    = %0d", dut.PC);
-        $display(" NEXT PC    = %0d", dut.pc_module.n_PC);
+
     endtask
 
+    // Task to check PC value
     task automatic check_pc(input [31:0] expected_pc, input string label = "");
     if (dut.PC !== expected_pc)
         $display("  [FAIL] %s: PC = %0d (expected %0d)", label, dut.PC, expected_pc);
@@ -70,24 +81,27 @@ module t04_datapath_tb;
         $display("  [PASS] %s: PC = %0d", label, dut.PC);
     endtask
 
-
+    // Begin testbench
     initial begin
         $dumpfile("t04_datapath.vcd");
         $dumpvars(0, t04_datapath_tb);
 
         // Init
         clk = 0;
-        rst = 1;
+        rst = 0;
         i_ack = 0;
         d_ack = 0;
         instruction = 32'd0;
         memload = 32'd0;
 
-        #10 rst = 0;
+        reset_dut();
 
         // Init register file
         dut.rf.registers[1] = 32'd10;
         dut.rf.registers[2] = 32'd20;
+
+        // Mark beginning of test
+        $display("\n\n\n--- STARTING DATAPATH TESTBENCH ---\n\n\n");
 
         // === Instruction Stream ===
         apply_instr(32'b0000000_00010_00001_000_00011_0110011, 0, 0, "ADD x3 = x1 + x2");
@@ -105,7 +119,7 @@ module t04_datapath_tb;
         apply_instr(32'h004002ef, 0, 0, "JAL x5, 4");
         apply_instr(32'h00828667, 0, 0, "JALR x12, x5, 8");
 
-                // === Extra LW Test: Simulate MMIO-style response ===
+        // === Extra LW Test: Simulate MMIO-style response ===
         $display("\n--- Simulating Multi-Cycle LW (MMIO-Style) ---");
 
         // Apply LW instruction: LW x13, 0(x1)
@@ -118,16 +132,16 @@ module t04_datapath_tb;
         // Wait one cycle (datapath computes address)
         #50;
 
-                $display("  [MMIO DEBUG] src_A        = %0d (should be x1 = 10)", dut.src_A);
-            $display("  [MMIO DEBUG] ALU_input_B  = %0d (should be imm = 0)", dut.ALU_input_B);
-            $display("  [MMIO DEBUG] ALU_result   = %0d", dut.ALU_result);
-            $display("  [MMIO DEBUG] ALU_control   = %0d", dut.ALU_control);
-            $display("  [MMIO DEBUG] branch_condition   = %0d", dut.alu.BranchConditionFlag);
-            $display("  [MMIO DEBUG] funct3   = %b", dut.alu.funct3);
-            $display("  [MMIO DEBUG] final_address= %0d", final_address);
-        $display("  [MMIO DEBUG] MemRead      = %b", dut.MemRead_O);
-        $display("  [MMIO DEBUG] RegD         = x%0d", dut.RegD);
-        $display("  [MMIO DEBUG] ALUSrc         = %d", dut.ALUSrc);
+        $display("  [MMIO DEBUG] src_A              = %0d (should be x1 = 10)", dut.src_A);
+        $display("  [MMIO DEBUG] ALU_input_B        = %0d (should be imm = 0)", dut.ALU_input_B);
+        $display("  [MMIO DEBUG] ALU_result         = %0d", dut.ALU_result);
+        $display("  [MMIO DEBUG] ALU_control        = %0d", dut.ALU_control);
+        $display("  [MMIO DEBUG] branch_condition   = %0d", dut.alu.BranchConditionFlag);
+        $display("  [MMIO DEBUG] funct3             = %b", dut.alu.funct3);
+        $display("  [MMIO DEBUG] final_address      = %0d", final_address);
+        $display("  [MMIO DEBUG] MemRead            = %b", dut.MemRead_O);
+        $display("  [MMIO DEBUG] RegD               = x%0d", dut.RegD);
+        $display("  [MMIO DEBUG] ALUSrc             = %d", dut.ALUSrc);
 
 
         // Now check if final_address is correct (x1 == 10)
@@ -141,13 +155,13 @@ module t04_datapath_tb;
         end else begin
             memload = 32'd0;
             $display("  ERROR: Unexpected address: %0d (expected 10)", final_address);
-            $display("  ALU_result    = %0d", dut.ALU_result);
+            $display("  ALU_result = %0d", dut.ALU_result);
         end
 
         // Wait for writeback
         #10;
 
-                $display("\n--- Simulating Multi-Cycle SW (MMIO-Style) ---");
+        $display("\n--- Simulating Multi-Cycle SW (MMIO-Style) ---");
 
         // SW x3, 0(x1): Store the value in x3 (30) into memory at address x1 (10)
         instruction = 32'b0000000_00011_00001_010_00000_0100011; // SW x3 → mem[x1 + 0]
@@ -180,11 +194,11 @@ module t04_datapath_tb;
 
 
         // Observe datapath
-        $display("  PC    = %0d", dut.PC);
-        $display("  memload    = %0d", dut.memload);
-        $display("  RegD  = x%0d", dut.RegD);
-        $display("  WB    = %0d", dut.write_back_data);
-        $display("  x13   = %0d (expect 42)", dut.rf.registers[13]);
+        $display("  PC          = %0d", dut.PC);
+        $display("  memload     = %0d", dut.memload);
+        $display("  RegD        = x%0d", dut.RegD);
+        $display("  WB          = %0d", dut.write_back_data);
+        $display("  x13         = %0d (expect 42)", dut.rf.registers[13]);
 
 
         @(posedge clk);
@@ -203,15 +217,11 @@ module t04_datapath_tb;
         $display("x12 = %0d (expect PC + 4 from jalr)", dut.rf.registers[12]);
 
         $display("\n--- DATAPATH OUTPUTS ---");
-        $display("final_address = %0d", final_address);
-        $display("mem_store     = %0d", mem_store);
-        $display("Freeze        = %0b", dut.Freeze);
-        $display("write_back_data = %0d", dut.write_back_data);
-        $display("desitination reg = %0d", dut.RegD);
-
-
-
-
+        $display("final_address     = %0d", final_address);
+        $display("mem_store         = %0d", mem_store);
+        $display("Freeze            = %0b", dut.Freeze);
+        $display("write_back_data   = %0d", dut.write_back_data);
+        $display("desitination reg  = %0d", dut.RegD);
 
     rst = 1; 
     #10
@@ -234,11 +244,16 @@ apply_instr(32'b0000000_00110_00101_000_01000_1100011, 0, 0, "BEQ x5 == x6 → P
 #10;  // Wait a cycle
 check_pc(32'h33000000 + 8, "BEQ Taken");
 
+apply_instr(32'b0000000_00111_01000_000_01100_1100011, 0, 0, "BEQ x7 != x8 → PC += 0 (should not branch)");
+#10;  // Wait a cycle
+check_pc(32'h33000000 + 8 + 4, "BEQ Not Taken"); // add 4 for next instruction, should not increment by 12
+
 
 $display("\n--- BRANCH INSTRUCTION TESTS COMPLETE ---");
 $display("Final PC = %0d", dut.PC);
 
-// === Additional Tests ===
+// === ADDITIONAL TESTS ===
+
 $display("\n--- ADDITIONAL TESTS ---");
 // Test illegal and undefined instructions
 apply_instr(32'b1111111_00000_00000_000_00000_0110011, 0, 0, "Illegal Instruction (should not affect PC)");
