@@ -58,9 +58,16 @@ module t07_control_unit_tb ();
     end
     endtask
 
+    task rs2_task; begin
+        rs2 = '0;
+        #1 
+        rs2 = 5'b00001;
+    end
+    endtask
+
     //signal dump
     initial begin
-        $dumpfile(waves/t07_control_unit.sv);
+        $dumpfile("t07_control_unit.vcd");
         $dumpvars(0, t07_controlUnit_tb);
 
     Opcodes();
