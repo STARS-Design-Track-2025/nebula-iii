@@ -29,62 +29,49 @@ module t07_program_counter_tb;
     );
     // Clock generation
     always begin 
-        clk = 1;
-        #10; // Wait for 10 time units
         clk = 0;
-        #10; // Wait for 10 time units
+        #5; // Wait for 10 time units
+        clk = 1;
+        #5; // Wait for 10 time units
     end
 
     initial begin
         $dumpfile("t07_program_counter.vcd");
         $dumpvars(0, t07_program_counter_tb);
         // Initialize Inputs
-        clk = 0;
         rst = 1; // Start with reset high
         freeze = 0;
         forceJump = 0;
         condJump = 0;
         ALU_flags = 7'b000000; // No flags set
-        JumpDist = 32'b0;
+        JumpDist = 32'h00000008;
         func3 = 3'b000; // Default function code
 
         // Wait for global reset to finish
-        #100;
+        #10;
         
         // Release reset
         rst = 0;
 
-        freeze = 1; // Freeze the CPU operations
         #10; // Wait for a clock cycle
-        freeze = 0; // Unfreeze the CPU operations  
-        #10; // Wait for a clock cycle
-
-        // Test case: Normal operation
-        #10;
-        clk = 1; // Rising edge
-        #10;
-        clk = 0; // Falling edge
-
+        #15; // Wait for a clock cycle
         // Test case: Force jump
         forceJump = 1;
-        JumpDist = 32'h00000008; // Jump to next instruction
-        #10;
-        clk = 1; // Rising edge
-        #10;
-        clk = 0; // Falling edge
+        #5;
         forceJump = 0; // Clear force jump
-        #20;
+        #15;
 
         // Test case: Conditional jump
         condJump = 1;
         ALU_flags = 7'b1000000; // Set condition met flag
-        #10;
-        JumpDist = 32'h00000008; // Jump to instruction at offset 8    
-        clk = 1; // Rising edge
-        #10;
-        clk = 0; // Falling edge
-        // condJump = 0; // Clear conditional jump
-        // ALU_flags = '0; // Reset flags
+        #5;
+        condJump = 0; // Clear conditional jump
+        ALU_flags = 7'b0000000; // Reset flags
+        #15;
+
+        freeze = 1;
+        #5;
+        freeze = 0; // Release freeze
         #10;
          #1; $finish;
     end
