@@ -136,6 +136,9 @@ module t08_control_unit_tb;
     //jalr
     instruction = 32'b00001000000000001000_00010_1100111;
     #2;
+    //Invalid commands
+    instruction = 32'd0;
+    #2;
     //$display("read=\%b, write=\%b, funct3=\%b, data_in_control=\%b, reg1=\%b, reg2 = \%b, regd = \%b, en_read_1, en_read_2", A, B, Cin, Cout, S);
       
   #1 $finish;

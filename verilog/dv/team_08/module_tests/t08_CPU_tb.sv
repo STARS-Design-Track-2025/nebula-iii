@@ -376,6 +376,15 @@ module t08_CPU_tb;
         subtestNumber = 2;
         instruction = 32'b000100111100_10110_000_11111_1100111; 
     
+        @ (negedge clk);
+        //invalid command, all bits to 0;
+        subtestNumber = 1;
+        instruction = 32'd0;
+
+        @ (negedge clk);
+        //invalid command, all bits to 1;
+        subtestNumber = 2;
+        instruction = 32'd1;
         #2 $finish;
 
     end
