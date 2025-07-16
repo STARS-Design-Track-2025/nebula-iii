@@ -4,8 +4,8 @@ logic  signed [31:0] imm_address = 0;
 logic [31:0] ret_address, program_counter;
 logic clk =0, nrst = 0, jump =0, branch = 0;
 task tfr;
-   nrst = 1; #1;
    nrst = 0; #1;
+   nrst = 1; #1;
 endtask
     
 always #1 clk = ~clk;
@@ -47,6 +47,14 @@ initial begin
     branch = 0; 
     jump = 1; 
     imm_address = -10; 
+    #5;
+
+
+    imm_address = -8; 
+    #5;
+
+
+    imm_address = -15; 
     #5;
     #1; $finish;
     end
