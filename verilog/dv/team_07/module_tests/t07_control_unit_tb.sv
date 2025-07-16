@@ -13,48 +13,67 @@ module t07_control_unit_tb ();
 
     task Opcodes; begin
         Op = 'b0110111; //U-type, lui
+        funct3_task();
         #6
         Op = 'b0010111; //U-type, auipc
+        funct3_task();
         #6
         Op = 'b1101111; //J-type, jal
+        funct3_task();
         #6
         Op = 'b1100111; //I-type, jalr
+        funct3_task();
         #6
         Op = 'b1100011; //B-type
+        funct3_task();
         #6
         Op = 'b0000011; //I-type (load)
+        funct3_task();
         #6
         Op = 'b0100011; //S-type
+        funct3_task();
         #6
         Op = 'b0010011; //I-type (immediate)
+        funct3_task();
         #6
         Op = 'b0110011; //R-type
+        funct3_task();
     end
     endtask
 
     task funct3_task; begin
         funct3 = 'b000;
+        funct7_task();
         #1
         funct3 = 'b001;
+        funct7_task();
         #1
         funct3 = 'b010;
+        funct7_task();
         #1
         funct3 = 'b011;
+        funct7_task();
         #1
         funct3 = 'b100;
+        funct7_task();
         #1
         funct3 = 'b101;
+        funct7_task();
         #1
         funct3 = 'b110;
+        funct7_task();
         #1
         funct3 = 'b111;
+        funct7_task();
     end
     endtask
 
     task funct7_task; begin
         funct7 = '0;
+        rs2_task();
         #0.5
         funct7 = 'b0100000;
+        rs2_task();
     end
     endtask
 
@@ -68,11 +87,9 @@ module t07_control_unit_tb ();
     //signal dump
     initial begin
         $dumpfile("t07_control_unit.vcd");
-        $dumpvars(0, t07_controlUnit_tb);
+        $dumpvars(0, t07_control_unit_tb);
 
     Opcodes();
-    funct3_task();
-    funct7_task();
 
     end
 
