@@ -31,34 +31,41 @@ always_ff@(posedge clk, negedge nrst) begin
         mems <= nextmem;
         state <= nextstate;
         instruction <= nextinst ;
-        //newad
+        addressnew <= nextnewadd;
 
     end
 end
 
 always_comb begin
     nextstate = state;
-    addressnew = 0;
+    nextnewadd = addressnew;
+    nextregs = regs;
+    nextmem = mems;
+    nextinst = instruction;
     
     case(state)
-    0: if (!busy) begin
-        if ((write) | (read & done ) begin 
-                nextstate = 1; //data
+    0: begin
+         if (!busy) begin
+            if ((write) | (read & done)) begin 
+                    nextstate = 1; //data
+                end
+            else if (!write&!read) begin
+                nextstate = 2;
             end
-        end
-        else if (write|read) begin
-            nextstate = 0;
-        end
+        
+        
         else begin
-            nextstate = 2; 
+            nextstate = 0; 
         end
+    end
     end
 
     1: begin //data
-        addressnew = mem_address; 
+        nextnewadd = mem_address; 
         nextmem = mems;
         nextregs = regs;
         nextstate = 0;
+
 
 
         readout = read;
@@ -97,7 +104,7 @@ always_comb begin
     end
 
     2: begin //instruction fetching
-        addressnew = counter;
+        nextnewadd = counter;
         if(!busy) begin
             writeout = 1;
             nextstate = 3;
