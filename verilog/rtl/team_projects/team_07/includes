@@ -15,5 +15,5 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_registers.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_immGen.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_fp_fcsr.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_external_memory.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_external_mem.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_CPU.sv
