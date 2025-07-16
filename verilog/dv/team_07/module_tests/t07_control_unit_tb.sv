@@ -9,7 +9,9 @@ module t07_control_unit_tb ();
     logic [2:0] regWriteSrc, FPURnd;
     logic [4:0] FPUOp, rs3;
     logic [1:0] FPUWrite;
-    logic [3:0] memOp;
+    logic [3:0] memOp, ALUOp;
+
+    t07_control_unit control(.rs3(rs3), .memOp(memOp), .rs2(rs2), .regWriteSrc(regWriteSrc), .Op(Op), .funct7(funct7), .funct3(funct3), .ALUOp(ALUOp), .ALUSrc(ALUSrc), .regWrite(regWrite), .branch(branch), .jump(jump), .memWrite(memWrite), .memRead(memRead), .FPUSrc(FPUSrc), .regEnable(regEnable), .FPUOp(FPUOp), .FPURnd(FPURnd), .FPUWrite(FPUWrite));
 
     task Opcodes; begin
         Op = 'b0110111; //U-type, lui
@@ -87,7 +89,7 @@ module t07_control_unit_tb ();
     task check_Rtype; begin
         if(Op == 'b110011) begin
             if(funct3 == 'b000 & funct7 == '0 & ALUOp == 4'd0) begin $display("add is correct"); end else begin $display("add error"); end
-            if(funct3 == 'b000 & funct7 == 'b010000 & ALUOp == 4'd08) begin $display("sub is correct"); end else begin $display("sub error"); end
+            if(funct3 == 'b000 & funct7 == 'b0100000 & ALUOp == 4'd08) begin $display("sub is correct"); end else begin $display("sub error"); end
         end
     end
     endtask
@@ -104,7 +106,7 @@ module t07_control_unit_tb ();
         check_Rtype();
         
         #1 
-        $finish
+        $finish;
     
 
     end
