@@ -10,7 +10,8 @@ output logic [4:0] FPUOp, //to FPU
 output logic [2:0] FPURnd, //to FPU
 output logic [1:0] FPUWrite, //to FPUReg
 output logic [4:0] rs3, //to FPU registers
-output logic [3:0] memOp //to internal memory
+output logic [3:0] memOp, //to internal memory
+output logic invalid_Op
 
 //outputs:
 //to register: regWrite (register read/write), regEnable
@@ -25,6 +26,7 @@ always_comb begin
     case(Op) //what should default case be?
         //ALU Cases
         7'b0110011: begin /*(R-type)*/
+            invalid_Op = 0;
             regWriteSrc = 3'b010; //from ALU
             ALUSrc = 0;
             regWrite = 1;
@@ -53,6 +55,7 @@ always_comb begin
         end
 
         7'b 0000011: begin /*(I-Type)*/
+            invalid_Op = 0;
             regWriteSrc = 3'b100; //from immediate
             ALUSrc = 1;
             regWrite = 1;
@@ -75,6 +78,7 @@ always_comb begin
         end
 
         7'b0010011: begin /*I-Type*/
+            invalid_Op = 0;
             regWriteSrc = 01;
             ALUSrc = 1;
             regWrite = 1;
@@ -100,6 +104,7 @@ always_comb begin
         end
 
         7'b0100011: begin /*(S-Type)*/
+            invalid_Op = 0;
             ALUSrc = 0;
             regWrite = 0;
             branch = 0;
@@ -117,6 +122,7 @@ always_comb begin
             if(funct3 == 'b010) begin memOp = 4'd8; end //sw - store word
         end
         7'b1100011: begin /*(B-Type)*/
+            invalid_Op = 0;
             ALUSrc = 0;
             regWrite = 0;
             branch = 1;
@@ -131,6 +137,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b0110111: begin /*(U-type, lui)*/ 
+            invalid_Op = 0;
             regWriteSrc = 3'b100; //from immGen
             ALUSrc = 0;
             regWrite = 1;
@@ -148,6 +155,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b0010111: begin /*(U-Type, auipc)*/
+            invalid_Op = 0;
             regWriteSrc = 3'b011; //from ALU
             ALUSrc = 0;
             regWrite = 1;
@@ -163,6 +171,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b1101111: begin /*(J-type, jal)*/
+            invalid_Op = 0;
             regWriteSrc = 3'b000; //from PC
             ALUSrc = 0;
             regWrite = 1;
@@ -178,6 +187,7 @@ always_comb begin
             FPURnd = '0;
         end
         7'b1100111: begin /*(J-type, jalr)*/
+            invalid_Op = 0;
             regWriteSrc = 3'b000; //from PC
             ALUSrc = 0;
             regWrite = 1;
@@ -195,6 +205,7 @@ always_comb begin
 
         //FPU Cases
         7'b0000111: begin//(FLW - load word)
+            invalid_Op = 0;
             FPUOp = 5'b1;
             FPUSrc = 0;
             FPURnd = 'b010;
@@ -202,6 +213,7 @@ always_comb begin
             FPUWrite = 1;
         end 
         7'b0100111: begin //(FSW - store word)
+            invalid_Op = 0;
             FPUOp = 5'd2;
             FPUSrc = 0;
             FPURnd = 'b010;
@@ -209,6 +221,7 @@ always_comb begin
             FPUWrite = 0; //reading value from register -> goes to internal mem
         end
         7'b1000011: begin //(FMADD.S) rs1 x rs2 + rs3
+            invalid_Op = 0;
             FPUOp = 5'd3;
             FPUSrc = 1;
             regEnable = 0;
@@ -217,6 +230,7 @@ always_comb begin
 
         end
         7'b1000111: begin //(FMSUB.S) rs1 x rs2 - rs3
+            invalid_Op = 0;
             FPUOp = 5'd4;
             FPUSrc = 1;
             regEnable = 0;
@@ -224,6 +238,7 @@ always_comb begin
             rs3 = funct7[6:2];
         end
         7'b1001011: begin //(FNMSUB.S) -(rs1 x rs2 - rs3)
+            invalid_Op = 0;
             FPUOp = 5'd5;
             FPUSrc = 1;
             regEnable = 0;
@@ -231,6 +246,7 @@ always_comb begin
             rs3 = funct7[6:2];
         end 
         7'b1001111: begin //(FNMADD.S) -(rs1 x rs2 + rs3)
+            invalid_Op = 0;
             FPUOp = 5'd6;
             FPUSrc = 1;
             regEnable = 0;
@@ -238,6 +254,7 @@ always_comb begin
             rs3 = funct7[6:2];
         end
         7'b1010011: begin //Math
+            invalid_Op = 0;
             regEnable = 0;
             FPUWrite = 1;
             case(funct7)
@@ -276,6 +293,7 @@ always_comb begin
                 
             endcase
         end 
+        default: invalid_Op = 1;
     endcase
 end
 endmodule

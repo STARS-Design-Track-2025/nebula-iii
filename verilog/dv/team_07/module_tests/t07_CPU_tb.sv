@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
 module t07_CPU_tb();
-    logic [31:0] inst, memData_in, addr, memData_out;
+    logic [31:0] inst, memData_in, memData_out;
     logic [2:0] rwi;
     logic FPUFlag, clk, rst;
 
-    t07_CPU CPU_test(.inst(inst), .memData_in(memData_in), .addr(addr), .memData_out(memData_out), .rwi(rwi), .FPUFlag(FPUFlag));
+    t07_CPU CPU_test(.inst(inst), .memData_in(memData_in), .memData_out(memData_out), .rwi(rwi), .FPUFlag(FPUFlag));
 
     task test_instr(); begin
         inst = 'b00000000000000000000000000110011; //add 
@@ -30,6 +30,6 @@ module t07_CPU_tb();
         memData_in = '0; //idk what to put here
 
         #1
-        $finish
+        $finish;
     end
 endmodule
