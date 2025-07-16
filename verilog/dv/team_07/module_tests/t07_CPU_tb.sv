@@ -28,7 +28,6 @@ module t07_CPU_tb();
 
         rst = 0;
         memData_in = '0; //idk what to put here
-        addr
 
         #1
         $finish
