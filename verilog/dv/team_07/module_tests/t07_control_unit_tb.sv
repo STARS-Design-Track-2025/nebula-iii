@@ -17,25 +17,25 @@ module t07_control_unit_tb ();
         #6
         Op = 'b0010111; //U-type, auipc
         funct3_task();
-        #6
+        #12
         Op = 'b1101111; //J-type, jal
         funct3_task();
-        #6
+        #12
         Op = 'b1100111; //I-type, jalr
         funct3_task();
-        #6
+        #12
         Op = 'b1100011; //B-type
         funct3_task();
-        #6
+        #12
         Op = 'b0000011; //I-type (load)
         funct3_task();
-        #6
+        #12
         Op = 'b0100011; //S-type
         funct3_task();
-        #6
+        #12
         Op = 'b0010011; //I-type (immediate)
         funct3_task();
-        #6
+        #12
         Op = 'b0110011; //R-type
         funct3_task();
     end
@@ -44,25 +44,25 @@ module t07_control_unit_tb ();
     task funct3_task; begin
         funct3 = 'b000;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b001;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b010;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b011;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b100;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b101;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b110;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b111;
         funct7_task();
     end
@@ -71,7 +71,7 @@ module t07_control_unit_tb ();
     task funct7_task; begin
         funct7 = '0;
         rs2_task();
-        #0.5
+        #1
         funct7 = 'b0100000;
         rs2_task();
     end
@@ -84,12 +84,28 @@ module t07_control_unit_tb ();
     end
     endtask
 
+    task check_Rtype; begin
+        if(Op == 'b110011) begin
+            if(funct3 == 'b000 & funct7 == '0 & ALUOp == 4'd0) begin $display("add is correct"); end else begin $display("add error"); end
+            if(funct3 == 'b000 & funct7 == 'b010000 & ALUOp == 4'd08) begin $display("sub is correct"); end else begin $display("sub error"); end
+        end
+    end
+    endtask
+
     //signal dump
     initial begin
         $dumpfile("t07_control_unit.vcd");
         $dumpvars(0, t07_control_unit_tb);
 
     Opcodes();
+        #1
+        Opcodes();
+
+        check_Rtype();
+        
+        #1 
+        $finish
+    
 
     end
 
