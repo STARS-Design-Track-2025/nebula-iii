@@ -80,7 +80,7 @@ always_comb begin
             regWrite = 1;
             branch = 0;
             memWrite = 0;
-            memRead = 1;
+            memRead = 0;
             memToReg = 1;
             jump = 0;
             regEnable = 1;
