@@ -12,7 +12,7 @@ module t08_handler(
     output logic writeout, readout
 );
 logic [31:0] regs = 0, mems = 0, address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
-logic state,  nextstate; //0 wait, 1 send
+logic [1:0] state,  nextstate; //0 wait, 1 send
 
 //assign addressnew = mem_address; 
 assign data_mem = mems;
@@ -42,21 +42,23 @@ always_comb begin
     nextregs = regs;
     nextmem = mems;
     nextinst = instruction;
-    
+    readout = 0;
+    writeout = 0;
+
     case(state)
     0: begin
          if (!busy) begin
+
             if ((write) | (read & done)) begin 
                     nextstate = 1; //data
                 end
             else if (!write&!read) begin
                 nextstate = 2;
             end
-        
-        
-        else begin
-            nextstate = 0; 
-        end
+            else begin
+                nextstate = 0;
+            end
+
     end
     end
 
