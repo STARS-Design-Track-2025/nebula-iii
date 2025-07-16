@@ -20,38 +20,60 @@ U-type: upper immediate for large constants.
 */
 
 module t07_immGen (
-    input logic clk,
+
     input logic [31:0] instruction,
-    
+    input logic [2:0] func3,
     output logic [31:0] immediate
 );
 
     logic [6:0] opcode;
-    logic [31:0] imm_temp;
+   
 
     assign opcode = instruction[6:0];
+    logic [11:0] imm_s;
 
 always_comb begin
+    imm_s = 12'b0; // Default assignment to avoid latch inference
     case(opcode)
     7'b0000011: begin // i-type
-       imm_temp = {{20{instruction[31]}}, instruction[31:20]};
+       immediate = {{20{instruction[31]}}, instruction[31:20]};
     end
-    7'b0100011: begin // s-type
-        imm_temp = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
-    end
-    7'b1100011: begin // b-type
-        imm_temp = {{20{instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
-    end
-    7'b1101111: begin // j-type
-        imm_temp = { {12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0 };
+
+    7'b0010011: begin // i-type part 2
+        if (func3 == 3'b000 || func3 == 3'b010 || func3 == 3'b011 || func3 == 3'b100 || func3 == 3'b110 || func3 == 3'b111) begin
+       immediate = {{20{instruction[31]}}, instruction[31:20]};
+        end else if (func3 == 3'b001) begin //slli
+            // slli instruction
+            immediate = {27'b0, instruction[24:20]}; // Shift amount is in bits 24-20
+        end else if (func3 == 3'b101) begin //srli/srai
+            immediate = {27'b0, instruction[24:20]};
+        end else begin
+            immediate = 32'b0; // Default case for unsupported func3
 
     end
+    end
+
+    7'b0100011: begin // S-type
+    immediate = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
+    end
+
+    7'b1100011: begin // b-type (all types)
+        immediate = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
+    end
+    7'b1101111: begin // j-type
+        immediate = {{12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0};
+
+    end
+    //lui
     7'b0110111: begin // u-type
-        imm_temp = {instruction[31:12], 12'b0};
-        
+        immediate = {12'b0, instruction[31:12]};
+    end
+    //auipc
+    7'b0010111: begin // u-type
+        immediate = {12'b0, instruction[31:12]};
     end
     default: begin
-        imm_temp = 32'b0;
+        immediate = 32'b0;
     end
     endcase
 end

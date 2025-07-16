@@ -48,20 +48,20 @@ module t07_cpu_memoryHandler_tb;
         // Test memory write operation
         memWrite = 1;
         memSource = 1; // Writing from FPU
-        #10; // Wait for a clock cycle
+        #10; 
         memWrite = 0; // Clear write signal
-        #10; // Wait for a clock cycle
+        #10; 
         memWrite = 1;
         memSource = 0; // Writing from Register
-        #10; // Wait for a clock cycle
+        #10; 
         memWrite = 0; // Clear write signal
-        #10; // Wait for a clock cycle
+        #10; 
 
         // Test memory read operation
         memRead = 1; // Test memory read operation
-        #10; // Wait for a clock cycle
+        #10;
         memRead = 0; // Clear read signal
-        #10; // Wait for a clock cycle
+        #10;
 
         $finish;
     end

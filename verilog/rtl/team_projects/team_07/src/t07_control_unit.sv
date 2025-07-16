@@ -4,7 +4,7 @@ input logic [2:0] funct3, //from decoder
 input logic [6:0] funct7, //from decoder
 input logic [4:0] rs2, //from decoder, for differentiating FPU convert functions
 output logic [3:0] ALUOp, //to ALU
-output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, memToReg, FPUSrc, regEnable, 
+output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, FPUSrc, regEnable, 
 output logic [2:0] regWriteSrc, //regWriteSrc goes to mux outside PC/memory handler/ALU/FPU/ImmGen -> registers, 000 = PC, 001 = MH, 010 = ALU, 011 = FPU, 100 = ImmGen
 output logic [4:0] FPUOp, //to FPU
 output logic [2:0] FPURnd, //to FPU
@@ -31,7 +31,7 @@ always_comb begin
             branch = 0;
             memWrite = 0;
             memRead = 0;
-            memToReg = 0;
+            //memToReg = 0;
             jump = 0;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
@@ -59,7 +59,7 @@ always_comb begin
             branch = 0;
             memWrite = 0;
             memRead = 1;
-            memToReg = 1;
+            //memToReg = 1;
             jump = 0;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
@@ -80,8 +80,8 @@ always_comb begin
             regWrite = 1;
             branch = 0;
             memWrite = 0;
-            memRead = 1;
-            memToReg = 1;
+            memRead = 0;
+            //memToReg = 1;
             jump = 0;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
@@ -105,7 +105,7 @@ always_comb begin
             branch = 0;
             memWrite = 1;
             memRead = 0;
-            memToReg = 0; //X
+            //memToReg = 0; //X
             jump = 0;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
@@ -122,7 +122,7 @@ always_comb begin
             branch = 1;
             memWrite = 0;
             memRead = 0;
-            memToReg = 0; //X
+            //memToReg = 0; //X
             jump = 0;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
@@ -139,7 +139,7 @@ always_comb begin
             branch = 0;
             memWrite = 0;
             memRead = 0;
-            memToReg = 0;
+            //memToReg = 0;
             jump = 0;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
@@ -154,7 +154,7 @@ always_comb begin
             branch = 0;
             memWrite = 0;
             memRead = 0;
-            memToReg = 0;
+            //memToReg = 0;
             jump = 0;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
@@ -169,7 +169,7 @@ always_comb begin
             branch = 0;
             memWrite = 0;
             memRead = 0;
-            memToReg = 0;
+            //memToReg = 0;
             jump = 1;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
@@ -184,7 +184,7 @@ always_comb begin
             branch = 0;
             memWrite = 0;
             memRead = 0;
-            memToReg = 0;
+            //memToReg = 0;
             jump = 1;
             regEnable = 1;
             //FPU outputs - all 0 when ALU op code
