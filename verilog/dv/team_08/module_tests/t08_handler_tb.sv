@@ -11,7 +11,7 @@ task tfr;
 endtask
     
 always #1 clk = ~clk;
-//always #2 done = ~done;
+always #3 done = ~done;
 t08_handler blockhandle(.counter(counter), .instruction(instruction), .busy(busy), .done(done), .readout(readout), .writeout(writeout), .rs1(rs1), .mem(mem), .mem_address(mem_address), .write(write), .read(read), .clk(clk),.nrst(nrst), .func3(func3), .data_reg(data_reg), . data_mem(data_mem), .addressnew(addressnew));
 
 initial begin
@@ -49,13 +49,19 @@ initial begin
     #10;
 
 
-    #5; $finish;
-    end
+
 
     read = 0;
     write = 0;
-    mem = 25;
-    //for ()
+    for (integer  w = 0; w <=20; w++) begin
+        counter = w;
+        mem = 10 + w;
+        #5;
+    end
+    #5; $finish;  
+
+end
+
 endmodule
 
 
