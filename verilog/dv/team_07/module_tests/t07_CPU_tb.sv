@@ -1,16 +1,23 @@
-`timescale 1ns / 1ps
+`timescale 1ms / 1ps
 module t07_CPU_tb();
     logic [31:0] inst, memData_in, memData_out;
     logic [2:0] rwi;
-    logic FPUFlag, clk, rst;
+    logic FPUFlag, clk, nrst;
 
-    t07_CPU CPU_test(.inst(inst), .memData_in(memData_in), .memData_out(memData_out), .rwi(rwi), .FPUFlag(FPUFlag));
+    t07_CPU CPU_test(.inst(inst), .memData_in(memData_in), .memData_out(memData_out), .rwi(rwi), .FPUFlag(FPUFlag), .clk(clk), .nrst(nrst));
     
+
+
     task reset(); begin
-        #12
-        rst = ~rst;        
+        #1
+        nrst = ~nrst;        
     end
     endtask
+
+    always begin
+        #2
+        clk = ~clk;
+    end
 
     task test_instr(); begin
         inst = 'b00000000000000000000000000110011; //add 
@@ -33,12 +40,13 @@ module t07_CPU_tb();
     initial begin
         $dumpfile("t07_CPU.vcd");
         $dumpvars(0, t07_CPU_tb);
-
-        rst = 0;
+        clk = 0;
+        nrst = 1;
+        reset();
+        #1
         test_instr();
         #10
-        reset();
-        test_instr();
+
 
         #1
         $finish;
