@@ -1,6 +1,6 @@
 module t08_spi_tb;
 logic [7:0] command, outputs;
-logic enable,  nrst, wrx,rdx,csx,dcx,  busy;
+logic enable,  nrst = 1, wrx,rdx,csx,dcx,  busy;
 logic [31:0] parameters;
 logic clk = 0, readwrite = 1;
 logic [3:0] counter = 4;
@@ -16,7 +16,7 @@ t08_spi spi(.busy(busy), .command(command), .enable(enable), .clk(clk), .nrst(nr
 
 
 initial begin
-    $dumpfile("waves/t08_spi.vcd"); 
+    $dumpfile("t08_spi.vcd"); 
     $dumpvars(0, t08_spi_tb);
     
     tfr; 
