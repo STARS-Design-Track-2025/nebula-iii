@@ -27,7 +27,7 @@ module t07_CPU_tb();
         $dumpvars(0, t07_CPU_tb);
 
         rst = 0;
-        memData_in = '0; //idk what to put here
+        test_instr();
 
         #1
         $finish;
