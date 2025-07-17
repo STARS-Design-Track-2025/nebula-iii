@@ -17,3 +17,9 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_wishbone_manager.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_datapathxmmio.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_request_unit_old.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_datapathxmmioxkeypad.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_keypad_interface.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_app_alpha_fsm.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_button_debounce.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_button_decoder_edge_detector.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_counter_column.sv

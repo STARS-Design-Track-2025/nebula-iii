@@ -1,13 +1,11 @@
 `timescale 1ns/1ps
 
-module t04_datapathxmmio_tb;
+module t04_datapathxmmioxkeypad_tb;
 
     logic clk, rst;
 
-    // Inputs to MMIO (simulated peripherals)
-    logic [4:0] button_pressed;
-    logic [1:0] app;
-    logic rising;
+    // Inputs to KEYPAD (simulated peripherals)
+    logic [3:0] row;
     logic d_ack_display;
 
     // Outputs from MMIO
@@ -16,12 +14,10 @@ module t04_datapathxmmio_tb;
     logic WEN;  
 
     // DUT instance (no .busy connection here)
-    t04_datapathxmmio dut (
+    t04_datapathxmmioxkeypad dut (
         .clk(clk),
         .rst(rst),
-        .button_pressed(button_pressed),
-        .app(app),
-        .rising(rising),
+        .row(row),
         .d_ack_display(d_ack_display),
         .display_address(display_address),
         .mem_store_display(mem_store_display),
@@ -63,36 +59,39 @@ module t04_datapathxmmio_tb;
 
     // === Initialize test ===
     initial begin
-        //force dut.mmio.RAM_en = 1;
-        $dumpfile("t04_datapathxmmio.vcd");
-        $dumpvars(0, t04_datapathxmmio_tb);
+        force dut.mmio.key_data = 10;
+        $dumpfile("t04_datapathxmmioxkeypad.vcd");
+        $dumpvars(0, t04_datapathxmmioxkeypad_tb);
 
         clk = 0;
         rst = 1;
-        button_pressed = 0;
-        app = 0;
-        rising = 0;
-        d_ack_display = 0;
+        row = 0;
 
 
         // === Release reset ===
         #15 rst = 0;
 
-        #1000;
+        #700;
+        // row = 4'b0010;
+        // #2000;
+        // row = 0;
+        // #200;
 
        $display("\nFINAL REGISTER VALUES");
         $display("----------------------");
-        $display("x1  = %0h (expect 00000024)", dut.datapath.rf.registers[1]);   // address of data start
-        $display("x2  = %0h (expect cafebabe)", dut.datapath.rf.registers[2]);   // loaded from 0x24
-        $display("x3  = %0h (expect deadbeef)", dut.datapath.rf.registers[3]);   // loaded from 0x28
-        $display("x4  = %0h (expect 00ff00ff)", dut.datapath.rf.registers[4]);   // loaded from 0x2C
-        $display("x5  = %0h (expect 12345678)", dut.datapath.rf.registers[5]);   // hardcoded value (set manually in CPU or TB)
-        $display("x10 = %0h (expect ec531ecf)", dut.datapath.rf.registers[10]);  // x2 - x3
-        $display("x11 = %0h (expect 00340078)", dut.datapath.rf.registers[11]);  // x4 & x5
-        $display("x12 = %0h (expect dafebefe)", dut.datapath.rf.registers[12]);  // x5 | x2
-        $display("x13 = %0h (expect 00000001)", dut.datapath.rf.registers[13]);  // x2 < x4 (signed)
-        $display("x14 = %0h (expect 80000000)", dut.datapath.rf.registers[14]);  // x3 << (x4 & 0x1F)
+        $display("x1  = %0h ", dut.datapath.rf.registers[1]);   // address of data start
+        $display("x2  = %0h ", dut.datapath.rf.registers[2]);   // loaded from 0x24
+        $display("x3  = %0h ", dut.datapath.rf.registers[3]);   // loaded from 0x28
+        $display("x4  = %0h ", dut.datapath.rf.registers[4]);   // loaded from 0x2C
+        $display("x5  = %0h ", dut.datapath.rf.registers[5]);   // hardcoded value (set manually in CPU or TB)
+        $display("x10 = %0h ", dut.datapath.rf.registers[10]);  // x2 - x3
+        $display("x11 = %0h ", dut.datapath.rf.registers[11]);  // x4 & x5
+        $display("x12 = %0h ", dut.datapath.rf.registers[12]);  // x5 | x2
+        $display("x13 = %0h ", dut.datapath.rf.registers[13]);  // x2 < x4 (signed)
+        $display("x14 = %0h ", dut.datapath.rf.registers[14]);  // x3 << (x4 & 0x1F)
         $finish;
     end
+
+
 
 endmodule

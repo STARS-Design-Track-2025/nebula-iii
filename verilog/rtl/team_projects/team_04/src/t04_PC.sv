@@ -15,7 +15,7 @@ module t04_PC (
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
-        PC <= 32'h0; //32'h33000000
+        PC <= 32'h33000000; //32'h33000000
     end
     else begin
         PC <= n_PC;

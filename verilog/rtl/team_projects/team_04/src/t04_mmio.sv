@@ -27,7 +27,7 @@ module t04_mmio (
     // === Internal Signals ===
     logic [31:0] memload_or_instruction;
     logic busy;
-    logic RAM_en, key_en;
+    logic RAM_en, key_en, key_en1, key_en2;
     logic [31:0] key_data;
     logic stb;
     logic cyc;
@@ -53,8 +53,8 @@ module t04_mmio (
         .CPU_DAT_I(mem_store),
         .ADR_I(final_address),
         .SEL_I(4'd15),                  // full word access
-        .WRITE_I(MemWrite),
-        .READ_I(MemRead_Wishbone),
+        .WRITE_I(RAM_en && MemWrite),
+        .READ_I(RAM_en && MemRead_Wishbone),
 
         // Unconnected Wishbone bus outputs (to be wired in full system)
         .ADR_O(adr), .DAT_O(dat_o), .SEL_O(sel),
@@ -114,12 +114,23 @@ module t04_mmio (
 
     // === Mux for memload / instruction ===
     always_comb begin
-        if (RAM_en)
-            memload = memload_or_instruction;
-        else if (key_en)
+        if (key_en2)
             memload = key_data;
+        else if (RAM_en)
+            memload = memload_or_instruction;
         else
             memload = 32'hDEADBEEF;  // default or error value
+    end
+    
+    always_ff @(posedge clk, posedge reset) begin
+        if (reset) begin
+            key_en1 <= 0;
+            key_en2 <= 0;
+        end
+        else begin
+            key_en1 <= key_en;
+            key_en2 <= key_en1;
+        end
     end
 
     assign instruction = memload;  // simple connection unless you separate fetch/load later

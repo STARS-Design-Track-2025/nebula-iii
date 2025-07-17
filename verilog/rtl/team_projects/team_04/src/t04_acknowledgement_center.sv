@@ -18,14 +18,14 @@ module t04_acknowledgement_center (
     output logic i_ack
 );
 always_comb begin
-    if (Ram_En) begin
+    if (Ram_En) begin //AS OF NOW Ram_En is hardwired to be 1
         d_ack = (~busy);
     end
     else if (WEN) begin
-        d_ack = (MemRead || MemWrite) && (display_ack);
+        d_ack = (display_ack);
     end
     else begin
-        d_ack = key_en;
+        d_ack = (key_en);
     end
     i_ack = 0;
 end
