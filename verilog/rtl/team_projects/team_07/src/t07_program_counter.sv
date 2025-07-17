@@ -29,7 +29,7 @@ module t07_program_counter (
 logic [31:0] n_programCounter, n_linkAddress; // Next values for program counter and link address
 
 always_ff @(posedge clk or negedge nrst) begin
-    if (rst) begin
+    if (nrst) begin
         programCounter <= 32'b0; // Reset PC to 0
         linkAddress <= 32'b0; // Reset link address to 0
     end else begin
