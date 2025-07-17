@@ -16,7 +16,7 @@ t08_spi spi(.busy(busy), .command(command), .enable(enable), .clk(clk), .nrst(nr
 
 
 initial begin
-    $dumpfile("waves/t08_spi.vcd"); 
+    $dumpfile("t08_spi.vcd"); 
     $dumpvars(0, t08_spi_tb);
     
     tfr; 
