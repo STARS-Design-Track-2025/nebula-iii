@@ -15,7 +15,7 @@
 
 module t07_program_counter (
     //inputs
-    input logic clk, rst,
+    input logic clk, nrst,
     input logic freeze, // Freeze signal to pause CPU operations
     input logic forceJump,
     input logic condJump,
@@ -28,7 +28,7 @@ module t07_program_counter (
 );
 logic [31:0] n_programCounter, n_linkAddress; // Next values for program counter and link address
 
-always_ff @(posedge clk or negedge ~rst) begin
+always_ff @(posedge clk or negedge nrst) begin
     if (rst) begin
         programCounter <= 32'b0; // Reset PC to 0
         linkAddress <= 32'b0; // Reset link address to 0
