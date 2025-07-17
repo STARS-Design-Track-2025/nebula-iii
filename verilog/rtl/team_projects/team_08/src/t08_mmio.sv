@@ -39,7 +39,8 @@ module t08_mmio (
 
 typedef enum logic[1:0] {
     IDLE,
-    BUSY
+    BUSY,
+    MEMREAD
  } state;
 
 localparam [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
@@ -119,9 +120,8 @@ always_comb begin
                 end else if (address < 32'd2048) begin
                     if (mem_busy_i) begin
                         next_state  = IDLE; 
-                    end else begin //this is gonna cause problems if memory doesn't retrieve on nededge clk
-                        next_state = BUSY;
-                        mh_data_o_next = mem_data_i; 
+                    end else begin 
+                        next_state = MEMREAD;
                         mem_address_o_next = address;          
                         mem_read_o_next = 1;
                     end
@@ -158,6 +158,11 @@ always_comb begin
         BUSY: begin
            next_state = IDLE;
            mmio_busy_o_next = 1'b0;
+        end
+        MEMREAD: begin
+            next_state = BUSY;
+            mmio_busy_o_next = 1'b1;
+            mh_data_o_next = mem_data_i; 
         end
     endcase
 end
