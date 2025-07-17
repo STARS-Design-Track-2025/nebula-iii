@@ -94,7 +94,7 @@ module t07_immGen_tb;
         //andi x10, x8, 70
         func3 = 3'b111; // Set func3 for andi
         instruction = 32'b0000_0100_0110_0100_0111_0101_0001_0011; 
-        expected_immediate =
+        expected_immediate = 70;
         #10;
 
         //andi x10, x8, -70
