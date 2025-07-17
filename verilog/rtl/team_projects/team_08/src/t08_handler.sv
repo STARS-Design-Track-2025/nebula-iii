@@ -5,18 +5,18 @@
 
 
 module t08_handler(
-    input logic [31:0] rs1, mem, mem_address, counter,
+    input logic [31:0] fromregister, frommem, mem_address, counter,
     input logic write, read, clk, nrst, busy,done,
     input logic [2:0] func3,
-    output logic [31:0] data_reg,  data_mem, addressnew, instruction,
+    output logic [31:0] toreg,  tomem, addressnew, instruction,
     output logic writeout, readout
 );
 logic [31:0] regs = 0, mems = 0, address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 logic [1:0] state,  nextstate; //0 wait, 1 send
 
 //assign addressnew = mem_address; 
-assign data_mem = mems;
-assign data_reg = regs;
+assign tomem = mems;
+assign toreg = regs;
 //assign writeout = write;
 //assign readout = read;
 
@@ -75,11 +75,11 @@ always_comb begin
         if (write) begin //store type, signed
             case(func3)
             0: begin
-                nextmem = {{24{rs1[31]}},rs1[7:0]}; end //SB
+                nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
             1: begin
-                nextmem = {{16{rs1[31]}},rs1[15:0]}; end //SH     
+                nextmem = {{16{fromregister[31]}},fromregister[15:0]}; end //SH     
             2: begin
-                nextmem = rs1; end  //sw
+                nextmem = fromregister; end  //sw
             default:;
             endcase
         end
@@ -87,18 +87,18 @@ always_comb begin
             if (done) begin 
             case(func3)
             0: begin //signed
-                nextregs = {{24{mem[31]}},mem[7:0]}; end //LB
+                nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB
             1: begin
-                nextregs = {{16{mem[31]}},mem[15:0]}; end //LH
+                nextregs = {{16{frommem[31]}},frommem[15:0]}; end //LH
 
 
             4: begin //unsigned
-                nextregs = {24'b0, mem[7:0]}; end //LBU
+                nextregs = {24'b0, frommem[7:0]}; end //LBU
             
             5: begin 
-                nextregs = {16'b0, mem[15:0]}; end //LHU
+                nextregs = {16'b0, frommem[15:0]}; end //LHU
 
-            default:  begin  nextregs = mem; end //lw or lui;
+            default:  begin  nextregs = frommem; end //lw or lui;
             endcase
 
            end 
@@ -114,7 +114,7 @@ always_comb begin
     end
 
     3: begin //instruction sending to cu
-        nextinst = mem;
+        nextinst = frommem;
         nextstate = 0;
         readout = 1;
     end
