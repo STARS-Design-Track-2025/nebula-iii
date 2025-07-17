@@ -38,9 +38,15 @@ always_comb begin
     7'b0000011: begin // i-type
        immediate = {{20{instruction[31]}}, instruction[31:20]};
     end
-
+    7'b1100111: begin // jalr
+        if (func3 == 3'b000) begin
+            immediate = {{20{instruction[31]}}, instruction[31:20]};
+        end else begin
+            immediate = 32'b0; // Default case for unsupported func3
+        end
+    end
     7'b0010011: begin // i-type part 2
-        if (func3 == 3'b000 || func3 == 3'b010 || func3 == 3'b011 || func3 == 3'b100 || func3 == 3'b110 || func3 == 3'b111) begin
+        if (func3 == 000 || func3 == 3'b010 || func3 == 3'b011 || func3 == 3'b100 || func3 == 3'b110 || func3 == 3'b111) begin
        immediate = {{20{instruction[31]}}, instruction[31:20]};
         end else if (func3 == 3'b001) begin //slli
             // slli instruction
@@ -49,7 +55,6 @@ always_comb begin
             immediate = {27'b0, instruction[24:20]};
         end else begin
             immediate = 32'b0; // Default case for unsupported func3
-
     end
     end
 

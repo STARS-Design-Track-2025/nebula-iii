@@ -62,8 +62,6 @@ initial begin
 
 
    // testcases
-
-
    // test 1: write to register 5
    write_reg = 5;
    write_data = 32'hA5A5A5A5;
