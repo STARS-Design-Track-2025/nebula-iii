@@ -11,11 +11,12 @@
 module t07_cpu_memoryHandler (
 
     // Inputs
+    input logic busy, // Busy signal to indicate if the memory handler is currently processing
     input logic [3:0] memOp,
     input logic memWrite, memRead,
     input logic memSource,          //if we are writing from the FPU or ALU
     input logic [31:0] ALU_address, // Address for memory operations that comes from the ALU
-    input logic [31:0] FPU_data,    // Data from the FPU to store in memory
+    input logic [31:0] FPU_data,    // Data from the FPU register to store in memory
     input logic [31:0] Register_dataToMem, // Data from the internal register file to store in memory
     input logic [31:0] ExtData,     // Data from external memory to read/write
     
@@ -29,8 +30,15 @@ module t07_cpu_memoryHandler (
 );
 
 always_comb begin
+    if (busy) begin
+        freeze = 1;
+        write_data = 32'b0; // No data to write when busy
+        ExtAddress = 32'b0; // No address to write to when busy
+        dataToCPU = 32'b0; // No data to return to CPU when busy
+        rwi = 2'b00; // Idle state when busy
+    end else begin
+        freeze = 0;
     if(memWrite) begin 
-        freeze = 1; // Freeze the CPU during memory write operation
         dataToCPU = 32'b0; // No data to return to CPU on write operation
         rwi = 2'b01; // Write operation
         if(memSource) begin
@@ -43,7 +51,6 @@ always_comb begin
             ExtAddress = ALU_address; // Use ALU address for memory operations
         end 
     end else if(memRead) begin
-        freeze = 1; // Freeze the CPU during memory read operation
         rwi = 2'b10; //Read operation
         ExtAddress = ALU_address; // Use ALU address for memory operations
         write_data = 32'b0; // No data to write in read operation
@@ -62,10 +69,10 @@ always_comb begin
         end
     end else begin
         rwi = 2'b00; // Idle state
-        freeze = 0; // CPU is not frozen
         write_data = 32'b0; // No data to write
         ExtAddress = 32'b0; // No address to write to
         dataToCPU = 32'b0; // No data to return to CPU
+    end
     end
 end
 endmodule
