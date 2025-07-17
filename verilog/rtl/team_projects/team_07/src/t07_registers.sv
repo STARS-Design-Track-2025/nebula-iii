@@ -36,7 +36,7 @@ module t07_registers (
     end 
     
     // write logic
-    always_ff @(posedge clk or rst) begin
+    always_ff @(posedge clk or negedge ~rst) begin
         if (rst) begin
             // Reset all registers to zero
             for (int i = 0; i < 32; i++) begin
