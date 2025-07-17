@@ -64,6 +64,7 @@ always_comb begin
 
     1: begin //data
         nextnewadd = mem_address; 
+
         nextmem = mems;
         nextregs = regs;
         nextstate = 0;
@@ -111,6 +112,7 @@ always_comb begin
             readout = 1;
             nextinst = frommem;
         end
+        nextstate = 0;
     end
 
     // 3: begin //instruction sending to cu
