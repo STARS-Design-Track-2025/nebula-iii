@@ -32,14 +32,7 @@ module t04_control_unit (
     MemToReg = (opcode == l);
     MemWrite = (opcode == s);
     RegWrite = (opcode == jal || opcode == jalr || opcode == l || opcode == r || opcode == i);
-
-    if (opcode == b) begin
-      ALU_control = 1;
-    end
-    else begin
-      ALU_control = 0;
-    end
-    
+    ALU_control = (opcode == b);
 
     case (opcode)
       i, l, jalr: begin Imm = {{20{instruction[31]}}, instruction[31:20]}; end
