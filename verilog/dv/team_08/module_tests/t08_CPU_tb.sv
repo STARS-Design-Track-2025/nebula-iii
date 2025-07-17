@@ -20,7 +20,8 @@ module t08_CPU_tb;
         S_TYPE,
         B_TYPE,
         U_TYPE,
-        J_TYPE
+        J_TYPE,
+        INVALID
     } instruction_types;
 
     //To help keep track of which test is being done in the waveforms. 
@@ -347,6 +348,7 @@ module t08_CPU_tb;
         test_phase = U_TYPE;
 
         //AUIPC: store (PC + 285245440) in r31
+        //TODO: The correct result goes to r31 on the posedge but then on the negedge it increases by 4. 
         //r31 should now be 285245576
         subtestNumber = 1;
         instruction = 32'b0010001000000001000_11111_0010111; 
@@ -363,8 +365,6 @@ module t08_CPU_tb;
         test_phase = J_TYPE;
 
         //JAL: store (PC + 4) in r30, then add 32776 to the program counter
-        //TODO: The correct result goes to r30 on the posedge but then on the negedge it increases by 4. 
-        //TODO: When an error was made in the do_jump_instruction function earlier (have imm be 20 bits instead of 21) it caused the PC to go metastable. 
         subtestNumber = 1;
         do_jump_instruction(21'b00001000000000001000, 5'b11110);
 
@@ -372,11 +372,19 @@ module t08_CPU_tb;
         //JALR: store (PC + 4) in r31, then set the program counter to (r22 (-2) + 316)
         //r31 should now hold 4 more than the previous pc
         //The program counter should now be 314
-        //TODO: Neither of the parts of the instruction are working right now. Does the ALU need to have JALR added to it? 
         subtestNumber = 2;
         instruction = 32'b000100111100_10110_000_11111_1100111; 
-    
+        //Verifying that r31 holds the correct value by adding it to 0 and outputting it from the ALU. 
         @ (negedge clk);
+        subtestNumber = 3;
+        instruction = 32'b000000000000_11111_000_11111_0010011;
+
+        /*
+        Invalid commands
+        */
+        @ (negedge clk);
+        test_phase = INVALID;
+
         //invalid command, all bits to 0;
         subtestNumber = 1;
         instruction = 32'd0;
@@ -385,6 +393,7 @@ module t08_CPU_tb;
         //invalid command, all bits to 1;
         subtestNumber = 2;
         instruction = 32'd1;
+
         #2 $finish;
 
     end

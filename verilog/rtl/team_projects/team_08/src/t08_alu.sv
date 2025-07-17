@@ -51,7 +51,9 @@ module t08_alu(
         BLTU = 6'd32,
         BGEU = 6'd33,
 
-        AUIPC = 6'd35 // U type
+        AUIPC = 6'd35, // U type
+
+        JALR = 6'd37
 
     } alu_operations;
 
@@ -59,7 +61,7 @@ module t08_alu(
 
         case (alu_operations'(alu_control))
 
-            ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI, LB, LBU, LH, LHU, LW, SB, SH, SW: begin
+            ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI, LB, LBU, LH, LHU, LW, SB, SH, SW, JALR: begin
                 in1 = reg1;
                 in2 = immediate;
             end
@@ -86,7 +88,7 @@ module t08_alu(
             ADD, ADDI, LB, 
             LBU, LH, LHU, 
             LW, SB, SH, 
-            SW, AUIPC:        data_out =    in1 + in2;
+            SW, AUIPC, JALR:  data_out =    in1 + in2;
             SUB:              data_out =    in1 - in2;
             SLL, SLLI:        data_out =    in1 << (in2[4:0]);
             SLT, SLTI:        data_out =    {31'b0, $signed(in1) < $signed(in2)};

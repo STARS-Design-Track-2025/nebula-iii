@@ -45,15 +45,13 @@ module t08_alu_tb;
 
     } alu_operations;
 
-    logic clk = 0;
-    always clk = #5 ~clk;
-    logic nRst;
     logic [31:0] reg1, reg2, immediate, program_counter;
     logic [5:0] alu_control;
     logic [31:0] data_out;
     logic branch;
 
     string testname;
+    int testsetnum = 0;
     logic pass;
     logic [31:0] expectedresult;
     logic [31:0] actualresult;
@@ -63,14 +61,9 @@ module t08_alu_tb;
 
     t08_alu alu(.reg1(reg1), .reg2(reg2), .immediate(immediate), .program_counter(program_counter), .alu_control(alu_control), .data_out(data_out), .branch(branch));
 
-    task reset();
-        nRst = 0; #1;
-        nRst = 1; #1;
-    endtask
-
     task run_operation(logic [5:0] operation);
-        alu_control = operation; @ (negedge clk); @ (negedge clk);
-        verify_operation(operation); @ (negedge clk); @ (negedge clk);
+        alu_control = operation; #2
+        verify_operation(operation); #2
         if (operation >= 6'd28 && operation <= 6'd33) begin
             print_test_result(testname, (expectedresult == {31'b0, branch}), expectedresult, {31'b0, branch});
         end else begin
@@ -118,7 +111,7 @@ module t08_alu_tb;
             end
             SRA: begin   
                 testname = "shift right arithmetic";
-                expectedresult =    reg1 >>> (reg2[4:0]);
+                expectedresult =    $signed(reg1) >>> (reg2[4:0]);
             end
             OR: begin    
                 testname = "or";
@@ -164,7 +157,7 @@ module t08_alu_tb;
             end
             SRAI: begin
                 testname = "shift right arithmetic immediate";
-                expectedresult =    reg1 >>> immediate[4:0];
+                expectedresult =    $signed(reg1) >>> immediate[4:0];
             end
             LB, LBU, LH, LHU, LW: begin   
                 testname = "load operations";
@@ -231,45 +224,43 @@ module t08_alu_tb;
         $dumpfile("t08_alu.vcd");
         $dumpvars(0, t08_alu_tb);
 
-        //Power on reset
-        reset();
-
         //Test set 1
+        testsetnum++;
         reg1 = 32'sd100;
         reg2 = 32'sd200;
         immediate = 32'sd300;
-        program_counter = 32'sd400; @ (negedge clk);
+        program_counter = 32'sd400; #1
 
         run_all_operations;
 
-        // //Test set 2
+        //Test set 2
+        testsetnum++;
         reg1 = -32'sd500;
         reg2 = 32'sd200;
         immediate = 32'sd300;
-        program_counter = 32'sd0; @ (negedge clk);
+        program_counter = 32'sd0; #1
 
         run_all_operations;
 
-        // //Test set 3
+        //Test set 3
+        testsetnum++;
         reg1 = -32'sd100000;
         reg2 = -32'sd7;
         immediate = 32'sd300;
-        program_counter = 32'sd2987; @ (negedge clk);
+        program_counter = 32'sd2987; #1
 
         run_all_operations;
 
-        // //Test set 4
+        //Test set 4
+        testsetnum++;
         reg1 = 32'sd0;
         reg2 = 32'sd0;
         immediate = -32'sd389;
-        program_counter = 32'sd1; @ (negedge clk);
+        program_counter = 32'sd1; #1
 
         run_all_operations;
 
         $display("Wrong count: %-4d", wrongCount);
-
-        $display($signed(4'b1100 >> 1'b1));
-        $display($signed($signed(4'b1100) >>> 1'b1));
 
         #1 $finish;
 
