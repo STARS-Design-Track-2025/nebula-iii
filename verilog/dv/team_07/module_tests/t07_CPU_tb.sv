@@ -4,13 +4,13 @@ module t07_CPU_tb();
     logic [2:0] rwi;
     logic FPUFlag, clk, nrst;
 
-    t07_CPU CPU_test(.inst(inst), .memData_in(memData_in), .memData_out(memData_out), .rwi(rwi), .FPUFlag(FPUFlag), .clk(clk), .nrst(nrst));
+    t07_CPU CPU_test(.exInst(inst), .memData_in(memData_in), .memData_out(memData_out), .rwi(rwi), .FPUFlag(FPUFlag), .clk(clk), .nrst(nrst));
     
-
-
     task reset(); begin
         #1
         nrst = ~nrst;        
+        #1
+        nrst = ~nrst;
     end
     endtask
 
@@ -24,7 +24,7 @@ module t07_CPU_tb();
         #10
         inst = 'b01000000000000000000000000110011; //sub
         #10
-        inst = 'b00000000000000000000000001100011; //beq
+        inst = 'b00000000001000001000110001100011; //beq
         #10
         inst = 'b00000000000000000000000000010011; //addi
         #10
