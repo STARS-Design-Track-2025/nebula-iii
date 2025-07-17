@@ -1,5 +1,5 @@
 module t07_FPU_div (
-    input logic clk, rst,
+    input logic clk, nrst,
     input logic [31:0] inA, inB,
     input logic signA, signB,
     output logic [31:0] result,
@@ -17,7 +17,7 @@ module t07_FPU_div (
         end
     end
 
-    always_ff @(posedge clk, negedge ~rst) begin
+    always_ff @(posedge clk, negedge nrst) begin
         A = inA;
         B = inB;
 

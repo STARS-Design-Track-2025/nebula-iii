@@ -11,7 +11,7 @@ This module implements the FP Control and Status Register (FPSCR) for Team 07.
 */
 module t07_fp_fcsr (
     input logic clk,
-    input logic rst,
+    input logic nrst,
     input logic [2:0] frm, // write = 00 read = 01 idle = 10 || rounding mode
     input logic [4:0] fflags, // floating point exception flags
     input logic [1:0] rwSignal, // read/write signal
@@ -21,8 +21,8 @@ module t07_fp_fcsr (
 
 logic [31:0] fcsr; // internal fpscr register
 
-always_ff @(posedge clk or negedge ~rst) begin
-    if (rst) begin
+always_ff @(posedge clk or negedge nrst) begin
+    if (nrst) begin
         fcsr <= 32'b0; // reset fpscr to zero
     end else begin
         case (rwSignal)
