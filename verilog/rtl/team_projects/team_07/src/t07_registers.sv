@@ -13,8 +13,9 @@ contains 32 registers each 32 bit wide
 */
 
 module t07_registers (
+
     input logic clk,
-    input logic rst,
+    input logic nrst,
     input logic [4:0] read_reg1, // from decoder
     input logic [4:0] read_reg2, // from decoder
     input logic [4:0] write_reg, // from decoder
@@ -36,8 +37,8 @@ module t07_registers (
     end 
     
     // write logic
-    always_ff @(posedge clk or negedge ~rst) begin
-        if (rst) begin
+    always_ff @(posedge clk or negedge nrst) begin
+        if (nrst) begin
             // Reset all registers to zero
             for (int i = 0; i < 32; i++) begin
                 registers[i] <= 32'b0;
