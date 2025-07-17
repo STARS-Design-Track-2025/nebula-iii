@@ -2,16 +2,9 @@ module t07_ALU (
     input logic [31:0] valA, valB,
     input logic [3:0] ALUOp,
     output logic [31:0] result,
-    output logic [5:0] ALUflags
+    output logic [6:0] ALUflags
 );
 
-    //two's complement -> converting signed to unsigned- Page 13 RVALP
-    logic unsigned_val [30:0];
-
-    task automatic convert(val);
-        if(val[31] == 0) begin unsigned_val = val[30:0]; end
-        else begin unsigned_val = (~val[30:0] + 1'b1); end
-    endtask //automatic
 
     //choose operation- Page 51 RVALP
     always_comb begin
@@ -21,7 +14,7 @@ module t07_ALU (
             4'd2: result = valA | valB; //or
             4'd3: result = valA << valB[4:0]; //sll
             4'd4: if(valA < valB) begin result = 1; end else begin result = 0; end //slt
-            4'd5: if(convert(valA) < convert(valB)) begin result = 1; end else begin result = 0; end //sltu
+            4'd5: if($unsigned(valA) < $unsigned(valB)) begin result = 1; end else begin result = 0; end //sltu
             4'd6: result = valA >>> valB[4:0]; //sra
             4'd7: result = valA >> valB[4:0]; //srl
             4'd8: result = valA - valB; //sub
@@ -31,14 +24,15 @@ module t07_ALU (
     end
 
     //flag logic- Page 58 RVALP
-    assign ALUflags = 7'd0;
 
     always_comb begin
+        ALUflags = 7'd0;
+
         if (result == 32'b0) begin ALUflags[0] = 1; end //zeroFlag
         if (valA >= valB) begin ALUflags[1] = 1; end //greater than or equal 
-        if (convert(valA) >= convert(valB)) begin ALUflags[2] = 1; end //greater than or equal unsigned
+        if ($unsigned(valA) >= $unsigned(valB)) begin ALUflags[2] = 1; end //greater than or equal unsigned
         if (valA < valB) begin ALUflags[3] = 1; end //less than
-        if (convert(valA) < convert(valB)) begin ALUflags[4] = 1; end //less than unsigned
+        if ($unsigned(valA) < $unsigned(valB)) begin ALUflags[4] = 1; end //less than unsigned
         if (valA != valB) begin ALUflags[5] = 1; end //not equal
         if (valA == valB) begin ALUflags[6] = 1; end //equal
     end
