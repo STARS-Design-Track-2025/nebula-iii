@@ -1,11 +1,11 @@
 module t07_CPU(
-    input logic [31:0] inst, memData_in, //intruction from data memory, data from extern memory
-    output logic [31:0] memData_out,
+    input logic [31:0]exInst, memData_in, //intruction from data memory, data from extern memory
+    output logic [31:0] memData_out, pcData_out,
     input logic clk, nrst,
     output logic [1:0] rwi,
     output logic FPUFlag, invalError //to GPIO
 );
-    logic [31:0] externalMemData, externalMemAddr, externalMem_out;
+    logic [31:0] inst, externalMemData, externalMemAddr, externalMem_out;
     logic freeze; //to external memory 
     //decoder out
     logic [6:0] Op, funct7;
@@ -37,7 +37,7 @@ module t07_CPU(
     //memory output
     logic [31:0] intMem_out; 
     
-
+    t07_fetch fetch_inst(.clk(clk), .nrst(nrst), .ExtInstruction(exInst), .programCounter(pc_out), .Instruction(inst), .PC_out(pcData_out));
     t07_decoder decoder(.instruction(inst), .Op(Op), .funct7(funct7), .funct3(funct3), .rs1(rs1), .rs2(rs2), .rd(rd));
     t07_control_unit control(.memSrc(memSource), .invalid_Op(invalError), .rs3(rs3), .memOp(memOp), .rs2(rs2), .regWriteSrc(regWriteSrc), .Op(Op), .funct7(funct7), .funct3(funct3), .ALUOp(ALUOp), .ALUSrc(ALUSrc), .regWrite(regWrite), .branch(branch), .jump(jump), .memWrite(memWrite), .memRead(memRead), .FPUSrc(FPUSrc), .regEnable(regEnable), .FPUOp(FPUOp), .FPURnd(FPURnd), .FPUWrite(FPUWrite));
     t07_program_counter pc(.clk(clk), .func3(funct3), .nrst(nrst), .forceJump(jump), .condJump(branch), .ALU_flags(ALUFlags), .JumpDist(PCJumpDist), .programCounter(pc_out), .linkAddress(linkAddress), .freeze(freeze));
@@ -49,5 +49,6 @@ module t07_CPU(
     t07_muxes muxImmReg(.a(dataRead2), .b(immediate), .sel(ALUSrc), .out(ALU_in2));
     t07_muxForPC muxPC(.immediate(immediate), .ALUResult(ALUResult), .Op(Op), .PCJump(PCJumpDist));
     t07_MuxWD toReg(.control_in(regWriteSrc), .ALUResult(ALUResult), .PCResult(pc_out), .FPUResult(FPUResult), .memResult(intMem_out), .immResult(immediate), .writeData(regData_in));
+   
 
 endmodule
