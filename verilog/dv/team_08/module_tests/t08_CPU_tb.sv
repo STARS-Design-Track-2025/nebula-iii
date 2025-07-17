@@ -1,17 +1,33 @@
 `timescale 1ms/10ps
 module t08_CPU_tb;
-    logic clk = 0, nRst;                  //Clock and active-low reset. 
-    logic [31:0] data_in;             //memory to memory handler: data in
-    logic [31:0] instruction;         //memory to CPU: instruction 
-    logic [31:0] data_out;           //memory handler to mmio: data outputted 
-    logic [31:0] mem_address;        //memory handler to mmio: address in memory
-    logic read_out, write_out;        //memory handler to mmio: read and write enable
+    // logic clk = 0, nRst;                  //Clock and active-low reset. 
+    // logic [31:0] data_in;             //memory to memory handler: data in
+    // logic [31:0] instruction;         //memory to CPU: instruction 
+    // logic [31:0] data_out;           //memory handler to mmio: data outputted 
+    // logic [31:0] mem_address;        //memory handler to mmio: address in memory
+    // logic read_out, write_out;        //memory handler to mmio: read and write enable
+
+    logic clk = 0, nRst;        //Clock and active-low reset. 
+    logic [31:0] data_in;       //memory to memory handler: data in
+    logic done, busy;
+    logic [31:0] data_out;      //memory handler to mmio: data outputted 
+    logic [31:0] mem_address;   //memory handler to mmio: address in memory
+    logic read_out, write_out;  //memory handler to mmio: read and write enable
 
 
     always #1 clk = ~clk;
 
-    t08_CPU t08_CPU1(.clk(clk), .nRst(nRst), .data_in(data_in), .instruction(instruction), 
-                    .data_out(data_out), .mem_address(mem_address), .read_out(read_out), .write_out(write_out));
+    // t08_CPU t08_CPU1(.clk(clk), .nRst(nRst), .data_in(data_in), .instruction(instruction), 
+    //                 .data_out(data_out), .mem_address(mem_address), .read_out(read_out), .write_out(write_out));
+
+    t08_CPU CPU(
+        .clk(clk), .nRst(nRst),
+        .data(in), 
+        .done(done), .busy(busy), 
+        .data_out(data_out), 
+        .mem_address(mem_address), 
+        .read_out(read_out), .write_out(write_out)
+    );
 
     typedef enum logic [2:0] {
         SETUP,
@@ -27,6 +43,18 @@ module t08_CPU_tb;
     //To help keep track of which test is being done in the waveforms. 
     instruction_types test_phase = SETUP; 
     int subtestNumber = 0; 
+
+    logic [127:0] [31:0] memory = {
+        32'b000000000011_00001_000_00010_0010011, //setup addi 1
+        32'b000000000101_00001_000_00100_0010011, //setup addi 2
+        32'b0000000_00010_00100_000_00011_0110011, //R-Type add
+    };
+
+    task do_instruction(logic [31:0] instruction);
+
+
+
+    endtask
 
     task do_branch_instruction(logic [2:0] func3, logic [4:0] rs2, logic [4:0] rs1, logic [12:0] imm);
 

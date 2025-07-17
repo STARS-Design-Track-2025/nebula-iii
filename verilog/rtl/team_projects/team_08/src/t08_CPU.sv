@@ -19,7 +19,7 @@ module t08_CPU (
     logic mem_en_read, mem_en_write;                            //CU to memory handler: Read and write enable signals 
     logic reg_en_read_1, reg_en_read_2, reg_en_write;           //CU to registers: enable signals 
     logic [4:0] reg1, reg2, regd;                               //CU to registers: address inputs 
-    logic [1:0] data_in_control;                                //CU to registers: select line for the input mux                            //CU to fetch
+    logic [1:0] data_in_control;                                //CU to registers: select line for the input mux                   
     logic [31:0] immediate;                                     //CU to ALU: immediate value  
     logic [5:0] alu_control;                                    //CU to ALU: operation select    
     logic jump;                                                 //CU to fetch: jump signal
