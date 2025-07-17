@@ -12,7 +12,7 @@ always #1 clk = ~clk;
 t08_fetch fetchblk(.clk(clk), .nrst(nrst), .jump(jump), .branch(branch), .imm_address($unsigned(imm_address)), .ret_address(ret_address), .program_counter(program_counter));
 
 initial begin
-    $dumpfile("waves/t08_fetch.vcd"); 
+    $dumpfile("t08_fetch.vcd"); 
     $dumpvars(0, t08_fetch_tb);
 
     tfr; #2;
