@@ -20,7 +20,6 @@ logic Jalr;
 logic MemToReg;
 logic RegWrite;
 logic ALUSrc;
-logic Branch;
 logic MemRead;
 logic MemWrite;
 logic ALU_control;
@@ -33,6 +32,7 @@ logic [31:0] ALU_result;
 logic [31:0] write_back_data;
 logic [31:0] instruction_out;
 logic BranchConditionFlag;
+logic [31:0] n_PC;
 
 assign PC_plus4 = PC + 32'd4;
 
@@ -49,12 +49,10 @@ t04_register_file rf(
 );
 
 t04_control_unit cu(
-    .BranchConditionFlag(BranchConditionFlag),
     .instruction(instruction_out),
     .ALU_result(ALU_result),
     .RegWrite(RegWrite),
     .ALUSrc(ALUSrc),
-    .Branch(Branch),
     .MemRead(MemRead),
     .MemWrite(MemWrite),
     .MemToReg(MemToReg),
@@ -92,10 +90,11 @@ t04_PC pc_module(
     .PC_Jalr(PC_Jalr),
     .Jalr(Jalr),
     .Jal(Jal),
-    .Branch(Branch),
+    .Branch(BranchConditionFlag),
     .Freeze(Freeze),
     .imm(Imm),
-    .PC(PC)
+    .PC(PC),
+    .n_PC(n_PC)
 );
 
 t04_request_unit_old ru(
@@ -103,6 +102,8 @@ t04_request_unit_old ru(
     .i_ack(i_ack), .d_ack(d_ack),
     .instruction_in(instruction),
     .PC(PC),
+    .n_PC(n_PC),
+    .BranchCondition(BranchConditionFlag),
     .mem_address(ALU_result),
     .stored_data(src_B),
     .MemRead(MemRead), .MemWrite(MemWrite),

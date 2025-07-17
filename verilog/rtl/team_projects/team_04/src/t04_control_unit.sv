@@ -1,8 +1,7 @@
 module t04_control_unit (
-  input logic BranchConditionFlag,
   input logic [31:0] instruction,
   input logic [31:0] ALU_result,
-  output logic RegWrite, ALUSrc, Branch, MemRead, MemWrite, MemToReg, Jal, Jalr,
+  output logic RegWrite, ALUSrc, MemRead, MemWrite, MemToReg, Jal, Jalr, //ELIMINATING BRANCH
   output logic signed [31:0] Imm,
   output logic ALU_control,
   output logic [4:0] RegD, Reg2, Reg1
@@ -28,7 +27,6 @@ module t04_control_unit (
     Imm = 32'd0;
     Jal = (opcode == jal);
     Jalr = (opcode == jalr);
-    Branch = (opcode == b && BranchConditionFlag);
     ALUSrc = (opcode == i || opcode == l || opcode == s);
     MemRead = (opcode == l);
     MemToReg = (opcode == l);
@@ -48,7 +46,7 @@ module t04_control_unit (
       s:          begin Imm = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]}; end
       b:          begin Imm = ({{19{instruction[31]}}, instruction[31], instruction[7], instruction[30:25], instruction[11:8], 1'b0}); end
       jal:        begin Imm = {{11{instruction[31]}}, instruction[31], instruction[19:12], instruction[20], instruction[30:21], 1'b0}; end
-      // default:    begin Imm = 32'b0; end
+      default:    begin Imm = 32'b0; end
     endcase
   end
 endmodule

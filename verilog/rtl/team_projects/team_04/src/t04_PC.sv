@@ -7,10 +7,11 @@ module t04_PC (
     input logic Branch,
     input logic Freeze,
     input logic [31:0] imm,
-    output logic [31:0] PC
+    output logic [31:0] PC,
+    output logic [31:0] n_PC
 );
 
-logic [31:0] n_PC;
+
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
