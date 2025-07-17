@@ -51,15 +51,28 @@ module t04_datapathxmmioxkeypad_tb;
         $display("[Cycle %0t] instruction %b", $time, dut.mmio.instruction);
         $display("x1  = %0h (expect c)", dut.datapath.rf.registers[1]);
         $display("x2  = %0h (expect 1)", dut.datapath.rf.registers[2]);
+        $display("x3  = %0h (expect cafebabe)", dut.datapath.rf.registers[3]);
         $display("x4  = %0h (expect cafebabe)", dut.datapath.rf.registers[4]);
         $display("write back  = %0h (expect cafebabe)", dut.datapath.write_back_data);
         $display("mem_store from ru = %0h (expect cafebabe)", dut.datapath.ru.mem_store);
         $display("mem_store from mmio = %0h (expect cafebabe)", dut.mmio.mem_store);
+        $display("ram en = %0h (expect cafebabe)", dut.mmio.RAM_en);
+        $display("WEN = %0h (expect cafebabe)", dut.mmio.WEN);
+        $display("WEN1 = %0h (expect cafebabe)", dut.mmio.WEN1);
+        $display("WEN2 = %0h (expect cafebabe)", dut.mmio.WEN2);
+        $display("Write_I WISHBONE = %0h (expect cafebabe)", dut.mmio.write_I);
+        $display("READ_I WISHBONE = %0h (expect cafebabe)", dut.mmio.read_I);
+        $display("Sub Result = %0h (expect cafebabe)", dut.datapath.alu.sub_result);
+        $display("Src A = %0h (expect cafebabe)", dut.datapath.src_A);
+        $display("Src B = %0h (expect cafebabe)", dut.datapath.src_B);
+        $display("ALU INPUT 2 = %0h (expect cafebabe)", dut.datapath.ALU_input_B);
+        $display("Reg1 = %0h (expect cafebabe)", dut.datapath.Reg1);
+        $display("Reg2 = %0h (expect cafebabe)", dut.datapath.Reg2);
     end
 
     // === Initialize test ===
     initial begin
-        force dut.mmio.key_data = 10;
+        force dut.mmio.key_data = 4;
         $dumpfile("t04_datapathxmmioxkeypad.vcd");
         $dumpvars(0, t04_datapathxmmioxkeypad_tb);
 
