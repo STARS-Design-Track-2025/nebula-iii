@@ -1,10 +1,10 @@
 module t07_CPU(
     input logic [31:0] inst, memData_in, //intruction from data memory, data from extern memory
     output logic [31:0] memData_out,
+    input logic clk, nrst,
     output logic [1:0] rwi,
     output logic FPUFlag, invalError //to GPIO
 );
-    logic clk, nrst;
     logic [31:0] externalMemData, externalMemAddr, externalMem_out;
     logic freeze; //to external memory 
     //decoder out
