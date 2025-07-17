@@ -31,10 +31,10 @@ module t07_registers (
 
     // read logic
     always_comb begin
-        read_data1 = (read_reg1 != 5'b0) ? registers[read_reg1] : 32'b0;
-        read_data2 = (read_reg2 != 5'b0) ? registers[read_reg2] : 32'b0;
-    end
-
+        read_data1 = registers[read_reg1];
+        read_data2 = registers[read_reg2];
+    end 
+    
     // write logic
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
