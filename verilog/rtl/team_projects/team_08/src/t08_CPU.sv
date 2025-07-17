@@ -5,7 +5,7 @@ The top level module for the CPU (brings the parts of the CPU together)
 module t08_CPU (
     input logic clk, nRst,                  //Clock and active-low reset. 
     input logic [31:0] data_in,             //memory to memory handler: data in
-    input logic [31:0] instruction,         //memory to CPU: instruction 
+    input logic done, busy,                 //from mmio, if its busy, if data from i2c is done
     output logic [31:0] data_out,           //memory handler to mmio: data outputted 
     output logic [31:0] mem_address,        //memory handler to mmio: address in memory
     output logic read_out, write_out        //memory handler to mmio: read and write enable
@@ -13,6 +13,7 @@ module t08_CPU (
 
     logic [31:0] program_counter;                               //Program counter
     logic [31:0] return_address;                                //fetch to registers: return address to be stored 
+    logic [31:0] instruction;                                   //instruction to cu
 
     logic [2:0] func3;                                          //CU to memory handler: function 3. 
     logic mem_en_read, mem_en_write;                            //CU to memory handler: Read and write enable signals 
@@ -67,16 +68,16 @@ module t08_CPU (
     );
 
     t08_handler handler(
-        .rs1(reg_out_1), .mem(data_in), 
+        .fromregister(reg_out_1), .frommem(data_in), 
         .mem_address(mem_address), 
-        .counter(),
+        .counter(program_counter),
         .write(mem_en_write), .read(mem_en_read), 
         .clk(clk), .nrst(nRst), 
-        .busy(), .done(), 
+        .busy(busy), .done(done), 
         .func3(func3), 
-        .data_reg(mem_to_reg), .data_mem(data_out), 
-        .addressnew(), 
-        .instruction(),
+        .toreg(mem_to_reg), .tomem(data_out), 
+        .addressnew(mem_address), 
+        .instruction(instruction),
         .writeout(write_out), .readout(read_out)
     );
 
