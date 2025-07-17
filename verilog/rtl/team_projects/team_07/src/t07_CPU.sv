@@ -1,6 +1,6 @@
 module t07_CPU(
     input logic [31:0] inst, memData_in, //intruction from data memory, data from extern memory
-    output logic [31:0] addr, memData_out,
+    output logic [31:0] memData_out,
     output logic [2:0] rwi,
     output logic FPUFlag
 );
@@ -10,7 +10,7 @@ module t07_CPU(
     //decoder out
     logic [6:0] Op, funct7;
     logic [2:0] funct3;
-    logic [4:0] rs1, rs2, rd;
+    logic [4:0] rs1, rs2, rs3, rd;
     //control out
     logic [3:0] ALUOp, memOp;
     logic ALUSrc, regWrite, branch, jump, memWrite, memRead, FPUSrc, regEnable;

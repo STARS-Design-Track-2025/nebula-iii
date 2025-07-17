@@ -9,34 +9,41 @@ module t07_control_unit_tb ();
     logic [2:0] regWriteSrc, FPURnd;
     logic [4:0] FPUOp, rs3;
     logic [1:0] FPUWrite;
-    logic [3:0] memOp;
+    logic [3:0] memOp, ALUOp;
+    logic invalError;
+
+    t07_control_unit control(.invalid_Op(invalError), .rs3(rs3), .memOp(memOp), .rs2(rs2), .regWriteSrc(regWriteSrc), .Op(Op), .funct7(funct7), .funct3(funct3), .ALUOp(ALUOp), .ALUSrc(ALUSrc), .regWrite(regWrite), .branch(branch), .jump(jump), .memWrite(memWrite), .memRead(memRead), .FPUSrc(FPUSrc), .regEnable(regEnable), .FPUOp(FPUOp), .FPURnd(FPURnd), .FPUWrite(FPUWrite));
 
     task Opcodes; begin
         Op = 'b0110111; //U-type, lui
         funct3_task();
-        #6
+        #12
         Op = 'b0010111; //U-type, auipc
         funct3_task();
-        #6
+        #12
         Op = 'b1101111; //J-type, jal
         funct3_task();
-        #6
+        #12
         Op = 'b1100111; //I-type, jalr
         funct3_task();
-        #6
+        #12
         Op = 'b1100011; //B-type
         funct3_task();
-        #6
+        #12
         Op = 'b0000011; //I-type (load)
         funct3_task();
-        #6
+        #12
         Op = 'b0100011; //S-type
         funct3_task();
-        #6
+        #12
         Op = 'b0010011; //I-type (immediate)
         funct3_task();
-        #6
+        #12
         Op = 'b0110011; //R-type
+        funct3_task();
+        #12
+        Op = 'b1111111; //invalid Op Code
+        #12
         funct3_task();
     end
     endtask
@@ -44,25 +51,25 @@ module t07_control_unit_tb ();
     task funct3_task; begin
         funct3 = 'b000;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b001;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b010;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b011;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b100;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b101;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b110;
         funct7_task();
-        #1
+        #1.5
         funct3 = 'b111;
         funct7_task();
     end
@@ -71,7 +78,7 @@ module t07_control_unit_tb ();
     task funct7_task; begin
         funct7 = '0;
         rs2_task();
-        #0.5
+        #1
         funct7 = 'b0100000;
         rs2_task();
     end
@@ -90,10 +97,14 @@ module t07_control_unit_tb ();
         $dumpvars(0, t07_control_unit_tb);
 
     Opcodes();
+        #1
+        Opcodes();
+        
+        #1
+        $finish;
+    
 
     end
-
-
 
 
 endmodule
