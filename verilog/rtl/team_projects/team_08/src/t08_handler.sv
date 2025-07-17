@@ -108,24 +108,20 @@ always_comb begin
     2: begin //instruction fetching
         nextnewadd = counter;
         if(!busy) begin
-            writeout = 1;
-            nextstate = 3;
+            readout = 1;
+            nextinst = frommem;
         end
     end
 
-    3: begin //instruction sending to cu
-        nextinst = frommem;
-        nextstate = 0;
-        readout = 1;
-    end
+    // 3: begin //instruction sending to cu
+        
+    //     nextstate = 0;
+    //     readout = 1;
+    // end
     default: begin readout = 0; writeout = 0; end
     endcase
 end
 
 
 
-endmodule
-
-
-
-
+endmodule 

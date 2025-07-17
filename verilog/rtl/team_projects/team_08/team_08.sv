@@ -23,14 +23,14 @@ module team_08 (
 
 
     // Wishbone master interface
-    // output wire [31:0] ADR_O,
-    // output wire [31:0] DAT_O,
-    // output wire [3:0]  SEL_O,
-    // output wire        WE_O,
-    // output wire        STB_O,
-    // output wire        CYC_O,
-    // input wire [31:0]  DAT_I,
-    // input wire         ACK_I,
+    output wire [31:0] ADR_O,
+    output wire [31:0] DAT_O,
+    output wire [3:0]  SEL_O,
+    output wire        WE_O,
+    output wire        STB_O,
+    output wire        CYC_O,
+    input wire [31:0]  DAT_I,
+    input wire         ACK_I,
 
     // 34 out of 38 GPIOs (Note: if you need up to 38 GPIO, discuss with a TA)
     input  logic [33:0] gpio_in, // Breakout Board Pins
@@ -49,7 +49,33 @@ module team_08 (
     assign gpio_out = '0;
     assign gpio_oeb = '0;
 
-    //logic l1, l2, l3, l4, l5, l6;
-    //t08_I2C_and_interrupt I2C(.clk(clk), .nRst(nrst), .SDAin(l1), .SDAout(l2), .inter(l3), .scl(l4), .data_out(l5), .done(l6));
+    /*
+    List of pins used: 
+
+        0:  Interrupt from touchscreen          (Input)
+        1:  SDA line for I2C with touchscreen   (Input and output)
+        2:  SCL line for I2C with touchscreen   (Output)
+     3-10:  SPI outputs                         (Output)
+       11:  spi_wrx                             (Output)
+       12:  spi_rdx                             (Output)
+       13:  spi_csx                             (Output)
+       14:  spi_dcx                             (Output)
+    15-33:  Not used
+
+    */
+
+    t08_top top(
+        .clk(clk), .nRst(nrst), .en(en),
+        .touchscreen_interrupt(gpio_in[0]), 
+        .SDAin(gpio_in[1]), .SDAout(gpio_out[1]), .SDAoeb(gpio_oeb[1]), 
+        .touchscreen_scl(gpio_out[2]),
+
+        .spi_outputs(gpio_out[3:10]), 
+        .spi_wrx(gpio_out[11]), .spi_rdx(gpio_out[12]), .spi_csx(gpio_out[13]), .spi_dcx(gpio_out[14]),
+
+        .wb_dat_i(DAT_I), .wb_ack_i(ACK_I), 
+        .wb_adr_o(ADR_O), .wb_dat_o(DAT_O), .wb_sel_o(SEL_O), 
+        .wb_we_o(WE_O), .wb_stb_o(STB_O), .wb_cyc_o(CYC_O)
+    );
 
 endmodule
