@@ -13,7 +13,7 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
     reg hz100 = 0;
     reg hz40M;
     always @ (posedge hwclk)
-      if (ctr == 60000)
+      if (ctr == 6)
         begin
           ctr <= 0;
           hz100 <= ~hz100;
