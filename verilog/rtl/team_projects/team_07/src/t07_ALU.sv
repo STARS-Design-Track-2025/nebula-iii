@@ -4,13 +4,9 @@ module t07_ALU (
     output logic [31:0] result,
     output logic [6:0] ALUflags
 );
-<<<<<<< HEAD
-//choose operation- Page 51 RVALP
-=======
 
 
     //choose operation- Page 51 RVALP
->>>>>>> 29944fb9d154a2b58919c355db2bf54c5639a7b9
     always_comb begin
         case (ALUOp)
             4'd0: result = valA + valB; //add 
@@ -34,15 +30,10 @@ module t07_ALU (
     end
 
     //flag logic- Page 58 RVALP
-<<<<<<< HEAD
-    always_comb begin
-        ALUflags = 7'd0;
-=======
 
     always_comb begin
         ALUflags = 7'd0;
 
->>>>>>> 29944fb9d154a2b58919c355db2bf54c5639a7b9
         if (result == 32'b0) begin ALUflags[0] = 1; end //zeroFlag
         if (valA >= valB) begin ALUflags[1] = 1; end //greater than or equal 
         if ($unsigned(valA) >= $unsigned(valB)) begin ALUflags[2] = 1; end //greater than or equal unsigned
