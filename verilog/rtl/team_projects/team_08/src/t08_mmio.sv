@@ -6,33 +6,35 @@
 module t08_mmio (
     input logic nRst, clk,
     //from memory handler
-    input logic read,                   //command to read, source specified by address
-    input logic write,                  //command to write, destination specified by address
-    input logic [31:0] address,         //location to read from or write to
-    input logic [31:0] mh_data,         //data to write
+    input logic read,                       //command to read, source specified by address
+    input logic write,                      //command to write, destination specified by address
+    input logic [31:0] address,             //location to read from or write to
+    input logic [31:0] mh_data_i,           //data to write
     //from I2C
-    input logic [31:0] xy,
-    input logic done,
+    input logic [31:0] I2C_xy_i,
+    input logic I2C_done_i,
     //from SPI
-    input logic spi_busy,
+    input logic spi_busy_i,
     //from Memory: data
-    input logic [31:0] mem_data_i,      //data read from memory
-    input logic mem_busy,               //whether memory is busy or not
+    input logic [31:0] mem_data_i,          //data read from memory
+    input logic mem_busy_i,                 //whether memory is busy or not
     //to memory handler
-    output logic [31:0] mh_data_o,      //data read
-    output logic busy,                  //whether mmio is busy or not
-    output logic done_o,                //whether I2C data is ready to be read
+    output logic [31:0] mh_data_o,          //data read
+    output logic mmio_busy_o,               //whether mmio is busy or not
+    output logic I2C_done_o,                //whether I2C data is ready to be read
     //to SPI
-    output logic [31:0] parameters,     //
-    output logic [7:0] command,
-    output logic readwrite,
-    output logic enable,
+    output logic [31:0] spi_parameters_o,   //
+    output logic [7:0] spi_command_o,
+    output logic [3:0] spi_counter_o,
+    output logic spi_read_o,
+    output logic spi_write_o,
+    output logic spi_enable_o,
     //to Memory: data / wishbone
-    output logic [31:0] mem_data_o,     //data to write to memory
-    output logic [31:0] mem_address,    //address to put data
-    output logic [3:0]  select,         //
-    output logic        mem_write,      //tell memory to receive writing
-    output logic        mem_read        //tell memory to output reading
+    output logic [31:0] mem_data_o,         //data to write to memory
+    output logic [31:0] mem_address_o,      //address to put data
+    output logic [3:0]  mem_select_o,       //hardwired to 1
+    output logic        mem_write_o,        //tell memory to receive writing
+    output logic        mem_read_o          //tell memory to output reading
 );
 
 typedef enum logic[1:0] {
@@ -41,52 +43,126 @@ typedef enum logic[1:0] {
     READ
  } state;
 
-assign done_o = done;
-logic [31:0] data, next_data;
-assign mh_data_o = data;
-state curr_state, next_state;
-logic next_busy;
+constant [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
+constant [31:0] SPI_ADDRESS_P = 32'd333333; //SPI write parameter
+constant [31:0] I2C_ADDRESS = 32'd923923;
 
-logic [31:0][9:0] sr;
+//assign I2C_done_o = I2C_done_i;
+assign mem_select_o = 1;
 
-always_ff@(posedge clk, posedge reset) begin
-    if (reset) begin
+logic [31:0] mh_data_o_next;         
+logic        mmio_busy_o_next;                  
+logic        I2C_done_o_next;                
+
+logic [31:0] spi_parameters_o_next;     
+logic [7:0]  spi_command_o_next;
+logic [3:0]  spi_counter_o_next;
+logic        spi_read_o_next;
+logic        spi_write_o_next;
+logic        spi_enable_o_next;
+
+logic [31:0] mem_data_o_next;     
+logic [31:0] mem_address_o_next;        
+logic        mem_write_o_next;      
+logic        mem_read_o_next;  
+
+
+always_ff@(posedge clk, negedge nRst) begin
+    if (!nRst) begin
         curr_state <= IDLE;
     end else begin
         curr_state <= next_state;
-        busy <= next_busy;
-        data <= next_data;
+        mh_data_o <= mh_data_o_next;          
+        mmio_busy_o <= mmio_busy_o_next;                  
+        I2C_done_o <= I2C_done_o_next;                    
+        spi_parameters_o <= spi_parameters_o_next;     
+        spi_command_o <= spi_command_o_next;
+        spi_counter_o <= spi_counter_o_next;
+        spi_read_o <= spi_read_o_next;
+        spi_write_o <= spi_write_o_next;
+        spi_enable <= spi_enable_o_next;      
+        mem_data_o <= mem_data_o_next;     
+        mem_address_o <= mem_address_o_next;         
+        mem_write_o <= mem_write_o_next;      
+        mem_read_o <= mem_read_o_next;  
     end
 end
 
 always_comb begin
-    next_busy = 0;
+    I2C_done_o_next = 0;
+    if (I2C_done_i == 1) begin
+        I2C_done_o_next = 1;
+    end 
+end
+
+always_comb begin
     next_state = IDLE;
-    next_data = 0;
+    mh_data_o_next = 0;         
+    mmio_busy_o_next = 0;                         
+    
+    spi_parameters_o_next = 0;     
+    spi_command_o_next = spi_command_o;
+    spi_counter_o_next = spi_counter_o;
+    spi_read_o_next = 0;
+    spi_write_o_next = 0;
+    spi_enable_o_next = 0;
+
+    mem_data_o_next = 0;     
+    mem_address_o_next = 0;           
+    mem_write_o_next = 0;      
+    mem_read_o_next = 0;
+
     case (curr_state)
         IDLE: begin
             if (write && !read) begin
-                next_busy = 1'b1;
+                mmio_busy_o_next = 1;
                 next_state  = WRITE;
             end else if (!write && read) begin
-                next_busy= 1'b1;
+                mmio_busy_o_next = 1'b1;
                 next_state  = READ;
             end
         end
         READ: begin
-           if (address == I2C) begin
-                next_data = {xh, xl, yh, yl};
-            end else if (address == MEM) begin
-                //wishbone shenanigans
+           if (address == I2C_ADDRESS) begin
+                if (I2C_done_i) begin
+                    mh_data_o_next = I2C_xy_i;
+                end else begin
+                    mmio_busy_o_next = 1;
+                    next_state  = READ; 
+                end
+            end else if (address < 32'd2048) begin
+                if (mem_busy_i) begin
+                    mmio_busy_o_next = 1;
+                    next_state  = READ; 
+                end else begin
+                    mh_data_o_next = mem_data_i; 
+                    mem_address_o_next = address;          
+                    mem_read_o_next = 1;
+                end
             end  
         end     
         WRITE: begin
-            if (address == SPI) begin
-                if (!spi_busy) begin
-                    //why not just send 40 bits??
+            if (address == SPI_ADDRESS_C) begin
+                spi_command_o_next = mh_data_i[7:0];
+                spi_counter_o_next = mh_data_i[11:8];
+            end else if (address == SPI_ADDRESS_P) begin
+                if (spi_busy_i) begin
+                    mmio_busy_o_next = 1;
+                    next_state  = WRITE; 
+                end else begin
+                    spi_parameters_o_next = mh_data_i;
+                    spi_write_o_next = 1;
+                    spi_enable_o_next = 1;
                 end
-            end else if (address == MEM) begin
-                //wishbone shenanigans
+            end else if (address < 32'd2048) begin
+                if (mem_busy_i) begin
+                    mmio_busy_o_next = 1;
+                    next_state  = WRITE; 
+                end else begin
+                    mem_data_o_next = mh_data_i;     
+                    mem_address_o_next = address;          
+                    mem_write_o_next = 1;      
+                end
             end
         end
     endcase

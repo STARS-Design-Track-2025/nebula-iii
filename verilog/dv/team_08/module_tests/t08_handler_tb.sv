@@ -15,7 +15,7 @@ always #3 done = ~done;
 t08_handler blockhandle(.counter(counter), .instruction(instruction), .busy(busy), .done(done), .readout(readout), .writeout(writeout), .rs1(rs1), .mem(mem), .mem_address(mem_address), .write(write), .read(read), .clk(clk),.nrst(nrst), .func3(func3), .data_reg(data_reg), . data_mem(data_mem), .addressnew(addressnew));
 
 initial begin
-    $dumpfile("waves/t08_handler.vcd"); 
+    $dumpfile("t08_handler.vcd"); 
     $dumpvars(0, t08_handler_tb);
     
     tfr; #1;
