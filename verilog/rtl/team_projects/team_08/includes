@@ -9,3 +9,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_CPU.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_fetch.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_handler.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_mmio.sv

@@ -39,15 +39,14 @@ module t08_mmio (
 
 typedef enum logic[1:0] {
     IDLE,
-    WRITE,
-    READ
+    BUSY
  } state;
 
-constant [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
-constant [31:0] SPI_ADDRESS_P = 32'd333333; //SPI write parameter
-constant [31:0] I2C_ADDRESS = 32'd923923;
+localparam [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
+localparam [31:0] SPI_ADDRESS_P = 32'd333333; //SPI write parameter
+localparam [31:0] I2C_ADDRESS = 32'd923923;
 
-//assign I2C_done_o = I2C_done_i;
+assign I2C_done_o = I2C_done_i;
 assign mem_select_o = 1;
 
 logic [31:0] mh_data_o_next;         
@@ -64,7 +63,9 @@ logic        spi_enable_o_next;
 logic [31:0] mem_data_o_next;     
 logic [31:0] mem_address_o_next;        
 logic        mem_write_o_next;      
-logic        mem_read_o_next;  
+logic        mem_read_o_next; 
+
+state curr_state, next_state;
 
 
 always_ff@(posedge clk, negedge nRst) begin
@@ -73,14 +74,13 @@ always_ff@(posedge clk, negedge nRst) begin
     end else begin
         curr_state <= next_state;
         mh_data_o <= mh_data_o_next;          
-        mmio_busy_o <= mmio_busy_o_next;                  
-        I2C_done_o <= I2C_done_o_next;                    
+        mmio_busy_o <= mmio_busy_o_next;                                     
         spi_parameters_o <= spi_parameters_o_next;     
         spi_command_o <= spi_command_o_next;
         spi_counter_o <= spi_counter_o_next;
         spi_read_o <= spi_read_o_next;
         spi_write_o <= spi_write_o_next;
-        spi_enable <= spi_enable_o_next;      
+        spi_enable_o <= spi_enable_o_next;      
         mem_data_o <= mem_data_o_next;     
         mem_address_o <= mem_address_o_next;         
         mem_write_o <= mem_write_o_next;      
@@ -89,23 +89,16 @@ always_ff@(posedge clk, negedge nRst) begin
 end
 
 always_comb begin
-    I2C_done_o_next = 0;
-    if (I2C_done_i == 1) begin
-        I2C_done_o_next = 1;
-    end 
-end
-
-always_comb begin
     next_state = IDLE;
     mh_data_o_next = 0;         
     mmio_busy_o_next = 0;                         
     
-    spi_parameters_o_next = 0;     
+    spi_parameters_o_next = spi_parameters_o;     
     spi_command_o_next = spi_command_o;
     spi_counter_o_next = spi_counter_o;
     spi_read_o_next = 0;
-    spi_write_o_next = 0;
-    spi_enable_o_next = 0;
+    spi_write_o_next = spi_write_o;
+    spi_enable_o_next = spi_enable_o;
 
     mem_data_o_next = 0;     
     mem_address_o_next = 0;           
@@ -114,56 +107,57 @@ always_comb begin
 
     case (curr_state)
         IDLE: begin
-            if (write && !read) begin
+            if (!write && read) begin
                 mmio_busy_o_next = 1;
-                next_state  = WRITE;
-            end else if (!write && read) begin
-                mmio_busy_o_next = 1'b1;
-                next_state  = READ;
+                if (address == I2C_ADDRESS) begin
+                    if (I2C_done_i) begin
+                        next_state = BUSY;
+                        mh_data_o_next = I2C_xy_i;
+                    end else begin
+                        next_state  = IDLE; 
+                    end
+                end else if (address < 32'd2048) begin
+                    if (mem_busy_i) begin
+                        next_state  = IDLE; 
+                    end else begin //this is gonna cause problems if memory doesn't retrieve on nededge clk
+                        next_state = BUSY;
+                        mh_data_o_next = mem_data_i; 
+                        mem_address_o_next = address;          
+                        mem_read_o_next = 1;
+                    end
+                end
+            end else if (write && !read) begin
+                mmio_busy_o_next = 1;
+                if (address == SPI_ADDRESS_C) begin
+                    next_state = BUSY;
+                    spi_command_o_next = mh_data_i[7:0];
+                    spi_counter_o_next = mh_data_i[11:8];
+                    spi_enable_o_next = 0;
+                    spi_write_o_next = 0;
+                end else if (address == SPI_ADDRESS_P) begin
+                    if (spi_busy_i) begin
+                        next_state  = IDLE; 
+                    end else begin
+                        next_state = BUSY;
+                        spi_parameters_o_next = mh_data_i;
+                        spi_write_o_next = 1;
+                        spi_enable_o_next = 1;
+                    end
+                end else if (address < 32'd2048) begin
+                    if (mem_busy_i) begin
+                        next_state  = IDLE; 
+                    end else begin
+                        next_state = BUSY;
+                        mem_data_o_next = mh_data_i;     
+                        mem_address_o_next = address;          
+                        mem_write_o_next = 1;      
+                    end
+                end
             end
         end
-        READ: begin
-           if (address == I2C_ADDRESS) begin
-                if (I2C_done_i) begin
-                    mh_data_o_next = I2C_xy_i;
-                end else begin
-                    mmio_busy_o_next = 1;
-                    next_state  = READ; 
-                end
-            end else if (address < 32'd2048) begin
-                if (mem_busy_i) begin
-                    mmio_busy_o_next = 1;
-                    next_state  = READ; 
-                end else begin
-                    mh_data_o_next = mem_data_i; 
-                    mem_address_o_next = address;          
-                    mem_read_o_next = 1;
-                end
-            end  
-        end     
-        WRITE: begin
-            if (address == SPI_ADDRESS_C) begin
-                spi_command_o_next = mh_data_i[7:0];
-                spi_counter_o_next = mh_data_i[11:8];
-            end else if (address == SPI_ADDRESS_P) begin
-                if (spi_busy_i) begin
-                    mmio_busy_o_next = 1;
-                    next_state  = WRITE; 
-                end else begin
-                    spi_parameters_o_next = mh_data_i;
-                    spi_write_o_next = 1;
-                    spi_enable_o_next = 1;
-                end
-            end else if (address < 32'd2048) begin
-                if (mem_busy_i) begin
-                    mmio_busy_o_next = 1;
-                    next_state  = WRITE; 
-                end else begin
-                    mem_data_o_next = mh_data_i;     
-                    mem_address_o_next = address;          
-                    mem_write_o_next = 1;      
-                end
-            end
+        BUSY: begin
+           next_state = IDLE;
+           mmio_busy_o_next = 1'b0;
         end
     endcase
 end
