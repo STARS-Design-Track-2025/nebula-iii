@@ -49,7 +49,6 @@ module team_08 (
     assign gpio_out = '0;
     assign gpio_oeb = '0;
 
-    //logic l1, l2, l3, l4, l5, l6;
-    //t08_I2C_and_interrupt I2C(.clk(clk), .nRst(nrst), .SDAin(l1), .SDAout(l2), .inter(l3), .scl(l4), .data_out(l5), .done(l6));
+    //t08_top top();
 
 endmodule

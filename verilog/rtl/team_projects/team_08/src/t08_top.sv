@@ -1,5 +1,20 @@
 module t08_top(
-    input logic clk, nRst
+    input logic clk, nRst,                              //Clock and active-low reset
+
+    input logic touchscreen_interrupt,                  //I2C inputs and outputs with touchscreen
+    input logic SDAin, 
+    output logic SDAout, SDAoeb,
+    output logic touchscreen_scl,
+
+    output logic [7:0] spi_outputs,                     //SPI outputs to display screen
+    output logic spi_wrx, spi_rdx, spi_csx, spi_dcx,
+
+    input logic [31:0] wb_dat_i,                        //Wishbone manager inputs and outputs with wishbone interconnect
+    input logic wb_ack_i,
+    output logic [31:0] wb_adr_o, 
+    output logic [31:0] wb_dat_o,
+    output logic [3:0] wb_sel_o,
+    output logic wb_we_o, wb_stb_o, wb_cyc_o
 );
 
     /*
@@ -8,7 +23,6 @@ module t08_top(
 
     logic [31:0] CPU_data_in, CPU_data_out;
     logic [31:0] CPU_mem_address_out;
-    logic mmio_busy, mmio_done_from_I2C;
     logic CPU_read_out, CPU_write_out;
 
     t08_CPU CPU(
@@ -28,10 +42,10 @@ module t08_top(
     logic I2C_done;
 
     t08_I2C_and_interrupt I2C(
-        .clk(clk), .nRst(nRst),                  //clock and reset
-        .SDAin(), .SDAout(), .SDAoeb(),          //SDA line
-        .inter(), .scl(),                        //interrupt from touchscreen and SCL to touchscreen
-        .data_out(I2C_data_out), .done(I2C_done) //outputs to mmio
+        .clk(clk), .nRst(nRst),                               //clock and reset
+        .SDAin(SDAin), .SDAout(SDAout), .SDAoeb(SDAoeb),      //SDA line
+        .inter(touchscreen_interrupt), .scl(touchscreen_scl), //interrupt from touchscreen and SCL to touchscreen
+        .data_out(I2C_data_out), .done(I2C_done)              //outputs to mmio
     );
 
     /*
@@ -40,17 +54,16 @@ module t08_top(
 
     logic [7:0] screen_command;             //Command sent to the display screen. 
     logic [31:0] screen_command_parameters; //Parameters for the command sent to the display screen. 
-    logic SPI_enable;
-    logic SPI_readwrite;
-    logic SPI_busy;
+    logic SPI_enable, SPI_read, SPI_write;  //Enable, read, and write signals for SPI
+    logic SPI_busy;                         //Busy signal from SPI
 
     t08_spi SPI(
         .command(screen_command), .parameters(screen_command_parameters), 
         .enable(SPI_enable), .clk(clk), .nrst(nRst), 
-        .readwrite(SPI_readwrite), 
-        .counter(), 
-        .outputs(), 
-        .wrx(), .rdx(), .csx(), .dcx(), 
+        .readwrite(SPI_write), 
+        .counter(mmio_counter_to_spi), 
+        .outputs(spi_outputs), 
+        .wrx(spi_wrx), .rdx(spi_rdx), .csx(spi_csx), .dcx(spi_dcx), 
         .busy(SPI_busy)
     );
 
@@ -58,31 +71,34 @@ module t08_top(
     MMIO
     */
 
+    logic [3:0] mmio_counter_to_spi;
     logic [31:0] mmio_data_to_wb;            //Data written from mmio to the wishbone manager
     logic [31:0] mmio_address_to_wb;         //Memory address sent from mmio to wishbone mananger
     logic [3:0] mmio_select_to_wb;           //Select signal from mmio to wishbone manager
     logic mmio_write_to_wb, mmio_read_to_wb; //Read and write signals from mmio to wishbone manager
+    logic mmio_busy, mmio_done_from_I2C;
 
     t08_mmio mmio(
-        .nRst(nRst), .clk(clk),                                                 //Clock and reset
+        .nRst(nRst), .clk(clk),                                                            //Clock and reset
         
-        .read(CPU_read_out), .write(CPU_write_out),                             //From memory handler
-        .address(CPU_mem_address_out), .mh_data(CPU_data_out), 
+        .read(CPU_read_out), .write(CPU_write_out),                                        //From memory handler
+        .address(CPU_mem_address_out), .mh_data_i(CPU_data_out), 
         
-        .xy(I2C_data_out), .done(I2C_done),                                     //From I2C
+        .I2C_xy_i(I2C_data_out), .I2C_done_i(I2C_done),                                    //From I2C
         
-        .spi_busy(SPI_busy),                                                    //From SPI
+        .spi_busy_i(SPI_busy),                                                             //From SPI
         
-        .mem_data_i(wb_data_to_mmio), .mem_busy(wb_busy_to_mmio),               //From memory: data
+        .mem_data_i(wb_data_to_mmio), .mem_busy_i(wb_busy_to_mmio),                        //From memory: data
         
-        .mh_data_o(CPU_data_in), .busy(mmio_busy), .done_o(mmio_done_from_I2C), //To memory handler
+        .mh_data_o(CPU_data_in), .mmio_busy_o(mmio_busy), .I2C_done_o(mmio_done_from_I2C), //To memory handler
         
-        .parameters(screen_command_parameters), .command(screen_command),       //To SPI
-        .readwrite(SPI_readwrite), .enable(SPI_enable),          
+        .spi_parameters_o(screen_command_parameters), .spi_command_o(screen_command),      //To SPI
+        .spi_counter_o(mmio_counter_to_spi),
+        .spi_read_o(SPI_read), .spi_write_o(SPI_write), .spi_enable_o(SPI_enable),          
                    
-        .mem_data_o(mmio_data_to_wb), .mem_address(mmio_address_to_wb),         //To memory: data/wishbone    
-        .select(mmio_select_to_wb), 
-        .mem_write(mmio_write_to_wb), .mem_read(mmio_read_to_wb) 
+        .mem_data_o(mmio_data_to_wb), .mem_address_o(mmio_address_to_wb),                  //To memory: data/wishbone    
+        .mem_select_o(mmio_select_to_wb), 
+        .mem_write_o(mmio_write_to_wb), .mem_read_o(mmio_read_to_wb) 
     );
 
     /*
@@ -95,13 +111,14 @@ module t08_top(
     wishbone_manager wm(
         .nRST(nRst), .CLK(clk),                                     //reset and clock
 
-        .DAT_I(), .ACK_I(),                                         //"input from wishbone interconnect"
+        .DAT_I(wb_dat_i), .ACK_I(wb_ack_i),                         //"input from wishbone interconnect"
                                                                   
         .CPU_DAT_I(mmio_data_to_wb), .ADR_I(mmio_address_to_wb),    //"input from user design"
         .SEL_I(mmio_select_to_wb),  
         .WRITE_I(mmio_write_to_wb), .READ_I(mmio_read_to_wb),    
 
-        .ADR_O(), .DAT_O(), .SEL_O(), .WE_O(), .STB_O(), .CYC_O(),  //"output to wishbone interconnect"
+        .ADR_O(wb_adr_o), .DAT_O(wb_dat_o), .SEL_O(wb_sel_o),       //"output to wishbone interconnect"
+        .WE_O(wb_we_o), .STB_O(wb_stb_o), .CYC_O(wb_cyc_o),  
 
         .CPU_DAT_O(wb_data_to_mmio), .BUSY_O(wb_busy_to_mmio)       //"output to user design"
     );
