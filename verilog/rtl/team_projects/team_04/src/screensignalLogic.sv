@@ -20,41 +20,6 @@ module screensignalLogic (
   assign dcx = currentDcx;
   assign data = currentData;
 
-  function automatic logic [11:0] signal_call (
-    input logic [7:0] command,
-    input logic [7:0] pat0,
-    input logic [7:0] pat1,
-    input int unsigned pixel_cnt
-  );
-    int unsigned total_bytes = pixel_cnt << 1;
-    int unsigned byte_idx = (ct >= 5) ? ({8'b0, ct} - 5) : 0;
-
-    case (ct)
-      0 : signal_call = {1'b0, 1'b1, 1'b1, 1'b1, 8'b0};
-      1 : signal_call = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0};
-      2 : signal_call = {1'b0, 1'b0, 1'b0, 1'b0, command};
-      3 : signal_call = {1'b0, 1'b0, 1'b0, 1'b1, command};
-      4 : signal_call = {1'b0, 1'b0, 1'b1, 1'b1, 8'b0};
-
-      default : begin
-        if (ct >= 5) begin
-          signal_call = 12'b0;
-
-          if (byte_idx < total_bytes) begin
-            logic wrx = byte_idx[0];
-            logic [7:0] data = wrx ? pat1 : pat0;
-
-            signal_call = {1'b0, 1'b0, 1'b0, wrx, data};
-
-            if (byte_idx == total_bytes - 1) begin
-              signal_call[11] = 1'b1;
-            end
-          end
-        end
-      end
-    endcase
-  endfunction
-
   always_comb begin
     nextData = currentData;
     nextCsx = currentCsx;
@@ -70,11 +35,11 @@ module screensignalLogic (
     fullX2 = 8'b0;
     fullY1 = 8'b0;
     fullY2 = 8'b0;
-    fullY3 = 8'd1;
-    fullY4 = 8'b11100000;
+    fullY3 = 8'd0;
+    fullY4 = 8'b11101111;
     rgbParam = 8'b01010101;
     rgbCommand = 8'b00111010;
-    oriParam = 8'b00110000;
+    oriParam = 8'b10111000;
     oriCommand = 8'h36;
     sleepoCommand = 8'h11;
     sleepiCommand = 8'h10;
@@ -100,9 +65,6 @@ module screensignalLogic (
           09: begin nextWrx = 1; end
           10: begin nextWrx = 0;nextData = fullX4; end
           11: begin nextWrx = 1; end
-          12: begin nextCsx = 1; end
-          13: begin nextCsx = 0; end
-          14: begin nextDcx = 1; nextWrx = 1; nextData = 8'b0; end
           15: begin nextDcx = 0; nextWrx = 0; nextData = yCommand; end
           16: begin nextWrx = 1; end
           17: begin nextWrx = 0; nextDcx = 1; nextData = fullY1; end
@@ -113,12 +75,9 @@ module screensignalLogic (
           22: begin nextWrx = 1; end
           23: begin nextWrx = 0; nextData = fullY4; end
           24: begin nextWrx = 1; end
-          25: begin nextCsx = 1; end
-          26: begin nextCsx = 0; end
-          27: begin nextDcx = 1; nextData = 8'b0; nextWrx = 1; end
           28: begin nextDcx = 0; nextData = memCommand; nextWrx = 0; end
           29: begin nextWrx = 1; end
-          30: begin nextDcx = 1; nextWrx = 0; nextData = 8'b0; end
+          30: begin nextDcx = 1; nextWrx = 0; nextData = 8'b1; end
           default: begin
             if (ct > 30 && ct < 307231) begin
               if (oeCt) begin
