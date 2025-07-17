@@ -5,6 +5,12 @@ module t07_CPU_tb();
     logic FPUFlag, clk, rst;
 
     t07_CPU CPU_test(.inst(inst), .memData_in(memData_in), .memData_out(memData_out), .rwi(rwi), .FPUFlag(FPUFlag));
+    
+    task reset(); begin
+        #12
+        rst = ~rst;        
+    end
+    endtask
 
     task test_instr(); begin
         inst = 'b00000000000000000000000000110011; //add 
@@ -14,6 +20,8 @@ module t07_CPU_tb();
         inst = 'b00000000000000000000000001100011; //beq
         #10
         inst = 'b00000000000000000000000000010011; //addi
+        #10
+        inst = 'b00000001100000000000000011101111; //jal
         /*#10
         inst = 'b00000000000000000010000000100011; //sw
         #10
@@ -27,7 +35,10 @@ module t07_CPU_tb();
         $dumpvars(0, t07_CPU_tb);
 
         rst = 0;
-        memData_in = '0; //idk what to put here
+        test_instr();
+        #10
+        reset();
+        test_instr();
 
         #1
         $finish;

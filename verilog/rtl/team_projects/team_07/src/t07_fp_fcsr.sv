@@ -21,7 +21,7 @@ module t07_fp_fcsr (
 
 logic [31:0] fcsr; // internal fpscr register
 
-always_ff @(posedge clk or posedge rst) begin
+always_ff @(posedge clk or negedge ~rst) begin
     if (rst) begin
         fcsr <= 32'b0; // reset fpscr to zero
     end else begin
