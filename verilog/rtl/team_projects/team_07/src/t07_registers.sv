@@ -13,6 +13,7 @@ contains 32 registers each 32 bit wide
 */
 
 module t07_registers (
+
     input logic clk,
     input logic nrst,
     input logic [4:0] read_reg1, // from decoder
