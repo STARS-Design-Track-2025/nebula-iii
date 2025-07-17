@@ -1,14 +1,14 @@
 module t04_counter_column (
     input logic clk, rst,
-    output logic [3:0] column
+    output logic [3:0] column,
+    output logic pulse // the pulse to send to the decoder
 );
 
 logic [10:0] count, count_n;
 logic [1:0] column_count, column_count_n;
 logic [3:0] column_n;
-logic pulse;
 
-//the following section is to create a pulse, 
+//the following section is to create a pulse, it is also present in the button decoder
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
@@ -19,16 +19,15 @@ always_ff @(posedge clk, posedge rst) begin
 end
 
 always_comb begin
-    if (count < 11'd1) begin
+    if (count < 11'd99) begin
         count_n = count + 1;
-        pulse = 1'b0;
-    end else if (count == 11'd1) begin
-        count_n = count + 1;
+        pulse = 0;
+    end else if (count == 11'd99) begin
         pulse = 1'b1;
         count_n = 0;
     end else begin
         count_n = count;
-        pulse = 1'b0;
+        pulse = 0;
     end
 end
 

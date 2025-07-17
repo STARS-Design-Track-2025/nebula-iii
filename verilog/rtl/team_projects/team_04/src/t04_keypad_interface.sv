@@ -9,13 +9,14 @@ module t04_keypad_interface(
 logic [3:0] column;
 logic alpha;
 logic debounced;
-logic [4:0] button_o;
+logic pulse;
+logic [3:0] row_d;
 
 
-t04_counter_column columns(.clk(clk), .rst(rst), .column(column));
+t04_counter_column columns(.clk(clk), .rst(rst), .column(column), .pulse(pulse));
 // between these two modules is the physical keypad
-t04_button_decoder_edge_detector decode(.clk(clk), .rst(rst), .alpha(alpha), .row(row), .column(column), .button(button), .rising(rising), .debounced(debounced));
+t04_button_debounce debounce(.clk(clk), .rst(rst), .row(row), .row_d(row_d));
+t04_button_decoder_edge_detector decode(.clk(clk), .rst(rst), .alpha(alpha), .row(row_d), .column(column), .button(button), .rising(rising), .pulse(pulse));
 t04_app_alpha_fsm apps(.clk(clk), .rst(rst), .alpha(alpha), .rising(rising), .button(button), .app(app));
-// t04_button_storage store(.clk(clk), .rst(rst), .button(button), .button_o(button_o), .rising(rising));
 
 endmodule
