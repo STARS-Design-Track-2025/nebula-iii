@@ -78,7 +78,7 @@ module t04_datapathxmmio_tb;
         // === Release reset ===
         #15 rst = 0;
 
-        #10000;
+        #1000;
 
        $display("\nFINAL REGISTER VALUES");
         $display("----------------------");

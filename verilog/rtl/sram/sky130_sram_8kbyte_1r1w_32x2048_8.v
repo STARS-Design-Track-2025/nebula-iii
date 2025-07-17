@@ -40,8 +40,8 @@ module sky130_sram_8kbyte_1r1w_32x2048_8(
   output [DATA_WIDTH-1:0] dout1;
 
   reg [DATA_WIDTH-1:0]    mem [0:RAM_DEPTH-1];
-  initial begin
-    $readmemh("instructions.mem",mem,0,4);
+  initial begin //remove lines 43-45
+    $readmemh("instructions.mem",mem);
   end
 
   reg  csb0_reg;
