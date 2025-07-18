@@ -112,16 +112,15 @@ always_comb begin
         nextnewadd = counter;
         if(!busy) begin
             readout = 1;
-            nextinst = frommem;
         end
-        nextstate = 0;
+        nextstate = 3;
     end
 
-    // 3: begin //instruction sending to cu
-        
-    //     nextstate = 0;
-    //     readout = 1;
-    // end
+    3: begin //instruction sending to cu
+        nextinst = frommem;
+        nextstate = 0;
+        //readout = 1;
+    end
     default: begin readout = 0; writeout = 0; end
     endcase
 end
