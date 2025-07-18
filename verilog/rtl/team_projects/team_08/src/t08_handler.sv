@@ -96,13 +96,13 @@ always_comb begin
             default:;
             endcase
 
-            nextstate = 0;
+            //nextstate = 0;
         end
 
         else if (read& !busy) begin
             readout = read;
             nextnewadd = mem_address;
-            nextstate = 0;
+          //  nextstate = 0;
 
             if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
             case(func3)
@@ -124,9 +124,9 @@ always_comb begin
            end 
             end
 
-        else begin
-            nextstate = 1;
-        end
+        // else begin
+        //     //nextstate = 1;
+        // end
     end
 
     1: begin //instruction fetching
