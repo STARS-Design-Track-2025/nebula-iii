@@ -1,10 +1,16 @@
-00500093   // addi x1, x0, 5       ; x1 = 5
-00500113   // addi x2, x0, 5       ; x2 = 5
-00208463   // beq  x1, x2, +8      ; branch over next line if x1 == x2
-07b00213   // addi x4, x0, 123     ; skipped if branch taken
-1c801193   // addi x3, x0, 456     ; x3 = 456 (always runs)
-01000083   // lw x1, 0x10(x0)
-00302223   // sw x3, 4(x0)
+00500093   // 00 addi x1, x0, 5       ; x1 = 5
+00500113   // 04 addi x2, x0, 5       ; x2 = 5
+00208463   // 08 beq  x1, x2, +8      ; branch over next line if x1 == x2
+07b00213   // 0C addi x4, x0, 123     ; skipped if branch taken
+1c801193   // 10 addi x3, x0, 456     ; x3 = 456 (always runs)
+01000083   // 14 lw x1, 0x10(x0)
+00302223   // 18 sw x3, 4(x0)
+022085B3   // 1C mul x11, x1, x2
+00500093   //next instruction for now
+07b00213 
+07b00213 
+07b00213 
+07b00213 
 
 
 

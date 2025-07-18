@@ -37,6 +37,7 @@ logic MUL_EN;
 logic [31:0] mulitply_result;
 logic ack_mul;
 logic mul_freeze;
+logic main_freeze;
 
 assign PC_plus4 = PC + 32'd4;
 
@@ -103,10 +104,17 @@ always_comb begin
     else begin
         result_or_pc4 = (Jal || Jalr) ? PC_plus4 : ALU_result;
     end
+    if (~(MUL_EN && ack_mul)) begin
+        main_freeze = Freeze || mul_freeze;
+    end
+    else begin
+        main_freeze = 0;
+    end
 end
 
 assign mul_freeze = (MUL_EN) ? (~ack_mul) : 0;
 assign write_back_data = (MemToReg) ? memload : result_or_pc4;
+
 
 t04_PC pc_module(
     .clk(clk),
@@ -115,7 +123,7 @@ t04_PC pc_module(
     .Jalr(Jalr),
     .Jal(Jal),
     .Branch(BranchConditionFlag),
-    .Freeze(Freeze || mul_freeze),
+    .Freeze(main_freeze),
     .imm(Imm),
     .PC(PC),
     .n_PC(n_PC)
@@ -130,6 +138,8 @@ t04_request_unit_old ru(
     .BranchCondition(BranchConditionFlag),
     .mem_address(ALU_result),
     .stored_data(src_B),
+    .MUL_EN(MUL_EN),
+    .ack_mul(ack_mul),
     .MemRead(MemRead), .MemWrite(MemWrite),
     .final_address(final_address),
     .instruction_out(instruction_out),

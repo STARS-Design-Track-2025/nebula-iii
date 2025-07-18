@@ -10,6 +10,18 @@ module t04_multiplication (
 logic [31:0] multiplicand_i, multiplicand_i_n; // the internal multiplicand shift register
 logic [15:0] multiplier_i, multiplier_i_n; // the internal multiplier shift register
 logic [31:0] product_n; // the next product
+logic mul_prev;
+logic mul_rising_edge;
+
+always_ff @(posedge clk or posedge rst) begin
+    if (rst) begin
+        mul_prev <= 0;
+    end else begin
+        mul_prev <= mul;
+    end
+end
+
+
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
@@ -25,10 +37,11 @@ always_ff @(posedge clk, posedge rst) begin
 end
 
 always_comb begin
+    mul_rising_edge = mul & ~mul_prev;
     multiplicand_i_n = multiplicand_i;
     multiplier_i_n = multiplier_i;
     product_n = product;
-    if (mul) begin
+    if (mul_rising_edge) begin
         multiplicand_i_n = {16'd0, multiplicand[15:0]};
         multiplier_i_n = multiplier[15:0];
         product_n = 0;

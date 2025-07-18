@@ -26,6 +26,7 @@ module t04_ALU(
   always_comb begin
     BranchConditionFlag = 1'b0;
     ALU_result = 32'b0;
+    MUL_EN = 0;
 
     if (ALU_control == 1) begin
       ALU_result = sub_result;

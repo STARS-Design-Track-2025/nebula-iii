@@ -84,7 +84,11 @@ module t04_datapathxmmioxkeypad_tb;
         // === Release reset ===
         #15 rst = 0;
 
-        #700;
+        #1000;
+
+        force dut.datapath.ack_mul = 1;
+
+        #180;
         // row = 4'b0010;
         // #2000;
         // row = 0;
@@ -94,7 +98,7 @@ module t04_datapathxmmioxkeypad_tb;
         $display("----------------------");
         $display("x1  = %0h ", dut.datapath.rf.registers[1]);   // address of data start
         $display("x2  = %0h ", dut.datapath.rf.registers[2]);   // loaded from 0x24
-        $display("x3  = %0h ", dut.datapath.rf.registers[3]);   // loaded from 0x28
+        $display("x3  = %0d ", dut.datapath.rf.registers[3]);   // loaded from 0x28
         $display("x4  = %0h ", dut.datapath.rf.registers[4]);   // loaded from 0x2C
         $display("x5  = %0h ", dut.datapath.rf.registers[5]);   // hardcoded value (set manually in CPU or TB)
         $display("x10 = %0h ", dut.datapath.rf.registers[10]);  // x2 - x3

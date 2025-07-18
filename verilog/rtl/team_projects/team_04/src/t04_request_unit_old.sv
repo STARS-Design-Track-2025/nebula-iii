@@ -11,6 +11,8 @@ module t04_request_unit_old(
     input  logic [31:0] stored_data,
     input  logic MemRead,
     input  logic MemWrite,
+    input  logic MUL_EN,
+    input  logic ack_mul,
     output logic [31:0] final_address,
     output logic [31:0] instruction_out,
     output logic [31:0] mem_store,
@@ -25,6 +27,9 @@ module t04_request_unit_old(
     logic n_memread2;
     logic n_memwrite;
     logic n_memwrite2;
+    logic ack_mul_reg;
+    logic ack_mul_reg2;
+    logic MUL_EN1;
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -33,6 +38,9 @@ module t04_request_unit_old(
             n_memwrite <= 0;
             n_memread2 <= 0;
             n_memwrite2 <= 0;
+            ack_mul_reg <= 0;
+            ack_mul_reg2 <= 0;
+            MUL_EN1 <= 0;
         end 
         else begin
             latched_instruction <= n_latched_instruction;
@@ -40,13 +48,16 @@ module t04_request_unit_old(
             n_memwrite <= MemWrite;
             n_memread2 <= n_memread;
             n_memwrite2 <= n_memwrite;
+            ack_mul_reg <= ack_mul;
+            ack_mul_reg2 <= ack_mul_reg;
+            MUL_EN1 <= MUL_EN;
         end
     end
 
     always_comb begin
         MemRead_request = MemRead;
         MemWrite_request = MemWrite;
-        if (n_memread == 1 || n_memwrite == 1) begin
+        if ((n_memread == 1 || n_memwrite == 1) || (MUL_EN1)) begin
             instruction_out = latched_instruction;
         end
         else if ((latched_instruction == instruction_in && (!(MemRead || MemWrite))) || (latched_instruction != 32'b0 && instruction_in == 32'hBAD1BAD1 && !(MemRead || MemWrite))) begin
@@ -78,7 +89,10 @@ module t04_request_unit_old(
         else begin
             freeze = 1;
         end
-        if (((n_memread == 1 && MemRead == 1) || (n_memwrite == 1 && MemWrite == 1))) begin
+        if (MUL_EN && !ack_mul && !ack_mul_reg) begin
+            n_latched_instruction = latched_instruction;
+        end
+        else if (((n_memread == 1 && MemRead == 1) || (n_memwrite == 1 && MemWrite == 1))) begin
             if ((n_memread2 == 1 || n_memwrite2 == 1) && !freeze) begin
                 n_latched_instruction = 32'd0; 
             end
