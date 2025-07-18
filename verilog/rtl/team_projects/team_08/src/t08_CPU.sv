@@ -32,12 +32,15 @@ module t08_CPU (
     logic [31:0] alu_data_out;                                  //ALU to registers and memory handler: ALU output
     logic branch;                                               //ALU to fetch: branch signal
 
+    logic freeze;
+
     t08_fetch fetch(
         .imm_address(immediate), 
         .clk(clk), .nrst(nRst), 
         .jump(jump), .branch(branch), 
         .program_counter(program_counter), 
-        .ret_address(return_address)
+        .ret_address(return_address),
+        .freeze(freeze)
     );
 
     t08_control_unit control_unit(
@@ -64,7 +67,7 @@ module t08_CPU (
         .data_in_frommemory(mem_to_reg), .data_in_frominstructionfetch(return_address), .data_in_fromalu(alu_data_out), //multiplexer inputs
         .data_in_control(data_in_control), //multiplexer select line
         .en_read_1(reg_en_read_1), .en_read_2(reg_en_read_2), .en_write(reg_en_write), //enable signals
-        .busy(busy), //busy signal
+        .busy(freeze), //busy signal
         .data_out_r1(reg_out_1), .data_out_r2(reg_out_2) //outputs
     );
 
@@ -74,7 +77,7 @@ module t08_CPU (
         .counter(program_counter),
         .write(mem_en_write), .read(mem_en_read), 
         .clk(clk), .nrst(nRst), 
-        .busy(busy), .done(done), 
+        .busy(busy), .done(done), .freeze(freeze),
         .func3(func3), 
         .toreg(mem_to_reg), .tomem(data_out), 
         .addressnew(mem_address), 
