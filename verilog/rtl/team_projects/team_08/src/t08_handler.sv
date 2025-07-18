@@ -24,8 +24,9 @@ assign tomem = mems;
 assign toreg = regs;
 //assign writeout = write;
 //assign readout = read;
-//assign freeze = busy|readout|writeout;
 assign freeze = busy;
+//|readout|writeout;
+
 
 
 always_ff@(posedge clk, negedge nrst) begin
@@ -76,14 +77,12 @@ always_comb begin
 
         nextmem = mems;
         nextregs = regs;
-        //nextstate = 0;
-
-
+        nextstate = 1;
 
         readout = 0;
         writeout = 0;
+
         if (write&!busy) begin //store type, signed
-            nextstate = 1;
             writeout = write;
             nextnewadd = mem_address;
 
@@ -96,12 +95,14 @@ always_comb begin
                 nextmem = fromregister; end  //sw
             default:;
             endcase
+
+            nextstate = 0;
         end
 
         else if (read& !busy) begin
             readout = read;
             nextnewadd = mem_address;
-            nextstate = 1;
+            nextstate = 0;
 
             if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
             case(func3)
