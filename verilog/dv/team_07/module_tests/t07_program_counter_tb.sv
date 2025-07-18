@@ -2,7 +2,7 @@
 module t07_program_counter_tb;
     // Inputs
     logic clk;
-    logic rst;
+    logic nrst;
     logic freeze;
     logic forceJump;
     logic [2:0] func3; // Function code for the jump operation
@@ -17,7 +17,7 @@ module t07_program_counter_tb;
     // Instantiate the Unit Under Test (UUT)
     t07_program_counter pc(
         .clk(clk), 
-        .rst(rst), 
+        .nrst(nrst), 
         .freeze(freeze),
         .forceJump(forceJump), 
         .condJump(condJump), 
@@ -121,7 +121,7 @@ module t07_program_counter_tb;
         $dumpfile("t07_program_counter.vcd");
         $dumpvars(0, t07_program_counter_tb);
         // Initialize Inputs
-        rst = 1; // Start with reset high
+        nrst = 1; // Start with reset high
         freeze = 0;
         forceJump = 0;
         condJump = 0;
@@ -133,8 +133,10 @@ module t07_program_counter_tb;
         #10;
         
         // Release reset
-        rst = 0;
-
+        nrst = 0;
+        #10; // Wait for a few clock cycles
+        nrst = 1; // Set reset high again
+        #10; // Wait for a few clock cycles
         #10; // Wait for a clock cycle
         #15; // Wait for a clock cycle
         // Test case: Force jump
