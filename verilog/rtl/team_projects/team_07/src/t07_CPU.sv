@@ -1,11 +1,11 @@
 module t07_CPU(
     input logic [31:0]exInst, memData_in, //intruction from data memory, data from extern memory
-    output logic [31:0] memData_out, pcData_out,
-    input logic clk, nrst,
+    output logic [31:0] pcData_out, externalMemAddr, //PCdata_out to MMIO or instr
+    input logic clk, nrst, busy,
     output logic [1:0] rwi,
     output logic FPUFlag, invalError //to GPIO
 );
-    logic [31:0] inst, externalMemData, externalMemAddr, externalMem_out;
+    logic [31:0] inst, externalMemData, externalMem_out;
     logic freeze; //to external memory 
     //decoder out
     logic [6:0] Op, funct7;
@@ -43,7 +43,7 @@ module t07_CPU(
     t07_program_counter pc(.clk(clk), .func3(funct3), .nrst(nrst), .forceJump(jump), .condJump(branch), .ALU_flags(ALUFlags), .JumpDist(PCJumpDist), .programCounter(pc_out), .linkAddress(linkAddress), .freeze(freeze));
     t07_immGen immediate0(.func3(funct3), .instruction(inst), .immediate(immediate));
     t07_registers register(.clk(clk), .nrst(nrst), .read_reg1(rs1), .read_reg2(rs2), .write_reg(rd), .write_data(regData_in), .reg_write(regWrite), .enable(regEnable), .read_data1(dataRead1), .read_data2(dataRead2));
-    t07_cpu_memoryHandler internalMem(.memOp(memOp), .memWrite(memWrite), .memRead(memRead), .memSource(memSource), .ALU_address(ALUResult), .FPU_data('0), .Register_dataToMem(dataRead2), .ExtData(externalMemData), .write_data(externalMem_out), .ExtAddress(externalMemAddr), .dataToCPU(intMem_out), .freeze(freeze), .rwi(rwi));
+    t07_cpu_memoryHandler internalMem(.busy(busy), .memOp(memOp), .memWrite(memWrite), .memRead(memRead), .memSource(memSource), .ALU_address(ALUResult), .FPU_data('0), .Register_dataToMem(dataRead2), .ExtData(externalMemData), .write_data(externalMem_out), .ExtAddress(externalMemAddr), .dataToCPU(intMem_out), .freeze(freeze), .rwi(rwi));
     t07_ALU ALU(.valA(dataRead1), .valB(ALU_in2), .result(ALUResult), .ALUflags(ALUFlags), .ALUOp(ALUOp));
     t07_muxes muxFPUReg(.a(fcsr_out), .b(dataRead2), .sel(FPUSrc), .out(memRegSource)); //check when FPU is added
     t07_muxes muxImmReg(.a(dataRead2), .b(immediate), .sel(ALUSrc), .out(ALU_in2));
