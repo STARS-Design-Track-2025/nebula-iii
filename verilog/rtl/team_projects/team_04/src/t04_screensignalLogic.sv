@@ -1,4 +1,4 @@
-module screensignalLogic (
+module t04_screensignalLogic (
   input logic [31:0] controlBus, xBus, yBus,
   input logic [22:0] ct,
   input logic clk, rst,
@@ -6,13 +6,9 @@ module screensignalLogic (
   output logic [7:0] data  
 );
   logic [7:0] nextData, currentData;
-  logic nextDcx, nextCsx, nextWrx, currentDcx, currentCsx, currentWrx, oeCt;
-  logic [8:0] control;
+  logic nextDcx, nextCsx, nextWrx, currentDcx, currentCsx, currentWrx;
   logic [16:0] pixel;
-  logic [7:0] xCommand, yCommand, fullX3, fullX4, fullX1, fullX2, fullY1, fullY2, fullY3, fullY4, 
-    rgbParam, rgbCommand, oriCommand, oriParam, sleepoCommand, sleepiCommand, swrstCommand, dispoffCommand, disponCommand, memCommand;
-
-  assign control = controlBus[8:0];
+  logic [7:0] xCommand, yCommand, rgbParam, rgbCommand, oriCommand, oriParam, sleepoCommand, sleepiCommand, swrstCommand, dispoffCommand, disponCommand, memCommand;
 
   //outputs
   assign csx = currentCsx;
@@ -29,14 +25,6 @@ module screensignalLogic (
 
     xCommand = 8'h2A;
     yCommand = 8'h2B;
-    fullX3 = 8'd1;
-    fullX4 = 8'b00111111;
-    fullX1 = 8'b0;
-    fullX2 = 8'b0;
-    fullY1 = 8'b0;
-    fullY2 = 8'b0;
-    fullY3 = 8'd0;
-    fullY4 = 8'b11101111;
     rgbParam = 8'b01010101;
     rgbCommand = 8'b00111010;
     oriParam = 8'b10111000;
@@ -48,55 +36,9 @@ module screensignalLogic (
     dispoffCommand = 8'h28;
     memCommand = 8'h2C;
 
-    oeCt = ct[0];
-
-    case (control)
-      9'b100000000: begin //clear
-        case (ct)
-          00: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
-          01: begin nextCsx = 0; end
-          02: begin nextDcx = 0; nextWrx = 0; nextData = xCommand; end
-          03: begin nextWrx = 1; end
-          04: begin nextDcx = 1; nextData = fullX1; nextWrx = 0; end
-          05: begin nextWrx = 1; end
-          06: begin nextWrx = 0; nextData = fullX2; end
-          07: begin nextWrx = 1; end
-          08: begin nextWrx = 0; nextData = fullX3; end
-          09: begin nextWrx = 1; end
-          10: begin nextWrx = 0;nextData = fullX4; end
-          11: begin nextWrx = 1; end
-          15: begin nextDcx = 0; nextWrx = 0; nextData = yCommand; end
-          16: begin nextWrx = 1; end
-          17: begin nextWrx = 0; nextDcx = 1; nextData = fullY1; end
-          18: begin nextWrx = 1; end
-          19: begin nextWrx = 0; nextData = fullY2; end
-          20: begin nextWrx = 1; end
-          21: begin nextWrx = 0; nextData = fullY3; end
-          22: begin nextWrx = 1; end
-          23: begin nextWrx = 0; nextData = fullY4; end
-          24: begin nextWrx = 1; end
-          28: begin nextDcx = 0; nextData = memCommand; nextWrx = 0; end
-          29: begin nextWrx = 1; end
-          30: begin nextDcx = 1; nextWrx = 0; nextData = 8'b1; end
-          default: begin
-            if (ct > 30 && ct < 307231) begin
-              if (oeCt) begin
-                nextWrx = 1;
-              end else begin
-                nextWrx = 0;
-              end
-            end else if (ct == 307231) begin
-              nextCsx = 1;
-            end else if (ct == 307232) begin
-              ack = 1;
-            end else if (ct == 307233) begin
-              ack = 0;
-            end
-          end
-        endcase
-      end
+    case (controlBus)
       
-      9'b10000000: begin //reseton
+      32'b10000000: begin //reseton
         case (ct) 
           0: begin nextCsx = 1; nextWrx = 1; nextDcx = 1; nextData = 8'b0; end 
           1: begin nextCsx = 0; end
@@ -120,7 +62,7 @@ module screensignalLogic (
         endcase
       end
 
-      9'b100000: begin //display off
+      32'b100000: begin //display off
         case (ct)
           0: begin nextCsx = 1; nextData = 0; nextDcx = 1; nextWrx = 1; end
           1: begin nextCsx = 0; end
@@ -134,7 +76,7 @@ module screensignalLogic (
         endcase
       end
 
-      9'b1000000: begin //display on
+      32'b1000000: begin //display on
         case (ct)
           0: begin nextCsx = 1; nextWrx = 1; nextDcx = 1; nextData = 8'b0; end
           1: begin nextCsx = 0; end
@@ -148,7 +90,7 @@ module screensignalLogic (
         endcase
       end
 
-      9'b10000: begin //red
+      32'b10000: begin //red
         case (ct)
           00: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
           01: begin nextCsx = 0; end
@@ -188,7 +130,7 @@ module screensignalLogic (
         endcase
       end
 
-      9'b100: begin //blue
+      32'b100: begin //blue
         case (ct)
           0: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
           1: begin nextCsx = 0; end
@@ -228,7 +170,7 @@ module screensignalLogic (
         endcase
       end
 
-      9'b10: begin //black
+      32'b10: begin //black
         case (ct)
           00: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
           01: begin nextCsx = 0; end
@@ -268,7 +210,7 @@ module screensignalLogic (
         endcase
       end
 
-      9'b1000: begin //green
+      32'b1000: begin //green
         case (ct)
           00: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
           01: begin nextCsx = 0; end
@@ -308,7 +250,7 @@ module screensignalLogic (
         endcase
       end
 
-      9'b1: begin //white
+      32'b1: begin //white
         case (ct)
           0: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
           1: begin nextCsx = 0; end

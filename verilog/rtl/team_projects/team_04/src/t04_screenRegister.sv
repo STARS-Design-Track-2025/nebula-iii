@@ -1,4 +1,4 @@
-module screenRegister(
+module t04_screenRegister(
     input logic [31:0] data, address,
     input logic wen, rst, clk, ack,
     output logic [31:0] control, xBus, yBus

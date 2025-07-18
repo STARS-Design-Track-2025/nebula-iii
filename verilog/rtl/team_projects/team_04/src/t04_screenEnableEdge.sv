@@ -1,4 +1,4 @@
-module screenEnableEdge (
+module t04_screenEnableEdge (
     input logic [31:0] xBus, yBus, control, 
     input logic clk, rst,
     output logic enableEdge
@@ -27,5 +27,6 @@ always_ff @(posedge clk, posedge rst) begin
 end
 
 assign enableEdge = enable2 && ~enable3;
+
 
 endmodule
