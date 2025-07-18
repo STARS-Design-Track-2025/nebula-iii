@@ -53,7 +53,7 @@ logic [4:0] button_n;
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
-        button <= 0; // button_c is the current button and button is the next button
+        button <= 0;
     end else begin
         button <= button_n;
     end
@@ -62,7 +62,7 @@ end
 
 always_comb begin
     button_n = button;
-    if (rising) begin
+    if (rising || pulse) begin // this will turn the button output off when we let go of the button
         button_n = 5'd0;
     end
     //remaining buttons section
@@ -71,12 +71,12 @@ always_comb begin
             if (row == 4'b1000) begin button_n = 5'd19; end
             else if (row == 4'b0100) begin button_n = 5'd23; end 
             else if (row == 4'b0010) begin button_n = 5'd27; end
-            else if (row == 4'b0001) begin button_n = 5'd31; end
+            else if (row == 4'b0001) begin button_n = 5'd30; end
         end else if (column == 4'b0100) begin 
             if (row == 4'b1000) begin button_n = 5'd18; end
             else if (row == 4'b0100) begin button_n = 5'd22; end 
             else if (row == 4'b0010) begin button_n = 5'd26; end 
-            else if (row == 4'b0001) begin button_n = 5'd30; end
+            else if (row == 4'b0001) begin button_n = 5'd29; end
         end else if (column == 4'b0010) begin
             if (row == 4'b1000) begin button_n = 5'd17; end
             else if (row == 4'b0100) begin button_n = 5'd21; end
@@ -86,7 +86,7 @@ always_comb begin
             if (row == 4'b1000) begin button_n = 5'd16; end
             else if (row == 4'b0100) begin button_n = 5'd20; end
             else if (row == 4'b0010) begin button_n = 5'd24; end
-            else if (row == 4'b0001) begin button_n = 5'd29; end
+            else if (row == 4'b0001) begin button_n = 5'd28; end
         end
     end else begin
         if (column == 4'b1000) begin
@@ -108,7 +108,7 @@ always_comb begin
             if (row == 4'b1000) begin button_n = 5'd7; end
             else if (row == 4'b0100) begin button_n = 5'd4; end
             else if (row == 4'b0010) begin button_n = 5'd1; end
-            else if (row == 4'b0001) begin button_n = 5'd0; end
+            else if (row == 4'b0001) begin button_n = 5'd31; end
         end
     end
 end
