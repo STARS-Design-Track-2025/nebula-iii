@@ -31,7 +31,7 @@ module t08_mmio (
     output logic spi_enable_o,
     //to Memory: data / wishbone
     output logic [31:0] mem_data_o,         //data to write to memory
-    output logic [31:0] mem_address_o,      //address to read or write data
+    output logic [31:0] mem_address_o,      //address to put data
     output logic [3:0]  mem_select_o,       //hardwired to 1
     output logic        mem_write_o,        //tell memory to receive writing
     output logic        mem_read_o          //tell memory to output reading
@@ -72,6 +72,7 @@ state curr_state, next_state;
 always_ff@(posedge clk, negedge nRst) begin
     if (!nRst) begin
         curr_state <= IDLE;
+        mh_data_o <= 0;          
         mmio_busy_o <= 0;                                     
         spi_parameters_o <= 0;     
         spi_command_o <= 0;
@@ -82,7 +83,7 @@ always_ff@(posedge clk, negedge nRst) begin
         mem_data_o <= 0;     
         mem_address_o <= 0;         
         mem_write_o <= 0;      
-        mem_read_o <= 0; 
+        mem_read_o <= 0;
     end else begin
         curr_state <= next_state;
         mh_data_o <= mh_data_o_next;          
@@ -102,7 +103,7 @@ end
 
 always_comb begin
     next_state = IDLE;
-    mh_data_o_next = mh_data_o;         
+    mh_data_o_next = 0;         
     mmio_busy_o_next = 0;                         
     
     spi_parameters_o_next = spi_parameters_o;     
@@ -112,8 +113,8 @@ always_comb begin
     spi_write_o_next = spi_write_o;
     spi_enable_o_next = spi_enable_o;
 
-    mem_data_o_next = mem_data_o;     
-    mem_address_o_next = mem_address_o;           
+    mem_data_o_next = 0;     
+    mem_address_o_next = 0;           
     mem_write_o_next = 0;      
     mem_read_o_next = 0;
 
