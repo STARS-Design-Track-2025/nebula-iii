@@ -1,0 +1,139 @@
+module t07_MMIO (
+//inputs
+    // inputs from internal memory
+    input logic [31:0] addr_in, //address from the internal memory
+    input logic [31:0] memData_in,  // data from internal memory
+    input logic [1:0] rwi_in, //read write or idle from internal memory
+
+    //inputs from instruction/Data memory
+    input logic [31:0] inst, // instruction to write to fetch (writeInstruction_out)
+    input logic [31:0] ExtData_in, // data from instruction/Data memory
+
+    //inputs from external register
+    input logic [31:0] regData_in, //data from external register
+
+    // input from fetch module
+    input logic [31:0] PC_address, // Program Counter address to write to instruction module
+
+
+//outputs
+    // outputs to external register
+    output logic ri_out, //read or idle signal to external register
+    output logic [31:0] addr_outREG, // address to external register
+
+    // outputs to internal memory
+    output logic [31:0] ExtData_out, //ExtData to internal memory
+    output logic busy, //to CPU internal memory handler
+
+    // outputs to fetch
+    output logic [31:0] writeInstruction_out, // ext instruction to write to fetch module in CPU
+
+    //output to SPI TFT
+    output logic [31:0] writeData_outTFT, // data to write to SPT TFT
+    output logic wi_out, // write or idle to SPI FTF
+
+    //output to instruction/Data memory
+    output logic [1:0] rwi_out, // read/write/idle to instruction/Data memory
+    output logic [31:0] addr_out, // address to instruction/Data memory
+    output logic [31:0] writeData_out // data to write to instruction/Data memory
+);
+
+always_comb begin
+    if (rwi_in == 2'b01) begin //write from internal memory of the CPU
+        busy <= 1'b1; //set busy signal to indicate memory handler is processing
+        if (addr_in >= 32'd1024 && addr_in < 32'd2048) begin //change address number later              // write to SPI TFT
+            ri_out <= 1'b0; //idle external register
+            wi_out <= 1'b1; //write to SPI TFT
+            rwi_out <= 2'b11; //idle instruction/Data memory
+            writeData_outTFT <= memData_in; // data to write to SPI TFT
+        end else if (addr_in >= 32'd2048 && addr_in < 32'd8192) begin //change address number later     // write to instruction/Data memory
+            ri_out <= 1'b0; //idle external register
+            wi_out <= 1'b0; //idle the TFT
+            rwi_out <= 2'b10; //write to instruction/Data memory
+            addr_out <= addr_in; // address to instruction/Data memory
+            writeData_out <= memData_in; // data from instruction/Data memory
+        end else begin                                                                                  //should not happen but here to prevent latches
+            ri_out <= 1'b0; //idle external register
+            wi_out <= 1'b0; //idle TFT
+            rwi_out <= 2'b11; //idle instruction/Data memory
+            addr_outREG <= 32'b0; // no address for external register
+            addr_out <= 32'b0; // no address for instruction/Data memory
+        end
+    end else if (rwi_in == 2'b10) begin //read from internal memory of the CPU
+        busy <= 1'b1; //set busy signal to indicate memory handler is processing
+        if(addr_in < 32'd1024) begin //change address number later                                      // read from external register
+            ri_out <= 1'b1; //read from external register
+            wi_out <= 1'b0; //idle external register
+            rwi_out <= 2'b11; //idle instruction/Data memory
+            addr_outREG <= addr_in; // address to read from external register
+            ExtData_out <= regData_in; // data from external register to internal memory
+        end else if (addr_in >= 32'd2048 && addr_in < 32'd8192) begin //change address number later     // read from instruction/Data memory
+            ri_out <= 1'b0; //idle external register
+            wi_out <= 1'b0; //idle TFT
+            rwi_out <= 2'b10; //read from instruction/Data memory
+            addr_out <= addr_in; // address to read from instruction/Data memory
+            ExtData_out <= ExtData_in; // data from instruction/Data memory to internal memory
+       end else begin                                                                                  //should not happen but here to prevent latches     
+            ri_out <= 1'b0; //idle external register
+            wi_out <= 1'b0; //idle TFT
+            rwi_out <= 2'b11; //idle instruction/Data memory
+            addr_outREG <= 32'b0; // no address for external register
+            addr_out <= 32'b0; // no address for instruction/Data memory
+            ExtData_out <= 32'b0; // no data to internal memory
+        end
+    end else if (PC_address) begin //write to fetch module
+        busy <= 1'b1; //set busy signal to indicate memory handler is processing
+        ri_out <= 1'b0; //idle external register
+        wi_out <= 1'b0; //idle TFT
+        rwi_out <= 2'b10; //idle instruction/Data memory
+        addr_outREG <= 32'b0; // no address for external register
+        addr_out <= PC_address; // address to write to instruction module
+        writeData_out <= 32'b0; // no data to write to instruction/Data memory
+        writeInstruction_out <= inst; // instruction to write to fetch module in CPU
+    end else begin //idle state
+        busy <= 1'b0; //clear busy signal
+        ri_out <= 1'b0; //idle external register
+        wi_out <= 1'b0; //idle TFT
+        rwi_out <= 2'b11; //idle instruction/Data memory
+        addr_outREG <= 32'b0; // no address for external register
+        addr_out <= 32'b0; // no address for instruction/Data memory
+        writeData_out <= 32'b0; // no data to write to instruction/Data memory
+        writeInstruction_out <= 32'b0; // no instruction to write to fetch module
+        writeData_outTFT <= 32'b0; // no data to write to SPI TFT
+    end
+end
+
+
+
+
+// always_ff @(posedge clk, negedge nrst) begin //check that pos rst is correct
+//     if (rwi_in == 2'b10) begin //read from memory from cpu
+        
+        
+//         rwi_out <= 2'b10; // when do we know if we are also reading from the register?
+//         addr_outREG <= addr_in; // address to read from external register
+
+
+//         ExtData_out <= memData_in; // data from internal memory to external memory
+
+//         if (addr_in < 32'd1024) begin //access wishbone
+//             //wishbone
+//         end else begin //access register
+//             //register
+//         end
+//     end
+//     if (rwi_in == 2'b01) begin //write to memory
+        
+//         rwi_out <= 2'd1; // when do we know if we are also writing to the register?
+
+//         addr_out <= PC_address; // address to write to instruction module
+//         writeData_out <= regData_in;
+//     end else begin
+//         rwi_out <= '0;
+//         addr_out <= addr_in;
+//         writeData_out <= 0;
+//     end
+// end
+
+
+endmodule
