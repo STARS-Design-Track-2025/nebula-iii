@@ -103,7 +103,7 @@ end
 
 always_comb begin
     next_state = IDLE;
-    mh_data_o_next = 0;         
+    mh_data_o_next = mh_data_o;         
     mmio_busy_o_next = 0;                         
     
     spi_parameters_o_next = spi_parameters_o;     
@@ -113,8 +113,8 @@ always_comb begin
     spi_write_o_next = spi_write_o;
     spi_enable_o_next = spi_enable_o;
 
-    mem_data_o_next = 0;     
-    mem_address_o_next = 0;           
+    mem_data_o_next = mem_data_o;     
+    mem_address_o_next = mem_address_o;           
     mem_write_o_next = 0;      
     mem_read_o_next = 0;
 
