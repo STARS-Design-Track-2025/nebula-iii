@@ -9,7 +9,7 @@ module t08_handler(
     input logic write, read, clk, nrst, busy,done,
     input logic [2:0] func3,
     output logic [31:0] toreg,  tomem, addressnew, instruction,
-    output logic writeout, readout
+    output logic writeout, readout, freeze
 );
 logic [31:0] regs = 0, mems = 0, address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 logic [1:0] state,  nextstate; //0 wait, 1 send
@@ -19,6 +19,7 @@ assign tomem = mems;
 assign toreg = regs;
 //assign writeout = write;
 //assign readout = read;
+assign freeze = busy;
 
 always_ff@(posedge clk, negedge nrst) begin
     if(!nrst) begin
