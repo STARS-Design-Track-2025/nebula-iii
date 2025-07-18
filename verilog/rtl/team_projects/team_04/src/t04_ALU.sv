@@ -2,7 +2,8 @@ module t04_ALU(
   input  logic [31:0] src_A, src_B, instruction,
   input  logic        ALU_control,
   output logic [31:0] ALU_result,
-  output logic        BranchConditionFlag
+  output logic        BranchConditionFlag,
+  output logic        MUL_EN
 );
 
   logic [31:0] sub_result;
@@ -43,7 +44,21 @@ module t04_ALU(
       // If it's an R-type instruction (opcode == 0110011), use funct3/funct7 logic
       if (opcode == 7'b0110011) begin
         case (funct3)
-          3'b000: ALU_result = (funct7 == 7'b0100000) ? sub_result : (src_A + src_B); // SUB or ADD
+          3'b000: begin
+          if (funct7 == 7'b0000001) begin
+            // MUL
+            MUL_EN = 1'b1;
+            ALU_result = 32'd0; // Let external module drive result later
+          end
+          else if (funct7 == 7'b0100000) begin
+            // SUB
+            ALU_result = sub_result;
+          end
+          else begin
+            // ADD
+            ALU_result = src_A + src_B;
+          end
+        end
           3'b111: ALU_result = src_A & src_B;
           3'b110: ALU_result = src_A | src_B;
           3'b100: ALU_result = src_A ^ src_B;

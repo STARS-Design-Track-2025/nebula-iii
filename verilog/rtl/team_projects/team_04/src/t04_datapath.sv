@@ -33,6 +33,10 @@ logic [31:0] write_back_data;
 logic [31:0] instruction_out;
 logic BranchConditionFlag;
 logic [31:0] n_PC;
+logic MUL_EN;
+logic [31:0] mulitply_result;
+logic ack_mul;
+logic mul_freeze;
 
 assign PC_plus4 = PC + 32'd4;
 
@@ -74,14 +78,34 @@ t04_ALU alu(
     .instruction(instruction_out),
     .ALU_control(ALU_control),
     .ALU_result(ALU_result),
-    .BranchConditionFlag(BranchConditionFlag)
+    .BranchConditionFlag(BranchConditionFlag),
+    .MUL_EN(MUL_EN)
+);
+
+t04_multiplication multiplication_module(
+.clk(clk),
+.rst(rst),
+.mul(MUL_EN),
+.multiplicand(src_A),
+.multiplier(src_B),
+.product(mulitply_result),
+.ack_mul(ack_mul)
 );
 
 assign PC_Jalr = ALU_result;
 
 logic [31:0] result_or_pc4;
-assign result_or_pc4 = (Jal || Jalr) ? PC_plus4 : ALU_result;
 
+always_comb begin 
+    if (MUL_EN) begin
+        result_or_pc4 = mulitply_result;
+    end
+    else begin
+        result_or_pc4 = (Jal || Jalr) ? PC_plus4 : ALU_result;
+    end
+end
+
+assign mul_freeze = (MUL_EN) ? (~ack_mul) : 0;
 assign write_back_data = (MemToReg) ? memload : result_or_pc4;
 
 t04_PC pc_module(
@@ -91,7 +115,7 @@ t04_PC pc_module(
     .Jalr(Jalr),
     .Jal(Jal),
     .Branch(BranchConditionFlag),
-    .Freeze(Freeze),
+    .Freeze(Freeze || mul_freeze),
     .imm(Imm),
     .PC(PC),
     .n_PC(n_PC)

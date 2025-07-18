@@ -23,3 +23,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_button_debounce.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_button_decoder_edge_detector.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_counter_column.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_multiplication.sv
