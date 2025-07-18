@@ -6,10 +6,11 @@ module t04_top(
     input  logic [3:0] row,
 
     // // === Display ===
-    // output logic [31:0] display_address,
-    // output logic [31:0] mem_store_display,
-    // input  logic d_ack_display,
-    // output logic WEN
+    output  logic screenCsx,
+    output  logic screenDcx,
+    output  logic screenWrx,
+    output  logic [7:0] screenData
+    
 );
 
     // === Internal wires ===
@@ -25,6 +26,12 @@ module t04_top(
     logic [4:0] button;
     logic [1:0] app;
     logic rising;
+
+    logic [31:0] display_address;
+    logic [31:0] mem_store_display;
+    logic WEN;
+    logic d_ack_display;
+
 
     // === Instantiate Datapath ===
     t04_datapath datapath (
@@ -69,6 +76,21 @@ module t04_top(
     .button(button),
     .app(app),
     .rising(rising)
+    );
+
+    // === DISPLAY INTERFACE ===
+
+    t04_screen_top screen (
+        .clk(clk),
+        .rst(rst),
+        .WEN(WEN),
+        .mem_store_display(mem_store_display),
+        .display_address(display_address),
+        .d_ack_display(d_ack_display),
+        .dcx(screenDcx),
+        .csx(screenCsx),
+        .wrx(screenWrx),
+        .screenData(screenData)
     );
 
 endmodule
