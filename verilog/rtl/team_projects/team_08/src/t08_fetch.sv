@@ -11,7 +11,7 @@ always_ff@(posedge clk, negedge nrst) begin
         program_counter <= '0;
         current_ra <= '0;
     end
-    else if (!feeze) begin
+    else if (!freeze) begin
         program_counter <= next_pc;
         current_ra <= next_ra;
     end
