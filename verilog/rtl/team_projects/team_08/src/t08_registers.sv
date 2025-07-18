@@ -8,6 +8,8 @@ module t08_registers(
     input logic [1:0] data_in_control, //For selecting which data is to be drawn from for input (multiplexer)
 
     input logic en_read_1, en_read_2, en_write, //Enable signals for reading from the registers and writing
+
+    input logic busy, //Disables all reading and writing
     
     output logic [31:0] data_out_r1, data_out_r2 //Output when registers are read from
 );
@@ -56,7 +58,7 @@ module t08_registers(
         data_out_r1 = 0;
         data_out_r2 = 0;
         
-        if (en_read_1) begin //Read from one register
+        if (en_read_1 && !busy) begin //Read from one register
 
             data_out_r1 = data[address_r1];
 
@@ -66,7 +68,7 @@ module t08_registers(
 
         end
 
-        if (en_read_2) begin //Read from a second register
+        if (en_read_2 && !busy) begin //Read from a second register
 
             data_out_r2 = data[address_r2];
 
@@ -76,7 +78,7 @@ module t08_registers(
 
         end
 
-        if (en_write) begin //Write to a register
+        if (en_write && !busy) begin //Write to a register
 
             data_n[address_rd] = data_in;
 

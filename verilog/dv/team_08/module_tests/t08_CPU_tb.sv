@@ -9,7 +9,7 @@ module t08_CPU_tb;
 
     logic clk = 0, nRst;        //Clock and active-low reset. 
     logic [31:0] data_in;       //memory to memory handler: data in
-    logic done, busy;
+    logic done = 1, busy = 0;
     logic [31:0] data_out;      //memory handler to mmio: data outputted 
     logic [31:0] mem_address;   //memory handler to mmio: address in memory
     logic read_out, write_out;  //memory handler to mmio: read and write enable
@@ -22,7 +22,7 @@ module t08_CPU_tb;
 
     t08_CPU CPU(
         .clk(clk), .nRst(nRst),
-        .data(in), 
+        .data_in(data_in), 
         .done(done), .busy(busy), 
         .data_out(data_out), 
         .mem_address(mem_address), 
@@ -44,12 +44,6 @@ module t08_CPU_tb;
     instruction_types test_phase = SETUP; 
     int subtestNumber = 0; 
 
-    logic [127:0] [31:0] memory = {
-        32'b000000000011_00001_000_00010_0010011, //setup addi 1
-        32'b000000000101_00001_000_00100_0010011, //setup addi 2
-        32'b0000000_00010_00100_000_00011_0110011, //R-Type add
-    };
-
     task do_instruction(logic [31:0] instruction);
 
 
@@ -58,13 +52,13 @@ module t08_CPU_tb;
 
     task do_branch_instruction(logic [2:0] func3, logic [4:0] rs2, logic [4:0] rs1, logic [12:0] imm);
 
-        instruction = {imm[12], imm[10:5], rs2, rs1, func3, imm[4:1], imm[11], 7'b1100011};
+        //instruction = {imm[12], imm[10:5], rs2, rs1, func3, imm[4:1], imm[11], 7'b1100011};
 
     endtask
 
     task do_jump_instruction(logic [20:0] imm, logic [4:0] rd);
 
-        instruction = {imm[20], imm[10:1], imm[11], imm[19:12], rd, 7'b1101111};
+        //instruction = {imm[20], imm[10:1], imm[11], imm[19:12], rd, 7'b1101111};
 
     endtask
 
@@ -77,9 +71,13 @@ module t08_CPU_tb;
         nRst = 1;
         data_in = 0;
 
+        repeat (100) @ (negedge clk);
+
         /*
         Setup
         */
+
+        /*
 
         @ (negedge clk);
         test_phase = SETUP;
@@ -96,9 +94,9 @@ module t08_CPU_tb;
         subtestNumber = 2;
         instruction = 32'b000000000101_00001_000_00100_0010011;
 
-        /*
+        
         Register command tests
-        */
+        
         
         @ (negedge clk);
         test_phase = R_TYPE;
@@ -162,9 +160,9 @@ module t08_CPU_tb;
         subtestNumber = 10;
         instruction = 32'b0000000_01100_00101_111_01101_0110011; 
 
-        /*
+        
         Immediate command tests
-        */
+        
 
         @ (negedge clk);
         test_phase = I_TYPE;
@@ -222,11 +220,11 @@ module t08_CPU_tb;
         subtestNumber = 9;
         instruction = 32'b0100000_00010_00101_101_10110_0010011;
 
-        /*
+        
         Load command tests
-        */
+        
 
-        /*
+        
         @ (negedge clk);
         //LB: 
         instruction = 32'b000000000011_00001_000_01111_0000011; //
@@ -246,13 +244,13 @@ module t08_CPU_tb;
         @ (negedge clk);
         //lhu
         instruction = 32'b000000000011_00001_101_00010_0000011; //
-        */
+        
     
-        /*
+        
         Store command types
-        */
+        
     
-        /*
+        
         @ (negedge clk);
         //sb
         instruction = 32'b0000100_00000_00001_000_00010_0100011; //
@@ -264,11 +262,11 @@ module t08_CPU_tb;
         @ (negedge clk);
         //sw
         instruction = 32'b0000100_00000_00001_010_00010_0100011; //
-        */
+        
 
-        /*
+        
         Branch command tests
-        */
+        
 
         @ (negedge clk);
         test_phase = B_TYPE;
@@ -368,9 +366,9 @@ module t08_CPU_tb;
         subtestNumber = 16;
         do_branch_instruction(3'b111, 5'b00100, 5'b00101, 13'd0); 
 
-        /*
+        
         Upper immediate command tests
-        */
+        
 
         @ (negedge clk);
         test_phase = U_TYPE;
@@ -385,9 +383,9 @@ module t08_CPU_tb;
         // //lui
         // instruction = 32'b00001000000000001000_00010_0110111; //
 
-        /*
+        
         Jump command tests
-        */
+        
 
         @ (negedge clk);
         test_phase = J_TYPE;
@@ -407,9 +405,9 @@ module t08_CPU_tb;
         subtestNumber = 3;
         instruction = 32'b000000000000_11111_000_11111_0010011;
 
-        /*
+        
         Invalid commands
-        */
+        
         @ (negedge clk);
         test_phase = INVALID;
 
@@ -421,6 +419,8 @@ module t08_CPU_tb;
         //invalid command, all bits to 1;
         subtestNumber = 2;
         instruction = 32'd1;
+
+        */
 
         #2 $finish;
 

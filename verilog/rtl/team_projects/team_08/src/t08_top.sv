@@ -8,14 +8,21 @@ module t08_top(
     output logic touchscreen_scl,
 
     output logic [7:0] spi_outputs,                     //SPI outputs to display screen
-    output logic spi_wrx, spi_rdx, spi_csx, spi_dcx,
+    output logic spi_wrx, spi_rdx, spi_csx, spi_dcx
 
-    input logic [31:0] wb_dat_i,                        //Wishbone manager inputs and outputs with wishbone interconnect
-    input logic wb_ack_i,
-    output logic [31:0] wb_adr_o, 
-    output logic [31:0] wb_dat_o,
-    output logic [3:0] wb_sel_o,
-    output logic wb_we_o, wb_stb_o, wb_cyc_o
+    // input logic [31:0] wb_dat_i,                        //Wishbone manager inputs and outputs with wishbone interconnect
+    // input logic wb_ack_i,
+    // output logic [31:0] wb_adr_o, 
+    // output logic [31:0] wb_dat_o,
+    // output logic [3:0] wb_sel_o,
+    // output logic wb_we_o, wb_stb_o, wb_cyc_o
+
+    // input logic [31:0] wb_dat_o,                    //TEMPORARILY TRYING TO MOVE WISHBONE MANAGER OUT OF TOP
+    // input logic wb_busy_o,
+    // output logic [31:0] wb_dat_i,
+    // output logic [31:0] wb_adr_i,
+    // output logic [3:0] wb_sel_i,
+    // output logic wb_write_i, wb_read_i
 );
 
     /*
@@ -89,7 +96,7 @@ module t08_top(
         
         .spi_busy_i(SPI_busy),                                                             //From SPI
         
-        .mem_data_i(wb_data_to_mmio), .mem_busy_i(wb_busy_to_mmio),                        //From memory: data
+        .mem_data_i(wb_dat_o), .mem_busy_i(wb_busy_o),                        //From memory: data
         
         .mh_data_o(CPU_data_in), .mmio_busy_o(mmio_busy), .I2C_done_o(mmio_done_from_I2C), //To memory handler
         
@@ -107,7 +114,15 @@ module t08_top(
     */
 
     logic [31:0] wb_data_to_mmio; //Data read into mmio from wishbone manager
-    logic wb_busy_to_mmio;        //Busy signal sent from wishbone manager to mmio
+            
+
+    logic [31:0] wb_dat_i;                     
+    logic wb_ack_i;
+    logic [31:0] wb_adr_o;
+    logic [31:0] wb_dat_o;
+    logic [3:0] wb_sel_o;
+    logic wb_we_o, wb_stb_o, wb_cyc_o;
+    logic wb_busy_o;                //Busy signal sent from wishbone manager to mmio
 
     wishbone_manager wm(
         .nRST(nRst), .CLK(clk),                                     //reset and clock
@@ -121,7 +136,18 @@ module t08_top(
         .ADR_O(wb_adr_o), .DAT_O(wb_dat_o), .SEL_O(wb_sel_o),       //"output to wishbone interconnect"
         .WE_O(wb_we_o), .STB_O(wb_stb_o), .CYC_O(wb_cyc_o),  
 
-        .CPU_DAT_O(wb_data_to_mmio), .BUSY_O(wb_busy_to_mmio)       //"output to user design"
+        .CPU_DAT_O(wb_data_to_mmio), .BUSY_O(wb_busy_o)       //"output to user design"
+    );
+
+    /*
+    SRAM Wishbone wrapper
+    */
+
+    sram_WB_Wrapper sram_wb_w(
+        .wb_clk_i(clk), .wb_rst_i(!nRst), 
+        .wbs_stb_i(wb_stb_o), .wbs_cyc_i(wb_cyc_o), .wbs_we_i(wb_we_o), 
+        .wbs_sel_i(wb_sel_o), .wbs_dat_i(wb_dat_o), .wbs_adr_i(wb_adr_o), 
+        .wbs_ack_o(wb_ack_i), .wbs_dat_o(wb_dat_i)
     );
 
 endmodule

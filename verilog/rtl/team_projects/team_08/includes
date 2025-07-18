@@ -10,3 +10,5 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_fetch.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_handler.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_mmio.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_spi.sv

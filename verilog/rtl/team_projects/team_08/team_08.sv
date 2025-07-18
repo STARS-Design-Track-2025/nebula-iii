@@ -76,6 +76,25 @@ module team_08 (
         .wb_dat_i(DAT_I), .wb_ack_i(ACK_I), 
         .wb_adr_o(ADR_O), .wb_dat_o(DAT_O), .wb_sel_o(SEL_O), 
         .wb_we_o(WE_O), .wb_stb_o(STB_O), .wb_cyc_o(CYC_O)
+
+        // .wb_dat_o(DAT_O), .wb_busy_o(BUSY_O), 
+        // .wb_dat_i(DAT_I), .wb_adr_i(ADR_I), .wb_sel_i(SEL_I), 
+        // .wb_write_i(WRITE_I), .wb_read_i(READ_I)
     );
+
+    // wishbone_manager wm(
+    //     .nRST(nRst), .CLK(clk),                                     //reset and clock
+
+    //     .DAT_I(DAT_I), .ACK_I(ACK_I),                         //"input from wishbone interconnect"
+                                                                  
+    //     .CPU_DAT_I(DAT_I), .ADR_I(ADR_I),                   //"input from user design"
+    //     .SEL_I(SEL_I),  
+    //     .WRITE_I(WRITE_I), .READ_I(READ_I),    
+
+    //     .ADR_O(ADR_O), .DAT_O(DAT_O), .SEL_O(SEL_O),       //"output to wishbone interconnect"
+    //     .WE_O(WE_O), .STB_O(STB_O), .CYC_O(CYC_O),  
+
+    //     .CPU_DAT_O(DAT_O), .BUSY_O(BUSY_O)       //"output to user design"
+    // );
 
 endmodule
