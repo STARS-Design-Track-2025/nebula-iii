@@ -81,8 +81,9 @@ always_comb begin
 
         readout = 0;
         writeout = 0;
+        if (busy) begin nextstate = 0; end
 
-        if (write&!busy) begin //store type, signed
+        else if (write&!busy) begin //store type, signed
             writeout = write;
             nextnewadd = mem_address;
 
