@@ -6,11 +6,24 @@
 
 module t08_handler(
     input logic [31:0] fromregister, frommem, mem_address, counter,
-    input logic write, read, clk, nrst, busy,done,
+    input logic write, read, clk, nrst, busy,do
+    
+    
+    
+    
+    
+    
+    
+    ne,
     input logic [2:0] func3,
     output logic [31:0] toreg,  tomem, addressnew, instruction,
     output logic writeout, readout, freeze
 );
+
+localparam [31:0] I2C_ADDRESS = 32'd923923;
+
+
+
 logic [31:0] regs = 0, mems = 0, address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 logic [1:0] state,  nextstate; //0 wait, 1 send
 
@@ -20,6 +33,8 @@ assign toreg = regs;
 //assign writeout = write;
 //assign readout = read;
 assign freeze = busy|readout|writeout;
+
+
 
 always_ff@(posedge clk, negedge nrst) begin
     if(!nrst) begin
@@ -87,7 +102,7 @@ always_comb begin
             endcase
         end
         else if (read) begin
-            if (done) begin 
+            if (done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048) begin 
             case(func3)
             0: begin //signed
                 nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB

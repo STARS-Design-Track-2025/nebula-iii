@@ -283,7 +283,6 @@ always_comb begin
 
     //U-TYPE: LUI
     else if (opcode == 7'b0110111) begin 
-        read = 1;
         funct3 = 1; //to enable memory handler
 
         regd = instruction[11:7];
