@@ -1,7 +1,6 @@
 module t07_MMIO (
 //inputs
     // inputs from internal memory
-    input logic [31:0] addr_in, //address from the internal memory
     input logic [31:0] memData_in,  // data from internal memory
     input logic [1:0] rwi_in, //read write or idle from internal memory
 
@@ -12,8 +11,8 @@ module t07_MMIO (
     //inputs from external register
     input logic [31:0] regData_in, //data from external register
 
-    // input from fetch module
-    input logic [31:0] PC_address, // Program Counter address to write to instruction module
+    // input from CPU top
+    input logic [31:0] addr_in, // Program Counter address to write to instruction module
 
 
 //outputs
@@ -73,6 +72,22 @@ always_comb begin
             rwi_out <= 2'b10; //read from instruction/Data memory
             addr_out <= addr_in; // address to read from instruction/Data memory
             ExtData_out <= ExtData_in; // data from instruction/Data memory to internal memory
+        end else if (addr_in >= 32'd8192) begin //change address number later                           // write instruction to fetch module
+            ri_out <= 1'b0; //idle external register
+            wi_out <= 1'b0; //idle TFT
+            rwi_out <= 2'b01; //write instruction/Data memory
+            addr_outREG <= 32'b0; // no address for external register
+            addr_out <= addr_in; // address for instruction/Data memory from cpu top mux
+            ExtData_out <= 32'b0; // no data to internal memory
+            writeInstruction_out <= inst; // next instruction to write to fetch module in CPU
+        end else begin                                                                                  //should not happen but here to prevent latches     
+            ri_out <= 1'b0; //idle external register
+            wi_out <= 1'b0; //idle TFT
+            rwi_out <= 2'b11; //idle instruction/Data memory
+            addr_outREG <= 32'b0; // no address for external register
+            addr_out <= 32'b0; // no address for instruction/Data memory
+            ExtData_out <= 32'b0; // no data to internal memory
+        end
        end else begin                                                                                  //should not happen but here to prevent latches     
             ri_out <= 1'b0; //idle external register
             wi_out <= 1'b0; //idle TFT
@@ -81,26 +96,6 @@ always_comb begin
             addr_out <= 32'b0; // no address for instruction/Data memory
             ExtData_out <= 32'b0; // no data to internal memory
         end
-    end else if (PC_address) begin //write to fetch module
-        busy <= 1'b1; //set busy signal to indicate memory handler is processing
-        ri_out <= 1'b0; //idle external register
-        wi_out <= 1'b0; //idle TFT
-        rwi_out <= 2'b10; //idle instruction/Data memory
-        addr_outREG <= 32'b0; // no address for external register
-        addr_out <= PC_address; // address to write to instruction module
-        writeData_out <= 32'b0; // no data to write to instruction/Data memory
-        writeInstruction_out <= inst; // instruction to write to fetch module in CPU
-    end else begin //idle state
-        busy <= 1'b0; //clear busy signal
-        ri_out <= 1'b0; //idle external register
-        wi_out <= 1'b0; //idle TFT
-        rwi_out <= 2'b11; //idle instruction/Data memory
-        addr_outREG <= 32'b0; // no address for external register
-        addr_out <= 32'b0; // no address for instruction/Data memory
-        writeData_out <= 32'b0; // no data to write to instruction/Data memory
-        writeInstruction_out <= 32'b0; // no instruction to write to fetch module
-        writeData_outTFT <= 32'b0; // no data to write to SPI TFT
-    end
 end
 
 
