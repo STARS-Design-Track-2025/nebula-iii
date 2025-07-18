@@ -73,7 +73,7 @@ module t08_CPU (
 
     t08_handler handler(
         .fromregister(reg_out_1), .frommem(data_in), 
-        .mem_address(mem_address), 
+        .mem_address(alu_data_out), 
         .counter(program_counter),
         .write(mem_en_write), .read(mem_en_read), 
         .clk(clk), .nrst(nRst), 

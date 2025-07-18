@@ -35,7 +35,7 @@ module t08_top(
 
     t08_CPU CPU(
         .clk(clk), .nRst(nRst),                             //clock and reset
-        .data_in(CPU_data_in),                              //memory to memory handler: data in
+        .data_in(CPU_data_in),                              //mmio to memory handler: data in
         .done(mmio_done_from_I2C), .busy(mmio_busy),        //from mmio, if it's busy, if data from I2C is done
         .data_out(CPU_data_out),                            //memory handler to mmio: data outputted
         .mem_address(CPU_mem_address_out),                  //memory handler to mmio: address in memory
@@ -96,7 +96,7 @@ module t08_top(
         
         .spi_busy_i(SPI_busy),                                                             //From SPI
         
-        .mem_data_i(wb_dat_o), .mem_busy_i(wb_busy_o),                        //From memory: data
+        .mem_data_i(wb_data_to_mmio), .mem_busy_i(wb_busy_o),                        //From memory: data
         
         .mh_data_o(CPU_data_in), .mmio_busy_o(mmio_busy), .I2C_done_o(mmio_done_from_I2C), //To memory handler
         
