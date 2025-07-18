@@ -55,34 +55,35 @@ always_comb begin
     writeout = 0;
 
     case(state)
-    0: begin
-         if (!busy) begin
+    // 0: begin
+    //      if (!busy) begin
 
-            if ((write) | (read & done)) begin 
-                    nextstate = 1; //data
-                end
-            else if (!write&!read) begin
-                nextstate = 2;
-            end
-            else begin
-                nextstate = 0;
-            end
+    //         if ((write) | (read & done)) begin 
+    //                 nextstate = 1; //data
+    //             end
+    //         else if (!write&!read) begin
+    //             nextstate = 2;
+    //         end
+    //         else begin
+    //             nextstate = 0;
+    //         end
 
-    end
-    end
+    // end
+    // end
 
-    1: begin //data
+    0: begin //data
         nextnewadd = mem_address; 
 
         nextmem = mems;
         nextregs = regs;
-        nextstate = 0;
+        //nextstate = 0;
 
 
 
         readout = read;
         writeout = write;
         if (write) begin //store type, signed
+            nextstate = 1;
             case(func3)
             0: begin
                 nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
@@ -94,7 +95,7 @@ always_comb begin
             endcase
         end
         else if (read) begin
-            if (done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048) begin 
+            if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
             case(func3)
             0: begin //signed
                 nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB
@@ -113,21 +114,27 @@ always_comb begin
 
            end 
             end
-    end
-
-    2: begin //instruction fetching
-        nextnewadd = counter;
-        if(!busy) begin
-            readout = 1;
+        else begin
+            nextstate = 1;
         end
-        nextstate = 3;
     end
 
-    3: begin //instruction sending to cu
+    1: begin //instruction fetching
+        nextnewadd = counter;           
         nextinst = frommem;
-        nextstate = 0;
-        //readout = 1;
+        if(!busy) begin
+            readout = 1;        
+ 
+            nextstate = 0;
+        end
+
     end
+
+    // 2: begin //instruction sending to cu
+ 
+
+    //     //readout = 1;
+    // end
     default: begin readout = 0; writeout = 0; end
     endcase
 end
