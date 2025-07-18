@@ -13,7 +13,7 @@ logic pulse;
 logic [3:0] row_d;
 
 
-t04_counter_column columns(.clk(clk), .rst(rst), .column(column), .pulse(pulse));
+t04_counter_column columns(.clk(clk), .rst(rst), .column(column), .pulse_e(pulse));
 // between these two modules is the physical keypad
 t04_button_debounce debounce(.clk(clk), .rst(rst), .row(row), .row_d(row_d));
 t04_button_decoder_edge_detector decode(.clk(clk), .rst(rst), .alpha(alpha), .row(row_d), .column(column), .button(button), .rising(rising), .pulse(pulse));
