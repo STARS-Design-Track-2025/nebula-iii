@@ -72,7 +72,7 @@ always_comb begin
     // end
 
     0: begin //data
-        nextnewadd = mem_address; 
+        nextnewadd = addressnew; 
 
         nextmem = mems;
         nextregs = regs;
@@ -82,9 +82,11 @@ always_comb begin
 
         readout = 0;
         writeout = 0;
-        if (write|!busy) begin //store type, signed
+        if (write&!busy) begin //store type, signed
             nextstate = 1;
-            writeout = 1;
+            writeout = write;
+            nextnewadd = mem_address;
+
             case(func3)
             0: begin
                 nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
@@ -95,8 +97,12 @@ always_comb begin
             default:;
             endcase
         end
-        else if (read| !busy) begin
+
+        else if (read& !busy) begin
             readout = read;
+            nextnewadd = mem_address;
+            nextstate = 1;
+
             if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
             case(func3)
             0: begin //signed
@@ -116,6 +122,7 @@ always_comb begin
 
            end 
             end
+
         else begin
             nextstate = 1;
         end
