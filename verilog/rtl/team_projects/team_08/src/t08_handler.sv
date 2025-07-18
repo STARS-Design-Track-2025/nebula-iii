@@ -25,6 +25,7 @@ always_ff@(posedge clk, negedge nrst) begin
     if(!nrst) begin
         regs <= '0;
         mems <= '0;
+        
         state <= 0; //wait
     end
     else begin
