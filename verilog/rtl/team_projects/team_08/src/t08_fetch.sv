@@ -1,16 +1,17 @@
 //produces program counter and return address for jump opertion
 module t08_fetch(
     input logic [31:0] imm_address,
-    input logic clk, nrst, jump, branch,
+    input logic clk, nrst, jump, branch, freeze,
     output logic [31:0] program_counter, ret_address
 );
-logic [31:0] next_pc, next_ra, current_pc = 0, current_ra = 0, prev_pc = 0;
+logic [31:0] next_pc, next_ra, current_ra;
+
 always_ff@(posedge clk, negedge nrst) begin
     if (!nrst) begin
         program_counter <= '0;
         current_ra <= '0;
     end
-    else begin
+    else if (!feeze) begin
         program_counter <= next_pc;
         current_ra <= next_ra;
     end
