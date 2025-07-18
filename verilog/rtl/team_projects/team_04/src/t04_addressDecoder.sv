@@ -8,9 +8,9 @@ module t04_addressDecoder (
 );
 
     // Address map (can customize)
-    localparam logic [31:0] DISPLAY_ADDR1   = 32'h0000_0004;
-    localparam logic [31:0] DISPLAY_ADDR2  = 32'h0000_0008;
-    localparam logic [31:0] DISPLAY_ADDR3  = 32'h4000_000C;
+    localparam logic [31:0] DISPLAY_ADDR1   = 32'h0000_0004; //control
+    localparam logic [31:0] DISPLAY_ADDR2  = 32'h0000_0008; //x
+    localparam logic [31:0] DISPLAY_ADDR3  = 32'h4000_000C; //y
     localparam logic [31:0] KEYPAD_ADDR   = 32'h0000_0010;
 
     always_comb begin

@@ -15,8 +15,8 @@ module t04_keypad_register (
         if (reset) begin
             key_reg <= 32'b0;
         end
-        else if (rising && app == 2'b00) begin
-            key_reg <= {27'b0, button_pressed}; 
+        else if (rising) begin
+            key_reg <= {25'b0, app[1:0], button_pressed}; 
         end
     end
 
