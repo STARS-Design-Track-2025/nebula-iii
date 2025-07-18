@@ -19,13 +19,13 @@ assign tomem = mems;
 assign toreg = regs;
 //assign writeout = write;
 //assign readout = read;
-assign freeze = busy;
+assign freeze = busy|readout|writeout;
 
 always_ff@(posedge clk, negedge nrst) begin
     if(!nrst) begin
         regs <= '0;
         mems <= '0;
-        
+        addressnew <= 0;
         state <= 0; //wait
     end
     else begin
