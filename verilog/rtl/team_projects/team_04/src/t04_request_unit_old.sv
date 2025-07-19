@@ -104,7 +104,14 @@ module t04_request_unit_old(
             n_latched_instruction = instruction_in;
         end
         else begin
-            n_latched_instruction = 32'd0;
+            if (ack_mul_reg && (MemRead || MemWrite) && !ack_mul_reg2) begin
+                n_latched_instruction = latched_instruction;
+            end
+            else begin
+                n_latched_instruction = 32'd0;
+            end
+            //n_latched_instruction = 32'd0;
+            //used to just be n_latched_instruction = 32'd0;
         end
     end
 

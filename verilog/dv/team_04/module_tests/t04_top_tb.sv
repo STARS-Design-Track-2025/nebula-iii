@@ -1,31 +1,26 @@
 `timescale 1ns/1ps
 
-module t04_datapathxmmioxkeypad_tb;
+module t04_top_tb;
 
     logic clk, rst;
-
-    // Inputs to KEYPAD (simulated peripherals)
     logic [3:0] row;
-    logic d_ack_display;
 
-    // Outputs from MMIO
-    logic [31:0] display_address;
-    logic [31:0] mem_store_display;
-    logic WEN;  
+    logic screenCsx;
+    logic screenDcx;
+    logic screenWrx;
+    logic [7:0] screenData;
 
     // DUT instance (no .busy connection here)
-    t04_datapathxmmioxkeypad dut (
+    t04_top dut (
         .clk(clk),
         .rst(rst),
         .row(row),
-        .d_ack_display(d_ack_display),
-        .display_address(display_address),
-        .mem_store_display(mem_store_display),
-        .WEN(WEN)
+        .screenCsx(screenCsx),
+        .screenDcx(screenDcx),
+        .screenWrx(screenWrx),
+        .screenData(screenData)
     );
 
-    // Simulated RAM
-    logic [31:0] ram [0:255];
 
     // Clock generation
     always #10 clk = ~clk;
@@ -72,9 +67,10 @@ module t04_datapathxmmioxkeypad_tb;
 
     // === Initialize test ===
     initial begin
-        //force dut.mmio.key_data = 4;
-        $dumpfile("t04_datapathxmmioxkeypad.vcd");
-        $dumpvars(0, t04_datapathxmmioxkeypad_tb);
+        //force dut.mmio.RAM_en = 0;
+        force dut.mmio.key_data = 4;
+        $dumpfile("t04_top.vcd");
+        $dumpvars(0, t04_top_tb);
 
         clk = 0;
         rst = 1;
@@ -83,13 +79,9 @@ module t04_datapathxmmioxkeypad_tb;
 
         // === Release reset ===
         #15 rst = 0;
-        row = 4'b0010;
         #2000;
-        #200;
-        #1000;
-        #180;
 
-       $display("\nFINAL REGISTER VALUES");
+       $display("\nFINAL REGISTER VALUES HEX");
         $display("----------------------");
         $display("x1  = %0h ", dut.datapath.rf.registers[1]);   // address of data start
         $display("x2  = %0h ", dut.datapath.rf.registers[2]);   // loaded from 0x24

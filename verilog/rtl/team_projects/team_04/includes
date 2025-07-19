@@ -25,3 +25,8 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_counter_column.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_multiplication.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screen_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screenCounter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screenEnableEdge.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screenRegister.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screensignalLogic.sv
