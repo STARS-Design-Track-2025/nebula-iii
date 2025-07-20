@@ -1,5 +1,5 @@
 00500093  // 00: addi x1, x0, 5        ; x1 = 5
-//01000083  // 04: lw   x1, 16(x0) 
+01000083  // 04: lw   x1, 16(x0) 
 0500113   // 08: addi x2, x0, 5        ; x2 = 5
 00208463  // 0C: beq  x1, x2, +8       ; if x1 == x2, skip next line
 07b00213  // 10: addi x4, x0, 123      ; x4 = 123 (skipped if branch taken)
