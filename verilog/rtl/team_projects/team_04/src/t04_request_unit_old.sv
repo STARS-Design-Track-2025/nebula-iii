@@ -57,7 +57,7 @@ module t04_request_unit_old(
             zero_multi1 <= zero_multi;
         end
     end
-
+    //problem of repeating an instruction sometimes after a multiply
     always_comb begin
         MemRead_request = MemRead;
         MemWrite_request = MemWrite;
