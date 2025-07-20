@@ -55,8 +55,8 @@ module t04_mmio (
         .CPU_DAT_I(mem_store),
         .ADR_I(final_address),
         .SEL_I(4'd15),                  // full word access
-        .WRITE_I(RAM_en && MemWrite && !WEN2),
-        .READ_I(((RAM_en && MemRead_Wishbone) || WEN2)),
+        .WRITE_I(RAM_en && MemWrite && !WEN2 && !i_ack),
+        .READ_I(((RAM_en && MemRead_Wishbone) || WEN2) || i_ack),
 
         // Unconnected Wishbone bus outputs (to be wired in full system)
         .ADR_O(adr), .DAT_O(dat_o), .SEL_O(sel),
@@ -69,8 +69,8 @@ module t04_mmio (
 
     logic read_I;
     logic write_I;
-    assign write_I = RAM_en && MemWrite && !WEN2;
-    assign read_I = (RAM_en && MemRead_Wishbone) || WEN2;
+    // assign write_I = RAM_en && MemWrite && !WEN2;
+    // assign read_I = (RAM_en && MemRead_Wishbone) || WEN2;
 
     sram_WB_Wrapper sram (
     .wb_clk_i(clk),
@@ -113,8 +113,8 @@ module t04_mmio (
         .WEN(WEN),
         .Ram_En(RAM_en),
         .key_en(key_en),
-        .MemRead(MemRead),
-        .MemWrite(MemWrite),
+        .clk(clk),
+        .rst(reset),
         .d_ack(d_ack),
         .i_ack(i_ack)
     );

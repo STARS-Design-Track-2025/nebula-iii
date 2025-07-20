@@ -82,7 +82,7 @@ module t04_request_unit_old(
             end
         end
         mem_store = stored_data;
-        if (i_ack || d_ack) begin
+        if (d_ack) begin
             if ((MemRead || MemWrite) && (!(n_memread2 || n_memwrite2))) begin
                 freeze = 1;
             end

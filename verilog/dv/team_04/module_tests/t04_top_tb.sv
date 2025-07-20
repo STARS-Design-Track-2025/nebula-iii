@@ -68,7 +68,7 @@ module t04_top_tb;
     // === Initialize test ===
     initial begin
         //force dut.mmio.RAM_en = 0;
-        force dut.mmio.key_data = 0;
+        force dut.mmio.key_data = 16;
         //x2 is multiplier
         //x1 is multicand
         // force dut.datapath.rf.registers[1] = 0;
@@ -83,13 +83,17 @@ module t04_top_tb;
 
         // === Release reset ===
         #15 rst = 0;
-        #2000;
+        #1020;
+        force dut.screen.d_ack_display = 1;
+        #20;
+        force dut.screen.d_ack_display = 0;
+        #1000;
 
        $display("\nFINAL REGISTER VALUES HEX");
         $display("----------------------");
         $display("x1  = %0h ", dut.datapath.rf.registers[1]);   // address of data start
         $display("x2  = %0h ", dut.datapath.rf.registers[2]);   // loaded from 0x24
-        $display("x3  = %0d ", dut.datapath.rf.registers[3]);   // loaded from 0x28
+        $display("x3  = %0h ", dut.datapath.rf.registers[3]);   // loaded from 0x28
         $display("x4  = %0h ", dut.datapath.rf.registers[4]);   // loaded from 0x2C
         $display("x5  = %0h ", dut.datapath.rf.registers[5]);   // hardcoded value (set manually in CPU or TB)
         $display("x10 = %0h ", dut.datapath.rf.registers[10]);  // x2 - x3

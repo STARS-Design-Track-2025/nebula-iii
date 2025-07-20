@@ -9,25 +9,49 @@ module t04_acknowledgement_center (
     // from display
     input logic display_ack,
 
-    // from datapath
-    input logic MemRead,
-    input logic MemWrite,
+    // for register
+    input logic clk,
+    input logic rst,
 
     // output to datapath
     output logic d_ack,
     output logic i_ack
 );
+//i_ack SERVES AS THE DATA_STORING NOT USED IN DATAPATH
+logic DATA_STORING;
+logic DATA_STORING1;
+
 always_comb begin
-    if (WEN) begin //AS OF NOW Ram_En is hardwired to be 1
+    i_ack = DATA_STORING;
+    if (DATA_STORING) begin //AS OF NOW Ram_En is hardwired to be 1
         d_ack = (display_ack);
     end
-    else if (Ram_En) begin
+    else if (Ram_En && !DATA_STORING1) begin
         d_ack = (~busy);
     end
     else begin
         d_ack = (key_en);
     end
-    i_ack = 0;
 end
 
+always_ff @(posedge clk, posedge rst) begin
+    if (rst) begin
+        DATA_STORING <= 0;
+    end
+    else if (WEN) begin
+        DATA_STORING <= 1;
+    end
+    else if (display_ack) begin
+        DATA_STORING <= 0;
+    end
+end
+
+always_ff @(posedge clk, posedge rst) begin
+    if (rst) begin
+        DATA_STORING1 <= 0;
+    end
+    else begin
+        DATA_STORING1 <= DATA_STORING;
+    end
+end
 endmodule
