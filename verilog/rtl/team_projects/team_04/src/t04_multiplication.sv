@@ -3,7 +3,8 @@ module t04_multiplication (
     input logic mul, // this is the enable signal, it should only stay high for one clock cycle to receive inputs
     input logic [31:0] multiplicand, multiplier,
     output logic [31:0] product,
-    output logic ack_mul
+    output logic ack_mul,
+    output logic zero_multi
 );
 
 
@@ -37,6 +38,7 @@ always_ff @(posedge clk, posedge rst) begin
 end
 
 always_comb begin
+    zero_multi = (!multiplicand || !multiplier) && mul;
     mul_rising_edge = mul & ~mul_prev;
     multiplicand_i_n = multiplicand_i;
     multiplier_i_n = multiplier_i;

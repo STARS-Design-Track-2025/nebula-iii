@@ -13,6 +13,7 @@ module t04_request_unit_old(
     input  logic MemWrite,
     input  logic MUL_EN,
     input  logic ack_mul,
+    input  logic zero_multi,
     output logic [31:0] final_address,
     output logic [31:0] instruction_out,
     output logic [31:0] mem_store,
@@ -30,6 +31,7 @@ module t04_request_unit_old(
     logic ack_mul_reg;
     logic ack_mul_reg2;
     logic MUL_EN1;
+    logic zero_multi1;
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -41,6 +43,7 @@ module t04_request_unit_old(
             ack_mul_reg <= 0;
             ack_mul_reg2 <= 0;
             MUL_EN1 <= 0;
+            zero_multi1 <= 0;
         end 
         else begin
             latched_instruction <= n_latched_instruction;
@@ -51,16 +54,17 @@ module t04_request_unit_old(
             ack_mul_reg <= ack_mul;
             ack_mul_reg2 <= ack_mul_reg;
             MUL_EN1 <= MUL_EN;
+            zero_multi1 <= zero_multi;
         end
     end
 
     always_comb begin
         MemRead_request = MemRead;
         MemWrite_request = MemWrite;
-        if ((n_memread == 1 || n_memwrite == 1) || (MUL_EN1)) begin
+        if ((n_memread == 1 || n_memwrite == 1) || (MUL_EN1 && !zero_multi1)) begin
             instruction_out = latched_instruction;
         end
-        else if ((latched_instruction == instruction_in && (!(MemRead || MemWrite))) || (latched_instruction != 32'b0 && instruction_in == 32'hBAD1BAD1 && !(MemRead || MemWrite))) begin
+        else if ((zero_multi1) || (latched_instruction == instruction_in && (!(MemRead || MemWrite))) || (latched_instruction != 32'b0 && instruction_in == 32'hBAD1BAD1 && !(MemRead || MemWrite))) begin
             instruction_out = 32'b0;
         end
         else begin

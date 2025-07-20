@@ -68,7 +68,11 @@ module t04_top_tb;
     // === Initialize test ===
     initial begin
         //force dut.mmio.RAM_en = 0;
-        force dut.mmio.key_data = 4;
+        force dut.mmio.key_data = 0;
+        //x2 is multiplier
+        //x1 is multicand
+        // force dut.datapath.rf.registers[1] = 0;
+        // force dut.datapath.rf.registers[2] = 0;        
         $dumpfile("t04_top.vcd");
         $dumpvars(0, t04_top_tb);
 

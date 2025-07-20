@@ -38,6 +38,7 @@ logic [31:0] mulitply_result;
 logic ack_mul;
 logic mul_freeze;
 logic main_freeze;
+logic zero_multi;
 
 assign PC_plus4 = PC + 32'd4;
 
@@ -90,7 +91,8 @@ t04_multiplication multiplication_module(
 .multiplicand(src_A),
 .multiplier(src_B),
 .product(mulitply_result),
-.ack_mul(ack_mul)
+.ack_mul(ack_mul),
+.zero_multi(zero_multi)
 );
 
 assign PC_Jalr = ALU_result;
@@ -104,7 +106,10 @@ always_comb begin
     else begin
         result_or_pc4 = (Jal || Jalr) ? PC_plus4 : ALU_result;
     end
-    if (~(MUL_EN && ack_mul)) begin
+    if (zero_multi) begin
+        main_freeze = 0;
+    end
+    else if (~(MUL_EN && ack_mul)) begin
         main_freeze = Freeze || mul_freeze;
     end
     else begin
@@ -140,6 +145,7 @@ t04_request_unit_old ru(
     .stored_data(src_B),
     .MUL_EN(MUL_EN),
     .ack_mul(ack_mul),
+    .zero_multi(zero_multi),
     .MemRead(MemRead), .MemWrite(MemWrite),
     .final_address(final_address),
     .instruction_out(instruction_out),
