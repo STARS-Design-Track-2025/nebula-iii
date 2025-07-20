@@ -9,8 +9,6 @@ module t04_screen_top (
   logic [31:0] controlBus, xBus, yBus;
   logic [22:0] ct;
 
-  assign d_ack_display = internalAck;
-
   t04_screenRegister register(
     .wen(WEN), 
     .clk(clk), 
@@ -20,7 +18,8 @@ module t04_screen_top (
     .address(display_address), 
     .control(controlBus), 
     .xBus(xBus),
-    .yBus(yBus)
+    .yBus(yBus),
+    .finalAck(d_ack_display)
     );
 
   t04_screenEnableEdge screenEdge(
