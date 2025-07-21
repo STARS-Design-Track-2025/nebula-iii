@@ -4,27 +4,42 @@ module t07_ExternalRegister (
     input logic clk,
     input logic rst,
     input logic [31:0] ReadRegister, // Address of the register to read/write from the memory handler
+    input logic [31:0] SPIAddress, // Address for the SPI TFT
     input logic [31:0] write_data, // Data to write to the register from SPI
-    input logic [1:0] rwi, // Enable writing,reading, or idle to the register
-    output logic [31:0] read_data // Data read from the register
+    input logic ri, // Enable reading or idle to the register
+    output logic [31:0] read_data, // Data read from the register
+    output logic ack_REG // acknowledge signal to the memory handler
 );
     logic [31:0] registers [31:0]; // 32 registers, each 32 bits wide
-
-    // Read logic
+    logic next_ack_REG;  // Next acknowledge signal to the memory handler
+    logic [31:0] next_read_data; // Next write data to the register
+    
     always_comb begin
-        read_data = (rwi == 2'b10) ? registers[ReadRegister] : 32'b0; // Read data if rwi is read
+        next_ack_REG = 1'b0; // Default to not acknowledge
+        
+        if (ri == 1'b1) begin // If read or idle signal is high
+            next_ack_REG = 1'b1; // Acknowledge the read operation
+            next_read_data = registers[ReadRegister]; // Read data from the register
+        end else begin
+            next_ack_REG = 1'b0; // Do not acknowledge if not reading
+            next_read_data = 32'b0; // No data to read
+        end
     end
 
     // Write logic
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
+            ack_REG <= 1'b0; // Reset acknowledge signal
             // Reset all registers to zero
             for (int i = 0; i < 32; i++) begin
                 registers[i] <= 32'b0;
             end
-        end else if (rwi == 2'b01 && ReadRegister != '0) begin
-            // Write data to the register if rwi is write and ReadRegister is not zero
-            registers[ReadRegister] <= write_data;
+        end else begin
+            registers[SPIAddress] <= write_data; // Write data to the register
+            if (ri == 1'b1) begin
+                ack_REG <= next_ack_REG; // Acknowledge signal to the memory handler
+                read_data <= next_read_data; // Update write data
+            end
         end
     end
 

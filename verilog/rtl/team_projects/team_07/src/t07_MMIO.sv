@@ -83,7 +83,7 @@ always_comb begin
         end
     end else if (addr_in >= 32'd8192) begin //change address number later                           // write instruction to fetch module
             busy = busy_o; //set busy signal to indicate memory handler is processing
-            rwi_out = 2'b01; //read from instruction
+            rwi_out = 2'b10; //read from instruction
             addr_out = addr_in; // address for instruction/Data memory from cpu top mux
             ExtData_out = 32'b0; // no data to internal memory
             writeInstruction_out = inst; // next instruction to write to fetch module in CPU
