@@ -44,11 +44,27 @@ always_comb begin
         if(memSource) begin
             // If memSource is set, we are writing from the FPU register
             ExtAddress = ALU_address; // Use ALU address for memory operations
-            write_data = FPU_data;
+            if (memOp == 4'd6) begin // store byte
+                write_data = {24'b0, FPU_data[7:0]}; // Store byte from FPU data
+            end else if (memOp == 4'd7) begin // store half-word
+                write_data = {16'b0, FPU_data[15:0]}; // Store half-word from FPU data
+            end else if (memOp == 4'd8) begin // store word
+                write_data = FPU_data; // Store full word from FPU data
+            end else begin
+                write_data = 32'b0; // Default case, no valid operation
+            end
         end else begin
             // Otherwise, we are writing from the Register file
-            write_data = Register_dataToMem;
             ExtAddress = ALU_address; // Use ALU address for memory operations
+            if (memOp == 4'd6) begin // store byte
+                write_data = {24'b0, Register_dataToMem[7:0]}; // Store byte from FPU data
+            end else if (memOp == 4'd7) begin // store half-word
+                write_data = {16'b0, Register_dataToMem[15:0]}; // Store half-word from FPU data
+            end else if (memOp == 4'd8) begin // store word
+                write_data = Register_dataToMem; // Store full word from FPU data
+            end else begin
+                write_data = 32'b0; // Default case, no valid operation
+            end 
         end 
     end else if(memRead) begin
         rwi = 2'b10; //Read operation
