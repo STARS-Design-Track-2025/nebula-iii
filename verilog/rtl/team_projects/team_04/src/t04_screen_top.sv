@@ -35,7 +35,8 @@ module t04_screen_top (
     .clk(clk), 
     .rst(rst),
     .enableEdge(enableEdge),
-    .ct(ct)
+    .ct(ct),
+    .ack(internalAck)
   );
 
   t04_screensignalLogic screenLogic(
