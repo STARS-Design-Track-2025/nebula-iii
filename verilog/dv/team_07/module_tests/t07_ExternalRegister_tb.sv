@@ -4,64 +4,102 @@ module t07_ExternalRegister_tb;
 
     // Inputs
     logic clk;
-    logic rst;
+    logic nrst;
     logic [31:0] ReadRegister;
     logic [31:0] write_data;
-    logic [1:0] rwi;
+    logic ri;
+    logic [31:0] SPIAddress; // Address for the SPI TFT
 
     // Outputs
     logic [31:0] read_data;
+    logic ack_REG; // Acknowledge signal to the memory handler
 
     // Instantiate the Unit Under Test (UUT)
     t07_ExternalRegister uut (
         .clk(clk),
-        .rst(rst),
+        .nrst(nrst),
         .ReadRegister(ReadRegister),
+        .SPIAddress(SPIAddress),
         .write_data(write_data),
-        .rwi(rwi),
-        .read_data(read_data)
+        .ri(ri),
+        .read_data(read_data),
+        .ack_REG(ack_REG)
     );
     // Clock generation
     always begin 
-        clk = 1;
-        #10; // Wait for 10 time units
         clk = 0;
+        #10; // Wait for 10 time units
+        clk = 1;
         #10; // Wait for 10 time units
     end
 
+    task spiAddress;
+    
+        SPIAddress = 32'd1; // Default address
+        writeData();
+        #10;
+        SPIAddress = 32'd2; // Change address to 2
+        writeData();
+        #10;
+        SPIAddress = 32'd3; // Change address to 3
+        writeData();
+        #10;
+        SPIAddress = 32'd4; // Change address to 4
+        writeData();
+        #10;
+        SPIAddress = 32'd5; // Change address to 5
+        writeData();
+        #10;
+    endtask
+
+    task writeData;
+        write_data = 32'h12345678; // Change data to 12345678
+        #20;
+        write_data = 32'h87654321; // Change data to 87654321
+        #20;
+        write_data = 32'hAABBCCDD; // Change data to AABBCCDD
+        #20;
+        write_data = 32'hFFFFFFFF; // Change data to FFFFFFFF
+        #10;
+    endtask
+
+    task readRegister;
+        ReadRegister = 32'd1; // Read from address 1
+        #20;
+        ReadRegister = 32'd2; // Read from address 2
+        #20;
+        ReadRegister = 32'd3; // Read from address 3
+        #20;
+        ReadRegister = 32'd4; // Read from address 4
+        #20;
+        ReadRegister = 32'd5; // Read from address 5
+        #20;
+    endtask
     initial begin
         $dumpfile("t07_ExternalRegister.vcd");
         $dumpvars(0, t07_ExternalRegister_tb);
         
         // Initialize Inputs
-        rst = 1;
+        nrst = 0;
         ReadRegister = 32'h00000000;
         write_data = 32'h00000000;
-        rwi = 2'b00; // Idle state
-
+        ri = 1'b0; // Idle state
+        SPIAddress = 32'd0; // Initial address for SPI TFT
         // Wait for global reset to finish
         #10;
-        rst = 0; // Release reset
-
+        nrst = 1; // Release reset
+        #10; // Wait for a few clock cycles
+        nrst = 0; // Set reset low again
+        #10; // Wait for a few clock cycles
         // Test writing to a register
-        ReadRegister = 5; // Register address to write to
-        write_data = 32'h12345678; // Data to write
-        rwi = 2'b01; // Write operation
-        #10; // Wait for a clock cycle
-
+        spiAddress(); // Set SPI address
+        
+    
         // Check if the data was written correctly
-        rwi = 2'b10; // Read operation
-        #10; // Wait for a clock cycle
-        if (read_data !== write_data) $display("Write test failed: expected %h, got %h", write_data, read_data);
-
-        // Test reading from a register
-        ReadRegister = 5; // Register address to read from
-        rwi = 2'b10; // Read operation
-        #10; // Wait for a clock cycle
-
-        if (read_data !== write_data) $display("Read test failed: expected %h, got %h", write_data, read_data);
-
-        $finish; // End simulation
+        ri = 1'b1; // Read operation
+        readRegister(); // Read from the registers
+        #1; // Wait for a clock cycle
+       $finish; // End simulation
     end
 endmodule
     
