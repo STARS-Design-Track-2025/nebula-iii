@@ -179,7 +179,7 @@ always_comb begin
             if (mem_read_o) begin   
                 next_state = MEMREAD;
             end else if (mem_write_o) begin
-                //next_state = MEMWRITE;
+                next_state = MEMWRITE;
             end
         end
         MEMREAD: begin
