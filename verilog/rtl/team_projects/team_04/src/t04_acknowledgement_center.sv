@@ -20,10 +20,11 @@ module t04_acknowledgement_center (
 //i_ack SERVES AS THE DATA_STORING NOT USED IN DATAPATH
 logic DATA_STORING;
 logic DATA_STORING1;
+logic DATA_STORING2;
 
 always_comb begin
     i_ack = DATA_STORING;
-    if (DATA_STORING) begin //AS OF NOW Ram_En is hardwired to be 1
+    if (DATA_STORING || DATA_STORING1 || DATA_STORING2) begin //AS OF NOW Ram_En is hardwired to be 1
         d_ack = (display_ack);
     end
     else if (Ram_En && !DATA_STORING1) begin
@@ -49,9 +50,11 @@ end
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
         DATA_STORING1 <= 0;
+        DATA_STORING2 <= 0;
     end
     else begin
         DATA_STORING1 <= DATA_STORING;
+        DATA_STORING2 <= DATA_STORING1;
     end
 end
 endmodule

@@ -55,8 +55,8 @@ module t04_mmio (
         .CPU_DAT_I(mem_store),
         .ADR_I(final_address),
         .SEL_I(4'd15),                  // full word access
-        .WRITE_I(RAM_en && MemWrite && !WEN2 && !i_ack),
-        .READ_I(((RAM_en && MemRead_Wishbone) || WEN2) || i_ack),
+        .WRITE_I(RAM_en && MemWrite1 && !WEN2 && !i_ack && !WEN),
+        .READ_I(((RAM_en && MemRead_Wishbone) || WEN2) || i_ack || WEN),
 
         // Unconnected Wishbone bus outputs (to be wired in full system)
         .ADR_O(adr), .DAT_O(dat_o), .SEL_O(sel),
@@ -66,7 +66,7 @@ module t04_mmio (
         .CPU_DAT_O(memload_or_instruction),
         .BUSY_O(busy)
     );
-
+    logic MemWrite1;
     logic read_I;
     logic write_I;
     // assign write_I = RAM_en && MemWrite && !WEN2;
@@ -136,6 +136,7 @@ module t04_mmio (
             key_en3 <= 0;
             WEN1 <= 0;
             WEN2 <= 0;
+            MemWrite1 <= 0;
         end
         else begin
             key_en1 <= key_en;
@@ -143,6 +144,7 @@ module t04_mmio (
             key_en3 <= key_en2;
             WEN1 <= WEN;
             WEN2 <= WEN1;
+            MemWrite1 <= MemWrite;
         end
     end
 

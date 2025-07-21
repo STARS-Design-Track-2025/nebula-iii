@@ -84,7 +84,7 @@ module t04_top_tb;
         // === Release reset ===
         #15 rst = 0;
         #1020;
-        #10000;
+        #100010000;
         //#100000000;
 
        $display("\nFINAL REGISTER VALUES HEX");
