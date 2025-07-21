@@ -44,6 +44,8 @@ initial begin
         if (j == 3) begin j = 4; end
             func3 = j;
             mem_address = 32'h0000_000C + j;
+            busy = 1; #1;
+            busy = 0; #1;
         #10; end
     #10;
 
@@ -52,6 +54,8 @@ initial begin
         if (k == 3) begin k = 4; end
            func3 = k;
            mem_address = 32'h0000_000C + k;
+                       busy = 1; #1;
+            busy = 0; #1;
         #10; end
     #10;
 
