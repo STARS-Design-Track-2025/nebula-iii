@@ -40,7 +40,7 @@ module t07_CPU(
     
     logic [31:0] pcData_out;
     
-    t07_fetch fetch_inst(.clk(clk), .nrst(nrst), .ExtInstruction(exInst), .programCounter(pc_out), .Instruction(inst), .PC_out(pcData_out));
+    t07_fetch fetch_inst(.clk(clk), .nrst(nrst), .ExtInstruction(exInst), .programCounter(pc_out), .Instruction(inst), .PC_out(pcData_out), .busy_o(busy));
     t07_decoder decoder(.instruction(inst), .Op(Op), .funct7(funct7), .funct3(funct3), .rs1(rs1), .rs2(rs2), .rd(rd));
     t07_control_unit control(.memSrc(memSource), .invalid_Op(invalError), .rs3(rs3), .memOp(memOp), .rs2(rs2), .regWriteSrc(regWriteSrc), .Op(Op), 
     .funct7(funct7), .funct3(funct3), .ALUOp(ALUOp), .ALUSrc(ALUSrc), .regWrite(regWrite), .branch(branch), .jump(jump), .memWrite(memWrite), .memRead(memRead), 
@@ -57,7 +57,7 @@ module t07_CPU(
     t07_cpu_memoryHandler internalMem(.busy(busy), .memOp(memOp), .memWrite(memWrite), .memRead(memRead), .memSource(memSource), .ALU_address(ALUResult), 
     .FPU_data('0), .Register_dataToMem(dataRead2), .ExtData(externalMemData), .write_data(exMemData_out), .ExtAddress(intMemAddr), .dataToCPU(intMem_out), 
     .freeze(freeze), .rwi(rwi));
-    
+
     t07_ALU ALU(.valA(dataRead1), .valB(ALU_in2), .result(ALUResult), .ALUflags(ALUFlags), .ALUOp(ALUOp));
     t07_muxes muxFPUReg(.a(fcsr_out), .b(dataRead2), .sel(FPUSrc), .out(memRegSource)); //check when FPU is added
     t07_muxes muxImmReg(.a(dataRead2), .b(immediate), .sel(ALUSrc), .out(ALU_in2));
