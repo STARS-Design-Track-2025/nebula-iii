@@ -6,10 +6,10 @@ module t04_screenCounter (
   logic [22:0] nextCt, currentCt;
 
   always_comb begin
-    if (enableEdge && currentCt == 0) begin
+    if (enableEdge) begin
       nextCt = 1;
     end 
-    else if (enableEdge) begin
+    else if (!enableEdge && currentCt == 0) begin
       nextCt = 0;
     end
     else if (currentCt == 23'b11111111111111111111111) begin
