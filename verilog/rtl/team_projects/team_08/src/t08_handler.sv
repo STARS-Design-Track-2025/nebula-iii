@@ -6,7 +6,7 @@
 
 module t08_handler(
     input logic [31:0] fromregister, frommem, mem_address, counter,
-    input logic write, read, clk, nrst, busy,done,
+    input logic write, read, clk, nrst, busy,done, getinst
     input logic [2:0] func3,
     output logic [31:0] toreg,  tomem, addressnew, instruction,
     output logic writeout, readout, freeze
@@ -134,7 +134,7 @@ always_comb begin
         nextnewadd = counter;                  
         nextinst = frommem;
         if(!busy) begin
-            readout = 1;        
+            getinst = 1;        
 
             nextstate = 0;
         end
