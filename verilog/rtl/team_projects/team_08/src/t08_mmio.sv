@@ -8,6 +8,7 @@ module t08_mmio (
     //from memory handler
     input logic read,                       //command to read, source specified by address
     input logic write,                      //command to write, destination specified by address
+    input logic getinst,                    //command to read instruction
     input logic [31:0] address,             //location to read from or write to
     input logic [31:0] mh_data_i,           //data to write
     //from I2C
@@ -122,7 +123,7 @@ always_comb begin
 
     case (curr_state)
         IDLE: begin
-            if (!write && read) begin
+            if (!write && read || getinst) begin
                 mmio_busy_o_next = 1;
                 if (address == I2C_ADDRESS) begin
                     if (I2C_done_i) begin
@@ -140,7 +141,7 @@ always_comb begin
                         mem_read_o_next = 1;
                     end
                 end
-            end else if (write && !read) begin
+            end else if (write && !read && !getinst) begin
                 mmio_busy_o_next = 1;
                 if (address == SPI_ADDRESS_C) begin
                     next_state = BUSY;
@@ -161,7 +162,7 @@ always_comb begin
                     if (mem_busy_i) begin
                         next_state  = IDLE; 
                     end else begin
-                        next_state = BUSY;
+                        next_state = MEMWRITE;
                         mem_data_o_next = mh_data_i;     
                         mem_address_o_next = address;          
                         mem_write_o_next = 1;      
@@ -188,11 +189,17 @@ always_comb begin
             end else begin
                 next_state = BUSY;
                 mh_data_o_next = mem_data_i; 
-                mem_read_o_next =0;
-                mem_write_o_next = 0;
+                mem_read_o_next = 0;
             end
         end
         MEMWRITE: begin
+            mmio_busy_o_next = 1'b1;
+            if (mem_busy_i) begin
+                next_state = MEMWRITE;
+            end else begin
+                next_state = BUSY; 
+                mem_write_o_next = 0;
+            end
         end
     endcase
 end
