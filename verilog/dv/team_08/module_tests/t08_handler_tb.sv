@@ -1,7 +1,7 @@
 `timescale 1ms/10ps
 module t08_handler_tb;
 logic [31:0] fromregister=0,  frommem=0, mem_address=0;
-logic write=0, read=0, clk=0, nrst=1, writeout, readout, busy = 0, done = 1;
+logic write=0, read=0, clk=0, nrst=1, writeout, readout, busy = 0, done = 1, getinst = 0;
 logic [2:0] func3=0;
 logic [31:0] toreg,  tomem, addressnew, counter= 0, instruction;
 
@@ -14,7 +14,7 @@ always #1 clk = ~clk;
 always #3 done = ~done;
 always #5 counter = counter + 1;
 always #5 frommem = frommem +2;
-t08_handler blockhandle(.counter(counter), .instruction(instruction), .busy(busy), .done(done), .readout(readout), .writeout(writeout), .fromregister(fromregister), .frommem(frommem), .mem_address(mem_address), .write(write), .read(read), .clk(clk),.nrst(nrst), .func3(func3), .toreg(toreg), . tomem(tomem), .addressnew(addressnew));
+t08_handler blockhandle(.getinst(getinst), .counter(counter), .instruction(instruction), .busy(busy), .done(done), .readout(readout), .writeout(writeout), .fromregister(fromregister), .frommem(frommem), .mem_address(mem_address), .write(write), .read(read), .clk(clk),.nrst(nrst), .func3(func3), .toreg(toreg), . tomem(tomem), .addressnew(addressnew));
 
 initial begin
     $dumpfile("t08_handler.vcd"); 
