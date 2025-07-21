@@ -5,7 +5,7 @@ module t07_muxForPC (
 );
 
 always_comb begin
-    if(Op == 1100111) begin PCJump = ALUResult; end
+    if(Op == 'b1100111) begin PCJump = ALUResult; end
     else begin PCJump = immediate; end
 end
 endmodule
