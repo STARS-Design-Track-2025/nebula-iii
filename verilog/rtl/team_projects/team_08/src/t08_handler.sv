@@ -24,8 +24,7 @@ assign tomem = mems;
 assign toreg = regs;
 //assign writeout = write;
 //assign readout = read;
-assign freeze = busy;
-//|readout|writeout;
+assign freeze = busy|readout|writeout;
 
 
 
