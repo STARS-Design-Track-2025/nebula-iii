@@ -20,6 +20,9 @@ module t08_registers(
     logic [31:0] [31:0] data;
     logic [31:0] [31:0] data_n;
 
+    logic [31:0] data_out_r1_prev = 0;
+    logic [31:0] data_out_r2_prev = 0;
+
     always_ff @ (/*posedge clk, */negedge clk, negedge nRst) begin
         if (!nRst) begin
             
@@ -36,6 +39,9 @@ module t08_registers(
         end else begin
 
             data <= data_n;
+
+            data_out_r1_prev <= data_out_r1;
+            data_out_r2_prev <= data_out_r2;
 
         end
     end
@@ -55,8 +61,8 @@ module t08_registers(
 
     always_comb begin : read_and_write
 
-        data_out_r1 = 0;
-        data_out_r2 = 0;
+        data_out_r1 = data_out_r1_prev;
+        data_out_r2 = data_out_r2_prev;
         
         if (en_read_1 && !busy) begin //Read from one register
 

@@ -20,7 +20,7 @@ module t08_registers_tb;
 
     t08_registers registers(.clk(clk), .nRst(nRst), .address_r1(address_r1), .address_r2(address_r2), .address_rd(address_rd), 
         .data_in_frommemory(data_in_frommemory), .data_in_frominstructionfetch(data_in_frominstructionfetch), .data_in_fromalu(data_in_fromalu), 
-        .data_in_control(data_in_control), .en_read_1(en_read_1), .en_read_2(en_read_2), .en_write(en_write), .data_out_r1(data_out_r1), 
+        .data_in_control(data_in_control), .en_read_1(en_read_1), .en_read_2(en_read_2), .en_write(en_write), .busy(1'b0), .data_out_r1(data_out_r1), 
         .data_out_r2(data_out_r2));
 
     string testname;
@@ -63,7 +63,7 @@ module t08_registers_tb;
         en_read_1 = 0;
         en_read_2 = 0;
         en_write = 1;
-        data_in_control = 2'b10;
+        data_in_control = 2'b01;
         address_r1 = 5'd5;
         address_r2 = 5'd18;
         address_rd = 5'd13;
