@@ -72,7 +72,7 @@ always_comb begin
     // end
 
     0: begin //data
-        nextnewadd = addressnew; 
+        nextnewadd = counter; 
 
         nextmem = mems;
         nextregs = regs;
@@ -130,11 +130,11 @@ always_comb begin
     end
 
     1: begin //instruction fetching
-        nextnewadd = counter;           
+        nextnewadd = counter;                  
         nextinst = frommem;
         if(!busy) begin
             readout = 1;        
- 
+
             nextstate = 0;
         end
 
