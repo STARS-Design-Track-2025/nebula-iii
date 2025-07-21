@@ -40,7 +40,7 @@ logic [31:0] addrToDec, dataToDec;
 logic [3:0] selToDec;
 
 //wishbone arbitrator output to wishbone manger
-logic [31:0] ackToWM; dataArToWM;
+logic [31:0] ackToWM, dataArToWM;
 
 //wishbone decoder output to wishbone arbitrator
 logic ackToAr;
