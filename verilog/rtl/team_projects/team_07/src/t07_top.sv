@@ -54,13 +54,13 @@ logic busyToMMIO;
 logic [6 + 3:0] cyc_out;
 logic [6 + 3:0] stb_out;
 logic [6 + 3:0] we_out;
-logic [(32 * (10)) - 1:0] addr_out;
+logic [(32 * (10)) - 1:0] addr_out; 
 logic [(32 * (10)) - 1:0] data_out;
 logic [(4 * (10)) - 1:0] sel_out;
 
 //input SRAM to decoder
-logic [6 + 3:0] ackDec_in;
-logic [(32 * (10)) - 1:0] dataDec_in;
+logic [6 + 3:0] ackDec_in; //acknowledge
+logic [(32 * (10)) - 1:0] dataDec_in; //data from SRAM to WB Dec
 
 t07_CPU CPU(.busy(busyFromCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
 .rwi(rwi), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst));
@@ -83,5 +83,8 @@ wishbone_decoder wishboneD0 (.CLK(clk), .nRST(nrst), .wbs_ack_i_peroph(ackDec_in
 .wbs_dat_o_m(dataDecToAr), .wbs_cyc_i_m(cycToDec), .wbs_stb_i_m(stbToDec), .wbs_we_i_m(weToDec), .wbs_adr_i_m(addrToDec), 
 .wbs_dat_i_m(dataToDec), .wbs_sel_i_m(selToDec), .wbs_cyc_o_periph(cyc_out), .wbs_stb_o_periph(stb_out), .wbs_we_o_periph(we_out), 
 .wbs_adr_o_periph(addr_out), .wbs_dat_o_periph(data_out), .wbs_sel_o_periph(sel_out));
+
+sram_WB_Wrapper sramWrapper(.wb_clk_i(clk), .wb_rst_i(nrst), .wbs_stb_i(stb_out), .wbs_cyc_i(cyc_out), .wbs_we_i(we_out), .wbs_sel_i(sel_out),
+.wbs_dat_i(data_out), .wbs_adr_i(addr_out), .wbs_ack_o(ackDec_in), .wbs_dat_o(dataDec_in));
 
 endmodule
