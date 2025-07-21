@@ -9,7 +9,8 @@ module t04_top(
     output  logic screenCsx,
     output  logic screenDcx,
     output  logic screenWrx,
-    output  logic [7:0] screenData
+    output  logic [7:0] screenData,
+    output  logic checkX, checkY, checkC
     
 );
 
@@ -90,7 +91,10 @@ module t04_top(
         .dcx(screenDcx),
         .csx(screenCsx),
         .wrx(screenWrx),
-        .screenData(screenData)
+        .screenData(screenData),
+        .checkC(checkC),
+        .checkX(checkX),
+        .checkY(checkY)
     );
 
 endmodule

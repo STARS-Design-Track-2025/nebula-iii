@@ -1,13 +1,17 @@
 module t04_screen_top (
   input logic [31:0] mem_store_display, display_address,
   input logic WEN, clk, rst,
-  output logic d_ack_display, dcx, csx, wrx, 
+  output logic d_ack_display, dcx, csx, wrx, checkX, checkY, checkC,
   output logic [7:0] screenData
 );
 
   logic internalAck, enableEdge;
   logic [31:0] controlBus, xBus, yBus;
   logic [22:0] ct;
+
+  assign checkX = |xBus;
+  assign checkY = |yBus;
+  assign checkC = |controlBus;
 
   t04_screenRegister register(
     .wen(WEN), 

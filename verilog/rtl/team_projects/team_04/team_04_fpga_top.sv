@@ -59,7 +59,10 @@ module top (
   .screenCsx(right[0]),
   .screenDcx(right[1]),
   .screenWrx(right[2]),
-  .screenData(left[7:0])
+  .screenData(left[7:0]),
+  .checkC(red),
+  .checkX(green),
+  .checkY(blue)
 );
 
 // verilator --lint-only --top-module top -Werror-latch -y $$TEAM_DIR/*.sv $$SRC_DIR/*.sv $$USER_PROJECT_VERILOG/rtl/wishbone_manager/wishbone_manager.sv $$SRAM_WRAPPER $$USER_PROJECT_VERILOG/rtl/sram/sram_for_FPGA.v &&\
