@@ -20,7 +20,7 @@ module t07_ExternalRegister (
         if (ri == 1'b1) begin // If read or idle signal is high
             next_ack_REG = 1'b1; // Acknowledge the read operation
             next_read_data = registers[ReadRegister]; // Read data from the register
-        end else begin
+        end else if (ack_REG) begin
             next_ack_REG = 1'b0; // Do not acknowledge if not reading
             next_read_data = 32'b0; // No data to read
         end
