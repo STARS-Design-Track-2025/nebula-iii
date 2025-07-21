@@ -6,10 +6,10 @@
 
 module t08_handler(
     input logic [31:0] fromregister, frommem, mem_address, counter,
-    input logic write, read, clk, nrst, busy,done, getinst
+    input logic write, read, clk, nrst, busy,done,
     input logic [2:0] func3,
     output logic [31:0] toreg,  tomem, addressnew, instruction,
-    output logic writeout, readout, freeze
+    output logic writeout, readout,  getinst, freeze
 );
 
 localparam [31:0] I2C_ADDRESS = 32'd923923;

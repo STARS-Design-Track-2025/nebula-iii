@@ -33,6 +33,7 @@ module t08_CPU (
     logic branch;                                               //ALU to fetch: branch signal
 
     logic freeze;
+    logic getinst;
 
     t08_fetch fetch(
         .imm_address(immediate), 
@@ -82,7 +83,7 @@ module t08_CPU (
         .toreg(mem_to_reg), .tomem(data_out), 
         .addressnew(mem_address), 
         .instruction(instruction),
-        .writeout(write_out), .readout(read_out)
+        .writeout(write_out), .readout(read_out), .getinst(getinst)
     );
 
 endmodule
