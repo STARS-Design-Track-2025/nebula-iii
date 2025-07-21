@@ -5,7 +5,6 @@ module t07_MMIO (
     input logic [1:0] rwi_in, //read write or idle from internal memory
 
     //inputs from instruction/Data memory
-    input logic [31:0] inst, // instruction to write to fetch (writeInstruction_out)
     input logic [31:0] ExtData_in, // data from instruction/Data memory
     input logic busy_o, // busy signal from wishbone
 
@@ -86,7 +85,7 @@ always_comb begin
             rwi_out = 2'b10; //read from instruction
             addr_out = addr_in; // address for instruction/Data memory from cpu top mux
             ExtData_out = 32'b0; // no data to internal memory
-            writeInstruction_out = inst; // next instruction to write to fetch module in CPU
+            writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
     end
 end
 
