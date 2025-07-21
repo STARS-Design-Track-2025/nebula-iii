@@ -3,7 +3,7 @@ module t04_request_unit_old(
     input  logic rst,
     input  logic i_ack,
     input  logic d_ack,
-    input  logic [31:0] n_PC,
+    input  logic [31:0] Imm,
     input  logic BranchCondition,
     input  logic [31:0] instruction_in,
     input  logic [31:0] PC,
@@ -64,7 +64,7 @@ module t04_request_unit_old(
         if ((n_memread == 1 || n_memwrite == 1) || (MUL_EN1 && !zero_multi1)) begin
             instruction_out = latched_instruction;
         end
-        else if ((zero_multi1) || (latched_instruction == instruction_in && (!(MemRead || MemWrite))) || (latched_instruction != 32'b0 && instruction_in == 32'hBAD1BAD1 && !(MemRead || MemWrite))) begin
+        else if ((zero_multi1) || (latched_instruction == instruction_in && (!(n_memread || n_memwrite))) || (latched_instruction != 32'b0 && instruction_in == 32'hBAD1BAD1 && !(n_memread || n_memwrite))) begin //using n_memread instead of MemRead
             instruction_out = 32'b0;
         end
         else begin
@@ -75,7 +75,7 @@ module t04_request_unit_old(
         end
         else begin
             if (BranchCondition) begin
-                final_address = n_PC - 32'd4; //subtracting 4 to stop it from incrementing too far
+                final_address = PC + Imm; 
             end
             else begin
                 final_address = (((MemRead || MemWrite)) && (!(n_memread2 || n_memwrite2))) ? mem_address : PC;

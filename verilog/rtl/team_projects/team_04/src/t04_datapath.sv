@@ -32,7 +32,6 @@ logic [31:0] ALU_result;
 logic [31:0] write_back_data;
 logic [31:0] instruction_out;
 logic BranchConditionFlag;
-logic [31:0] n_PC;
 logic MUL_EN;
 logic [31:0] mulitply_result;
 logic ack_mul;
@@ -130,8 +129,7 @@ t04_PC pc_module(
     .Branch(BranchConditionFlag),
     .Freeze(main_freeze),
     .imm(Imm),
-    .PC(PC),
-    .n_PC(n_PC)
+    .PC(PC)
 );
 
 t04_request_unit_old ru(
@@ -139,7 +137,7 @@ t04_request_unit_old ru(
     .i_ack(i_ack), .d_ack(d_ack),
     .instruction_in(instruction),
     .PC(PC),
-    .n_PC(n_PC),
+    .Imm(Imm),
     .BranchCondition(BranchConditionFlag),
     .mem_address(ALU_result),
     .stored_data(src_B),

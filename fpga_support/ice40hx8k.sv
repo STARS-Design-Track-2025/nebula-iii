@@ -50,10 +50,10 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
 //          (12 + 1 )
 
 
-// FOR PLL INSTANCE BELOW: Setting the clock frequency to 40 MHz
-//       12  * (9 + 1)
-//   ---------------------------- = 40
-//          ( 2 + 1 )
+// FOR PLL INSTANCE BELOW: Setting the clock frequency to 10 MHz
+//       12  * (4 + 1)
+//   ---------------------------- = 10
+//          ( 5 + 1 )
 
 
     /* The PLL instance */
@@ -68,8 +68,8 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
         .SHIFTREG_DIV_MODE(1'b0), // 0 => div-by-4; 1 => div-by-7
         .FDA_FEEDBACK(4'b0000),
         .FDA_RELATIVE(4'b0000),
-        .DIVR(4'd2),
-        .DIVF(7'd9),
+        .DIVR(4'd5),
+        .DIVF(7'd4),
         .DIVQ(3'd0),
         .FILTER_RANGE(3'b001), // 1
     ) pll (

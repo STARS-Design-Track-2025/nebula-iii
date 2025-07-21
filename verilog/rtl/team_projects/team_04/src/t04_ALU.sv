@@ -74,7 +74,29 @@ module t04_ALU(
       end
       else begin
         // For I-type and S-type instructions like LW/SW/ADDI — just do ADD
-        ALU_result = src_A + src_B;
+        if (opcode == 7'b0010011) begin
+          case (funct3)
+                3'b000: ALU_result = src_A + src_B;                           // ADDI
+                3'b010: ALU_result = ($signed(src_A) < $signed(src_B)) ? 32'd1 : 32'd0; // SLTI
+                3'b011: ALU_result = ($unsigned(src_A) < $unsigned(src_B)) ? 32'd1 : 32'd0; // SLTIU
+                3'b100: ALU_result = src_A ^ src_B;                           // XORI
+                3'b110: ALU_result = src_A | src_B;                           // ORI
+                3'b111: ALU_result = src_A & src_B;                           // ANDI
+                3'b001: ALU_result = src_A << instruction[24:20];             // SLLI (funct7 must be 0000000)
+                3'b101: begin
+                  if (instruction[31:25] == 7'b0000000)
+                    ALU_result = src_A >> instruction[24:20];                 // SRLI
+                  else if (instruction[31:25] == 7'b0100000)
+                    ALU_result = $signed(src_A) >>> instruction[24:20];       // SRAI
+                  else
+                    ALU_result = 32'd0;                                       // Invalid shift
+                end
+                default: ALU_result = 32'd0;
+          endcase
+        end
+        else begin
+          ALU_result = src_A + src_B;
+        end
       end
     end
   end

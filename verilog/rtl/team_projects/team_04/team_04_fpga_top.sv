@@ -19,18 +19,18 @@ module top (
 
   // GPIOs
   // Don't forget to assign these to the ports above as needed
-  logic [33:0] gpio_in, gpio_out;
+  //logic [33:0] gpio_in, gpio_out;
   
   
   // Team 04 Design Instance
-  team_04 team_04_inst (
-    .clk(hwclk),
-    .nrst(~reset),
-    .en(1'b1),
+  // team_04 team_04_inst (
+  //   .clk(hwclk),
+  //   .nrst(~reset),
+  //   .en(1'b1),
 
-    .gpio_in(gpio_in),
-    .gpio_out(gpio_out),
-    .gpio_oeb(),  // don't really need it her since it is an output
+  //   .gpio_in(gpio_in),
+  //   .gpio_out(gpio_out),
+  //   .gpio_oeb(),  // don't really need it her since it is an output
 
     // Uncomment only if using LA
     // .la_data_in(),
@@ -50,6 +50,18 @@ module top (
 
     // Add other I/O connections to WB bus here
 
-  );
+  //);
+
+  t04_top team_04_inst (
+  .clk(hwclk),
+  .rst(reset),
+  .row(pb[3:0]),  // Example if row lines come from pushbuttons
+  .screenCsx(right[0]),
+  .screenDcx(right[1]),
+  .screenWrx(right[2]),
+  .screenData(left[7:0])
+);
+
+// verilator --lint-only --top-module top -Werror-latch -y $$TEAM_DIR/*.sv $$SRC_DIR/*.sv $$USER_PROJECT_VERILOG/rtl/wishbone_manager/wishbone_manager.sv $$SRAM_WRAPPER $$USER_PROJECT_VERILOG/rtl/sram/sram_for_FPGA.v &&\
 
 endmodule

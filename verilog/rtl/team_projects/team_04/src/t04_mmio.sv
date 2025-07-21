@@ -43,7 +43,7 @@ module t04_mmio (
 
 
     // === Wishbone Manager ===
-    t04_wishbone_manager wishbone (
+    wishbone_manager wishbone (
         .CLK(clk),
         .nRST(~reset),
 
