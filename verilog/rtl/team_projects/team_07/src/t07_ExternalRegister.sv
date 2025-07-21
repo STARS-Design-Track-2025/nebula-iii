@@ -16,7 +16,7 @@ module t07_ExternalRegister (
     
     always_comb begin
         next_ack_REG = 1'b0; // Default to not acknowledge
-        
+        next_read_data = 32'b0; // Default read data to zero
         if (ri == 1'b1) begin // If read or idle signal is high
             next_ack_REG = 1'b1; // Acknowledge the read operation
             next_read_data = registers[ReadRegister]; // Read data from the register
@@ -30,6 +30,7 @@ module t07_ExternalRegister (
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             ack_REG <= 1'b0; // Reset acknowledge signal
+            read_data <= 32'b0; // Reset read data
             // Reset all registers to zero
             for (int i = 0; i < 32; i++) begin
                 registers[i] <= 32'b0;
