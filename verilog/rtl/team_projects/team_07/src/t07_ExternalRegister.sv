@@ -2,7 +2,7 @@
 // This module is used to interface with the external registers, allowing for read and write operations.
 module t07_ExternalRegister (
     input logic clk,
-    input logic rst,
+    input logic nrst,
     input logic [31:0] ReadRegister, // Address of the register to read/write from the memory handler
     input logic [31:0] SPIAddress, // Address for the SPI TFT
     input logic [31:0] write_data, // Data to write to the register from SPI
@@ -27,8 +27,8 @@ module t07_ExternalRegister (
     end
 
     // Write logic
-    always_ff @(posedge clk or posedge rst) begin
-        if (rst) begin
+    always_ff @(posedge clk, negedge nrst) begin
+        if (nrst) begin
             ack_REG <= 1'b0; // Reset acknowledge signal
             read_data <= 32'b0; // Reset read data
             // Reset all registers to zero
@@ -40,6 +40,9 @@ module t07_ExternalRegister (
             if (ri == 1'b1) begin
                 ack_REG <= next_ack_REG; // Acknowledge signal to the memory handler
                 read_data <= next_read_data; // Update write data
+            end else begin
+                ack_REG <= 1'b0; // Do not acknowledge if not reading
+                read_data <= '0; // No data to read
             end
         end
     end
