@@ -37,6 +37,9 @@ logic cycToDec, stbToDec, weToDec;
 logic [31:0] addrToDec, dataToDec; 
 logic [3:0] selToDec;
 
+//wishbone arbitrator output to wishbone manger
+logic [31:0] dataToWM;
+
 //wishbone manager output to user design
 logic [31:0] dataToMMIO;
 logic busyToMMIO;
