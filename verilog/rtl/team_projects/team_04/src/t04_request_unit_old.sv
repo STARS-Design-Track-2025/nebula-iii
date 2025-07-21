@@ -75,7 +75,7 @@ module t04_request_unit_old(
         end
         else begin
             if (BranchCondition) begin
-                final_address = PC + Imm; 
+                final_address = PC + Imm - 32'd4; 
             end
             else begin
                 final_address = (((MemRead || MemWrite)) && (!(n_memread2 || n_memwrite2))) ? mem_address : PC;
