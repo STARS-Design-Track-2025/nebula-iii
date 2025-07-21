@@ -90,4 +90,10 @@ module t08_registers(
 
     end
 
+    logic [31:0] reg31, reg30, reg29, reg28, reg27, reg26, reg25, reg24, reg23, reg22, reg21, reg20, reg19, reg18, reg17, reg16, reg15, reg14, reg13,
+                   reg12, reg11, reg10, reg09, reg08, reg07, reg06, reg05, reg04, reg03, reg02, reg01, reg00;
+
+    assign {reg31, reg30, reg29, reg28, reg27, reg26, reg25, reg24, reg23, reg22, reg21, reg20, reg19, reg18, reg17, reg16, reg15, reg14, reg13,
+                   reg12, reg11, reg10, reg09, reg08, reg07, reg06, reg05, reg04, reg03, reg02, reg01, reg00} = data;
+
 endmodule
