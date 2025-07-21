@@ -29,12 +29,6 @@ module t07_registers (
 
     // Register file: 32 registers, each 32 bits wide
     logic [31:0] registers [31:0];
-
-    // read logic
-    always_comb begin
-        read_data1 = registers[read_reg1];
-        read_data2 = registers[read_reg2];
-    end 
     
     // write logic
     always_ff @(negedge nrst, posedge clk) begin
@@ -49,6 +43,12 @@ module t07_registers (
             end 
         end
     end
+
+        // read logic
+    always_comb begin
+        read_data1 = registers[read_reg1];
+        read_data2 = registers[read_reg2];
+    end 
 
 endmodule
 
