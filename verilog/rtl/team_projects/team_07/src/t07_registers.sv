@@ -37,8 +37,8 @@ module t07_registers (
     end 
     
     // write logic
-    always_ff @(posedge clk or negedge nrst) begin
-        if (nrst) begin
+    always_ff @(negedge nrst, posedge clk) begin
+        if (~nrst) begin
             // Reset all registers to zero
             for (int i = 0; i < 32; i++) begin
                 registers[i] <= 32'b0;
@@ -46,7 +46,7 @@ module t07_registers (
         end else if (enable) begin
             if (reg_write && write_reg != 5'b0) begin
                 registers[write_reg] <= write_data;
-            end
+            end 
         end
     end
 
