@@ -31,7 +31,7 @@ module t08_top(
 
     logic [31:0] CPU_data_in, CPU_data_out;
     logic [31:0] CPU_mem_address_out;
-    logic CPU_read_out, CPU_write_out;
+    logic CPU_read_out, CPU_write_out, getinst;
 
     t08_CPU CPU(
         .clk(clk), .nRst(nRst),                             //clock and reset
@@ -39,7 +39,7 @@ module t08_top(
         .done(mmio_done_from_I2C), .busy(mmio_busy),        //from mmio, if it's busy, if data from I2C is done
         .data_out(CPU_data_out),                            //memory handler to mmio: data outputted
         .mem_address(CPU_mem_address_out),                  //memory handler to mmio: address in memory
-        .read_out(CPU_read_out), .write_out(CPU_write_out)  //memory handler to mmio: read and write enable
+        .read_out(CPU_read_out), .write_out(CPU_write_out), .getinst(getinst)  //memory handler to mmio: read and write enable
     );
 
     /*
@@ -89,7 +89,7 @@ module t08_top(
     t08_mmio mmio(
         .nRst(nRst), .clk(clk),                                                            //Clock and reset
         
-        .read(CPU_read_out), .write(CPU_write_out),                                        //From memory handler
+        .read(CPU_read_out), .write(CPU_write_out),  .getinst(getinst),                                      //From memory handler
         .address(CPU_mem_address_out), .mh_data_i(CPU_data_out), 
         
         .I2C_xy_i(I2C_data_out), .I2C_done_i(I2C_done),                                    //From I2C
