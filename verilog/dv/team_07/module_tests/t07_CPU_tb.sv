@@ -20,7 +20,7 @@ module t07_CPU_tb();
     end
 
     task test_instr(); begin
-        @(posedge clk) begin
+        @(posedge clk); 
         inst = 'b00000000000000000000000000110011; //add 
         
         #8
@@ -48,7 +48,7 @@ module t07_CPU_tb();
         #10
         inst = 'b00000000000000000010000000000011; //lw
         */
-        end
+        
     end
     endtask
 

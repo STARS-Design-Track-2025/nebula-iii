@@ -19,13 +19,13 @@ module t07_top_tb();
     end
 
     initial begin
-        $dumpfile("t07_CPU.vcd");
-        $dumpvars(0, t07_CPU_tb);
+        $dumpfile("t07_top.vcd");
+        $dumpvars(0, t07_top_tb);
         clk = 0;
         nrst = 1;
         reset();
 
-        #20
+        #100
         $finish;
     end
 

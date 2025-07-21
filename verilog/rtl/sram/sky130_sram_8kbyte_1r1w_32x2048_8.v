@@ -46,6 +46,10 @@ module sky130_sram_8kbyte_1r1w_32x2048_8(
   reg [ADDR_WIDTH-1:0]  addr0_reg;
   reg [DATA_WIDTH-1:0]  din0_reg;
 
+  initial begin
+    $readmemh("instruction_ex.mem", mem);
+  end
+
   // All inputs are registers
   always @(posedge clk0)
   begin

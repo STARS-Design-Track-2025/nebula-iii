@@ -54,7 +54,7 @@ always_comb begin
     writeData_outTFT = 32'b0; // no data to SPI TFT
     ExtData_out = 32'b0; // no data to internal memory
     writeInstruction_out = 32'b0; // no instruction to fetch module
-    if (addr_in < 32'd8192) begin
+    if (addr_in > 32'd1024) begin
         if (rwi_in == 2'b01) begin //write from internal memory of the CPU
             if (addr_in >= 32'd1024 && addr_in < 32'd2048) begin //change address number later              // write to SPI TFT
                 busy = ack_TFT; //set busy signal to indicate memory handler is processing
@@ -64,11 +64,11 @@ always_comb begin
             end else if (addr_in >= 32'd2048 && addr_in < 32'd8192) begin //change address number later     // write to instruction/Data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
                 rwi_out = 2'b01; //read to instruction/Data memory
-                addr_out = addr_in; // address to instruction/Data memory
+                addr_out = {8'h33, addr_in[23:0]}; // address to instruction/Data memory
                 writeData_out = memData_in; // data from instruction/Data memory
             end
         end else if (rwi_in == 2'b10) begin //read from internal memory of the CPU
-            if(addr_in < 32'd1024) begin //change address number later                                      // read from external register
+            if(addr_in >= 32'd8192) begin //change address number later                                      // read from external register
                 busy = ack_REG; //set busy signal to indicate memory handler is processing
                 ri_out = 1'b1; //read from external register
                 addr_outREG = addr_in; // address to read from external register
@@ -76,14 +76,14 @@ always_comb begin
             end else if (addr_in >= 32'd2048 && addr_in < 32'd8192) begin //change address number later     // read from instruction/Data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
                 rwi_out = 2'b10; //read from Data memory
-                addr_out = addr_in; // address to read from instruction/Data memory
+                addr_out = {8'h33, addr_in[23:0]}; // address to read from instruction/Data memory
                 ExtData_out = ExtData_in; // data from instruction/Data memory to internal memory
             end 
         end
-    end else if (addr_in >= 32'd8192) begin //change address number later                           // write instruction to fetch module
+    end else if (addr_in <= 32'd1024) begin //change address number later                           // write instruction to fetch module
             busy = busy_o; //set busy signal to indicate memory handler is processing
             rwi_out = 2'b10; //read from instruction
-            addr_out = addr_in; // address for instruction/Data memory from cpu top mux
+            addr_out = {8'h33, addr_in[23:0]}; // address for instruction/Data memory from cpu top mux
             ExtData_out = 32'b0; // no data to internal memory
             writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
     end
