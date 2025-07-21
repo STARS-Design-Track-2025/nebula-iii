@@ -10,7 +10,7 @@ module t04_PC (
     output logic [31:0] PC
 );
 
-
+logic [31:0] n_PC;
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
