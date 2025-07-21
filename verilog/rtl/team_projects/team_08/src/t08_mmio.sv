@@ -37,10 +37,12 @@ module t08_mmio (
     output logic        mem_read_o          //tell memory to output reading
 );
 
-typedef enum logic[1:0] {
+typedef enum logic[2:0] {
     IDLE,
     BUSY,
-    MEMREAD
+    MEMWAIT,
+    MEMREAD,
+    MEMWRITE
  } state;
 
 localparam [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
@@ -115,8 +117,8 @@ always_comb begin
 
     mem_data_o_next = mem_data_o;     
     mem_address_o_next = mem_address_o;           
-    mem_write_o_next = 0;      
-    mem_read_o_next = 0;
+    mem_write_o_next = mem_write_o;      
+    mem_read_o_next = mem_read_o;
 
     case (curr_state)
         IDLE: begin
@@ -133,7 +135,7 @@ always_comb begin
                     if (mem_busy_i) begin
                         next_state  = IDLE; 
                     end else begin 
-                        next_state = MEMREAD;
+                        next_state = MEMWAIT;
                         mem_address_o_next = address;          
                         mem_read_o_next = 1;
                     end
@@ -171,10 +173,26 @@ always_comb begin
            next_state = IDLE;
            mmio_busy_o_next = 1'b0;
         end
-        MEMREAD: begin
-            next_state = BUSY;
+        MEMWAIT: begin
             mmio_busy_o_next = 1'b1;
-            mh_data_o_next = mem_data_i; 
+            if (mem_read_o) begin   
+                next_state = MEMREAD;
+            end else if (mem_write_o) begin
+                //next_state = MEMWRITE;
+            end
+        end
+        MEMREAD: begin
+            mmio_busy_o_next = 1'b1;
+            if (mem_busy_i) begin
+                next_state = MEMREAD;
+            end else begin
+                next_state = BUSY;
+                mh_data_o_next = mem_data_i; 
+                mem_read_o_next =0;
+                mem_write_o_next = 0;
+            end
+        end
+        MEMWRITE: begin
         end
     endcase
 end
