@@ -18,6 +18,7 @@ module t07_SPI_ESP32 (
 
 always_ff @(posedge clk, negedge nrst) begin
     if (!nrst) begin
+        SCLK_out <= 1'b0; // Reset clock signal to low
         MOSI_shiftReg <= '0;
         bit_count <= 0;
     end else begin      
