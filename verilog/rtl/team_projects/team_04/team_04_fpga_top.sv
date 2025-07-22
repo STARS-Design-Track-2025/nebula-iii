@@ -60,10 +60,11 @@ module top (
   .screenDcx(right[1]),
   .screenWrx(right[2]),
   .screenData(left[7:0]),
-  .sus(red),
-  .green()
+  .checkC(red),
+  .checkX(green),
+  .checkY(blue)
 );
-assign green = 1;
+
 
 
 // always begin

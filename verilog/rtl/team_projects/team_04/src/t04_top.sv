@@ -10,10 +10,8 @@ module t04_top(
     output  logic screenDcx,
     output  logic screenWrx,
     output  logic [7:0] screenData,
-
-    output logic sus,
-    output logic green
-    
+    output  logic checkX, checkY, checkC
+    output  logic [7:0] screenData
 );
 
     // === Internal wires ===
@@ -69,8 +67,8 @@ module t04_top(
         .mem_store_display(mem_store_display),
         .d_ack_display(d_ack_display),
         .WEN(WEN),
-        .sus(sus),
-        .green(green)
+        .sus(),
+        .green()
     );
 
     // === KEYPAD INTERFACE ===
@@ -95,7 +93,10 @@ module t04_top(
         .dcx(screenDcx),
         .csx(screenCsx),
         .wrx(screenWrx),
-        .screenData(screenData)
+        .screenData(screenData),
+        .checkC(checkC),
+        .checkX(checkX),
+        .checkY(checkY)
     );
 
 endmodule
