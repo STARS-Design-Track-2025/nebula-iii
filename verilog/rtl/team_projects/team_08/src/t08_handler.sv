@@ -15,13 +15,13 @@ module t08_handler(
 localparam [31:0] I2C_ADDRESS = 32'd923923;
 
 
-logic nextfreeze;
-logic [31:0] regs = 0, mems = 0, address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
+logic nextfreeze, nextwriteout, nextreadout;
+logic [31:0] address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 logic [1:0] state,  nextstate; //0 wait, 1 send
 
 //assign addressnew = mem_address; 
-assign tomem = mems;
-assign toreg = regs;
+//assign tomem = tomem;
+//assign toreg = toreg;
 //assign writeout = write;
 //assign readout = read;
 
@@ -31,19 +31,20 @@ assign toreg = regs;
 
 always_ff@(posedge clk, negedge nrst) begin
     if(!nrst) begin
-        regs <= '0;
-        mems <= '0;
+        toreg <= '0;
+        tomem <= '0;
         addressnew <= 0;
         state <= 0; //wait
         freeze <= 1;
     end
     else begin
-        regs <= nextregs;
-        mems <= nextmem;
+        toreg <= nextregs;
+        tomem <= nextmem;
         state <= nextstate;
         instruction <= nextinst ;
         addressnew <= nextnewadd;
         freeze <= nextfreeze;
+        //writeout <= next
 
     end
 end
@@ -52,8 +53,8 @@ always_comb begin
     nextfreeze = freeze;
     nextstate = state;
     nextnewadd = addressnew;
-    nextregs = regs;
-    nextmem = mems;
+    nextregs = toreg;
+    nextmem = tomem;
     nextinst = instruction;
     readout = 0;
     writeout = 0;
@@ -63,19 +64,27 @@ always_comb begin
 
 
     0: begin //data
-        nextnewadd = counter; 
-
-        nextmem = mems;
-        nextregs = regs;
-        nextstate = 1;
+        nextnewadd = addressnew; 
+        nextmem = tomem;
+        nextregs = toreg;
+        
+        if (!busy) begin
+            nextstate = 1;
+            nextfreeze = 0;
+        end
+        
+        else begin 
+            nextstate = 0; 
+            nextfreeze = 1;
+        end
 
         readout = 0;
         writeout = 0;
 
-        nextfreeze = 0;
-        if (busy) begin nextstate = 0; nextfreeze = 1; end
+        
+       
 
-        else if (write&!busy) begin //store type, signed
+        if (write&!busy) begin //store type, signed
             writeout = write;
             nextnewadd = mem_address;
             nextfreeze = 1;
@@ -89,6 +98,7 @@ always_comb begin
                 nextmem = fromregister; end  //sw
             default:;
             endcase
+            nextstate = 2;
 
             //nextstate = 0;
         end
@@ -115,6 +125,7 @@ always_comb begin
 
             default:  begin  nextregs = frommem; end //lw or lui;
             endcase
+            nextstate = 2;
 
            end 
             end
@@ -128,14 +139,27 @@ always_comb begin
         nextnewadd = counter;                  
         nextinst = frommem;
         nextfreeze = 0;
+
         if(!busy) begin
             getinst = 1;        
-
             nextstate = 0;
             nextfreeze = 1;
         end
 
     end
+
+    2: begin
+        
+        writeout = 0;
+        readout = 0;
+nextnewadd = mem_address;
+        nextstate = 1;
+        nextfreeze = 1;
+        
+
+
+    end
+
 
     // 2: begin //instruction sending to cu
  

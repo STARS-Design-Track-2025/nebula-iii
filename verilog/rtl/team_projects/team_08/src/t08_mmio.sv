@@ -176,6 +176,8 @@ always_comb begin
         end
         MEMWAIT: begin
             mmio_busy_o_next = 1'b1;
+            mem_write_o_next = 0;
+            mem_read_o_next = 0;
             if (mem_read_o) begin   
                 next_state = MEMREAD;
             end else if (mem_write_o) begin

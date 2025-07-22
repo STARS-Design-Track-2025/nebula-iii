@@ -1,13 +1,16 @@
 module t08_spi(
 //input logic [31:0] parameters,
+//TODO redo for 2 32 bits inputs
 input logic [7:0] command,
 input logic [31:0] parameters,
+// input logic [31:0] commands
 input logic enable, clk, nrst, readwrite, 
 input logic [3:0] counter,
 output logic [7:0] outputs,
 output logic wrx, rdx, csx, dcx, busy
 );
-
+//assign command = [7:0]commands;
+//assign counter = [11:8] commands;
 logic [31:0] paroutput, nextparoutput;
 logic [7:0] currentout, nextout;
 logic [1:0] state, nextstate; 

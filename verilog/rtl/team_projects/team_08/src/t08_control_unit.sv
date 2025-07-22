@@ -221,7 +221,8 @@ always_comb begin
         en_read_1 = 1;
         data_in_control = 2'd3;
 
-        immediate[6:0] = instruction[31:25];
+        immediate[11:5] = instruction[31:25];
+        immediate[4:0] = instruction[11:7];
 
         case(funct3)
             3'b000: begin

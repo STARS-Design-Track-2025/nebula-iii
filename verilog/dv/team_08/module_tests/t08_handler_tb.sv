@@ -1,6 +1,6 @@
 `timescale 1ms/10ps
 module t08_handler_tb;
-logic [31:0] fromregister=0,  frommem=0, mem_address=0;
+logic [31:0] fromregister=0,  frommem=0, mem_a0 ddress=0;
 logic write=0, read=0, clk=0, nrst=1, writeout, readout, busy = 0, done = 1, getinst;
 logic [2:0] func3=0;
 logic [31:0] toreg,  tomem, addressnew, counter= 0, instruction;
