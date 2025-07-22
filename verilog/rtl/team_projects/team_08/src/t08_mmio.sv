@@ -4,32 +4,33 @@
 
 //interface with wishbone
 module t08_mmio (
-    input logic nRst, clk,
+    //input logic         nRst, 
+      //                  clk,
     //from memory handler
-    input logic read,                       //command to read, source specified by address
-    input logic write,                      //command to write, destination specified by address
-    input logic getinst,                    //command to read instruction
-    input logic [31:0] address,             //location to read from or write to
-    input logic [31:0] mh_data_i,           //data to write
+    input logic         read,                       //command to read, source specified by address
+    input logic         write,                      //command to write, destination specified by address
+    input logic         getinst,                    //command to read instruction
+    input logic [31:0]  address,                    //location to read from or write to
+    input logic [31:0]  mh_data_i,                  //data to write
     //from I2C
-    input logic [31:0] I2C_xy_i,
-    input logic I2C_done_i,
+    input logic [31:0]  I2C_xy_i,
+    input logic         I2C_done_i,
     //from SPI
-    input logic spi_busy_i,
+    input logic         spi_busy_i,
     //from Memory: data
-    input logic [31:0] mem_data_i,          //data read from memory
-    input logic mem_busy_i,                 //whether memory is busy or not
+    input logic [31:0]  mem_data_i,          //data read from memory
+    input logic         mem_busy_i,                 //whether memory is busy or not
     //to memory handler
     output logic [31:0] mh_data_o,          //data read
-    output logic mmio_busy_o,               //whether mmio is busy or not
-    output logic I2C_done_o,                //whether I2C data is ready to be read
+    output logic        mmio_busy_o,               //whether mmio is busy or not
+    output logic        I2C_done_o,                //whether I2C data is ready to be read
     //to SPI
     output logic [31:0] spi_parameters_o,   //
-    output logic [7:0] spi_command_o,
-    output logic [3:0] spi_counter_o,
-    output logic spi_read_o,
-    output logic spi_write_o,
-    output logic spi_enable_o,
+    output logic [7:0]  spi_command_o,
+    output logic [3:0]  spi_counter_o,
+    output logic        spi_read_o,
+    output logic        spi_write_o,
+    output logic        spi_enable_o,
     //to Memory: data / wishbone
     output logic [31:0] mem_data_o,         //data to write to memory
     output logic [31:0] mem_address_o,      //address to put data
@@ -38,12 +39,69 @@ module t08_mmio (
     output logic        mem_read_o          //tell memory to output reading
 );
 
+localparam [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
+localparam [31:0] SPI_ADDRESS_P = 32'd333333; //SPI write parameter
+localparam [31:0] I2C_ADDRESS = 32'd923923;
+
+assign mmio_busy_o = spi_busy_i | mem_busy_i | !(I2C_done_i); 
+assign I2C_done_o = I2C_done_i;
+assign mem_select_o = 4'b1111;
+
+always_comb begin
+    mh_data_o = 0;                                             
+    spi_parameters_o = 0;     
+    spi_command_o = 0;
+    spi_counter_o = 0;
+    spi_read_o = 0;
+    spi_write_o = 0;
+    spi_enable_o = 0;      
+    mem_data_o = 0;     
+    mem_address_o = 0;         
+    mem_write_o = 0;      
+    mem_read_o = 0;
+    if (mmio_busy_o) begin
+        
+    end else if (!write && read || getinst) begin
+        if (address == I2C_ADDRESS) begin
+            if (I2C_done_i) begin
+                mh_data_o = I2C_xy_i;
+            end
+        end else if (address < 32'd2048) begin
+                if (mem_busy_i) begin
+                    mh_data_o = 32'hBAD1BAD1;
+                end else begin
+                    mh_data_o = mem_data_i;
+                end
+        end
+    end else if (write && !read && !getinst) begin
+        if (address == SPI_ADDRESS_C) begin        
+            spi_command_o = mh_data_i[7:0];
+            spi_counter_o = mh_data_i[11:8];
+            spi_enable_o = 0;
+            spi_write_o = 0;
+        end else if (address == SPI_ADDRESS_P) begin
+            if (!spi_busy_i) begin 
+                spi_parameters_o = mh_data_i;
+                spi_write_o = 1;
+                spi_enable_o = 1;
+            end
+        end else if (address < 32'd2048) begin
+            if (!mem_busy_i) begin
+                mem_data_o = mh_data_i;     
+                mem_address_o = address;          
+                mem_write_o = 1;      
+            end
+        end
+    end
+
+end
+/*
 typedef enum logic[2:0] {
-    IDLE,
-    BUSY,
-    MEMWAIT,
-    MEMREAD,
-    MEMWRITE
+    IDLE,       //state that reads mh input at every posedge clock
+    BUSY,       //state that's outputting info to mh
+    MEMWAIT,    //state that's waits a cycle for mem_busy_i to activate since it's the exit signal for leaving the next states MEMREAD and MEMWRITE
+    MEMREAD,    //state that is waiting for memory to get the right memory, exits when mem_busy_i go low
+    MEMWRITE    //state that is waiting for memory to finish being busy, exits when mem_busy_i go low
  } state;
 
 localparam [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
@@ -197,12 +255,12 @@ always_comb begin
             if (mem_busy_i) begin
                 next_state = MEMWRITE;
             end else begin
-                next_state = BUSY; 
-                mem_write_o_next = 0;
+                next_state = IDLE;
+                mmio_busy_o_next = 1'b0;
             end
         end
     endcase
 end
-
+*/
 endmodule
 
