@@ -56,7 +56,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk);
+        @ (posedge clk);
 
         //Test 2: Writing 345 to register 13.
         testNumber++;
@@ -70,7 +70,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 3: Reading from register 13 to make sure it contains 345. 
         testNumber++;
@@ -84,7 +84,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 4: Disabling both read and write and making sure the output doesn't change. 
         testNumber++;
@@ -98,7 +98,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 5: Changing data_in_control to pull from instruction fetch instead. (Register 5 should now hold 1024)
         testNumber++;
@@ -112,7 +112,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 6: Verifying that register 5 holds 1024.
         testNumber++;
@@ -126,7 +126,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk);
+        @ (posedge clk);
 
         //Test 7: Changing data_in_control to pull from alu instead. (Register 5 should now hold 0)
         testNumber++;
@@ -140,7 +140,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 8: Verifying that register 5 holds 0.
         testNumber++;
@@ -154,7 +154,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 9: Reading from two registers at once. (Should output 345 and 0) 
         testNumber++;
@@ -168,7 +168,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         #1 $finish;
 
