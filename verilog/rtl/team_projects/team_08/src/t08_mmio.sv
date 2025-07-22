@@ -59,40 +59,41 @@ always_comb begin
     mem_address_o = 0;         
     mem_write_o = 0;      
     mem_read_o = 0;
-    if (mmio_busy_o) begin
+    if (!mmio_busy_o) begin
         
-    end else if (!write && read || getinst) begin
-        if (address == I2C_ADDRESS) begin
-            if (I2C_done_i) begin
-                mh_data_o = I2C_xy_i;
-            end
-        end else if (address < 32'd2048) begin
-                if (mem_busy_i) begin
-                    mh_data_o = 32'hBAD1BAD1;
-                end else begin
-                    mh_data_o = mem_data_i;
+        if (!write && read || getinst) begin
+            if (address == I2C_ADDRESS) begin
+                if (I2C_done_i) begin
+                    mh_data_o = I2C_xy_i;
                 end
-        end
-    end else if (write && !read && !getinst) begin
-        if (address == SPI_ADDRESS_C) begin        
-            spi_command_o = mh_data_i[7:0];
-            spi_counter_o = mh_data_i[11:8];
-            spi_enable_o = 0;
-            spi_write_o = 0;
-        end else if (address == SPI_ADDRESS_P) begin
-            if (!spi_busy_i) begin 
-                spi_parameters_o = mh_data_i;
-                spi_write_o = 1;
-                spi_enable_o = 1;
+            end else if (address < 32'd2048) begin
+                    if (mem_busy_i) begin
+                        mh_data_o = 32'hBAD1BAD1;
+                    end else begin
+                        mh_data_o = mem_data_i;
+                    end
             end
-        end else if (address < 32'd2048) begin
-            if (!mem_busy_i) begin
-                mem_data_o = mh_data_i;     
-                mem_address_o = address;          
-                mem_write_o = 1;      
+
+        end else if (write && !read && !getinst) begin
+            if (address == SPI_ADDRESS_C) begin        
+                spi_command_o = mh_data_i[7:0];
+                spi_counter_o = mh_data_i[11:8];
+                spi_enable_o = 0;
+                spi_write_o = 0;
+            end else if (address == SPI_ADDRESS_P) begin
+                if (!spi_busy_i) begin 
+                    spi_parameters_o = mh_data_i;
+                    spi_write_o = 1;
+                    spi_enable_o = 1;
+                end
+            end else if (address < 32'd2048) begin
+                if (!mem_busy_i) begin
+                    mem_data_o = mh_data_i;     
+                    mem_address_o = address;          
+                    mem_write_o = 1;      
+                end
             end
-        end
-    end
+    end end
 
 end
 /*

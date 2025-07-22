@@ -87,8 +87,6 @@ module t08_top(
     logic mmio_busy, mmio_done_from_I2C;
 
     t08_mmio mmio(
-        .nRst(nRst), .clk(clk),                                                            //Clock and reset
-        
         .read(CPU_read_out), .write(CPU_write_out),  .getinst(getinst),                                      //From memory handler
         .address(CPU_mem_address_out), .mh_data_i(CPU_data_out), 
         
