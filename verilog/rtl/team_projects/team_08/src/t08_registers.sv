@@ -20,6 +20,9 @@ module t08_registers(
     logic [31:0] [31:0] data;
     logic [31:0] [31:0] data_n;
 
+    logic [31:0] data_out_r1_prev = 0;
+    logic [31:0] data_out_r2_prev = 0;
+
     always_ff @ (/*posedge clk, */negedge clk, negedge nRst) begin
         if (!nRst) begin
             
@@ -36,6 +39,9 @@ module t08_registers(
         end else begin
 
             data <= data_n;
+
+            data_out_r1_prev <= data_out_r1;
+            data_out_r2_prev <= data_out_r2;
 
         end
     end
@@ -55,28 +61,20 @@ module t08_registers(
 
     always_comb begin : read_and_write
 
-        data_out_r1 = 0;
-        data_out_r2 = 0;
+        data_out_r1 = data_out_r1_prev;
+        data_out_r2 = data_out_r2_prev;
         
         if (en_read_1 && !busy) begin //Read from one register
 
             data_out_r1 = data[address_r1];
 
-        end else begin
-
-            data_out_r1 = data_out_r1;
-
-        end
+        end 
 
         if (en_read_2 && !busy) begin //Read from a second register
 
             data_out_r2 = data[address_r2];
 
-        end else begin
-
-            data_out_r2 = data_out_r2;
-
-        end
+        end 
 
         if (en_write && !busy) begin //Write to a register
 
@@ -89,5 +87,11 @@ module t08_registers(
         end
 
     end
+
+    logic [31:0] reg31, reg30, reg29, reg28, reg27, reg26, reg25, reg24, reg23, reg22, reg21, reg20, reg19, reg18, reg17, reg16, reg15, reg14, reg13,
+                   reg12, reg11, reg10, reg09, reg08, reg07, reg06, reg05, reg04, reg03, reg02, reg01, reg00;
+
+    assign {reg31, reg30, reg29, reg28, reg27, reg26, reg25, reg24, reg23, reg22, reg21, reg20, reg19, reg18, reg17, reg16, reg15, reg14, reg13,
+                   reg12, reg11, reg10, reg09, reg08, reg07, reg06, reg05, reg04, reg03, reg02, reg01, reg00} = data;
 
 endmodule

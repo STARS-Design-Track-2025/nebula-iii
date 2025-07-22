@@ -38,7 +38,7 @@ module t08_top(
         .data_in(CPU_data_in),                              //mmio to memory handler: data in
         .done(mmio_done_from_I2C), .busy(mmio_busy),        //from mmio, if it's busy, if data from I2C is done
         .data_out(CPU_data_out),                            //memory handler to mmio: data outputted
-        .mem_address(CPU_mem_address_out),                  //memory handler to mmio: address in memory
+        .addressnew(CPU_mem_address_out),                  //memory handler to mmio: address in memory
         .read_out(CPU_read_out), .write_out(CPU_write_out), .getinst(getinst)  //memory handler to mmio: read and write enable
     );
 

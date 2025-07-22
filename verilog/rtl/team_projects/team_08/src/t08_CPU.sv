@@ -7,7 +7,7 @@ module t08_CPU (
     input logic [31:0] data_in,             //memory to memory handler: data in
     input logic done, busy,                 //from mmio, if its busy, if data from i2c is done
     output logic [31:0] data_out,           //memory handler to mmio: data outputted 
-    output logic [31:0] mem_address,        //memory handler to mmio: address in memory
+    output logic [31:0] addressnew,        //memory handler to mmio: address in memory
     output logic read_out, write_out, getinst        //memory handler to mmio: read and write enable
 );
 
@@ -81,7 +81,7 @@ module t08_CPU (
         .busy(busy), .done(done), .freeze(freeze),
         .func3(func3), 
         .toreg(mem_to_reg), .tomem(data_out), 
-        .addressnew(mem_address), 
+        .addressnew(addressnew), 
         .instruction(instruction),
         .writeout(write_out), .readout(read_out), .getinst(getinst)
     );

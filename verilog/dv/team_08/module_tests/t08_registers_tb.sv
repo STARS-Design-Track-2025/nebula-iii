@@ -20,7 +20,7 @@ module t08_registers_tb;
 
     t08_registers registers(.clk(clk), .nRst(nRst), .address_r1(address_r1), .address_r2(address_r2), .address_rd(address_rd), 
         .data_in_frommemory(data_in_frommemory), .data_in_frominstructionfetch(data_in_frominstructionfetch), .data_in_fromalu(data_in_fromalu), 
-        .data_in_control(data_in_control), .en_read_1(en_read_1), .en_read_2(en_read_2), .en_write(en_write), .data_out_r1(data_out_r1), 
+        .data_in_control(data_in_control), .en_read_1(en_read_1), .en_read_2(en_read_2), .en_write(en_write), .busy(1'b0), .data_out_r1(data_out_r1), 
         .data_out_r2(data_out_r2));
 
     string testname;
@@ -56,21 +56,21 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk);
+        @ (posedge clk);
 
         //Test 2: Writing 345 to register 13.
         testNumber++;
         en_read_1 = 0;
         en_read_2 = 0;
         en_write = 1;
-        data_in_control = 2'b10;
+        data_in_control = 2'b01;
         address_r1 = 5'd5;
         address_r2 = 5'd18;
         address_rd = 5'd13;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 3: Reading from register 13 to make sure it contains 345. 
         testNumber++;
@@ -84,7 +84,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 4: Disabling both read and write and making sure the output doesn't change. 
         testNumber++;
@@ -98,7 +98,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 5: Changing data_in_control to pull from instruction fetch instead. (Register 5 should now hold 1024)
         testNumber++;
@@ -112,7 +112,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 6: Verifying that register 5 holds 1024.
         testNumber++;
@@ -126,7 +126,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk);
+        @ (posedge clk);
 
         //Test 7: Changing data_in_control to pull from alu instead. (Register 5 should now hold 0)
         testNumber++;
@@ -140,7 +140,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 8: Verifying that register 5 holds 0.
         testNumber++;
@@ -154,7 +154,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         //Test 9: Reading from two registers at once. (Should output 345 and 0) 
         testNumber++;
@@ -168,7 +168,7 @@ module t08_registers_tb;
         data_in_frommemory = 32'd345;
         data_in_frominstructionfetch = 32'd1024;
         data_in_fromalu = 32'd0;
-        @ (negedge clk); 
+        @ (posedge clk); 
 
         #1 $finish;
 

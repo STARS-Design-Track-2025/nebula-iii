@@ -15,7 +15,7 @@ module t08_handler(
 localparam [31:0] I2C_ADDRESS = 32'd923923;
 
 
-
+logic nextfreeze;
 logic [31:0] regs = 0, mems = 0, address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 logic [1:0] state,  nextstate; //0 wait, 1 send
 
@@ -24,7 +24,8 @@ assign tomem = mems;
 assign toreg = regs;
 //assign writeout = write;
 //assign readout = read;
-assign freeze = busy|readout|writeout;
+
+//assign freeze = busy;
 
 
 
@@ -34,6 +35,7 @@ always_ff@(posedge clk, negedge nrst) begin
         mems <= '0;
         addressnew <= 0;
         state <= 0; //wait
+        freeze <= 1;
     end
     else begin
         regs <= nextregs;
@@ -41,11 +43,13 @@ always_ff@(posedge clk, negedge nrst) begin
         state <= nextstate;
         instruction <= nextinst ;
         addressnew <= nextnewadd;
+        freeze <= nextfreeze;
 
     end
 end
 
 always_comb begin
+    nextfreeze = freeze;
     nextstate = state;
     nextnewadd = addressnew;
     nextregs = regs;
@@ -53,23 +57,10 @@ always_comb begin
     nextinst = instruction;
     readout = 0;
     writeout = 0;
+    getinst = 0;
 
     case(state)
-    // 0: begin
-    //      if (!busy) begin
 
-    //         if ((write) | (read & done)) begin 
-    //                 nextstate = 1; //data
-    //             end
-    //         else if (!write&!read) begin
-    //             nextstate = 2;
-    //         end
-    //         else begin
-    //             nextstate = 0;
-    //         end
-
-    // end
-    // end
 
     0: begin //data
         nextnewadd = counter; 
@@ -80,11 +71,14 @@ always_comb begin
 
         readout = 0;
         writeout = 0;
-        if (busy) begin nextstate = 0; end
+
+        nextfreeze = 0;
+        if (busy) begin nextstate = 0; nextfreeze = 1; end
 
         else if (write&!busy) begin //store type, signed
             writeout = write;
             nextnewadd = mem_address;
+            nextfreeze = 1;
 
             case(func3)
             0: begin
@@ -100,6 +94,7 @@ always_comb begin
         end
 
         else if (read& !busy) begin
+            nextfreeze = 1;
             readout = read;
             nextnewadd = mem_address;
           //  nextstate = 0;
@@ -132,10 +127,12 @@ always_comb begin
     1: begin //instruction fetching
         nextnewadd = counter;                  
         nextinst = frommem;
+        nextfreeze = 0;
         if(!busy) begin
             getinst = 1;        
 
             nextstate = 0;
+            nextfreeze = 1;
         end
 
     end
