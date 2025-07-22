@@ -5,6 +5,9 @@ module t04_request_unit_old(
     input  logic d_ack,
     input  logic [31:0] Imm,
     input  logic BranchCondition,
+    input  logic Jal,
+    input  logic Jalr,
+    input  logic PC_Jalr,
     input  logic [31:0] instruction_in,
     input  logic [31:0] PC,
     input  logic [31:0] mem_address,
@@ -74,8 +77,11 @@ module t04_request_unit_old(
             final_address = PC;
         end
         else begin
-            if (BranchCondition) begin
+            if (BranchCondition || Jal) begin
                 final_address = PC + Imm - 32'd4; 
+            end
+            else if (Jalr) begin
+                final_address = PC_Jalr - 32'd4; 
             end
             else begin
                 final_address = (((MemRead || MemWrite)) && (!(n_memread2 || n_memwrite2))) ? mem_address : PC;

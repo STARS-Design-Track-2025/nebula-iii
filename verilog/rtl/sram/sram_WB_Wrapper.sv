@@ -81,7 +81,7 @@ module sram_WB_Wrapper #(
             .vssd1(vssd1),	// User area 1 digital ground
         `endif
         // Write Ports
-        .clk0(clk0),
+        .clk0(clk0 ),
         .csb0(csb0),
         .wmask0(wmask0),
         .addr0(addr0),

@@ -9,7 +9,10 @@ module t04_top(
     output  logic screenCsx,
     output  logic screenDcx,
     output  logic screenWrx,
-    output  logic [7:0] screenData
+    output  logic [7:0] screenData,
+
+    output logic sus,
+    output logic green
     
 );
 
@@ -65,7 +68,9 @@ module t04_top(
         .display_address(display_address),
         .mem_store_display(mem_store_display),
         .d_ack_display(d_ack_display),
-        .WEN(WEN)
+        .WEN(WEN),
+        .sus(sus),
+        .green(green)
     );
 
     // === KEYPAD INTERFACE ===

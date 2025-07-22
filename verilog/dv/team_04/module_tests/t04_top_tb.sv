@@ -68,7 +68,7 @@ module t04_top_tb;
     // === Initialize test ===
     initial begin
         //force dut.mmio.RAM_en = 0;
-        force dut.mmio.key_data = 0;
+        force dut.row = 4'b1000;
         //x2 is multiplier
         //x1 is multicand
         // force dut.datapath.rf.registers[1] = 0;
@@ -84,7 +84,7 @@ module t04_top_tb;
         // === Release reset ===
         #15 rst = 0;
         #1020;
-        #100010000;
+        #1220;
         //#100000000;
 
        $display("\nFINAL REGISTER VALUES HEX");

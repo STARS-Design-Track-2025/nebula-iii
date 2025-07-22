@@ -44,7 +44,7 @@ end
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
-        column <= 0;
+        column <= 4'b0001;
     end else begin
         column <= column_n;
     end

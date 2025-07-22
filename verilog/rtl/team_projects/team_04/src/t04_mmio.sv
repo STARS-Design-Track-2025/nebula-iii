@@ -21,9 +21,13 @@ module t04_mmio (
     output logic [31:0] display_address,
     output logic [31:0] mem_store_display,
     input logic d_ack_display,
-    output logic WEN
-);
+    output logic WEN,
 
+    output logic sus,
+    output logic green
+);
+    assign sus = rising;
+    assign green = (1);
     // === Internal Signals ===
     logic [31:0] memload_or_instruction;
     logic busy;
@@ -72,6 +76,8 @@ module t04_mmio (
     // assign write_I = RAM_en && MemWrite && !WEN2;
     // assign read_I = (RAM_en && MemRead_Wishbone) || WEN2;
 
+    
+    //FOR TEST BENCHING
     sram_WB_Wrapper sram (
     .wb_clk_i(clk),
     .wb_rst_i(reset),
@@ -84,6 +90,7 @@ module t04_mmio (
     .wbs_ack_o(ack),
     .wbs_dat_o(dat_i)
     );
+
 
     // === Address Decoder ===
     t04_addressDecoder addrDecode (
