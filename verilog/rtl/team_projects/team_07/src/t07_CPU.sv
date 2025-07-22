@@ -1,5 +1,5 @@
 module t07_CPU(
-    input logic [31:0]exInst, memData_in, //intruction from data memory, data from extern memory
+    input logic [31:0]exInst, memData_in, //intruction from data memory, data from MMIO
     output logic [31:0] exMemData_out, externalMemAddr, //PCdata_out to MMIO or instr
     input logic clk, nrst, busy,
     output logic [1:0] rwi,
