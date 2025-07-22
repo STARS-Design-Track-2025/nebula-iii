@@ -26,7 +26,7 @@ always_ff@(posedge clk, negedge nrst) begin
         tomem <= '0;
         addressnew <= 0;
         state <= 0; //wait
-        freeze <= 1;
+        freeze <= 0;
         writeout <= 0;
         readout <=0;
     end
@@ -36,7 +36,7 @@ always_ff@(posedge clk, negedge nrst) begin
         state <= nextstate;
         instruction <= nextinst ;
         addressnew <= nextnewadd;
-        freeze <= nextfreeze;
+        freeze <= nextfreeze|(busy);
         writeout <= nextwriteout;
         readout <= nextreadout;
 
@@ -58,85 +58,92 @@ always_comb begin
 
 
     0: begin //data
+
+
         nextnewadd = addressnew; 
         nextmem = tomem;
         nextregs = toreg;
 
         nextreadout = 0;
         nextwriteout = 0;
-        
+
         if (!busy) begin
+
             nextstate = 1;
             nextreadout = 1;
             nextwriteout = 0;
             nextfreeze = 0;
-        end
-        
+
+
+            if (write) begin //store type, signed
+                nextwriteout = write;
+                nextnewadd = mem_address;
+                nextfreeze = 1;
+
+                case(func3)
+                0: begin
+                    nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
+                1: begin
+                    nextmem = {{16{fromregister[31]}},fromregister[15:0]}; end //SH     
+                2: begin
+                    nextmem = fromregister; end  //sw
+                default:;
+                endcase
+                nextstate = 2;
+
+                //nextstate = 0;
+            end
+
+            else if (read) begin
+                nextfreeze = 1;
+                nextreadout = 1;
+                nextnewadd = mem_address;
+            //  nextstate = 0;
+
+                if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
+                case(func3)
+                0: begin //signed
+                    nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB
+                1: begin
+                    nextregs = {{16{frommem[31]}},frommem[15:0]}; end //LH
+
+
+                4: begin //unsigned
+                    nextregs = {24'b0, frommem[7:0]}; end //LBU
+                
+                5: begin 
+                    nextregs = {16'b0, frommem[15:0]}; end //LHU
+
+                default:  begin  nextregs = frommem; end //lw or lui;
+                endcase
+                nextstate = 2;
+
+                end end
+                end
+
+
         else begin 
             nextstate = 0; 
             nextfreeze = 1;
         end
 
-        if (write&!busy) begin //store type, signed
-            nextwriteout = write;
-            nextnewadd = mem_address;
-            nextfreeze = 1;
-
-            case(func3)
-            0: begin
-                nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
-            1: begin
-                nextmem = {{16{fromregister[31]}},fromregister[15:0]}; end //SH     
-            2: begin
-                nextmem = fromregister; end  //sw
-            default:;
-            endcase
-            nextstate = 2;
-
-            //nextstate = 0;
-        end
-
-        else if (read& !busy) begin
-            nextfreeze = 1;
-            nextreadout = 1;
-            nextnewadd = mem_address;
-          //  nextstate = 0;
-
-            if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
-            case(func3)
-            0: begin //signed
-                nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB
-            1: begin
-                nextregs = {{16{frommem[31]}},frommem[15:0]}; end //LH
-
-
-            4: begin //unsigned
-                nextregs = {24'b0, frommem[7:0]}; end //LBU
-            
-            5: begin 
-                nextregs = {16'b0, frommem[15:0]}; end //LHU
-
-            default:  begin  nextregs = frommem; end //lw or lui;
-            endcase
-            nextstate = 2;
-
-           end 
-            end
-
 
     end
 
     1: begin //instruction fetching
-        nextnewadd = counter;                  
-        nextinst = frommem;
+
         nextfreeze = 1;
         // readout = 1;
         // getinst = 1;
-
+        nextnewadd = counter;  
+        nextinst = frommem;
+        
         if(!busy) begin
             // getinst = 1;      
             nextstate = 0;
-            nextfreeze = 1;
+            nextfreeze = 1;       
+                 
+
         end
 
     end
@@ -145,7 +152,7 @@ always_comb begin
         
         nextwriteout = 0;
         nextreadout = 0;
-    nextnewadd = mem_address;
+        nextnewadd = mem_address;
         nextstate = 1;
         nextfreeze = 1;
         

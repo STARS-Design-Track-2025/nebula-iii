@@ -13,14 +13,14 @@ always_ff@(posedge clk, negedge nrst) begin
         current_ra <= '0;
     end
 
-    else if(!freeze) begin
+    else begin
         program_counter <= next_pc;
         current_ra <= next_ra;
     end
 end
 
 always_comb begin
-    if (!freeze) begin
+   if (!freeze) begin
         next_pc = program_counter +4; //normal incrementing
         next_ra = current_ra;
         if (program_counter >= {32{1'b1}}) begin next_pc = 0; end // restart at 0
