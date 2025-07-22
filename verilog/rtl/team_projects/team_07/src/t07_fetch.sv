@@ -24,7 +24,6 @@ always_ff @( negedge busy_o, negedge nrst, posedge clk) begin
 end
 
 always_comb begin
-
     n_ExtInstruction = ExtInstruction; // Fetch new instruction from external memory
     n_PC_out = programCounter; // Update program counter output
 end

@@ -14,11 +14,15 @@ module t07_program_counter_tb;
     logic [31:0] programCounter;
     logic [31:0] linkAddress;
 
+    //fetch
+    logic busy_o;
+    logic [31:0] Instr_out, PC_out, inst;
+
     // Instantiate the Unit Under Test (UUT)
     t07_program_counter pc(
         .clk(clk), 
         .nrst(nrst), 
-        .freeze(freeze),
+        .freeze(busy_o),
         .forceJump(forceJump), 
         .condJump(condJump), 
         .ALU_flags(ALU_flags), 
@@ -27,6 +31,9 @@ module t07_program_counter_tb;
         .linkAddress(linkAddress),
         .func3(func3)
     );
+
+    t07_fetch fetch0(.clk(clk), .nrst(nrst), .busy_o(busy_o), .ExtInstruction(inst), .programCounter(programCounter), .Instruction(Instr_out), .PC_out(PC_out));
+
     // Clock generation
     always begin 
         clk = 0;
@@ -35,6 +42,22 @@ module t07_program_counter_tb;
         #5; // Wait for 10 time units
     end
 
+    //test busy signal (coming in from MMIO)
+    always begin
+        #20
+        busy_o = ~busy_o;
+    end
+
+    task reset(); begin
+        nrst = '1;
+        #1
+        nrst = '0;
+        #3
+        nrst = '1;
+    end
+    endtask
+
+    /*
     task JumpDist_task; begin
         JumpDist = 32'd00000004; // Default jump distance
         #10;
@@ -55,9 +78,10 @@ module t07_program_counter_tb;
         JumpDist = 32'd0; // Reset jump distance
         #10; // Wait for a clock cycle
     end
-    endtask
+    endtask */
 
     // Task to set ALU flags for different conditions
+    /*
     task ALU_flags_task; begin
         ALU_flags = 7'b0000000; // No flags set
         funct3_task();
@@ -89,7 +113,9 @@ module t07_program_counter_tb;
         #10; // Wait for a clock cycle
     end
     endtask
+    */
 
+    /*
     // Task to set funct3 values for different operations
     task funct3_task; begin
         func3 = 'b000;
@@ -116,19 +142,81 @@ module t07_program_counter_tb;
         func3 = 'b111;
         JumpDist_task(); // Set jump distance for each funct3
     end
-    endtask
+    endtask */
+
+    always begin
+        @(posedge clk); 
+        inst = 'b00000000001100010000000010110011; //add x1. x2, x3
+        JumpDist = '0;
+        condJump = '0;
+        forceJump = 0;
+        #30
+        inst = 'b01000000001100010000000010110011; //sub x1, x2, x3
+        JumpDist = '0;
+        condJump = '0;
+        forceJump = 0;
+        #30
+        inst = 'b00000000001000001000001001100011; //beq, x1, x2, 5
+        JumpDist = '0;
+        condJump = '1;
+        forceJump = 0;
+        #30
+        inst = 'b00000000010000000000000011101111; //jal x1, 5
+        JumpDist = 32'd5;
+        forceJump = 1;
+        forceJump = 0;
+        //ALU result
+        #30
+        inst = 'b00000000001100010010000010110011; //slt x1, x2
+        JumpDist = '0;
+        condJump = '0;
+        forceJump = 0;
+        #30
+        inst = 'b00000000011000010011000010010011; //sltiu x1, x2, 6
+        JumpDist = '0;
+        condJump = '0;
+        forceJump = 0;
+        #30
+        inst = 'b00000000011000010100000010010011; //xori x1, x2, 6
+        JumpDist = '0;
+        condJump = '0;
+        forceJump = 0;
+        #30
+        inst = 'b00000000100100010110000010010011; //ori x1, x2, 9
+        JumpDist = '0;
+        condJump = '0;
+        forceJump = 0;
+        #30
+        inst = 'b00000000100100010111000010010011; //andi x1, x2, 9
+        JumpDist = '0;
+        condJump = '0;
+        forceJump = 0;
+        #30
+        inst = 'b00000000100100010000000010010011; //addi x1, x2, 9
+        JumpDist = '0;
+        condJump = '0;
+        forceJump = 0;
+    end
+
+
     initial begin
         $dumpfile("t07_program_counter.vcd");
         $dumpvars(0, t07_program_counter_tb);
         // Initialize Inputs
-        nrst = 1; // Start with reset high
-        freeze = 0;
+        /*nrst = 1; // Start with reset high
         forceJump = 0;
         condJump = 0;
         ALU_flags = 7'b000000; // No flags set
         JumpDist = 32'h00000000;
-        func3 = 3'b000; // Default function code
+        func3 = 3'b000; // Default function code */
 
+        //testing pc & fetch together
+        busy_o = 0;
+        reset();
+
+
+
+        /*
         // Wait for global reset to finish
         #10;
         
@@ -139,14 +227,14 @@ module t07_program_counter_tb;
         #10; // Wait for a few clock cycles
         #10; // Wait for a clock cycle
         #15; // Wait for a clock cycle
+        
         // Test case: Force jump
         forceJump = 1;
         JumpDist_task(); // Set jump distance
         #10;
         forceJump = 0; // Clear force jump
         #10;
-
-
+        */
         // // Test case: Conditional jump with branch for beq
         // condJump = 1;
         // ALU_flags = 7'b1000000; // Set condition met flag
@@ -157,13 +245,10 @@ module t07_program_counter_tb;
         // #10;
 
         // Test case: Conditional jump with branch for bne
-        condJump = 1; // Set conditional jump again
-        ALU_flags_task(); // Set flags and func3 for different conditions
+        //condJump = 1; // Set conditional jump again
+        //ALU_flags_task(); // Set flags and func3 for different condition
 
-        freeze = 1;
-        #10;
-        freeze = 0; // Release freeze
-        #10;
+        //#10;
         #1; 
         $finish;
     end
