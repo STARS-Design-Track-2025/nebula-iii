@@ -8,7 +8,8 @@ module t07_ExternalRegister (
     input logic [31:0] write_data, // Data to write to the register from SPI
     input logic ri, // Enable reading or idle to the register
     output logic [31:0] read_data, // Data read from the register
-    output logic ack_REG // acknowledge signal to the memory handler
+    output logic ack_REG, // acknowledge signal to the memory handler
+    output logic clk_SPI // Clock signal for the SPI
 );
     logic [31:0] registers [31:0]; // 32 registers, each 32 bits wide
     logic next_ack_REG;  // Next acknowledge signal to the memory handler
@@ -29,6 +30,7 @@ module t07_ExternalRegister (
     // Write logic
     always_ff @(posedge clk, negedge nrst) begin
         if (nrst) begin
+            clk_SPI <= 1'b0; // Reset SPI clock
             ack_REG <= 1'b0; // Reset acknowledge signal
             read_data <= 32'b0; // Reset read data
             // Reset all registers to zero
@@ -36,6 +38,7 @@ module t07_ExternalRegister (
                 registers[i] <= 32'b0;
             end
         end else begin
+            clk_SPI <= clk; // Maintain the SPI clock
             registers[SPIAddress] <= write_data; // Write data to the register
             if (ri == 1'b1) begin
                 ack_REG <= next_ack_REG; // Acknowledge signal to the memory handler
