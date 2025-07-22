@@ -13,11 +13,11 @@ module t07_fetch (
 
 logic [31:0] n_ExtInstruction, n_PC_out; // Next instruction to fetch
 
-always_ff @( negedge busy_o, negedge nrst, posedge clk) begin
+always_ff @(negedge nrst, posedge clk) begin
     if (~nrst) begin
         Instruction <= 32'b0; // Reset instruction to zero on reset
         PC_out <= 32'b0; // Reset program counter output to zero
-    end else begin
+    end if (busy_o == 0 ) begin
         Instruction <= n_ExtInstruction; // Fetch instruction from external memory when not frozen
         PC_out <= n_PC_out; // Update program counter output
     end
