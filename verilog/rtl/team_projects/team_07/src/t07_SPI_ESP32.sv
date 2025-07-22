@@ -2,7 +2,7 @@ module t07_SPI_ESP32 (
     input logic [7:0] ESP_in, 
     input logic SCLK_in, clk, nrst,
     output logic [31:0] SPI_Address, // Address for the external register],
-    output logic [31:0] dataForExtReg, // Data to write to the external register
+    output logic [31:0] dataForExtReg // Data to write to the external register
 
 );
     logic [31:0] n_address;
