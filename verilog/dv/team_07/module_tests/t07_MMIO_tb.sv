@@ -28,7 +28,6 @@ module t07_MMIO_tb;
     t07_MMIO uut (
         .memData_in(memData_in),
         .rwi_in(rwi_in),
-        .inst(inst),
         .ExtData_in(ExtData_in),
         .busy_o(busy_o),
         .regData_in(regData_in),
