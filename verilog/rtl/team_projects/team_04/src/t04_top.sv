@@ -11,7 +11,6 @@ module t04_top(
     output  logic screenWrx,
     output  logic [7:0] screenData,
     output  logic checkX, checkY, checkC
-    output  logic [7:0] screenData
 );
 
     // === Internal wires ===
