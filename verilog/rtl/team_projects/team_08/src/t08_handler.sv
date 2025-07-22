@@ -19,15 +19,6 @@ logic nextfreeze, nextwriteout, nextreadout;
 logic [31:0] address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 logic [1:0] state,  nextstate; //0 wait, 1 send
 
-//assign addressnew = mem_address; 
-//assign tomem = tomem;
-//assign toreg = toreg;
-//assign writeout = write;
-//assign readout = read;
-
-//assign freeze = busy;
-
-
 
 always_ff@(posedge clk, negedge nrst) begin
     if(!nrst) begin
@@ -36,6 +27,8 @@ always_ff@(posedge clk, negedge nrst) begin
         addressnew <= 0;
         state <= 0; //wait
         freeze <= 1;
+        writeout <= 0;
+        readout <=0;
     end
     else begin
         toreg <= nextregs;
@@ -44,7 +37,8 @@ always_ff@(posedge clk, negedge nrst) begin
         instruction <= nextinst ;
         addressnew <= nextnewadd;
         freeze <= nextfreeze;
-        //writeout <= next
+        writeout <= nextwriteout;
+        readout <= nextreadout;
 
     end
 end
@@ -56,8 +50,8 @@ always_comb begin
     nextregs = toreg;
     nextmem = tomem;
     nextinst = instruction;
-    readout = 0;
-    writeout = 0;
+    nextreadout = readout;
+    nextwriteout = writeout;
     getinst = 0;
 
     case(state)
@@ -67,9 +61,14 @@ always_comb begin
         nextnewadd = addressnew; 
         nextmem = tomem;
         nextregs = toreg;
+
+        nextreadout = 0;
+        nextwriteout = 0;
         
         if (!busy) begin
             nextstate = 1;
+            nextreadout = 1;
+            nextwriteout = 0;
             nextfreeze = 0;
         end
         
@@ -78,14 +77,8 @@ always_comb begin
             nextfreeze = 1;
         end
 
-        readout = 0;
-        writeout = 0;
-
-        
-       
-
         if (write&!busy) begin //store type, signed
-            writeout = write;
+            nextwriteout = write;
             nextnewadd = mem_address;
             nextfreeze = 1;
 
@@ -105,7 +98,7 @@ always_comb begin
 
         else if (read& !busy) begin
             nextfreeze = 1;
-            readout = read;
+            nextreadout = 1;
             nextnewadd = mem_address;
           //  nextstate = 0;
 
@@ -130,18 +123,18 @@ always_comb begin
            end 
             end
 
-        // else begin
-        //     //nextstate = 1;
-        // end
+
     end
 
     1: begin //instruction fetching
         nextnewadd = counter;                  
         nextinst = frommem;
-        nextfreeze = 0;
+        nextfreeze = 1;
+        // readout = 1;
+        // getinst = 1;
 
         if(!busy) begin
-            getinst = 1;        
+            // getinst = 1;      
             nextstate = 0;
             nextfreeze = 1;
         end
@@ -150,9 +143,9 @@ always_comb begin
 
     2: begin
         
-        writeout = 0;
-        readout = 0;
-nextnewadd = mem_address;
+        nextwriteout = 0;
+        nextreadout = 0;
+    nextnewadd = mem_address;
         nextstate = 1;
         nextfreeze = 1;
         
@@ -160,12 +153,6 @@ nextnewadd = mem_address;
 
     end
 
-
-    // 2: begin //instruction sending to cu
- 
-
-    //     //readout = 1;
-    // end
     default: begin readout = 0; writeout = 0; end
     endcase
 end

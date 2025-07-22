@@ -1,0 +1,889 @@
+$date
+	Tue Jul 22 17:04:19 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module t08_top_tb $end
+$var reg 1 ! clk $end
+$var reg 1 " nRst $end
+$scope module top $end
+$var wire 1 # SDAin $end
+$var wire 1 ! clk $end
+$var wire 1 $ en $end
+$var wire 4 % mmio_select_to_wb [3:0] $end
+$var wire 1 " nRst $end
+$var wire 1 & touchscreen_interrupt $end
+$var wire 1 ' wb_we_o $end
+$var wire 1 ( wb_stb_o $end
+$var wire 4 ) wb_sel_o [3:0] $end
+$var wire 32 * wb_data_to_mmio [31:0] $end
+$var wire 32 + wb_dat_o [31:0] $end
+$var wire 32 , wb_dat_i [31:0] $end
+$var wire 1 - wb_cyc_o $end
+$var wire 1 . wb_busy_o $end
+$var wire 32 / wb_adr_o [31:0] $end
+$var wire 1 0 wb_ack_i $end
+$var wire 1 1 touchscreen_scl $end
+$var wire 1 2 spi_wrx $end
+$var wire 1 3 spi_rdx $end
+$var wire 8 4 spi_outputs [7:0] $end
+$var wire 1 5 spi_dcx $end
+$var wire 1 6 spi_csx $end
+$var wire 32 7 screen_command_parameters [31:0] $end
+$var wire 8 8 screen_command [7:0] $end
+$var wire 1 9 mmio_write_to_wb $end
+$var wire 1 : mmio_read_to_wb $end
+$var wire 1 ; mmio_done_from_I2C $end
+$var wire 32 < mmio_data_to_wb [31:0] $end
+$var wire 4 = mmio_counter_to_spi [3:0] $end
+$var wire 1 > mmio_busy $end
+$var wire 32 ? mmio_address_to_wb [31:0] $end
+$var wire 1 @ getinst $end
+$var wire 1 A SPI_write $end
+$var wire 1 B SPI_read $end
+$var wire 1 C SPI_enable $end
+$var wire 1 D SPI_busy $end
+$var wire 1 E SDAout $end
+$var wire 1 F SDAoeb $end
+$var wire 1 G I2C_done $end
+$var wire 32 H I2C_data_out [31:0] $end
+$var wire 1 I CPU_write_out $end
+$var wire 1 J CPU_read_out $end
+$var wire 32 K CPU_mem_address_out [31:0] $end
+$var wire 32 L CPU_data_out [31:0] $end
+$var wire 32 M CPU_data_in [31:0] $end
+$scope module CPU $end
+$var wire 1 ! clk $end
+$var wire 1 " nRst $end
+$var wire 1 I write_out $end
+$var wire 32 N return_address [31:0] $end
+$var wire 5 O regd [4:0] $end
+$var wire 32 P reg_out_2 [31:0] $end
+$var wire 32 Q reg_out_1 [31:0] $end
+$var wire 1 R reg_en_write $end
+$var wire 1 S reg_en_read_2 $end
+$var wire 1 T reg_en_read_1 $end
+$var wire 5 U reg2 [4:0] $end
+$var wire 5 V reg1 [4:0] $end
+$var wire 1 J read_out $end
+$var wire 32 W program_counter [31:0] $end
+$var wire 32 X mem_to_reg [31:0] $end
+$var wire 1 Y mem_en_write $end
+$var wire 1 Z mem_en_read $end
+$var wire 1 [ jump $end
+$var wire 32 \ instruction [31:0] $end
+$var wire 32 ] immediate [31:0] $end
+$var wire 1 @ getinst $end
+$var wire 3 ^ func3 [2:0] $end
+$var wire 1 _ freeze $end
+$var wire 1 ; done $end
+$var wire 32 ` data_out [31:0] $end
+$var wire 2 a data_in_control [1:0] $end
+$var wire 32 b data_in [31:0] $end
+$var wire 1 > busy $end
+$var wire 1 c branch $end
+$var wire 32 d alu_data_out [31:0] $end
+$var wire 6 e alu_control [5:0] $end
+$var wire 32 f addressnew [31:0] $end
+$scope module alu $end
+$var wire 32 g reg2 [31:0] $end
+$var wire 32 h reg1 [31:0] $end
+$var wire 32 i program_counter [31:0] $end
+$var wire 32 j immediate [31:0] $end
+$var wire 6 k alu_control [5:0] $end
+$var reg 1 c branch $end
+$var reg 32 l data_out [31:0] $end
+$var reg 32 m in1 [31:0] $end
+$var reg 32 n in2 [31:0] $end
+$scope begin input_multiplexer $end
+$upscope $end
+$scope begin operation_select $end
+$upscope $end
+$upscope $end
+$scope module control_unit $end
+$var wire 32 o instruction [31:0] $end
+$var reg 6 p alu_control [5:0] $end
+$var reg 2 q data_in_control [1:0] $end
+$var reg 1 T en_read_1 $end
+$var reg 1 S en_read_2 $end
+$var reg 1 R en_write $end
+$var reg 3 r funct3 [2:0] $end
+$var reg 7 s funct7 [6:0] $end
+$var reg 32 t immediate [31:0] $end
+$var reg 1 [ jump $end
+$var reg 7 u opcode [6:0] $end
+$var reg 1 Z read $end
+$var reg 5 v reg1 [4:0] $end
+$var reg 5 w reg2 [4:0] $end
+$var reg 5 x regd [4:0] $end
+$var reg 1 Y write $end
+$upscope $end
+$scope module fetch $end
+$var wire 1 c branch $end
+$var wire 1 ! clk $end
+$var wire 32 y imm_address [31:0] $end
+$var wire 1 [ jump $end
+$var wire 1 " nrst $end
+$var wire 32 z ret_address [31:0] $end
+$var wire 1 _ freeze $end
+$var reg 32 { current_ra [31:0] $end
+$var reg 32 | next_pc [31:0] $end
+$var reg 32 } next_ra [31:0] $end
+$var reg 32 ~ program_counter [31:0] $end
+$upscope $end
+$scope module handler $end
+$var wire 1 ! clk $end
+$var wire 32 !" counter [31:0] $end
+$var wire 3 "" func3 [2:0] $end
+$var wire 32 #" mem_address [31:0] $end
+$var wire 1 " nrst $end
+$var wire 1 Z read $end
+$var wire 1 Y write $end
+$var wire 32 $" fromregister [31:0] $end
+$var wire 32 %" frommem [31:0] $end
+$var wire 1 ; done $end
+$var wire 1 > busy $end
+$var parameter 32 &" I2C_ADDRESS $end
+$var reg 32 '" addressnew [31:0] $end
+$var reg 1 _ freeze $end
+$var reg 1 @ getinst $end
+$var reg 32 (" instruction [31:0] $end
+$var reg 1 )" nextfreeze $end
+$var reg 32 *" nextinst [31:0] $end
+$var reg 32 +" nextmem [31:0] $end
+$var reg 32 ," nextnewadd [31:0] $end
+$var reg 32 -" nextregs [31:0] $end
+$var reg 2 ." nextstate [1:0] $end
+$var reg 1 J readout $end
+$var reg 2 /" state [1:0] $end
+$var reg 32 0" tomem [31:0] $end
+$var reg 32 1" toreg [31:0] $end
+$var reg 1 I writeout $end
+$upscope $end
+$scope module registers $end
+$var wire 5 2" address_r1 [4:0] $end
+$var wire 5 3" address_r2 [4:0] $end
+$var wire 5 4" address_rd [4:0] $end
+$var wire 1 _ busy $end
+$var wire 1 ! clk $end
+$var wire 2 5" data_in_control [1:0] $end
+$var wire 32 6" data_in_fromalu [31:0] $end
+$var wire 32 7" data_in_frominstructionfetch [31:0] $end
+$var wire 32 8" data_in_frommemory [31:0] $end
+$var wire 1 T en_read_1 $end
+$var wire 1 S en_read_2 $end
+$var wire 1 R en_write $end
+$var wire 1 " nRst $end
+$var wire 32 9" reg31 [31:0] $end
+$var wire 32 :" reg30 [31:0] $end
+$var wire 32 ;" reg29 [31:0] $end
+$var wire 32 <" reg28 [31:0] $end
+$var wire 32 =" reg27 [31:0] $end
+$var wire 32 >" reg26 [31:0] $end
+$var wire 32 ?" reg25 [31:0] $end
+$var wire 32 @" reg24 [31:0] $end
+$var wire 32 A" reg23 [31:0] $end
+$var wire 32 B" reg22 [31:0] $end
+$var wire 32 C" reg21 [31:0] $end
+$var wire 32 D" reg20 [31:0] $end
+$var wire 32 E" reg19 [31:0] $end
+$var wire 32 F" reg18 [31:0] $end
+$var wire 32 G" reg17 [31:0] $end
+$var wire 32 H" reg16 [31:0] $end
+$var wire 32 I" reg15 [31:0] $end
+$var wire 32 J" reg14 [31:0] $end
+$var wire 32 K" reg13 [31:0] $end
+$var wire 32 L" reg12 [31:0] $end
+$var wire 32 M" reg11 [31:0] $end
+$var wire 32 N" reg10 [31:0] $end
+$var wire 32 O" reg09 [31:0] $end
+$var wire 32 P" reg08 [31:0] $end
+$var wire 32 Q" reg07 [31:0] $end
+$var wire 32 R" reg06 [31:0] $end
+$var wire 32 S" reg05 [31:0] $end
+$var wire 32 T" reg04 [31:0] $end
+$var wire 32 U" reg03 [31:0] $end
+$var wire 32 V" reg02 [31:0] $end
+$var wire 32 W" reg01 [31:0] $end
+$var wire 32 X" reg00 [31:0] $end
+$var reg 1024 Y" data [1023:0] $end
+$var reg 32 Z" data_in [31:0] $end
+$var reg 1024 [" data_n [1023:0] $end
+$var reg 32 \" data_out_r1 [31:0] $end
+$var reg 32 ]" data_out_r1_prev [31:0] $end
+$var reg 32 ^" data_out_r2 [31:0] $end
+$var reg 32 _" data_out_r2_prev [31:0] $end
+$scope begin read_and_write $end
+$upscope $end
+$scope begin select_data_in $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module I2C $end
+$var wire 1 # SDAin $end
+$var wire 1 ! clk $end
+$var wire 1 & inter $end
+$var wire 1 " nRst $end
+$var reg 1 F SDAoeb $end
+$var reg 1 `" SDAoeb_n $end
+$var reg 1 E SDAout $end
+$var reg 1 a" SDAout_n $end
+$var reg 32 b" data_out [31:0] $end
+$var reg 32 c" data_out_n [31:0] $end
+$var reg 1 G done $end
+$var reg 1 d" done_n $end
+$var reg 8 e" high_step_counter [7:0] $end
+$var reg 8 f" high_step_counter_n [7:0] $end
+$var reg 1 g" inter_prev $end
+$var reg 3 h" low_step_address_counter [2:0] $end
+$var reg 3 i" low_step_address_counter_n [2:0] $end
+$var reg 5 j" low_step_register_counter [4:0] $end
+$var reg 5 k" low_step_register_counter_n [4:0] $end
+$var reg 3 l" mid_step_counter [2:0] $end
+$var reg 3 m" mid_step_counter_n [2:0] $end
+$var reg 1 1 scl $end
+$var reg 8 n" scl_counter [7:0] $end
+$var reg 8 o" scl_counter_n [7:0] $end
+$var reg 1 p" scl_n $end
+$var reg 1 q" scl_prev $end
+$var reg 1 r" scl_wouldbe $end
+$var reg 8 s" scl_wouldbe_counter [7:0] $end
+$var reg 8 t" scl_wouldbe_counter_n [7:0] $end
+$var reg 1 u" scl_wouldbe_n $end
+$var reg 1 v" scl_wouldbe_prev $end
+$scope begin SCL_control $end
+$upscope $end
+$scope begin state_machine $end
+$upscope $end
+$upscope $end
+$scope module SPI $end
+$var wire 1 ! clk $end
+$var wire 1 " nrst $end
+$var wire 8 w" outputs [7:0] $end
+$var wire 1 A readwrite $end
+$var wire 32 x" parameters [31:0] $end
+$var wire 1 C enable $end
+$var wire 4 y" counter [3:0] $end
+$var wire 8 z" command [7:0] $end
+$var reg 1 D busy $end
+$var reg 4 {" count [3:0] $end
+$var reg 1 6 csx $end
+$var reg 8 |" currentout [7:0] $end
+$var reg 1 5 dcx $end
+$var reg 1 }" nextbusy $end
+$var reg 4 ~" nextcount [3:0] $end
+$var reg 1 !# nextdcx $end
+$var reg 8 "# nextout [7:0] $end
+$var reg 32 ## nextparoutput [31:0] $end
+$var reg 4 $# nextpercount [3:0] $end
+$var reg 2 %# nextstate [1:0] $end
+$var reg 32 &# paroutput [31:0] $end
+$var reg 4 '# percount [3:0] $end
+$var reg 1 3 rdx $end
+$var reg 2 (# state [1:0] $end
+$var reg 1 2 wrx $end
+$upscope $end
+$scope module mmio $end
+$var wire 1 G I2C_done_i $end
+$var wire 1 ; I2C_done_o $end
+$var wire 32 )# I2C_xy_i [31:0] $end
+$var wire 32 *# address [31:0] $end
+$var wire 1 ! clk $end
+$var wire 1 @ getinst $end
+$var wire 4 +# mem_select_o [3:0] $end
+$var wire 32 ,# mh_data_i [31:0] $end
+$var wire 1 " nRst $end
+$var wire 1 J read $end
+$var wire 1 D spi_busy_i $end
+$var wire 1 I write $end
+$var wire 32 -# mem_data_i [31:0] $end
+$var wire 1 . mem_busy_i $end
+$var parameter 32 .# I2C_ADDRESS $end
+$var parameter 32 /# SPI_ADDRESS_C $end
+$var parameter 32 0# SPI_ADDRESS_P $end
+$var reg 32 1# mem_address_o [31:0] $end
+$var reg 32 2# mem_data_o [31:0] $end
+$var reg 1 : mem_read_o $end
+$var reg 1 9 mem_write_o $end
+$var reg 32 3# mh_data_o [31:0] $end
+$var reg 1 > mmio_busy_o $end
+$var reg 8 4# spi_command_o [7:0] $end
+$var reg 4 5# spi_counter_o [3:0] $end
+$var reg 1 C spi_enable_o $end
+$var reg 32 6# spi_parameters_o [31:0] $end
+$var reg 1 B spi_read_o $end
+$var reg 1 A spi_write_o $end
+$upscope $end
+$scope module sram_wb_w $end
+$var wire 1 7# clk0 $end
+$var wire 1 8# clk1 $end
+$var wire 1 9# csb0 $end
+$var wire 1 :# csb1 $end
+$var wire 32 ;# din0 [31:0] $end
+$var wire 1 <# ram_en $end
+$var wire 1 =# vccd1 $end
+$var wire 1 ># vssd1 $end
+$var wire 1 ! wb_clk_i $end
+$var wire 1 ?# wb_rst_i $end
+$var wire 4 @# wmask0 [3:0] $end
+$var wire 1 ' wbs_we_i $end
+$var wire 1 ( wbs_stb_i $end
+$var wire 4 A# wbs_sel_i [3:0] $end
+$var wire 32 B# wbs_dat_i [31:0] $end
+$var wire 1 - wbs_cyc_i $end
+$var wire 32 C# wbs_adr_i [31:0] $end
+$var wire 32 D# dout1 [31:0] $end
+$var wire 32 E# addr_shifted [31:0] $end
+$var wire 11 F# addr1 [10:0] $end
+$var wire 11 G# addr0 [10:0] $end
+$var parameter 32 H# ADDR_WIDTH $end
+$var parameter 32 I# DATA_WIDTH $end
+$var parameter 32 J# NUM_WMASKS $end
+$var reg 1 0 wbs_ack_o $end
+$var reg 32 K# wbs_dat_o [31:0] $end
+$scope module sram_inst $end
+$var wire 11 L# addr0 [10:0] $end
+$var wire 11 M# addr1 [10:0] $end
+$var wire 1 7# clk0 $end
+$var wire 1 8# clk1 $end
+$var wire 1 9# csb0 $end
+$var wire 1 :# csb1 $end
+$var wire 32 N# din0 [31:0] $end
+$var wire 1 =# vccd1 $end
+$var wire 1 ># vssd1 $end
+$var wire 4 O# wmask0 [3:0] $end
+$var parameter 32 P# ADDR_WIDTH $end
+$var parameter 32 Q# DATA_WIDTH $end
+$var parameter 32 R# DELAY $end
+$var parameter 32 S# NUM_WMASKS $end
+$var parameter 43 T# RAM_DEPTH $end
+$var parameter 32 U# T_HOLD $end
+$var parameter 32 V# VERBOSE $end
+$var reg 11 W# addr0_reg [10:0] $end
+$var reg 11 X# addr1_reg [10:0] $end
+$var reg 1 Y# csb0_reg $end
+$var reg 1 Z# csb1_reg $end
+$var reg 32 [# din0_reg [31:0] $end
+$var reg 32 \# dout1 [31:0] $end
+$var reg 4 ]# wmask0_reg [3:0] $end
+$scope begin MEM_READ1 $end
+$upscope $end
+$scope begin MEM_WRITE0 $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module wm $end
+$var wire 1 0 ACK_I $end
+$var wire 32 ^# ADR_I [31:0] $end
+$var wire 1 _# BUSY_O_edge $end
+$var wire 1 ! CLK $end
+$var wire 32 `# CPU_DAT_I [31:0] $end
+$var wire 32 a# DAT_I [31:0] $end
+$var wire 1 : READ_I $end
+$var wire 4 b# SEL_I [3:0] $end
+$var wire 1 9 WRITE_I $end
+$var wire 1 " nRST $end
+$var reg 32 c# ADR_O [31:0] $end
+$var reg 1 . BUSY_O $end
+$var reg 32 d# CPU_DAT_O [31:0] $end
+$var reg 1 - CYC_O $end
+$var reg 32 e# DAT_O [31:0] $end
+$var reg 4 f# SEL_O [3:0] $end
+$var reg 1 ( STB_O $end
+$var reg 1 ' WE_O $end
+$var reg 2 g# curr_state [1:0] $end
+$var reg 32 h# next_ADR_O [31:0] $end
+$var reg 1 i# next_BUSY_O $end
+$var reg 32 j# next_CPU_DAT_O [31:0] $end
+$var reg 1 k# next_CYC_O $end
+$var reg 32 l# next_DAT_O [31:0] $end
+$var reg 4 m# next_SEL_O [3:0] $end
+$var reg 1 n# next_STB_O $end
+$var reg 1 o# next_WE_O $end
+$var reg 2 p# next_state [1:0] $end
+$var reg 1 q# prev_BUSY_O $end
+$scope begin All_ffs $end
+$upscope $end
+$scope begin BUSY_O_edge_detector $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+b1 V#
+b1 U#
+b100000000000 T#
+b100 S#
+b11 R#
+b100000 Q#
+b1011 P#
+b100 J#
+b100000 I#
+b1011 H#
+b1010001011000010101 0#
+b11101100101111100 /#
+b11100001100100010011 .#
+b11100001100100010011 &"
+$end
+#0
+$dumpvars
+xq#
+bx p#
+xo#
+xn#
+bx m#
+bx l#
+xk#
+b10111010110100011011101011010001 j#
+xi#
+bx h#
+bx g#
+bx f#
+bx e#
+bx d#
+bx c#
+b1111 b#
+b0 a#
+b0 `#
+x_#
+b0 ^#
+bx ]#
+bx \#
+bx [#
+xZ#
+xY#
+bx X#
+bx W#
+bx O#
+bx N#
+bx M#
+bx L#
+b0 K#
+bx G#
+bx F#
+b0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx E#
+bx D#
+bx C#
+bx B#
+bx A#
+bx @#
+0?#
+z>#
+z=#
+x<#
+bx ;#
+x:#
+x9#
+08#
+07#
+b0 6#
+b0 5#
+b0 4#
+b0 3#
+b0 2#
+b0 1#
+bx -#
+bx ,#
+b1111 +#
+bx *#
+bx )#
+bx (#
+bx '#
+bx &#
+bx %#
+bx $#
+bx ##
+b0 "#
+x!#
+b0 ~"
+1}"
+bx |"
+b0 {"
+b0 z"
+b0 y"
+b0 x"
+bx w"
+xv"
+xu"
+b0 t"
+bx s"
+xr"
+xq"
+xp"
+b0 o"
+bx n"
+bx m"
+bx l"
+bx k"
+bx j"
+bx i"
+bx h"
+xg"
+bx f"
+bx e"
+xd"
+bx c"
+bx b"
+xa"
+x`"
+bx _"
+bx ^"
+bx ]"
+bx \"
+bx ["
+b0 Z"
+bx Y"
+bx X"
+bx W"
+bx V"
+bx U"
+bx T"
+bx S"
+bx R"
+bx Q"
+bx P"
+bx O"
+bx N"
+bx M"
+bx L"
+bx K"
+bx J"
+bx I"
+bx H"
+bx G"
+bx F"
+bx E"
+bx D"
+bx C"
+bx B"
+bx A"
+bx @"
+bx ?"
+bx >"
+bx ="
+bx <"
+bx ;"
+bx :"
+bx 9"
+bx 8"
+bx 7"
+b0 6"
+b0 5"
+b0 4"
+b0 3"
+b0 2"
+bx 1"
+bx 0"
+bx /"
+bx ."
+bx -"
+bx ,"
+bx +"
+bx *"
+x)"
+bx ("
+bx '"
+b0 %"
+bx $"
+b0 #"
+b0 ""
+bx !"
+bx ~
+bx }
+bx |
+bx {
+bx z
+b11111111111111111111111111111111 y
+b0 x
+b0 w
+b0 v
+bx u
+b11111111111111111111111111111111 t
+bx s
+b0 r
+b0 q
+b0 p
+bx o
+bx n
+bx m
+b0 l
+b0 k
+b11111111111111111111111111111111 j
+bx i
+bx h
+bx g
+bx f
+b0 e
+b0 d
+0c
+b0 b
+b0 a
+bx `
+x_
+b0 ^
+b11111111111111111111111111111111 ]
+bx \
+0[
+0Z
+0Y
+bx X
+bx W
+b0 V
+b0 U
+0T
+0S
+0R
+bx Q
+bx P
+b0 O
+bx N
+b0 M
+bx L
+bx K
+0J
+0I
+bx H
+xG
+xF
+xE
+xD
+0C
+0B
+0A
+0@
+b0 ?
+x>
+b0 =
+b0 <
+x;
+0:
+09
+b0 8
+b0 7
+x6
+x5
+bx 4
+03
+02
+x1
+x0
+bx /
+x.
+x-
+b0 ,
+bx +
+bx *
+bx )
+x(
+x'
+0&
+b1111 %
+1$
+0#
+1"
+0!
+$end
+#100000000
+1:#
+19#
+b0 G#
+b0 L#
+b0 F#
+b0 M#
+0<#
+b0 E#
+0_#
+0i#
+0k#
+0n#
+0o#
+b0 m#
+b0 l#
+b0 h#
+b0 p#
+b0 }
+b0 |
+1p"
+1u"
+b1 t"
+b0 c"
+1a"
+1d"
+b0 k"
+b111 i"
+b0 m"
+b11 f"
+1`"
+0!#
+b1 %#
+b0 $#
+b0 ##
+b0 +"
+b0 -"
+b0 ,"
+b0 ."
+1)"
+b0 ["
+b0 9"
+b0 :"
+b0 ;"
+b0 <"
+b0 ="
+b0 >"
+b0 ?"
+b0 @"
+b0 A"
+b0 B"
+b0 C"
+b0 D"
+b0 E"
+b0 F"
+b0 G"
+b0 H"
+b0 I"
+b0 J"
+b0 K"
+b0 L"
+b0 M"
+b0 N"
+b0 O"
+b0 P"
+b0 Q"
+b0 R"
+b0 S"
+b0 T"
+b0 U"
+b0 V"
+b0 W"
+b0 X"
+00
+0q#
+0-
+0(
+0'
+b0 @#
+b0 O#
+b0 )
+b0 A#
+b0 f#
+b0 ;#
+b0 N#
+b0 +
+b0 B#
+b0 e#
+b0 /
+b0 C#
+b0 c#
+0.
+b0 *
+b0 -#
+b0 d#
+b0 g#
+b0 N
+b0 z
+b0 7"
+b0 {
+b0 W
+b0 i
+b0 ~
+b0 !"
+1_
+b0 /"
+b0 K
+b0 f
+b0 '"
+b0 *#
+b0 L
+b0 `
+b0 0"
+b0 ,#
+b0 X
+b0 1"
+b0 8"
+b0 j"
+b111 h"
+b0 l"
+b11 e"
+b0 s"
+1v"
+1r"
+b0 n"
+1q"
+11
+1F
+1E
+0;
+0G
+b0 H
+b0 b"
+b0 )#
+0g"
+b0 &#
+0D
+b0 (#
+05
+16
+b0 4
+b0 w"
+b0 |"
+1>
+b0 Y"
+1?#
+0"
+#1000000000
+b0 [#
+b0 W#
+b0 ]#
+1Y#
+b0 X#
+1Z#
+17#
+18#
+1!
+#2000000000
+07#
+08#
+0!
+#3000000000
+17#
+18#
+1!
+#4000000000
+07#
+08#
+0!
+#5000000000
+17#
+18#
+1!
+#6000000000
+0?#
+1"
+07#
+08#
+0!
+#7000000000
+b10 t"
+0)"
+b1 ."
+b10111010110100011011101011010001 *
+b10111010110100011011101011010001 -#
+b10111010110100011011101011010001 d#
+b1 s"
+1;
+1G
+0>
+17#
+18#
+1!
+#8000000000
+07#
+08#
+0!
+#9000000000

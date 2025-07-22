@@ -4,8 +4,8 @@
 
 //interface with wishbone
 module t08_mmio (
-    //input logic         nRst, 
-      //                  clk,
+    input logic         nRst, 
+                       clk,
     //from memory handler
     input logic         read,                       //command to read, source specified by address
     input logic         write,                      //command to write, destination specified by address
@@ -43,9 +43,17 @@ localparam [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
 localparam [31:0] SPI_ADDRESS_P = 32'd333333; //SPI write parameter
 localparam [31:0] I2C_ADDRESS = 32'd923923;
 
-assign mmio_busy_o = spi_busy_i | mem_busy_i | !(I2C_done_i); 
+assign mmio_busy_o = mem_busy_i;
+// assign mmio_busy_o = spi_busy_i | mem_busy_i | !(I2C_done_i); 
 assign I2C_done_o = I2C_done_i;
 assign mem_select_o = 4'b1111;
+
+// always_ff @(posedge clk, negedge nRst) begin
+//     if (~nRst)
+//         mmio_busy_o <= 0;
+//     else
+//         mmio_busy_o <= mem_busy_i;
+// end
 
 always_comb begin
     mh_data_o = 0;                                             
@@ -59,22 +67,28 @@ always_comb begin
     mem_address_o = 0;         
     mem_write_o = 0;      
     mem_read_o = 0;
-    if (!mmio_busy_o) begin
+    // if (!mmio_busy_o) begin
         
-        if (!write && read || getinst) begin
+        if (!write && read) begin
             if (address == I2C_ADDRESS) begin
                 if (I2C_done_i) begin
                     mh_data_o = I2C_xy_i;
                 end
-            end else if (address < 32'd2048) begin
-                    if (mem_busy_i) begin
-                        mh_data_o = 32'hBAD1BAD1;
-                    end else begin
-                        mh_data_o = mem_data_i;
-                    end
+            end 
+            else if (address < 32'd2048) begin
+                if (mem_busy_i) begin
+                    mh_data_o = 32'hBAD1BAD1;
+                end 
+                else begin
+                    mh_data_o = mem_data_i;
+                    mem_address_o = address;
+                    mem_read_o = 1;
+                end
             end
+        end
 
-        end else if (write && !read && !getinst) begin
+    else
+    if (write && !read) begin
             if (address == SPI_ADDRESS_C) begin        
                 spi_command_o = mh_data_i[7:0];
                 spi_counter_o = mh_data_i[11:8];
@@ -93,10 +107,11 @@ always_comb begin
                     mem_write_o = 1;      
                 end
             end
-    end end
+        end
+    end
+// end
 
-end
-/*
+/* 
 typedef enum logic[2:0] {
     IDLE,       //state that reads mh input at every posedge clock
     BUSY,       //state that's outputting info to mh

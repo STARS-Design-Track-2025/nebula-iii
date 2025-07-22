@@ -8,8 +8,8 @@ logic [31:0] next_pc, next_ra, current_ra;
 
 always_ff@(posedge clk, negedge nrst) begin
     if (!nrst) begin
-        program_counter <= '0;
-        // program_counter <= -4;
+        //program_counter <= '0;
+        program_counter <= -4;
         current_ra <= '0;
     end
 

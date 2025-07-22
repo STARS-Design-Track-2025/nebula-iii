@@ -2,8 +2,13 @@
 
 module t08_top_tb;
 
-    logic clk = 0, nRst;
-    always #1 clk = ~clk;
+    logic clk, nRst;
+    always begin
+        clk = 0;
+        #1;
+        clk = 1;
+        #1;
+    end
 
     t08_top top(
         .clk(clk), .nRst(nRst), .en(1'b1),
@@ -41,13 +46,18 @@ module t08_top_tb;
         $dumpfile("t08_top.vcd");
         $dumpvars(0, t08_top_tb);
 
-        nRst = 0; #1;
+        nRst = 1;
+        #(0.1);
+
+        nRst = 0; #4;
+        @(negedge clk);
         nRst = 1;
         //data_in = 0;
 
         repeat (200) @ (negedge clk);
         
-        nRst = 0; #1;
+        nRst = 0; #4;
+        @(negedge clk);
         nRst = 1;
 
         repeat (200) @ (negedge clk);

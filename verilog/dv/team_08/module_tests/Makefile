@@ -7,7 +7,7 @@ BUILD = sim_build
 # Running simulations with iVerilog
 #g flag enables sv support
 %.vvp: %_tb.sv
-	iverilog -Ttyp -DFUNCTIONAL -DSIM -DUSE_POWER_PINS -DUNIT_DELAY=#1 \
+	iverilog -pfileline=1 -Ttyp -DFUNCTIONAL -DSIM -DUSE_POWER_PINS -DUNIT_DELAY=#1 \
 	-g2012 \
 	-f$(USER_PROJECT_VERILOG)/includes/includes.rtl.caravel_user_project -o $@ $<
 
