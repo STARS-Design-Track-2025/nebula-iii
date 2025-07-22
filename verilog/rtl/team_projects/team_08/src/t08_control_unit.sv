@@ -219,6 +219,7 @@ always_comb begin
         reg2 = instruction[24:20];
         regd = instruction[11:7];    
         en_read_1 = 1;
+        en_read_2 = 1;
         data_in_control = 2'd3;
 
         immediate[11:5] = instruction[31:25];

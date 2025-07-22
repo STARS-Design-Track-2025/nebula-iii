@@ -64,7 +64,7 @@ always_comb begin
     spi_write_o = 0;
     spi_enable_o = 0;      
     mem_data_o = 0;     
-    mem_address_o = 0;         
+    //mem_address_o = 0;         
     mem_write_o = 0;      
     mem_read_o = 0;
     // if (!mmio_busy_o) begin
@@ -77,7 +77,7 @@ always_comb begin
             end 
             else if (address < 32'd2048) begin
                 if (mem_busy_i) begin
-                    mh_data_o = 32'hBAD1BAD1;
+                    mh_data_o = 32'hDEADBEEF;
                 end 
                 else begin
                     mh_data_o = mem_data_i;
@@ -85,6 +85,12 @@ always_comb begin
                     mem_read_o = 1;
                 end
             end
+        //     else if (address < 32'd2048) begin
+        //         mh_data_o = mem_data_i;
+        //         mem_address_o = address;
+        //         mem_read_o = 1; end
+
+
         end
 
     else

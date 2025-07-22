@@ -64,13 +64,13 @@ module t08_registers(
         data_out_r1 = data_out_r1_prev;
         data_out_r2 = data_out_r2_prev;
         
-        if (en_read_1 && !busy) begin //Read from one register
+        if (en_read_1) begin //Read from one register
 
             data_out_r1 = data[address_r1];
 
         end 
 
-        if (en_read_2 && !busy) begin //Read from a second register
+        if (en_read_2 ) begin //Read from a second register
 
             data_out_r2 = data[address_r2];
 

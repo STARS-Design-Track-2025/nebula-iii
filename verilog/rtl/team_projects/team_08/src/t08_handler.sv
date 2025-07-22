@@ -55,7 +55,7 @@ always_comb begin
     getinst = 0;
 
     case(state)
-
+    
 
     0: begin //data
 
@@ -76,7 +76,8 @@ always_comb begin
 
 
             if (write) begin //store type, signed
-                nextwriteout = write;
+                nextwriteout = 1;
+                nextreadout = 0;
                 nextnewadd = mem_address;
                 nextfreeze = 1;
 
@@ -119,7 +120,7 @@ always_comb begin
                 nextstate = 2;
 
                 end end
-                end
+        end
 
 
         else begin 
@@ -132,6 +133,8 @@ always_comb begin
 
     1: begin //instruction fetching
 
+
+        
         nextfreeze = 1;
         // readout = 1;
         // getinst = 1;
@@ -149,21 +152,57 @@ always_comb begin
     end
 
     2: begin
-        
-        nextwriteout = 0;
-        nextreadout = 0;
+        if (write) begin 
+            nextwriteout = 1;
+            nextreadout = 0; 
+
+                case(func3)
+                0: begin
+                    nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
+                1: begin
+                    nextmem = {{16{fromregister[31]}},fromregister[15:0]}; end //SH     
+                2: begin
+                    nextmem = fromregister; end  //sw
+                default:;
+                endcase
+
+            end
+
+        else if (read)  begin
+             nextwriteout = 0;
+             nextreadout = 1; 
+                if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
+                
+                case(func3)
+                0: begin //signed
+                    nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB
+                1: begin
+                    nextregs = {{16{frommem[31]}},frommem[15:0]}; end //LH
+
+
+                4: begin //unsigned
+                    nextregs = {24'b0, frommem[7:0]}; end //LBU
+                
+                5: begin 
+                    nextregs = {16'b0, frommem[15:0]}; end //LHU
+
+                default:  begin  nextregs = frommem; end //lw or lui;
+                endcase
+                end  end 
+                
         nextnewadd = mem_address;
         nextstate = 1;
         nextfreeze = 1;
         
 
 
-    end
+       
+        end
 
     default: begin readout = 0; writeout = 0; end
-    endcase
+  
+
+  endcase
 end
-
-
 
 endmodule 
