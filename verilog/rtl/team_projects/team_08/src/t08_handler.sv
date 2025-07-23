@@ -156,39 +156,40 @@ always_comb begin
             nextwriteout = 1;
             nextreadout = 0; 
 
-                case(func3)
-                0: begin
-                    nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
-                1: begin
-                    nextmem = {{16{fromregister[31]}},fromregister[15:0]}; end //SH     
-                2: begin
-                    nextmem = fromregister; end  //sw
-                default:;
-                endcase
+                // case(func3)
+                // 0: begin
+                //     nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
+                // 1: begin
+                //     nextmem = {{16{fromregister[31]}},fromregister[15:0]}; end //SH     
+                // 2: begin
+                //     nextmem = fromregister; end  //sw
+                // default:;
+                // endcase
 
             end
 
         else if (read)  begin
              nextwriteout = 0;
              nextreadout = 1; 
-                if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
+                // if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
                 
-                case(func3)
-                0: begin //signed
-                    nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB
-                1: begin
-                    nextregs = {{16{frommem[31]}},frommem[15:0]}; end //LH
+                // case(func3)
+                // 0: begin //signed
+                //     nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB
+                // 1: begin
+                //     nextregs = {{16{frommem[31]}},frommem[15:0]}; end //LH
 
 
-                4: begin //unsigned
-                    nextregs = {24'b0, frommem[7:0]}; end //LBU
+                // 4: begin //unsigned
+                //     nextregs = {24'b0, frommem[7:0]}; end //LBU
                 
-                5: begin 
-                    nextregs = {16'b0, frommem[15:0]}; end //LHU
+                // 5: begin 
+                //     nextregs = {16'b0, frommem[15:0]}; end //LHU
 
-                default:  begin  nextregs = frommem; end //lw or lui;
-                endcase
-                end  end 
+                // default:  begin  nextregs = frommem; end //lw or lui;
+                // endcase
+                // end 
+                 end 
                 
         nextnewadd = mem_address;
         nextstate = 1;
