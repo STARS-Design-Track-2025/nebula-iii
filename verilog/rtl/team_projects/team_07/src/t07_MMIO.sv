@@ -63,7 +63,7 @@ always_comb begin
                 writeData_outTFT = memData_in; // data to write to SPI TFT
             end else if (addr_in >= 32'd2048 && addr_in < 32'd8192) begin //change address number later     // write to instruction/Data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
-                rwi_out = 2'b01; //read to instruction/Data memory
+                rwi_out = 2'b01; //write to instruction/Data memory
                 addr_out = {8'h33, addr_in[23:0]}; // address to instruction/Data memory
                 writeData_out = memData_in; // data from instruction/Data memory
             end
