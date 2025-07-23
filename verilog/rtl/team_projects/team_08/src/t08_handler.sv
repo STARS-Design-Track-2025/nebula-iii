@@ -9,7 +9,7 @@ module t08_handler(
     input logic write, read, clk, nrst, busy,done, gdone,
     input logic [2:0] func3,
     output logic [31:0] toreg,  tomem, addressnew, instruction,
-    output logic writeout, wb_read, readout,  getinst, counter_on
+    output logic wb_write, writeout, wb_read, readout,  getinst, counter_on
 );
 typedef enum logic[2:0] {
     INC, FETCH, LORS,REGOP, FWAIT, LWAIT
@@ -18,6 +18,7 @@ typedef enum logic[2:0] {
 localparam [31:0] I2C_ADDRESS = 32'd923923;
 // logic readout;
 assign wb_read = readout&(~gdone);
+assign wb_write = writeout&(~gdone);
 logic nextfreeze, nextwriteout, nextreadout, next_counter_on;
 logic [31:0] address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 //logic [2:0]  state,nextstate; 
@@ -114,7 +115,29 @@ always_comb begin
             if (gdone) begin
                 if (read) begin 
                     nextstate = REGOP; 
-                    nextreadout = 0;                    
+                    nextreadout = 0; 
+
+                    if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
+                    case(func3)
+                        0: begin //LB, signed
+                            nextregs = {{24{frommem[31]}},frommem[7:0]}; 
+                        end
+                        1: begin //LH
+                            nextregs = {{16{frommem[31]}},frommem[15:0]}; 
+                        end
+                        4: begin //LBU, unsigned
+                            nextregs = {24'b0, frommem[7:0]}; 
+                        end
+                        5: begin //LHU
+                            nextregs = {16'b0, frommem[15:0]}; 
+                        end
+                        default: begin  //LW or LUI;
+                            nextregs = frommem; 
+                        end
+                    endcase
+                    nextstate = REGOP;
+                    end
+                    else if (mem_address == I2C_ADDRESS) begin nextstate = LWAIT; end
                     end
                 else if (write) begin 
                     nextstate = INC;
@@ -125,27 +148,27 @@ always_comb begin
     end
 
     REGOP: begin
-        if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
-            case(func3)
-                0: begin //LB, signed
-                    nextregs = {{24{frommem[31]}},frommem[7:0]}; 
-                end
-                1: begin //LH
-                    nextregs = {{16{frommem[31]}},frommem[15:0]}; 
-                end
-                4: begin //LBU, unsigned
-                    nextregs = {24'b0, frommem[7:0]}; 
-                end
-                5: begin //LHU
-                    nextregs = {16'b0, frommem[15:0]}; 
-                end
-                default: begin  //LW or LUI;
-                    nextregs = frommem; 
-                end
-            endcase
+        // if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
+        //     case(func3)
+        //         0: begin //LB, signed
+        //             nextregs = {{24{frommem[31]}},frommem[7:0]}; 
+        //         end
+        //         1: begin //LH
+        //             nextregs = {{16{frommem[31]}},frommem[15:0]}; 
+        //         end
+        //         4: begin //LBU, unsigned
+        //             nextregs = {24'b0, frommem[7:0]}; 
+        //         end
+        //         5: begin //LHU
+        //             nextregs = {16'b0, frommem[15:0]}; 
+        //         end
+        //         default: begin  //LW or LUI;
+        //             nextregs = frommem; 
+        //         end
+        //     endcase
         nextstate = INC;
-        end
-        else if (mem_address == I2C_ADDRESS) begin nextstate = REGOP; end
+        // end
+        // else if (mem_address == I2C_ADDRESS) begin nextstate = REGOP; end
 
     end
     endcase
