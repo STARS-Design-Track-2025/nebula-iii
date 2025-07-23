@@ -3,7 +3,7 @@ module t07_SPI_ESP32_tb;
     // Testbench signals
     logic [7:0] ESP_in;
     logic clk, nrst;
-    logic [31:0] SPI_Address; // Address for the external register
+    logic [5:0] SPI_Address; // Address for the external register
     logic [31:0] dataForExtReg; // Data to write to the external register
     logic SCLK_out; // Clock signal for the ESP32
 
