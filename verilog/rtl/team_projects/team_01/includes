@@ -1,0 +1,26 @@
+# Team 01
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_cu_id.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_blockgen.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_button_sync.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_clkdiv1hz.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_counter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_lineclear.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_scoredisplay.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_speed_controller.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_synckey.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_tetrisFSM.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_tetrisGrid.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_vgadriver.sv
+
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_1_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_1_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_2_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_2_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_3_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_3_param0_int4.mem
