@@ -83,7 +83,7 @@ always_comb begin
         7'b0010011: begin /*I-Type*/
             memSrc = 0;
             invalid_Op = 0;
-            regWriteSrc = 01;
+            regWriteSrc = 'b010;
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
