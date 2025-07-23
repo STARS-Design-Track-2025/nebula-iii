@@ -84,7 +84,7 @@ module t04_request_unit_old(
                 final_address = PC_Jalr - 32'd4; 
             end
             else begin
-                final_address = (((MemRead || MemWrite)) && (!(n_memread2 || n_memwrite2))) ? mem_address : PC;
+                final_address = (((MemRead || MemWrite)) && (!(n_memread2 || n_memwrite2) || instruction_out != latched_instruction)) ? mem_address : PC;
             end
         end
         mem_store = stored_data;
