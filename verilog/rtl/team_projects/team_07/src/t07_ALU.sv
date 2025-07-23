@@ -24,9 +24,9 @@ module t07_ALU (
 
 
         //overflow
-        if ($size(result) > 31) begin
+        /*if ($size(result) > 31) begin
             result = 32'b0;
-        end
+        end */
     end
 
     //flag logic- Page 58 RVALP
