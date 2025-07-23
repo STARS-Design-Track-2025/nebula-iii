@@ -9,15 +9,15 @@ module t08_handler(
     input logic write, read, clk, nrst, busy,done, gdone,
     input logic [2:0] func3,
     output logic [31:0] toreg,  tomem, addressnew, instruction,
-    output logic writeout, readout,  getinst, counter_on
+    output logic writeout, wb_read, readout,  getinst, counter_on
 );
 typedef enum logic[2:0] {
     INC, FETCH, LORS,REGOP, FWAIT, LWAIT
 } states;
 
 localparam [31:0] I2C_ADDRESS = 32'd923923;
-
-
+// logic readout;
+assign wb_read = readout&(~gdone);
 logic nextfreeze, nextwriteout, nextreadout, next_counter_on;
 logic [31:0] address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 //logic [2:0]  state,nextstate; 
@@ -54,9 +54,10 @@ always_comb begin
     next_counter_on = 0;
     nextreadout = readout;
     nextwriteout = writeout;
+    nextinst  = instruction;
     case(state)
     INC: begin
-        next_counter_on <= 1;
+        next_counter_on = 1;
         nextstate = FETCH;
     end
 
@@ -68,10 +69,10 @@ always_comb begin
     end
 
     FWAIT: begin
-
         if (gdone) begin
             nextinst = frommem;
             nextstate = LORS;
+            nextreadout = 0;
         end
         else begin
             nextstate = FWAIT;
@@ -100,14 +101,8 @@ always_comb begin
             end
 
             else if (read) begin
-
                 nextreadout = 1;
-
-
             end
-   
-
-
         end
 
         else begin
@@ -116,7 +111,6 @@ always_comb begin
         end
 
     LWAIT: begin
-
             if (gdone) begin
                 if (read) begin 
                     nextstate = REGOP; 

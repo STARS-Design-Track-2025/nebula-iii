@@ -10,6 +10,7 @@ module t08_mmio (
     input logic         read,                       //command to read, source specified by address
     input logic         write,                      //command to write, destination specified by address
     input logic         getinst,                    //command to read instruction
+    input logic         wb_read, 
     input logic [31:0]  address,                    //location to read from or write to
     input logic [31:0]  mh_data_i,                  //data to write
     //from I2C
@@ -48,6 +49,7 @@ assign mmio_busy_o = mem_busy_i;
 // assign mmio_busy_o = spi_busy_i | mem_busy_i | !(I2C_done_i); 
 assign I2C_done_o = I2C_done_i;
 assign mem_select_o = 4'b1111;
+assign mem_read_o = wb_read;
 
 logic m1, m2;
 
@@ -76,7 +78,7 @@ always_comb begin
     mem_data_o = 0;     
     //mem_address_o = 0;         
     mem_write_o = 0;      
-    mem_read_o = 0;
+    //mem_read_o = 0;
     // if (!mmio_busy_o) begin
         
         if (!write && read) begin
@@ -94,7 +96,7 @@ always_comb begin
                         mh_data_o = mem_data_i;
                     end
                     mem_address_o = address;
-                    mem_read_o = 1;
+                    //mem_read_o = wb_read;
                 end
             end
         //     else if (address < 32'd2048) begin
