@@ -22,7 +22,7 @@ module t07_MMIO (
 //outputs
     // outputs to external register
     output logic ri_out, //read or idle signal to external register
-    output logic [31:0] addr_outREG, // address to external register
+    output logic [4:0] addr_outREG, // address to external register
 
     // outputs to internal memory
     output logic [31:0] ExtData_out, //ExtData to internal memory
@@ -47,7 +47,7 @@ always_comb begin
     ri_out = 1'b0; // idle external register
     wi_out = 1'b0; // idle TFT
     rwi_out = 2'b11; // idle instruction/Data memory
-    addr_outREG = 32'b0; // no address for external register
+    addr_outREG = 5'b0; // no address for external register
     addr_out = 32'b0; // no address for instruction/Data memory
     addr_outTFT = 32'b0; // no address for SPI TFT`
     writeData_out = 32'b0; // no data to instruction/Data memory
@@ -71,7 +71,7 @@ always_comb begin
             if(addr_in >= 32'd8192) begin //change address number later                                      // read from external register
                 busy = ack_REG; //set busy signal to indicate memory handler is processing
                 ri_out = 1'b1; //read from external register
-                addr_outREG = addr_in; // address to read from external register
+                addr_outREG = addr_in[4:0]; // address to read from external register
                 ExtData_out = regData_in; // data from external register to internal memory
             end else if (addr_in >= 32'd2048 && addr_in < 32'd8192) begin //change address number later     // read from instruction/Data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
