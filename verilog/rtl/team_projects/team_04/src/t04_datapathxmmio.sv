@@ -58,7 +58,9 @@ module t04_datapathxmmio(
         .display_address(display_address),
         .mem_store_display(mem_store_display),
         .d_ack_display(d_ack_display),
-        .WEN(WEN)
+        .WEN(WEN),
+        .sus(),
+        .green()
     );
 
 endmodule

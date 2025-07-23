@@ -86,6 +86,7 @@ module t04_top_tb;
         #1020;
         #1220;
         #100000000;
+        #1000;
 
        $display("\nFINAL REGISTER VALUES HEX");
         $display("----------------------");

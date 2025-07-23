@@ -4,7 +4,7 @@
 
 module top (
   // I/O ports
-  input  logic hz100, reset, hwclk,
+  input  logic hwclk, reset,
   input  logic [20:0] pb,
   output logic [7:0] left, right,
          ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0,
@@ -64,6 +64,39 @@ module top (
   .checkX(green),
   .checkY(blue)
 );
+
+// // === Internal signals for datapath-MMIO connections ===
+// logic [4:0] button_pressed;
+// logic [1:0] app;
+// logic rising;
+// logic [31:0] display_address;
+// logic [31:0] mem_store_display;
+// logic d_ack_display;
+// logic WEN;
+
+// // === Example: assign buttons to keypad input ===
+// // (You can adjust these assignments based on actual wiring)
+// assign button_pressed = pb[4:0];    // 5 keypad lines
+// assign app            = pb[6:5];    // 2-bit app select
+// assign rising         = pb[7];      // rising edge flag
+// assign d_ack_display  = pb[8];      // d_ack feedback (e.g., from display-ready)
+
+// // === Instantiate datapath + MMIO system ===
+// t04_datapathxmmio team_04_inst (
+//     .clk(hwclk),
+//     .rst(reset),  // or use pb[19] if that is your reset button
+
+//     // === Keypad ===
+//     .button_pressed(button_pressed),
+//     .app(app),
+//     .rising(rising),
+
+//     // === Display ===
+//     .display_address({left [7:0],display_address[23:0]}),
+//     .mem_store_display(mem_store_display),
+//     .d_ack_display(d_ack_display),
+//     .WEN(red)
+// );
 
 
 
