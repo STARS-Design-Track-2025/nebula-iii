@@ -78,7 +78,7 @@ module t08_CPU (
         .counter(program_counter),
         .write(mem_en_write), .read(mem_en_read), 
         .clk(clk), .nrst(nRst), 
-        .busy(busy), .gdone(gdone), .counter_on(counter_on),
+        .busy(busy), .done(done), .gdone(gdone), .counter_on(counter_on),
         .func3(func3), 
         .toreg(mem_to_reg), .tomem(data_out), 
         .addressnew(addressnew), 
