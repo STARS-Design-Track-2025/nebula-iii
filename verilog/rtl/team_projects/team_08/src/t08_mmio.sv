@@ -24,6 +24,7 @@ module t08_mmio (
     output logic [31:0] mh_data_o,          //data read
     output logic        mmio_busy_o,               //whether mmio is busy or not
     output logic        I2C_done_o,                //whether I2C data is ready to be read
+    output logic        mmio_done_o,                //edge detector on mmio busy low
     //to SPI
     output logic [31:0] spi_parameters_o,   //
     output logic [7:0]  spi_command_o,
@@ -48,12 +49,19 @@ assign mmio_busy_o = mem_busy_i;
 assign I2C_done_o = I2C_done_i;
 assign mem_select_o = 4'b1111;
 
-// always_ff @(posedge clk, negedge nRst) begin
-//     if (~nRst)
-//         mmio_busy_o <= 0;
-//     else
-//         mmio_busy_o <= mem_busy_i;
-// end
+logic m1, m2;
+
+always_ff @(posedge clk, negedge nRst) begin
+    if (~nRst)
+        mmio_done_o <= 0;
+        m1 <=0;
+    else begin
+        m1 <= !mmio_busy_o;
+        m2 <= m1;
+    end
+end
+
+assign mmio_done_o = m1 & ~m2;
 
 always_comb begin
     mh_data_o = 0;                                             

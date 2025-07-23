@@ -104,7 +104,7 @@ always_comb begin
                         end
 
 
-                        4: begin //LBUunsigned
+                        4: begin //LBU, unsigned
                             nextregs = {24'b0, frommem[7:0]}; 
                         end
 
