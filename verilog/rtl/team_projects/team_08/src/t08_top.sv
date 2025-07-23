@@ -34,6 +34,7 @@ module t08_top(
     logic CPU_read_out, CPU_write_out, getinst;
 
     t08_CPU CPU(
+        .gdone(mmio_done_o),
         .clk(clk), .nRst(nRst),                             //clock and reset
         .data_in(CPU_data_in),                              //mmio to memory handler: data in
         .done(mmio_done_from_I2C), .busy(mmio_busy),        //from mmio, if it's busy, if data from I2C is done
@@ -84,7 +85,7 @@ module t08_top(
     logic [31:0] mmio_address_to_wb;         //Memory address sent from mmio to wishbone mananger
     logic [3:0] mmio_select_to_wb;           //Select signal from mmio to wishbone manager
     logic mmio_write_to_wb, mmio_read_to_wb; //Read and write signals from mmio to wishbone manager
-    logic mmio_busy, mmio_done_from_I2C;
+    logic mmio_busy, mmio_done_o, mmio_done_from_I2C;
 
     t08_mmio mmio(
         .clk(clk), .nRst(nRst),

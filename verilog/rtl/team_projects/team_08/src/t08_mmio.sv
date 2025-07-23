@@ -52,16 +52,18 @@ assign mem_select_o = 4'b1111;
 logic m1, m2;
 
 always_ff @(posedge clk, negedge nRst) begin
-    if (~nRst)
-        mmio_done_o <= 0;
+    if (~nRst) begin
+        // mmio_done_o <= 0;
         m1 <=0;
+        m2 <= 0;
+    end
     else begin
-        m1 <= !mmio_busy_o;
+        m1 <= mmio_busy_o;
         m2 <= m1;
     end
 end
 
-assign mmio_done_o = m1 & ~m2;
+assign mmio_done_o = m1 & m2;
 
 always_comb begin
     mh_data_o = 0;                                             
