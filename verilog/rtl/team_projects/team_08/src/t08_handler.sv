@@ -14,11 +14,9 @@ module t08_handler(
 
 localparam [31:0] I2C_ADDRESS = 32'd923923;
 
-
 logic nextfreeze, nextwriteout, nextreadout;
 logic [31:0] address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 logic [1:0] state,  nextstate; //0 wait, 1 send
-
 
 always_ff@(posedge clk, negedge nrst) begin
     if(!nrst) begin
@@ -55,86 +53,80 @@ always_comb begin
     getinst = 0;
 
     case(state)
-    
-
     0: begin //data
-
-
         nextnewadd = addressnew; 
         nextmem = tomem;
         nextregs = toreg;
-
         nextreadout = 0;
         nextwriteout = 0;
 
         if (!busy) begin
-
             nextstate = 1;
             nextreadout = 1;
             nextwriteout = 0;
             nextfreeze = 0;
-
 
             if (write) begin //store type, signed
                 nextwriteout = 1;
                 nextreadout = 0;
                 nextnewadd = mem_address;
                 nextfreeze = 1;
-
-                case(func3)
-                0: begin
-                    nextmem = {{24{fromregister[31]}},fromregister[7:0]}; end //SB
-                1: begin
-                    nextmem = {{16{fromregister[31]}},fromregister[15:0]}; end //SH     
-                2: begin
-                    nextmem = fromregister; end  //sw
-                default:;
-                endcase
                 nextstate = 2;
-
-                //nextstate = 0;
+                
+                case(func3)
+                    0: begin  //SB
+                        nextmem = {{24{fromregister[31]}},fromregister[7:0]}; 
+                    end 
+                    1: begin //SH
+                        nextmem = {{16{fromregister[31]}},fromregister[15:0]}; 
+                    end     
+                    2: begin //SW
+                        nextmem = fromregister; 
+                    end
+                    default:;
+                endcase
             end
 
             else if (read) begin
                 nextfreeze = 1;
                 nextreadout = 1;
                 nextnewadd = mem_address;
-            //  nextstate = 0;
+                nextstate = 2;
+                //  nextstate = 0;
 
                 if ((done& mem_address == I2C_ADDRESS)| (mem_address < 32'd2048)) begin 
-                case(func3)
-                0: begin //signed
-                    nextregs = {{24{frommem[31]}},frommem[7:0]}; end //LB
-                1: begin
-                    nextregs = {{16{frommem[31]}},frommem[15:0]}; end //LH
+                    case(func3)
+                        0: begin //LB, signed
+                            nextregs = {{24{frommem[31]}},frommem[7:0]}; 
+                        end
+                        1: begin //LH
+                            nextregs = {{16{frommem[31]}},frommem[15:0]}; 
+                        end
 
 
-                4: begin //unsigned
-                    nextregs = {24'b0, frommem[7:0]}; end //LBU
-                
-                5: begin 
-                    nextregs = {16'b0, frommem[15:0]}; end //LHU
+                        4: begin //LBUunsigned
+                            nextregs = {24'b0, frommem[7:0]}; 
+                        end
 
-                default:  begin  nextregs = frommem; end //lw or lui;
-                endcase
-                nextstate = 2;
+                        5: begin //LHU
+                            nextregs = {16'b0, frommem[15:0]}; 
+                        end 
 
-                end end
+                        default: begin  //LW or LUI;
+                            nextregs = frommem; 
+                        end
+                    endcase
+                end
+            end
         end
-
 
         else begin 
             nextstate = 0; 
             nextfreeze = 1;
         end
-
-
     end
 
     1: begin //instruction fetching
-
-
-        
         nextfreeze = 1;
         // readout = 1;
         // getinst = 1;
@@ -145,8 +137,6 @@ always_comb begin
             // getinst = 1;      
             nextstate = 0;
             nextfreeze = 1;       
-                 
-
         end
 
     end
