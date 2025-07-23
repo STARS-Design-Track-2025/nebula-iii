@@ -1,6 +1,6 @@
 module sram_for_FPGA #(
   // Uncomment if using external memory file
-  // parameter FILENAME = "filename.hex"  // THIS IS YOUR MEMORY FILE OR HEX FILE!!
+  parameter FILENAME = "verilog/dv/team_04/module_tests/instructions.mem"  // THIS IS YOUR MEMORY FILE OR HEX FILE!!
 )(
 `ifdef USE_POWER_PINS
     vccd1,
@@ -34,7 +34,7 @@ module sram_for_FPGA #(
   reg [DATA_WIDTH-1:0]    mem [0:RAM_DEPTH-1];
 
   // Uncomment if using external memory file
-  // initial $readmemh(FILENAME, mem, 0, 8);  // SPECIFY UP TO WHICH WORD ADDRESS YOU WILL WRITE!!
+  initial $readmemh(FILENAME, mem);  // SPECIFY UP TO WHICH WORD ADDRESS YOU WILL WRITE!!
 
   reg  csb0_reg;
   reg [NUM_WMASKS-1:0]   wmask0_reg;
