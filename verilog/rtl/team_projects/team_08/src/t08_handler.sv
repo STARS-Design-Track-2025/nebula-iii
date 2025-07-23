@@ -56,7 +56,7 @@ always_comb begin
     nextwriteout = writeout;
     case(state)
     INC: begin
-        next_counter_on <= 1;
+        next_counter_on = 1;
         nextstate = FETCH;
     end
 
