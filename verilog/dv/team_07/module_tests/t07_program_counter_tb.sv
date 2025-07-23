@@ -46,6 +46,15 @@ module t07_program_counter_tb;
     always begin
         #20
         busy_o = ~busy_o;
+        #31
+        busy_o = ~busy_o;
+        #17
+        busy_o = ~busy_o;
+        #4
+        busy_o = ~busy_o;
+        #57
+        busy_o = ~busy_o;
+
     end
 
     task reset(); begin
@@ -150,52 +159,62 @@ module t07_program_counter_tb;
         JumpDist = '0;
         condJump = '0;
         forceJump = 0;
+        ALU_flags = '0;
         #30
         inst = 'b01000000001100010000000010110011; //sub x1, x2, x3
         JumpDist = '0;
         condJump = '0;
         forceJump = 0;
+        ALU_flags = '0;
         #30
         inst = 'b00000000001000001000001001100011; //beq, x1, x2, 5
         JumpDist = '0;
         condJump = '1;
         forceJump = 0;
+        ALU_flags = 000001;
         #30
         inst = 'b00000000010000000000000011101111; //jal x1, 5
         JumpDist = 32'd5;
-        forceJump = 1;
+        condJump = 0;
         forceJump = 0;
+        ALU_flags = '0;
         //ALU result
         #30
         inst = 'b00000000001100010010000010110011; //slt x1, x2
         JumpDist = '0;
         condJump = '0;
         forceJump = 0;
+        ALU_flags = '0;
         #30
         inst = 'b00000000011000010011000010010011; //sltiu x1, x2, 6
         JumpDist = '0;
         condJump = '0;
         forceJump = 0;
+        ALU_flags = '0;
         #30
         inst = 'b00000000011000010100000010010011; //xori x1, x2, 6
         JumpDist = '0;
         condJump = '0;
         forceJump = 0;
+        ALU_flags = '0;
         #30
         inst = 'b00000000100100010110000010010011; //ori x1, x2, 9
         JumpDist = '0;
         condJump = '0;
         forceJump = 0;
+        ALU_flags = '0;
         #30
         inst = 'b00000000100100010111000010010011; //andi x1, x2, 9
         JumpDist = '0;
         condJump = '0;
         forceJump = 0;
+        ALU_flags = '0;
         #30
         inst = 'b00000000100100010000000010010011; //addi x1, x2, 9
         JumpDist = '0;
         condJump = '0;
         forceJump = 0;
+        ALU_flags = '0;
     end
 
 
@@ -212,10 +231,11 @@ module t07_program_counter_tb;
 
         //testing pc & fetch together
         busy_o = 0;
+        func3 = '0;
         reset();
 
 
-
+        #200
         /*
         // Wait for global reset to finish
         #10;
