@@ -97,7 +97,7 @@ module t08_top(
         
         .mem_data_i(wb_data_to_mmio), .mem_busy_i(wb_busy_o),                        //From memory: data
         
-        .mh_data_o(CPU_data_in), .mmio_busy_o(mmio_busy), .I2C_done_o(mmio_done_from_I2C), //To memory handler
+        .mh_data_o(CPU_data_in), .mmio_busy_o(mmio_busy), .I2C_done_o(mmio_done_from_I2C), .mmio_done_o(mmio_done_o),//To memory handler
         
         .spi_parameters_o(screen_command_parameters), .spi_command_o(screen_command),      //To SPI
         .spi_counter_o(mmio_counter_to_spi),
