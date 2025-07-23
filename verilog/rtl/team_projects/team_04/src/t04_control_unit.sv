@@ -1,7 +1,7 @@
 module t04_control_unit (
   input logic [31:0] instruction,
   input logic [31:0] ALU_result,
-  output logic RegWrite, ALUSrc, MemRead, MemWrite, MemToReg, Jal, Jalr, //ELIMINATING BRANCH
+  output logic RegWrite, ALUSrc, MemRead, MemWrite, MemToReg, Jal, Jalr,
   output logic signed [31:0] Imm,
   output logic ALU_control,
   output logic [4:0] RegD, Reg2, Reg1
