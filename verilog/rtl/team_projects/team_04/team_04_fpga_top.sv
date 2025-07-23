@@ -54,7 +54,7 @@ module top (
 
   t04_top team_04_inst (
   .clk(hwclk),
-  .rst(reset),
+  .rst(pb[19]),
   .row(pb[3:0]),  // Example if row lines come from pushbuttons
   .screenCsx(right[0]),
   .screenDcx(right[1]),
