@@ -80,7 +80,9 @@ always_comb begin
                     mh_data_o = 32'hDEADBEEF;
                 end 
                 else begin
-                    mh_data_o = mem_data_i;
+                    if (mem_data_i != 32'hBAD1BAD1) begin
+                        mh_data_o = mem_data_i;
+                    end
                     mem_address_o = address;
                     mem_read_o = 1;
                 end
