@@ -24,7 +24,7 @@ logic DATA_STORING2;
 
 always_comb begin
     i_ack = DATA_STORING;
-    if (DATA_STORING || DATA_STORING1 || DATA_STORING2) begin //AS OF NOW Ram_En is hardwired to be 1
+    if (DATA_STORING || DATA_STORING1 || (DATA_STORING2)) begin //AS OF NOW Ram_En is hardwired to be 1. || DATA_STORING2
         d_ack = (display_ack);
     end
     else if (Ram_En && !DATA_STORING1) begin
