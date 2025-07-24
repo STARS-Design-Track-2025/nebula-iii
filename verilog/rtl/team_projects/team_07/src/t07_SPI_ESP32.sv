@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module t07_SPI_ESP32 (
     input logic [7:0] ESP_in, 
     input logic clk, nrst,
