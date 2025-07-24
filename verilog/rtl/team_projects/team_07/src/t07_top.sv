@@ -10,6 +10,7 @@ logic read, write, idle;
 logic busyCPU; //sent from MMIO to CPU
 logic [31:0] instr, memData_in, memData_out, exMemData_CPU, exMemAddr_CPU;
 logic [1:0] rwi_in; //read = 10, write = 01, idle = 00
+logic fetchReadToMMIO;
 
 //outputs of MMIO
 logic [31:0] addrToSRAM, dataToSRAM; //addr_out in MMIO 
@@ -53,7 +54,7 @@ logic [31:0] regData_in;
 logic ackReg; 
 //outputs to registers from MMIO
 logic ri_out;
-logic [31:0] addrToReg;
+logic [5:0] addrToReg;
 
 //outputs to SPI->TFT
 logic [31:0] dataToTFT, addrToTFT;
@@ -75,10 +76,10 @@ always_comb begin
     end
 end
 
-t07_CPU CPU(.busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
+t07_CPU CPU(.fetchRead(fetchReadToMMIO), .busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
 .rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst));
 
-t07_MMIO MMIO(.addr_in(exMemAddr_CPU), .memData_in(exMemData_CPU), .rwi_in(rwi_in), .ExtData_in(dataToMMIO), 
+t07_MMIO MMIO(.fetchRead_in(fetchReadToMMIO), .fetchRead_out(fetchReadToWB), .addr_in(exMemAddr_CPU), .memData_in(exMemData_CPU), .rwi_in(rwi_in), .ExtData_in(dataToMMIO), 
 .regData_in(regData_in), .ack_REG(ackReg), .ack_TFT(), .ri_out(ri_out), .addr_outREG(addrToReg), .ExtData_out(memData_in), .busy(busyCPU), .writeInstruction_out(instr), 
 .writeData_outTFT(dataToTFT), .wi_out(wi_out), .addr_outTFT(addrToTFT), .rwi_out(rwiToWB), .addr_out(addrToSRAM), .writeData_out(dataToSRAM), .busy_o(busyToMMIO));
 
