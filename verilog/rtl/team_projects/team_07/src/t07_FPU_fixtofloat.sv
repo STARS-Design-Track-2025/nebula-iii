@@ -4,6 +4,17 @@ module t07_FPU_fixtofloat (
     output logic [31:0] out
 );
     
+    //logic [5:0] count; 
+
+    always_comb begin
+        for(integer i = 0; i < 16; i++) begin
+            if (in[i] == 1) begin 
+                //count = i;
+                i = 16; 
+            end
+        end
+
+    end
     
 
     //parsing float

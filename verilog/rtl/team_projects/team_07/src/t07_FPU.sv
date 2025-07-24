@@ -1,11 +1,35 @@
+//NEED TO IMPLEMENT FIXTOFLOAT / FLOATTOFIX CONVERSIONS BEFORE AND AFTER MULT/DIV
+
 module t07_FPU (
-    input logic [31:0] valA, valB, valC,
-    input logic [31:0 ]fcsr_in,
+    input logic clk, nrst,
+    input signed [31:0] inA, inB, inC,
+    input logic [31:0]fcsr_in,
     input logic [4:0] FPUOp,
     output logic [31:0] result,
     output logic [6:0] FPUflags,
-    output logic carryout
+    output logic overflowFlag,
+    output logic carryout, busy
 );
+
+    //inputs converted from float to fixed point
+    logic [31:0] valA, valB, valC;
+    logic signA, signB, signC;
+
+    //all two input mult and div combinations within the FPU are instantiated here
+    logic [31:0] prodAB, quotAB, remAB, intFloatRes, floatIntRes;
+    logic signAB;
+    logic signSignal, invalid;
+
+    t07_FPU_floattofix fixedA (.in(inA), .out(valA), .sign(signA));
+    t07_FPU_floattofix fixedB (.in(inB), .out(valB), .sign(signB));
+    t07_FPU_floattofix fixedC (.in(inC), .out(valC), .sign(signC));
+
+    t07_FPU_mult mult(.clk(clk), .nrst(nrst), .inA(valA), .inB(valB), .busy(busy), .signA(valA[31]), .signB(valB[31]), .result(prodAB), .sign(signAB), .overflow(overflowFlag));
+    t07_FPU_div div(.clk(clk), .nrst(nrst), .inA(valA), .inB(valB), .signA(valA[31]), .signB(valB[31]), .quotient(quotAB), .remainder(remAB), .sign(signAB), .busy(busy));
+    t07_FPU_inttofloat intFloat (.in(valA), .signSignal(signSignal), .out(intFloatRes), .overflow(overflowFlag));
+    t07_FPU_floattoint floatInt (.in(valA), .signSignal(signSignal), .out(floatIntRes), .frm(fcsr_in[7:5]), .invalidFlag(invalid));
+
+    //other necessary signals from fcsr
     logic [2:0] frm; //page 41, last paragraph- check for static/dynamic rounding mode
     assign frm = fcsr_in [7:5];
     
@@ -14,31 +38,69 @@ module t07_FPU (
 
     //choose operation- Page 51 RVALP
     always_comb begin
+        result = 32'b0;
+        //signSignal = 1'b0;
         case (FPUOp)
-            5'd0: 
-            5'd1: 
-            5'd2: 
-            5'd3: 
-            5'd4: 
-            5'd5: 
-            5'd6: 
-            5'd7: 
-            5'd8: 
-            5'd9: 
-            5'd
-            default: result = 32'b0;
-        endcase
-    end
-
-    //rounding mode logic- Page 42 UCB RISCV manual
-    always_comb begin
-        case (frm)
-            3'b000: 
-            3'b001:
-            3'b010:
-            3'b011:
-            3'b100:
-            default: result = result;
+            //Fix op = 5'd0 - 5'd3 & op = 5'd6 and 5'd7 --> needs to include fixed point conversions in order to perform mult and div
+            5'd0: begin signSignal = 1'b0; result = {signAB, prodAB[31:1]} + valC; end //FMADD
+            5'd1: begin signSignal = 1'b0; result = {signAB, prodAB[31:1]} - valC; end //FMSUB
+            5'd2: begin signSignal = 1'b0; result = $signed({~signAB, prodAB[31:1]}) - valC; end //FNMSUB
+            5'd3: begin signSignal = 1'b0; result = $signed({~signAB, prodAB[31:1]}) - valC; end //FNMADD 
+            5'd4: begin //FADD
+                signSignal = 1'b0; 
+                if (valA[31] == 1 && valB[31] == 0) begin
+                    result = ~(((~valA + 1) + valB) - 1);
+                end else if (valB[31] == 1 && valA[31] == 0) begin
+                    result = ~(((~valB + 1) + valA) - 1);
+                end else if (valA[31] == 1 && valB[31] == 1) begin
+                    result = ~(((~valA + 1) + (~valB + 1)) - 1);
+                end else if (valA[31] == 0 && valB[31] == 0) begin
+                    result = valA + valB;
+                end
+            end 
+            5'd5: begin //FSUB
+                signSignal = 1'b0; 
+                if (valA[31] == 1 && valB[31] == 0) begin
+                    result = {1'b1, valA[30:0] + valB[30:0]};
+                end else if (valB[31] == 1 && valA[31] == 0) begin
+                    result = valA + {~valB[31], valB[30:0]};
+                end else if (valA[31] == 1 && valB[31] == 1) begin
+                    result = ~(((~valA + 1) + valB) - 1);
+                end else if (valA[31] == 0 && valB[31] == 0) begin
+                    result = ~(((~valB + 1) + valA) - 1);
+                end
+            end 
+            5'd6: begin signSignal = 1'b0; result = {signAB, prodAB[31:1]}; end //FMUL
+            5'd7: begin signSignal = 1'b0; result = {signAB, quotAB[31:1]}; end //FDIV 
+            5'd8: begin signSignal = 1'b0; result = 32'b0; end //FSQRT- not implemented, sets result to 0 for now, but change it so that no instruction is passed/idle state
+            5'd9: begin signSignal = 1'b0; result = {valB[31], valA[30:0]}; end //FSGNJ
+            5'd10: begin signSignal = 1'b0; result = {~valB[31], valA[30:0]}; end //FSGNJN
+            5'd11: begin signSignal = 1'b0; result = {(valA[31] ^ valB[31]), valA[30:0]}; end //FSGNJX
+            5'd12: begin signSignal = 1'b0; if(valA > valB) begin result = valB; end else if (valA <= valB) begin result = valA; end else begin result = 32'b0; end end //FMIN
+            5'd13: begin signSignal = 1'b0; if(valA >= valB) begin result = valA; end else if (valA < valB) begin result = valB; end else begin result = 32'b0; end end //FMAX
+            5'd14: begin //FCVT.W.S -> use rounding mode input
+                signSignal = 1;
+                result = floatIntRes; 
+            end 
+            5'd15: begin //FCVT.WU.S
+                signSignal = 0;
+                result = floatIntRes;
+            end 
+            5'd16: begin signSignal = 1'b0; result = 32'b0; end //FMV.X.S
+            5'd17: begin signSignal = 1'b0; if (valA == valB) begin result = 32'b1; end else begin result = 32'b0; end end //FEQ
+            5'd18: begin signSignal = 1'b0; if (valA < valB) begin result = 32'b1; end else begin result = 32'b0; end end //FLT
+            5'd19: begin signSignal = 1'b0; if (valA <= valB) begin result = 32'b1; end else begin result = 32'b0; end end //FLE
+            5'd20: begin signSignal = 1'b0; result = 32'b0; end //FCLASS- same as FSQRT comment
+            5'd21: begin //FCVT.S.W
+                signSignal = 1;
+                result = intFloatRes;
+            end
+            5'd22: begin //FCVT.S.WU
+                signSignal = 0;
+                result = intFloatRes;
+            end 
+            5'd23: begin signSignal = 1'b0; result = 32'b0; end //FMV.S.X
+            default: begin signSignal = 1'b0; result = 32'b0; end
         endcase
     end
 

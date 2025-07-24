@@ -2,6 +2,7 @@ module t07_FPU_floattofix (
     input logic [31:0] in,
     output logic [31:0] out,
     output logic sign
+    //output logic [8:0] decimal
 );
 
     //parsing float
@@ -21,6 +22,7 @@ module t07_FPU_floattofix (
         end
     end
 
+    
     assign out = fixed;
     
 endmodule
