@@ -66,16 +66,19 @@ module t07_cpu_memoryHandler (
 
     always_comb begin
         case(state) 
-            FETCH: begin addrControl = '0; fetchRead = '1; 
+            FETCH: begin addrControl = '0; fetchRead = '1; load_ct = '0; 
                 if(busy_o_edge == 'b1) begin state_n = F_WAIT; end 
                 else begin state_n = FETCH; end end
-            F_WAIT: begin addrControl = 0; fetchRead = '1; 
+            F_WAIT: begin addrControl = 0; fetchRead = '1; load_ct = '0; 
                 if(busy_o_edge == 'b1) begin state_n = DATA; end 
                 else begin state_n = F_WAIT; end end
-            DATA: begin load_ct = '0; addrControl = 1; fetchRead = '0; 
-                if(busy_o_edge == 'b1 & memWrite == 1) /*store*/ begin state_n = D_WAIT; end //load ct = 0 
-                else if (busy_o_edge == 1 & memRead == 1) /*load*/ begin state_n = D_WAIT; load_ct = load_ct + 1; end 
-                else begin state_n = FETCH; end end
+            DATA: begin addrControl = 1; fetchRead = '0; 
+                if(busy_o_edge == 'b1 & memWrite == 1) /*store*/ 
+                    begin state_n = D_WAIT; rwi = 'b01; load_ct = '0; end 
+                else if (busy_o_edge == 1 & memRead == 1) /*load*/ 
+                    begin state_n = D_WAIT; load_ct = load_ct + 1; rwi = 'b10; end 
+                else begin state_n = FETCH; rwi = 'b00; end 
+                end
             D_WAIT: begin fetchRead = '0; addrControl = 1;
                 if(load_ct == 0) begin state_n = FETCH; end
                 else if (load_ct == 1) begin state_n = DATA; end
@@ -89,12 +92,12 @@ always_comb begin
         write_data = 32'b0; // No data to write when busy
         ExtAddress = 32'b0; // No address to write to when busy
         dataToCPU = 32'b0; // No data to return to CPU when busy
-        rwi = 2'b00; // Idle state when busy
+        //rwi = 2'b00; // Idle state when busy
     end else begin
         freeze = 0;
     if(memWrite) begin 
         dataToCPU = 32'b0; // No data to return to CPU on write operation
-        rwi = 2'b01; // Write operation
+        //rwi = 2'b01; // Write operation
         if(memSource) begin
             // If memSource is set, we are writing from the FPU register
             ExtAddress = ALU_address; // Use ALU address for memory operations
@@ -121,7 +124,7 @@ always_comb begin
             end 
         end 
     end else if(memRead) begin
-        rwi = 2'b10; //Read operation
+        //rwi = 2'b10; //Read operation
         ExtAddress = ALU_address; // Use ALU address for memory operations
         write_data = 32'b0; // No data to write in read operation
         if (memOp == 4'd1) begin //
@@ -138,7 +141,7 @@ always_comb begin
             dataToCPU = 32'b0; // Default case, no valid operation
         end
     end else begin
-        rwi = 2'b00; // Idle state
+        //rwi = 2'b00; // Idle state
         write_data = 32'b0; // No data to write
         ExtAddress = 32'b0; // No address to write to
         dataToCPU = 32'b0; // No data to return to CPU
