@@ -78,6 +78,7 @@ always_comb begin
     nextparameters = parameters;
     nextcounter = counter;
     nextstate = state;
+    nexttimem = timem;
 
     case(register)
         GETCOMMAND: begin
@@ -149,17 +150,17 @@ always_comb begin
                     nextdcx = 1;
                     if (count >= percount) begin 
                         nextstate = 3; 
-                        nextbusy =0;
+                        nextbusy = 0;
                         nextcsx = 1;
-                        case(command): 
-                        8'h01, 8'h10, 8'h11: begin
-                            nexttimem = timem + 1;
-                            if (timem == delay) begin
-                                nexttimem = 0;
-                                nextstate = 3;
+                        case(command)
+                            8'h01, 8'h10, 8'h11: begin
+                                nexttimem = timem + 1;
+                                if (timem == delay) begin
+                                    nexttimem = 0;
+                                    nextstate = 3;
+                                end
+                                else nextstate = 1;
                             end
-                            nextstate = 1;
-                        end
                         endcase
 
                      end
