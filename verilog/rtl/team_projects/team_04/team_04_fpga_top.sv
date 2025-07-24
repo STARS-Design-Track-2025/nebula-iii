@@ -53,7 +53,7 @@ module top (
   //);
 
   t04_top team_04_inst (
-  .clk(hwclk),
+  .clk(pb[0]),
   .rst(pb[19]),
   .row(pb[3:0]),  // Example if row lines come from pushbuttons
   .screenCsx(right[0]),
