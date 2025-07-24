@@ -1,9 +1,8 @@
 module t08_spi_tb;
-logic [7:0] command, outputs;
-logic enable,  nrst = 1, wrx,rdx,csx,dcx,  busy;
-logic [31:0] parameters;
+logic [7:0]  outputs;
+logic enable_command,enable_parameter,  nrst = 1, wrx,rdx,csx,dcx,  busy;
+logic [31:0] inputs;
 logic clk = 0, readwrite = 1;
-logic [3:0] counter = 4;
 task tfr;
    nrst = 0; #1;
    nrst = 1; #1;
@@ -12,7 +11,7 @@ endtask
 always #1 clk = ~clk;
 
 
-t08_spi spi(.busy(busy), .command(command), .enable(enable), .clk(clk), .nrst(nrst), .readwrite(readwrite), .outputs(outputs), .wrx(wrx), .rdx(rdx), .csx(csx), .dcx(dcx), .counter(counter), .parameters(parameters));
+t08_spi spi(.busy(busy), .inputs(inputs),.enable_command(enable_command), .enable_parameter(enable_parameter), .clk(clk), .nrst(nrst), .readwrite(readwrite), .outputs(outputs), .wrx(wrx), .rdx(rdx), .csx(csx), .dcx(dcx));
 
 
 initial begin
@@ -20,31 +19,47 @@ initial begin
     $dumpvars(0, t08_spi_tb);
     
     tfr; 
-    command = {8{1'b1}}; 
-    enable = 1;
-    parameters  = 32'b10101010_00001111_11110000_00110011;
+    inputs = {{16{1'b0}}, 8'b00000100, {8{1'b1}}}; 
+    enable_command = 1; #2;
+    enable_command = 0; #1;
+    inputs  = 32'b10101010_00001111_11110000_00110011;
+    enable_parameter = 1; #2;
+    enable_parameter = 0;#1;
 
-    #15;
+    #30;
     readwrite = 1;
-    command = {8'b00101011}; 
-    parameters  = 32'b00001111_10101010_00110011_11110000;
+    inputs = {{24{1'b0}},{8'b00101011}}; 
+    enable_command = 1; #2;
+    enable_command = 0; #1;
+    inputs  = 32'b00001111_10101010_00110011_11110000;
+    enable_parameter = 1; #2;
+    enable_parameter = 0;#1;
+
     #30;
 
     readwrite = 0;
-    command = 8'b00101001;
-    parameters = 32'b1111_0000_1010_0000_1111_0101_1111_1111;
+    inputs = {{24{1'b0}},{8'b00101001}};
+    enable_command = 1; #1.1;
+    enable_command = 0; #1;
+    inputs = 32'b1111_0000_1010_0000_1111_0101_1111_1111;
+    enable_parameter = 1; #1;
+    enable_parameter = 0;#1;
     #30;
 
-    enable= 0;
+  
     #10
 
     readwrite = 0;
-    command = 8'b00101110;
-    parameters = 32'b1111_0000_1010_0000_1111_0101_1111_1111;
+    inputs = {{24{1'b0}},{8'b00101110}};
+    enable_command = 1; #1;
+    enable_command = 0; #1;
+    inputs = 32'b1111_0000_1010_0000_1111_0101_1111_1111;
+    enable_parameter = 1; #1;
+    enable_parameter = 0;#1;
     #20;
 
-    enable = 1;
-    #40;
+    // enable = 1;
+    // #40;
 
 
 
