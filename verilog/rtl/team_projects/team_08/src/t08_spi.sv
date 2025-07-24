@@ -19,7 +19,8 @@ logic [7:0] currentout, nextout, command, nextcommand;
 logic [1:0] state, nextstate; 
 logic nextdcx, nextbusy, nextcsx;
 logic [3:0] count = 0, percount, nextpercount,  nextcount, counter, nextcounter;
-
+logic [23:0] delay = 24'd4800000;
+logic [23:0] timem, nexttimem;
 registering register, nextregister;
 assign outputs = currentout;
 
@@ -36,6 +37,7 @@ always_ff@(posedge clk, negedge nrst) begin
         command <= '0;
         parameters <= '0;
         counter <= '0;
+        timem <= 0;
     end
     else begin
         currentout <= nextout;
@@ -50,6 +52,7 @@ always_ff@(posedge clk, negedge nrst) begin
         command <= nextcommand;
         counter <= nextcounter;
         parameters <=nextparameters;
+        timem <= nexttimem;
     end
     // else begin
     //     csx <= 1;
@@ -123,13 +126,15 @@ always_comb begin
                     case (command) 
                         8'b00101010: begin nextpercount = 4; end //CASET, SC2, SC1, EC2, EC1 
                         8'b00101011: begin nextpercount = 4; end //PASET SP2 SP1 EP2 EP1
-                        8'b00000001: begin nextpercount = 0; end //software reset
+                        8'b00000001: begin nextpercount = 0; end //software reset, 120 msec delay
                         8'b00101000: begin nextpercount = 0; end //display off;
                         8'b00111010: begin nextpercount = 1; end //pixel format set;
                         8'b00101001: begin nextpercount = 0; end //display on;
                         8'b0:        begin nextpercount = 0; end //no operation
                         8'b00101100: begin nextpercount = 3; end //mem write
                         8'b00101110: begin nextpercount = 3; end //mem read
+                        8'h10:       begin nextpercount = 0; end // sleep mode on, 5 ms delay
+                        8'h11:       begin nextpercount = 0; end //sleep out
                         default:     begin nextpercount = counter; end 
                     endcase
 
@@ -146,7 +151,18 @@ always_comb begin
                         nextstate = 3; 
                         nextbusy =0;
                         nextcsx = 1;
+                        case(command): 
+                        8'h01, 8'h10, 8'h11: begin
+                            nexttimem = timem + 1;
+                            if (timem == delay) begin
+                                nexttimem = 0;
+                                nextstate = 3;
+                            end
+                            nextstate = 1;
                         end
+                        endcase
+
+                     end
                     else begin nextstate = 2; end
                     if (readwrite) wrx = 1; else rdx = 1;
                     nextout = paroutput[31:24];
@@ -172,6 +188,7 @@ always_comb begin
                     nextbusy = 0;
                     
                 end
+
 
                 default: begin 
                     nextstate = state;
