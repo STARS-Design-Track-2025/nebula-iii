@@ -24,6 +24,7 @@ module t04_top(
     logic i_ack, d_ack;
     logic MemRead, MemWrite;
 
+    logic pulse_e;
     logic [4:0] button;
     logic [1:0] app;
     logic rising;
@@ -72,6 +73,12 @@ module t04_top(
     );
 
     // === KEYPAD INTERFACE ===
+
+    t04_counter_column columns (
+        .clk(clk), .rst(rst),
+        .column(column),
+        .pulse_e(pulse_e)
+    );
 
     t04_keypad_interface keypad (
     .clk(clk), .rst(rst),
