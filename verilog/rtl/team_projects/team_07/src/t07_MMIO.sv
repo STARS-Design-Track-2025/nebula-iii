@@ -96,15 +96,9 @@ always_comb begin
                 ExtData_out = 32'b0; // no data to internal memory
                 writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
         end
-<<<<<<< HEAD
-   end else if (rwi_in == 2'b00)
-        rwi_out = 2'b0;
-
-=======
     end else begin //idle
         rwi_out = 2'b0;
     end
->>>>>>> 77e0343ae0cd68aa06b08ea52c987a9032f33a52
 end
 
 
