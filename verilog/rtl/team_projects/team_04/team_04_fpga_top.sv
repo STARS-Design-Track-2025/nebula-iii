@@ -55,7 +55,9 @@ module top (
   t04_top team_04_inst (
   .clk(pb[0]),
   .rst(pb[19]),
-  .row(pb[3:0]),  // Example if row lines come from pushbuttons
+  .column(ss0[3:0]),
+  .button(ss1[4:0]),
+  .row({pb[15], pb[11], pb[7], pb[3]}),
   .screenCsx(right[0]),
   .screenDcx(right[1]),
   .screenWrx(right[2]),
