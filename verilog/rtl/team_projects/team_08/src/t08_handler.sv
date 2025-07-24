@@ -16,6 +16,8 @@ typedef enum logic[2:0] {
 } states;
 
 localparam [31:0] I2C_ADDRESS = 32'd923923;
+localparam [31:0] SPI_ADDRESS_C = 32'd121212;
+
 // logic readout;
 assign wb_read = readout&(~gdone);
 assign wb_write = writeout&(~gdone);
@@ -56,6 +58,12 @@ always_comb begin
     nextreadout = readout;
     nextwriteout = writeout;
     nextinst  = instruction;
+    nextregs = toreg;
+    nextmem = tomem;
+    nextnewadd = addressnew;
+    nextstate = state;
+
+
     case(state)
     INC: begin
         next_counter_on = 1;

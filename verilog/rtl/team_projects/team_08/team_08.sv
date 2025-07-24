@@ -46,8 +46,12 @@ module team_08 (
     // You can also have input registers controlled by the Caravel Harness's on chip processor
 );
 
-    assign gpio_out = '0;
-    assign gpio_oeb = '0;
+    // assign gpio_out = '0;
+
+
+    assign gpio_oeb[33:15] = '1;
+    assign gpio_oeb[14:2] = '0;
+    assign gpio_oeb[0] = 1;
 
     /*
     List of pins used: 
@@ -71,11 +75,11 @@ module team_08 (
         .touchscreen_scl(gpio_out[2]),
 
         .spi_outputs(gpio_out[3:10]), 
-        .spi_wrx(gpio_out[11]), .spi_rdx(gpio_out[12]), .spi_csx(gpio_out[13]), .spi_dcx(gpio_out[14]),
+        .spi_wrx(gpio_out[11]), .spi_rdx(gpio_out[12]), .spi_csx(gpio_out[13]), .spi_dcx(gpio_out[14])
 
-        .wb_dat_i(DAT_I), .wb_ack_i(ACK_I), 
-        .wb_adr_o(ADR_O), .wb_dat_o(DAT_O), .wb_sel_o(SEL_O), 
-        .wb_we_o(WE_O), .wb_stb_o(STB_O), .wb_cyc_o(CYC_O)
+        // .wb_dat_i(DAT_I), .wb_ack_i(ACK_I), 
+        // .wb_adr_o(ADR_O), .wb_dat_o(DAT_O), .wb_sel_o(SEL_O), 
+        // .wb_we_o(WE_O), .wb_stb_o(STB_O), .wb_cyc_o(CYC_O)
 
         // .wb_dat_o(DAT_O), .wb_busy_o(BUSY_O), 
         // .wb_dat_i(DAT_I), .wb_adr_i(ADR_I), .wb_sel_i(SEL_I), 

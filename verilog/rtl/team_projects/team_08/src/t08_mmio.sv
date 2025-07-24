@@ -78,7 +78,7 @@ always_comb begin
     spi_write_o = 0;
     spi_enable_o = 0;      
     mem_data_o = 0;     
-    //mem_address_o = 0;         
+    mem_address_o = 0;         
     //mem_write_o = 0;      
     //mem_read_o = 0;
     // if (!mmio_busy_o) begin

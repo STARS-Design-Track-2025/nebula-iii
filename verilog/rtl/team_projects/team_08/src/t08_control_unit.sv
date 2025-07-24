@@ -27,6 +27,7 @@ logic [6:0] funct7;                //function 7 field
 //Logic for analyzing the type of the instruction 
 always_comb begin
     opcode = instruction[6:0];
+    funct7 = 0;
 
     read = 0;                   //to memory handler
     write = 0;                  //to memory handler

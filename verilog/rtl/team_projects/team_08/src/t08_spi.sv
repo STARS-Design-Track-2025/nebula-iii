@@ -58,6 +58,7 @@ always_comb begin
     nextparoutput = paroutput;
     nextcount = count;
     nextpercount = percount;
+    nextdcx = dcx;
     case(state)
         0: begin //command
             //nextpercount = percount;

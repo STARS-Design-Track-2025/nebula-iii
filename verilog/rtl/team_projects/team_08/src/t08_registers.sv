@@ -61,6 +61,7 @@ module t08_registers(
 
     always_comb begin : read_and_write
 
+        data_n = data;
         data_out_r1 = data_out_r1_prev;
         data_out_r2 = data_out_r2_prev;
         

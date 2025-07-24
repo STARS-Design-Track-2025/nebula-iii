@@ -57,9 +57,12 @@ module t08_alu(
 
     } alu_operations;
 
+    alu_operations alu_operation;
+    assign alu_operation = alu_operations'(alu_control);
+
     always_comb begin : input_multiplexer
 
-        case (alu_operations'(alu_control))
+        case (alu_operation)
 
             ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI, LB, LBU, LH, LHU, LW, SB, SH, SW, JALR: begin
                 in1 = reg1;
@@ -83,7 +86,7 @@ module t08_alu(
         data_out = 32'b0; //Default value
         branch = 1'b0; //Default value
 
-        case (alu_operations'(alu_control))
+        case (alu_operation)
 
             ADD, ADDI, LB, 
             LBU, LH, LHU, 
