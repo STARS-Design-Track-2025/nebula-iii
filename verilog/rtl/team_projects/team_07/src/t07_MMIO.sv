@@ -86,15 +86,19 @@ always_comb begin
                 ExtData_out = ExtData_in; // data from instruction/Data memory to internal memory
             end 
         end
-    end else if (addr_in <= 32'd1024) begin //change address number later                           // write instruction to fetch module
-            busy = busy_o; //set busy signal to indicate memory handler is processing
-            //if(fetchRead_in == 0) begin 
-               //rwi_out = 2'b11; end else begin
-                    rwi_out = 2'b10; //end //read from instruction
-            addr_out = {8'h33, addr_in[23:0]}; // address for instruction/Data memory from cpu top mux
-            ExtData_out = 32'b0; // no data to internal memory
-            writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
-    end
+    end else if (rwi_in == 2'b10) begin
+        if (addr_in <= 32'd1024) begin //change address number later                           // write instruction to fetch module
+                busy = busy_o; //set busy signal to indicate memory handler is processing
+                //if(fetchRead_in == 0) begin 
+                //rwi_out = 2'b11; end else begin
+                        rwi_out = 2'b10; //end //read from instruction
+                addr_out = {8'h33, addr_in[23:0]}; // address for instruction/Data memory from cpu top mux
+                ExtData_out = 32'b0; // no data to internal memory
+                writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
+        end
+    end else if (rwi_in == 2'b00)
+        rwi_out = 2'b0;
+        
 end
 
 
