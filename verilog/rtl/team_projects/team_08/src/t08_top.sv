@@ -31,7 +31,7 @@ module t08_top(
 
     logic [31:0] CPU_data_in, CPU_data_out;
     logic [31:0] CPU_mem_address_out;
-    logic CPU_read_out, CPU_write_out, getinst, wb_read, wb_write;
+    logic CPU_read_out, CPU_write_out, wb_read, wb_write;
 
     t08_CPU CPU(
         .gdone(mmio_done_o),
@@ -40,7 +40,7 @@ module t08_top(
         .done(mmio_done_from_I2C), .busy(mmio_busy),        //from mmio, if it's busy, if data from I2C is done
         .data_out(CPU_data_out),                            //memory handler to mmio: data outputted
         .addressnew(CPU_mem_address_out),                  //memory handler to mmio: address in memory
-        .read_out(CPU_read_out), .write_out(CPU_write_out), .getinst(getinst), .wb_read(wb_read), .wb_write(wb_write)  //memory handler to mmio: read and write enable
+        .read_out(CPU_read_out), .write_out(CPU_write_out), .wb_read(wb_read), .wb_write(wb_write)  //memory handler to mmio: read and write enable
     );
 
     /*
@@ -89,7 +89,7 @@ module t08_top(
 
     t08_mmio mmio(
         .clk(clk), .nRst(nRst),
-        .read(CPU_read_out), .write(CPU_write_out),  .getinst(getinst), .wb_read(wb_read), .wb_write(wb_write),                                //From memory handler
+        .read(CPU_read_out), .write(CPU_write_out), .wb_read(wb_read), .wb_write(wb_write),                                //From memory handler
         .address(CPU_mem_address_out), .mh_data_i(CPU_data_out), 
         
         .I2C_xy_i(I2C_data_out), .I2C_done_i(I2C_done),                                    //From I2C

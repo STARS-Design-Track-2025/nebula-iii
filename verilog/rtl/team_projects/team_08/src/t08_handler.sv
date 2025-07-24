@@ -9,7 +9,7 @@ module t08_handler(
     input logic write, read, clk, nrst, busy,done, gdone,
     input logic [2:0] func3,
     output logic [31:0] toreg,  tomem, addressnew, instruction,
-    output logic wb_write, writeout, wb_read, readout,  getinst, counter_on
+    output logic wb_write, writeout, wb_read, readout, counter_on
 );
 typedef enum logic[2:0] {
     INC, FETCH, LORS,REGOP, FWAIT, LWAIT
