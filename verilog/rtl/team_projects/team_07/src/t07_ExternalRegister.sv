@@ -15,22 +15,29 @@ module t07_ExternalRegister (
     logic next_ack_REG;  // Next acknowledge signal to the memory handler
     logic [31:0] next_read_data; // Next write data to the register
     
-    always_comb begin
-        next_ack_REG = 1'b0; // Default to not acknowledge
-        next_read_data = registers[ReadRegister]; // Default read data from the register
-        if (ri == 1'b1) begin // If read or idle signal is high
-            
-            next_ack_REG = 1'b1; // Acknowledge the read operation
+    logic pre_ri, ri_edge;
+    always_ff @(negedge nrst, posedge clk) begin
+        if (!nrst) begin 
+            pre_ri <= '0;
+        end else begin
+            pre_ri <= ri;
         end
-        if (ack_REG) begin
-            next_ack_REG = 1'b0; // Do not acknowledge if not reading
+    end
+
+    assign ri_edge = (!ri && pre_ri);
+
+    always_comb begin
+        ack_REG = 1'b0; // Default to not acknowledge
+        next_read_data = registers[ReadRegister]; // Default read data from the register
+        if (ri_edge) begin // If read or idle signal is high 
+            ack_REG = 1'b1; // Acknowledge the read operation
         end
     end
 
     // Write logic
     always_ff @(negedge nrst, posedge clk) begin
         if (!nrst) begin
-            ack_REG <= 1'b0; // Reset acknowledge signal
+            //ack_REG <= 1'b0; // Reset acknowledge signal
             read_data <= 32'b0; // Reset read data
             // Reset all registers to zero
             for (int i = 0; i < 32; i++) begin
@@ -38,7 +45,7 @@ module t07_ExternalRegister (
             end
         end else begin
             registers[SPIAddress] <= write_data; // Write data to the register
-            ack_REG <= next_ack_REG; // Acknowledge signal to the memory handler
+            //ack_REG <= next_ack_REG; // Acknowledge signal to the memory handler
             read_data <= next_read_data; // Update write data
         end
     end
