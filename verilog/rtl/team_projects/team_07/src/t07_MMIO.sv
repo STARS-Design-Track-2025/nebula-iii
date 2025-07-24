@@ -17,7 +17,7 @@ module t07_MMIO (
 
     // input from CPU top
     input logic [31:0] addr_in, // Program Counter address or Internal Memory address 
-    input logic fetchRead_in,
+    input logic fetchRead_in, addrControl_in,
 
 
 
@@ -42,7 +42,7 @@ module t07_MMIO (
     output logic [1:0] rwi_out, // read/write/idle to instruction/Data memory (00- read from instruction, 01- write to instruction/Data memory, 10- read from Data memory, 11- idle)
     output logic [31:0] addr_out, // address to instruction/Data memory
     output logic [31:0] writeData_out, // data to write to instruction/Data memory
-    output logic fetchRead_out
+    output logic fetchRead_out, addrControl_out
 );
 
 always_comb begin
@@ -58,6 +58,7 @@ always_comb begin
     ExtData_out = 32'b0; // no data to internal memory
     writeInstruction_out = 32'b0; // no instruction to fetch module
     fetchRead_out = fetchRead_in; //fetch read signal
+    addrControl_out = addrControl_in; 
 
     if (addr_in > 32'd1024) begin
         if (rwi_in == 2'b01) begin //write from internal memory of the CPU
@@ -73,7 +74,7 @@ always_comb begin
                 writeData_out = memData_in; // data from instruction/Data memory
             end
         end else if (rwi_in == 2'b10) begin //read from internal memory of the CPU
-            if(addr_in > 32'd1024 && addr_in <= 32'd1056) begin //change address number later                                      // read from external register
+            if(addr_in > 32'd1024 && addr_in <= 32'd1056) begin //change address number later          // read from external register
                 busy = ack_REG; //set busy signal to indicate memory handler is processing
                 ri_out = 1'b1; //read from external register
                 addr_outREG = addr_in[4:0]; // address to read from external register
@@ -87,7 +88,9 @@ always_comb begin
         end
     end else if (addr_in <= 32'd1024) begin //change address number later                           // write instruction to fetch module
             busy = busy_o; //set busy signal to indicate memory handler is processing
-            rwi_out = 2'b10; //read from instruction
+            //if(fetchRead_in == 0) begin 
+               //rwi_out = 2'b11; end else begin
+                    rwi_out = 2'b10; //end //read from instruction
             addr_out = {8'h33, addr_in[23:0]}; // address for instruction/Data memory from cpu top mux
             ExtData_out = 32'b0; // no data to internal memory
             writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
