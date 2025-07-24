@@ -39,7 +39,8 @@ module t07_MMIO (
     output logic wi_out, // write or idle to SPI FTF
 
     //output to instruction/Data memory
-    output logic [1:0] rwi_out, // read/write/idle to instruction/Data memory (00- read from instruction, 01- write to instruction/Data memory, 10- read from Data memory, 11- idle)
+    //output logic [1:0] rwi_out, // read/write/idle to instruction/Data memory (00- read from instruction, 01- write to instruction/Data memory, 10- read from Data memory, 11- idle)
+    output logic read, write, //rw for wishbone manager
     output logic [31:0] addr_out, // address to instruction/Data memory
     output logic [31:0] writeData_out, // data to write to instruction/Data memory
     output logic fetchRead_out, addrControl_out
@@ -49,7 +50,9 @@ always_comb begin
     busy = 1'b0; // default busy signal to not busy
     ri_out = 1'b0; // idle external register
     wi_out = 1'b0; // idle TFT
-    rwi_out = 2'b11; // idle instruction/Data memory
+    read = 0; //to WB manager
+    write = 0; //to WB manager
+    //wi_out = 2'b11; // idle instruction/Data memory
     addr_outREG = 5'b0; // no address for external register
     addr_out = 32'b0; // no address for instruction/Data memory
     addr_outTFT = 32'b0; // no address for SPI TFT`
@@ -58,7 +61,7 @@ always_comb begin
     ExtData_out = 32'b0; // no data to internal memory
     writeInstruction_out = 32'b0; // no instruction to fetch module
     fetchRead_out = fetchRead_in; //fetch read signal
-    addrControl_out = addrControl_in; 
+    addrControl_out = addrControl_in; //address for next instr or data mem
 
     if (addr_in > 32'd1024) begin
         if (rwi_in == 2'b01) begin //write from internal memory of the CPU
@@ -99,6 +102,23 @@ always_comb begin
     end /*else begin //idle
         rwi_out = 2'b0;
     end*/
+
+    if(rwi_in == 'b10) begin //read
+        if(fetchRead_in == 1) begin
+            read = 1;
+        end else begin 
+            read = 0;
+            write = 0; end
+        //idle = 0;
+    end else if(rwi_in == 'b01) begin //write
+        read = 0;
+        write = 1;
+        //idle = 0;
+    end else begin 
+        read = 0;
+        write = 0;
+        //idle = 1;
+    end
 end
 
 
