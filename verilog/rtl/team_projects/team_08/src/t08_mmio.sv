@@ -9,7 +9,6 @@ module t08_mmio (
     //from memory handler
     input logic         read,                       //command to read, source specified by address
     input logic         write,                      //command to write, destination specified by address
-    input logic         getinst,                    //command to read instruction
     input logic         wb_read, 
     input logic         wb_write,
     input logic [31:0]  address,                    //location to read from or write to
