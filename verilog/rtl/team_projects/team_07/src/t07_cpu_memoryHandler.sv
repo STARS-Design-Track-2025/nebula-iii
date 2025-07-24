@@ -8,10 +8,18 @@
 
 */
 
+ typedef enum logic [3:0] {  
+        FETCH = 0,
+        F_WAIT = 1,
+        DATA = 2,
+        D_WAIT = 3
+    } state_t;
+
+
 module t07_cpu_memoryHandler (
 
     // Inputs
-    input logic busy, // Busy signal to indicate if the memory handler is currently processing
+    input logic clk, nrst, busy, // Busy signal to indicate if the memory handler is currently processing
     input logic [3:0] memOp,
     input logic memWrite, memRead,
     input logic memSource,          //if we are writing from the FPU or ALU
@@ -25,9 +33,50 @@ module t07_cpu_memoryHandler (
     output logic [31:0] ExtAddress, // Address to write to external memory   
     output logic [31:0] dataToCPU,  // Data to the register
     output logic freeze,            // Freeze signal to pause CPU operations during memory access
-    output logic [1:0] rwi          // Read/Write/Idle control signal for external memory operations
+    output logic [1:0] rwi,          // Read/Write/Idle control signal for external memory operations
+    output logic fetchRead,
+    output state_t state,
+    output logic addrControl // control for address mux, 0 when fetch, 1 when l/s
 
 );
+    //edge detector
+    logic load_ct;
+    logic prev_busy_o;
+    logic busy_o_edge;
+    state_t state_n;
+
+    always_ff @(negedge nrst, posedge clk) begin
+        if(~nrst) begin
+            prev_busy_o <= '0;
+        end else begin
+            prev_busy_o <= busy;
+        end
+    end
+
+    assign busy_o_edge = (~busy && prev_busy_o); //detects falling edge
+
+    //fsm
+    always_ff @(negedge nrst, posedge clk) begin
+        if (~nrst) begin
+            state <= FETCH;
+        end else begin
+            state <= state_n;
+        end
+    end
+
+    always_comb begin
+        case(state) 
+            FETCH: begin addrControl = '0; fetchRead = '1; if(busy_o_edge == 'b1) begin state_n = FETCH; end 
+            else begin state_n = F_WAIT; end end
+            F_WAIT: begin addrControl = '0; fetchRead = '0; if(busy_o_edge == 'b1) begin state_n = F_WAIT; end 
+            else begin state_n = DATA; end end
+            DATA: begin load_ct = '0; addrControl = '1; fetchRead = '0; if(busy_o_edge == 'b1) begin state_n = DATA; end 
+            else if(memWrite == '1) /*store*/ begin state_n = FETCH; end
+            else /*load*/ begin state_n = D_WAIT; load_ct = '1; end end
+            D_WAIT: begin fetchRead = '0; if(load_ct == '1) begin state_n = FETCH; 
+            end else begin addrControl = '1; if(busy_o_edge == 'b1) begin state_n = DATA; end end end
+        endcase
+    end
 
 always_comb begin
     if (busy) begin
