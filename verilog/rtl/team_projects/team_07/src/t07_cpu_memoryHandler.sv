@@ -66,15 +66,19 @@ module t07_cpu_memoryHandler (
 
     always_comb begin
         case(state) 
-            FETCH: begin addrControl = '0; fetchRead = '1; if(busy_o_edge == 'b1) begin state_n = FETCH; end 
-            else begin state_n = F_WAIT; end end
-            F_WAIT: begin addrControl = '0; fetchRead = '0; if(busy_o_edge == 'b1) begin state_n = F_WAIT; end 
-            else begin state_n = DATA; end end
-            DATA: begin load_ct = '0; addrControl = '1; fetchRead = '0; if(busy_o_edge == 'b1) begin state_n = DATA; end 
-            else if(memWrite == '1) /*store*/ begin state_n = FETCH; end
-            else /*load*/ begin state_n = D_WAIT; load_ct = '1; end end
-            D_WAIT: begin fetchRead = '0; if(load_ct == '1) begin state_n = FETCH; 
-            end else begin addrControl = '1; if(busy_o_edge == 'b1) begin state_n = DATA; end end end
+            FETCH: begin addrControl = '0; fetchRead = '1; 
+                if(busy_o_edge == 'b1) begin state_n = FETCH; end 
+                else begin state_n = F_WAIT; end end
+            F_WAIT: begin addrControl = 0; fetchRead = '0; 
+                if(busy_o_edge == 'b1) begin state_n = F_WAIT; end 
+                else begin state_n = DATA; end end
+            DATA: begin load_ct = '0; addrControl = 1; fetchRead = '0; 
+                if(busy_o_edge == 'b1 & memWrite == 1) /*store*/ begin state_n = D_WAIT; end //load ct = 0 
+                else if (busy_o_edge == 1 & memRead == 1) /*load*/ begin state_n = D_WAIT; load_ct = load_ct + 1; end end
+            D_WAIT: begin fetchRead = '0; addrControl = 1;
+                if(load_ct == 0) begin state_n = FETCH; end
+                else if (load_ct == 1) begin state_n = DATA; end
+                else state_n = FETCH; end
         endcase
     end
 
