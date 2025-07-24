@@ -4,7 +4,8 @@ module t04_top(
 
     // === Keypad ===
     input  logic [3:0] row,
-    output logic [3:0] column,
+    output logic [3:0] column, // good boy (can I have this column to be named the same as an internal signal)
+    output logic [4:0] button, // this is temporary for testing
 
     // // === Display ===
     output  logic screenCsx,
@@ -25,7 +26,7 @@ module t04_top(
     logic MemRead, MemWrite;
 
     logic pulse_e;
-    logic [4:0] button;
+    //logic [4:0] button;
     logic [1:0] app;
     logic rising;
 
@@ -82,6 +83,7 @@ module t04_top(
 
     t04_keypad_interface keypad (
     .clk(clk), .rst(rst),
+    .column(column),
     .row(row),
     .button(button),
     .app(app),
