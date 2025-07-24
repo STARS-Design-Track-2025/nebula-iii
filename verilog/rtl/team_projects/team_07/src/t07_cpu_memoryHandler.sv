@@ -66,10 +66,10 @@ module t07_cpu_memoryHandler (
 
     always_comb begin
         case(state) 
-            FETCH: begin addrControl = '0; fetchRead = '1; load_ct = '0; 
+            FETCH: begin addrControl = '0; fetchRead = '1; load_ct = '0; rwi = 'b00; //read - ftech instr
                 if(busy_o_edge == 'b1) begin state_n = F_WAIT; end 
                 else begin state_n = FETCH; end end
-            F_WAIT: begin addrControl = 0; fetchRead = '1; load_ct = '0; 
+            F_WAIT: begin addrControl = 0; fetchRead = '1; load_ct = '0; rwi = 'b00;
                 if(busy_o_edge == 'b1) begin state_n = DATA; end 
                 else begin state_n = F_WAIT; end end
             DATA: begin addrControl = 1; fetchRead = '0; 

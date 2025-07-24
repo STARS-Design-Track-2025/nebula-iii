@@ -60,30 +60,12 @@ logic [4:0] addrToReg;
 logic [31:0] dataToTFT, addrToTFT;
 logic wi_out; 
 
-always_comb begin
-    if(rwiToWB == 'b10) begin
-        if(fetchReadToMMIO == 1 || addrControl == 1) begin
-            read = 1;
-        end else begin read = 0; end
-        write = 0;
-        idle = 0;
-    end else if(rwiToWB == 'b01) begin
-        read = 0;
-        write = 1;
-        idle = 0;
-    end else begin 
-        read = 0;
-        write = 0;
-        idle = 1;
-    end
-end
-
 t07_CPU CPU(.fetchRead(fetchReadToMMIO), .addrControl(addrControl), .busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
 .rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst));
 
 t07_MMIO MMIO(.addrControl_in(addrControl), .addrControl_out(addrControlWB), .fetchRead_in(fetchReadToMMIO), .fetchRead_out(fetchReadToWB), .addr_in(exMemAddr_CPU), .memData_in(exMemData_CPU), .rwi_in(rwi_in), .ExtData_in(dataToMMIO), 
 .regData_in(regData_in), .ack_REG(ackReg), .ack_TFT(), .ri_out(ri_out), .addr_outREG(addrToReg), .ExtData_out(memData_in), .busy(busyCPU), .writeInstruction_out(instr), 
-.writeData_outTFT(dataToTFT), .wi_out(wi_out), .addr_outTFT(addrToTFT), .rwi_out(rwiToWB), .addr_out(addrToSRAM), .writeData_out(dataToSRAM), .busy_o(busyToMMIO));
+.writeData_outTFT(dataToTFT), .wi_out(wi_out), .addr_outTFT(addrToTFT), .read(read), .write(write), .addr_out(addrToSRAM), .writeData_out(dataToSRAM), .busy_o(busyToMMIO));
 
 wishbone_manager wishbone0(.nRST(nrst), .CLK(clk), .DAT_I(dataArToWM), .ACK_I(ackToWM), .CPU_DAT_I(dataToSRAM), 
 .ADR_I(addrToSRAM), .SEL_I(4'hF), .WRITE_I(write), .READ_I(read), .ADR_O(addrWMToAr), .DAT_O(dataWMToAr), 

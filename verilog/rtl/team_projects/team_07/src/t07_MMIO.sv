@@ -72,7 +72,7 @@ always_comb begin
                 writeData_outTFT = memData_in; // data to write to SPI TFT
             end else if (addr_in > 32'd1056 && addr_in <= 32'd1792) begin //change address number later     // write to Data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
-                rwi_out = 2'b01; //write to instruction/Data memory
+                //rwi_out = 2'b01; //write to instruction/Data memory
                 addr_out = {8'h33, addr_in[23:0]}; // address to instruction/Data memory
                 writeData_out = memData_in; // data from instruction/Data memory
             end
@@ -84,7 +84,7 @@ always_comb begin
                 ExtData_out = regData_in; // data from external register to internal memory
             end else if (addr_in > 32'd1056 && addr_in <= 32'd1792) begin //change address number later     // read from data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
-                rwi_out = 2'b10; //read from Data memory
+                //rwi_out = 2'b10; //read from Data memory
                 addr_out = {8'h33, addr_in[23:0]}; // address to read from instruction/Data memory
                 ExtData_out = ExtData_in; // data from instruction/Data memory to internal memory
             end 
@@ -94,14 +94,12 @@ always_comb begin
                 busy = busy_o; //set busy signal to indicate memory handler is processing
                 //if(fetchRead_in == 0) begin 
                 //rwi_out = 2'b11; end else begin
-                        rwi_out = 2'b10; //end //read from instruction
+                        //rwi_out = 2'b10; //end //read from instruction
                 addr_out = {8'h33, addr_in[23:0]}; // address for instruction/Data memory from cpu top mux
                 ExtData_out = 32'b0; // no data to internal memory
                 writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
         end
-    end /*else begin //idle
-        rwi_out = 2'b0;
-    end*/
+    end 
 
     if(rwi_in == 'b10) begin //read
         if(fetchRead_in == 1) begin
