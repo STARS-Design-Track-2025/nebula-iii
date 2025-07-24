@@ -107,11 +107,10 @@ module t07_ExternalRegister_tb;
         #10; // Wait for a clock cycle
         ESP_in = 8'hAA; // Default value
         #10;
-                
         ESP_in = 8'hBB; // Example data
-        rwi_in =2'b10; // Set to write operation
         #10;
         ESP_in = 8'hCC; // Another example data
+            rwi_in =2'b10; // Set to write operation
         #10;
         ESP_in = 8'hDD; // Reset value
         #10;
