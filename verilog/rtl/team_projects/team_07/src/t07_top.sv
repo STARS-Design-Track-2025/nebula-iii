@@ -10,7 +10,7 @@ logic read, write, idle;
 logic busyCPU; //sent from MMIO to CPU
 logic [31:0] instr, memData_in, memData_out, exMemData_CPU, exMemAddr_CPU;
 logic [1:0] rwi_in; //read = 10, write = 01, idle = 00
-logic fetchReadToMMIO;
+logic fetchReadToMMIO, addrControl; 
 
 //outputs of MMIO
 logic [31:0] addrToSRAM, dataToSRAM; //addr_out in MMIO 
@@ -62,7 +62,9 @@ logic wi_out;
 
 always_comb begin
     if(rwiToWB == 'b10) begin
-        read = 1;
+        if(fetchReadToMMIO == 1 || addrControl == 1) begin
+            read = 1;
+        end else begin read = 0; end
         write = 0;
         idle = 0;
     end else if(rwiToWB == 'b01) begin
