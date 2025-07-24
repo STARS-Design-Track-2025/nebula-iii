@@ -66,19 +66,19 @@ always_comb begin
                 wi_out = 1'b1; //write to SPI TFT
                 addr_outTFT = addr_in; // address to write to SPI TFT
                 writeData_outTFT = memData_in; // data to write to SPI TFT
-            end else if (addr_in > 32'd1536 && addr_in <= 32'd1792) begin //change address number later     // write to Data memory
+            end else if (addr_in > 32'd1056 && addr_in <= 32'd1792) begin //change address number later     // write to Data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
                 rwi_out = 2'b01; //write to instruction/Data memory
                 addr_out = {8'h33, addr_in[23:0]}; // address to instruction/Data memory
                 writeData_out = memData_in; // data from instruction/Data memory
             end
         end else if (rwi_in == 2'b10) begin //read from internal memory of the CPU
-            if(addr_in > 32'd1024 && addr_in <= 32'd1280) begin //change address number later               // read from external register
+            if(addr_in > 32'd1024 && addr_in <= 32'd1056) begin //change address number later                                      // read from external register
                 busy = ack_REG; //set busy signal to indicate memory handler is processing
                 ri_out = 1'b1; //read from external register
                 addr_outREG = addr_in[4:0]; // address to read from external register
                 ExtData_out = regData_in; // data from external register to internal memory
-            end else if (addr_in > 32'd1280 && addr_in <= 32'd1536) begin //change address number later     // read from data memory
+            end else if (addr_in > 32'd1056 && addr_in <= 32'd1792) begin //change address number later     // read from data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
                 rwi_out = 2'b10; //read from Data memory
                 addr_out = {8'h33, addr_in[23:0]}; // address to read from instruction/Data memory
