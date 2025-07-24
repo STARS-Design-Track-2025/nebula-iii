@@ -31,7 +31,7 @@ module t08_top(
 
     logic [31:0] CPU_data_in, CPU_data_out;
     logic [31:0] CPU_mem_address_out;
-    logic CPU_read_out, CPU_write_out, getinst, wb_read, wb_write;
+    logic CPU_read_out, CPU_write_out, wb_read, wb_write;
 
     t08_CPU CPU(
         .gdone(mmio_done_o),
@@ -40,7 +40,7 @@ module t08_top(
         .done(mmio_done_from_I2C), .busy(mmio_busy),        //from mmio, if it's busy, if data from I2C is done
         .data_out(CPU_data_out),                            //memory handler to mmio: data outputted
         .addressnew(CPU_mem_address_out),                  //memory handler to mmio: address in memory
-        .read_out(CPU_read_out), .write_out(CPU_write_out), .getinst(getinst), .wb_read(wb_read), .wb_write(wb_write)  //memory handler to mmio: read and write enable
+        .read_out(CPU_read_out), .write_out(CPU_write_out), .wb_read(wb_read), .wb_write(wb_write)  //memory handler to mmio: read and write enable
     );
 
     /*
@@ -61,16 +61,15 @@ module t08_top(
     SPI
     */
 
-    logic [7:0] screen_command;             //Command sent to the display screen. 
-    logic [31:0] screen_command_parameters; //Parameters for the command sent to the display screen. 
-    logic SPI_enable, SPI_read, SPI_write;  //Enable, read, and write signals for SPI
+    logic [31:0] inputs;  
+    logic enable_parameter, enable_command; //enables for command + count or parameters in input
+    logic SPI_read, SPI_write;              //, read, and write signals for SPI
     logic SPI_busy;                         //Busy signal from SPI
 
     t08_spi SPI(
-        .command(screen_command), .parameters(screen_command_parameters), 
-        .enable(SPI_enable), .clk(clk), .nrst(nRst), 
+        .inputs(inputs),
+        .enable_parameter(enable_parameter), .enable_command(enable_command), .clk(clk), .nrst(nRst), 
         .readwrite(SPI_write), 
-        .counter(mmio_counter_to_spi), 
         .outputs(spi_outputs), 
         .wrx(spi_wrx), .rdx(spi_rdx), .csx(spi_csx), .dcx(spi_dcx), 
         .busy(SPI_busy)
@@ -89,7 +88,7 @@ module t08_top(
 
     t08_mmio mmio(
         .clk(clk), .nRst(nRst),
-        .read(CPU_read_out), .write(CPU_write_out),  .getinst(getinst), .wb_read(wb_read), .wb_write(wb_write),                                //From memory handler
+        .read(CPU_read_out), .write(CPU_write_out), .wb_read(wb_read), .wb_write(wb_write),                                //From memory handler
         .address(CPU_mem_address_out), .mh_data_i(CPU_data_out), 
         
         .I2C_xy_i(I2C_data_out), .I2C_done_i(I2C_done),                                    //From I2C
@@ -100,9 +99,8 @@ module t08_top(
         
         .mh_data_o(CPU_data_in), .mmio_busy_o(mmio_busy), .I2C_done_o(mmio_done_from_I2C), .mmio_done_o(mmio_done_o),//To memory handler
         
-        .spi_parameters_o(screen_command_parameters), .spi_command_o(screen_command),      //To SPI
-        .spi_counter_o(mmio_counter_to_spi),
-        .spi_read_o(SPI_read), .spi_write_o(SPI_write), .spi_enable_o(SPI_enable),          
+        .spi_data_o(inputs),     //To SPI
+        .spi_read_o(SPI_read), .spi_write_o(SPI_write), .spi_comm_enable_o(enable_command), .spi_param_enable_o(enable_parameter),         
                    
         .mem_data_o(mmio_data_to_wb), .mem_address_o(mmio_address_to_wb),                  //To memory: data/wishbone    
         .mem_select_o(mmio_select_to_wb), 
