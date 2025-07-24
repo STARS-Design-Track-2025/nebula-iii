@@ -4,6 +4,7 @@ module t04_top(
 
     // === Keypad ===
     input  logic [3:0] row,
+    output logic [3:0] column,
 
     // // === Display ===
     output  logic screenCsx,
