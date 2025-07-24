@@ -101,12 +101,12 @@ always_comb begin
         end
     end 
 
-    if(rwi_in == 'b10) begin //read
-        if(fetchRead_in == 1) begin
-            read = 1;
-        end else begin 
-            read = 0;
-            write = 0; end
+    if(rwi_in == 'b11) begin //fetch
+        read = 1;
+        write = 0;
+    end else if(rwi_in == 'b10) begin //read
+        read = 1;
+        write = 0;
         //idle = 0;
     end else if(rwi_in == 'b01) begin //write
         read = 0;
