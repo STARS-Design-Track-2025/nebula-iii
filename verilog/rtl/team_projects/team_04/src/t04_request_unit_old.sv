@@ -7,7 +7,7 @@ module t04_request_unit_old(
     input  logic BranchCondition,
     input  logic Jal,
     input  logic Jalr,
-    input  logic PC_Jalr,
+    input  logic [31:0] PC_Jalr,
     input  logic [31:0] instruction_in,
     input  logic [31:0] PC,
     input  logic [31:0] mem_address,
