@@ -17,6 +17,8 @@ module t07_MMIO (
 
     // input from CPU top
     input logic [31:0] addr_in, // Program Counter address or Internal Memory address 
+    input logic fetchRead_in,
+
 
 
 //outputs
@@ -39,7 +41,8 @@ module t07_MMIO (
     //output to instruction/Data memory
     output logic [1:0] rwi_out, // read/write/idle to instruction/Data memory (00- read from instruction, 01- write to instruction/Data memory, 10- read from Data memory, 11- idle)
     output logic [31:0] addr_out, // address to instruction/Data memory
-    output logic [31:0] writeData_out // data to write to instruction/Data memory
+    output logic [31:0] writeData_out, // data to write to instruction/Data memory
+    output logic fetchRead_out
 );
 
 always_comb begin
@@ -54,6 +57,8 @@ always_comb begin
     writeData_outTFT = 32'b0; // no data to SPI TFT
     ExtData_out = 32'b0; // no data to internal memory
     writeInstruction_out = 32'b0; // no instruction to fetch module
+    fetchRead_out = fetchRead_in; //fetch read signal
+
     if (addr_in > 32'd1024) begin
         if (rwi_in == 2'b01) begin //write from internal memory of the CPU
             if (addr_in > 32'd1792 && addr_in < 32'd2048) begin //change address number later              // write to SPI TFT
@@ -68,7 +73,7 @@ always_comb begin
                 writeData_out = memData_in; // data from instruction/Data memory
             end
         end else if (rwi_in == 2'b10) begin //read from internal memory of the CPU
-            if(addr_in > 32'd1024 && addr_in <= 32'd1280) begin //change address number later                                      // read from external register
+            if(addr_in > 32'd1024 && addr_in <= 32'd1280) begin //change address number later               // read from external register
                 busy = ack_REG; //set busy signal to indicate memory handler is processing
                 ri_out = 1'b1; //read from external register
                 addr_outREG = addr_in[4:0]; // address to read from external register

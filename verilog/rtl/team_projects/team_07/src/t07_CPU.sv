@@ -3,7 +3,7 @@ module t07_CPU(
     output logic [31:0] exMemData_out, externalMemAddr, //PCdata_out to MMIO or instr
     input logic clk, nrst, busy,
     output logic [1:0] rwi,
-    output logic FPUFlag, invalError //to GPIO
+    output logic FPUFlag, invalError, fetchRead //to GPIO
 );
     logic [31:0] inst, externalMemData, externalMem_out;
     logic freeze; //to external memory 
@@ -39,6 +39,7 @@ module t07_CPU(
     logic [31:0] intMemAddr;
     
     logic [31:0] pcData_out;
+    logic addrControl; //mux control signal
     
     t07_fetch fetch_inst(.clk(clk), .nrst(nrst), .ExtInstruction(exInst), .programCounter(pc_out), .Instruction(inst), .PC_out(pcData_out), .busy_o(busy));
     t07_decoder decoder(.instruction(inst), .Op(Op), .funct7(funct7), .funct3(funct3), .rs1(rs1), .rs2(rs2), .rd(rd));
@@ -54,15 +55,15 @@ module t07_CPU(
     t07_registers register(.clk(clk), .nrst(nrst), .read_reg1(rs1), .read_reg2(rs2), .write_reg(rd), .write_data(regData_in), .reg_write(regWrite), 
     .enable(regEnable), .read_data1(dataRead1), .read_data2(dataRead2));
 
-    t07_cpu_memoryHandler internalMem(.busy(busy), .memOp(memOp), .memWrite(memWrite), .memRead(memRead), .memSource(memSource), .ALU_address(ALUResult), 
+    t07_cpu_memoryHandler internalMem(.clk(clk), .nrst(nrst), .busy(busy), .memOp(memOp), .memWrite(memWrite), .memRead(memRead), .memSource(memSource), .ALU_address(ALUResult), 
     .FPU_data('0), .Register_dataToMem(dataRead2), .ExtData(externalMemData), .write_data(exMemData_out), .ExtAddress(intMemAddr), .dataToCPU(intMem_out), 
-    .freeze(freeze), .rwi(rwi));
+    .freeze(freeze), .rwi(rwi), .addrControl(addrControl), .fetchRead(fetchRead));
 
     t07_ALU ALU(.valA(dataRead1), .valB(ALU_in2), .result(ALUResult), .ALUflags(ALUFlags), .ALUOp(ALUOp));
     t07_muxes muxFPUReg(.a(fcsr_out), .b(dataRead2), .sel(FPUSrc), .out(memRegSource)); //check when FPU is added
     t07_muxes muxImmReg(.a(dataRead2), .b(immediate), .sel(ALUSrc), .out(ALU_in2));
     t07_muxForPC muxPC(.immediate(immediate), .ALUResult(ALUResult), .Op(Op), .PCJump(PCJumpDist));
     t07_MuxWD toReg(.control_in(regWriteSrc), .ALUResult(ALUResult), .PCResult(pc_out), .FPUResult(FPUResult), .memResult(intMem_out), .immResult(immediate), .writeData(regData_in));
-    t07_muxes addrMux(.a(pcData_out), .b(intMemAddr), .sel(busy), .out(externalMemAddr));
+    t07_muxes addrMux(.a(pcData_out), .b(intMemAddr), .sel(~addrControl), .out(externalMemAddr));
 
 endmodule

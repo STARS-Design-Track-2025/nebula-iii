@@ -19,6 +19,7 @@ module t07_ExternalRegister (
         next_ack_REG = 1'b0; // Default to not acknowledge
         next_read_data = registers[ReadRegister]; // Default read data from the register
         if (ri == 1'b1) begin // If read or idle signal is high
+            
             next_ack_REG = 1'b1; // Acknowledge the read operation
         end
         if (ack_REG) begin

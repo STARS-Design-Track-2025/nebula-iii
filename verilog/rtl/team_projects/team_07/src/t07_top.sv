@@ -13,6 +13,7 @@ logic [1:0] rwi_in; //read = 10, write = 01, idle = 00
 
 //outputs of MMIO
 logic [31:0] addrToSRAM, dataToSRAM; //addr_out in MMIO 
+logic fetchReadToWB; //makes sure fetch doesnt run twice
 
 //wishbone manager output to wishbone arbitrator
 logic [31:0] addrWMToAr, dataWMToAr;
