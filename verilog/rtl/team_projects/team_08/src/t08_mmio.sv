@@ -27,12 +27,11 @@ module t08_mmio (
     output logic        I2C_done_o,                //whether I2C data is ready to be read
     output logic        mmio_done_o,                //edge detector on mmio busy low
     //to SPI
-    output logic [31:0] spi_parameters_o,   //
-    output logic [7:0]  spi_command_o,
-    output logic [3:0]  spi_counter_o,
+    output logic [31:0] spi_data_o,
     output logic        spi_read_o,
     output logic        spi_write_o,
-    output logic        spi_enable_o,
+    output logic        spi_comm_enable_o,
+    output logic        spi_param_enable_o,
     //to Memory: data / wishbone
     output logic [31:0] mem_data_o,         //data to write to memory
     output logic [31:0] mem_address_o,      //address to put data
@@ -70,12 +69,11 @@ assign mmio_done_o = m1 & m2;
 
 always_comb begin
     mh_data_o = 0;                                             
-    spi_parameters_o = 0;     
-    spi_command_o = 0;
-    spi_counter_o = 0;
+    spi_data_o = 0;
     spi_read_o = 0;
     spi_write_o = 0;
-    spi_enable_o = 0;      
+    spi_comm_enable_o = 0;
+    spi_param_enable_o = 0;      
     mem_data_o = 0;     
     mem_address_o = 0;         
     //mem_write_o = 0;      
@@ -110,17 +108,16 @@ always_comb begin
 
     else
     if (write && !read) begin
-            if (address == SPI_ADDRESS_C) begin        
-                spi_command_o = mh_data_i[7:0];
-                spi_counter_o = mh_data_i[11:8];
-                spi_enable_o = 0;
-                spi_write_o = 0;
-            end else if (address == SPI_ADDRESS_P) begin
-                if (!spi_busy_i) begin 
-                    spi_parameters_o = mh_data_i;
+            if (address == SPI_ADDRESS_C) begin
+                if (!spi_busy_i) begin        
+                    spi_data_o = mh_data_i;
+                    spi_comm_enable_o = 1;
                     spi_write_o = 1;
-                    spi_enable_o = 1;
                 end
+            end else if (address == SPI_ADDRESS_P) begin
+                spi_data_o = mh_data_i;
+                spi_write_o = 1;
+                spi_param_enable_o = 1;
             end else if (address < 32'd2048) begin
                 if (!mem_busy_i) begin
                     mem_data_o = mh_data_i;     

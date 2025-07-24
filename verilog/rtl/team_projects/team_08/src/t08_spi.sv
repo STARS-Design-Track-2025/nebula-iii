@@ -106,7 +106,7 @@ always_comb begin
             end
         end
 
-        TRANSITION: begin
+        TRANSITION: begin 
             wrx = 0;
             rdx = 0;
             nextbusy = 1;

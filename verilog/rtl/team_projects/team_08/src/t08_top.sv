@@ -61,16 +61,15 @@ module t08_top(
     SPI
     */
 
-    logic [7:0] screen_command;             //Command sent to the display screen. 
-    logic [31:0] screen_command_parameters; //Parameters for the command sent to the display screen. 
-    logic SPI_enable, SPI_read, SPI_write;  //Enable, read, and write signals for SPI
+    logic [31:0] inputs;  
+    logic enable_parameter, enable_command; //enables for command + count or parameters in input
+    logic SPI_read, SPI_write;              //, read, and write signals for SPI
     logic SPI_busy;                         //Busy signal from SPI
 
     t08_spi SPI(
-        .command(screen_command), .parameters(screen_command_parameters), 
-        .enable(SPI_enable), .clk(clk), .nrst(nRst), 
+        .inputs(inputs),
+        .enable_parameter(enable_parameter), .enable_command(enable_command), .clk(clk), .nrst(nRst), 
         .readwrite(SPI_write), 
-        .counter(mmio_counter_to_spi), 
         .outputs(spi_outputs), 
         .wrx(spi_wrx), .rdx(spi_rdx), .csx(spi_csx), .dcx(spi_dcx), 
         .busy(SPI_busy)
@@ -100,9 +99,8 @@ module t08_top(
         
         .mh_data_o(CPU_data_in), .mmio_busy_o(mmio_busy), .I2C_done_o(mmio_done_from_I2C), .mmio_done_o(mmio_done_o),//To memory handler
         
-        .spi_parameters_o(screen_command_parameters), .spi_command_o(screen_command),      //To SPI
-        .spi_counter_o(mmio_counter_to_spi),
-        .spi_read_o(SPI_read), .spi_write_o(SPI_write), .spi_enable_o(SPI_enable),          
+        .spi_data_o(inputs),     //To SPI
+        .spi_read_o(SPI_read), .spi_write_o(SPI_write), .spi_comm_enable_o(enable_command), .spi_param_enable_o(enable_parameter),         
                    
         .mem_data_o(mmio_data_to_wb), .mem_address_o(mmio_address_to_wb),                  //To memory: data/wishbone    
         .mem_select_o(mmio_select_to_wb), 
