@@ -8,7 +8,7 @@
 
 */
 
- typedef enum logic [3:0] {  
+ typedef enum logic [2:0] {  
         FETCH = 0,
         F_WAIT = 1,
         DATA = 2,
@@ -93,13 +93,13 @@ module t07_cpu_memoryHandler (
                 begin 
                     fetchRead = '0; 
 
-                    if(busy_o_edge == 'b1 & memWrite == 1) begin            //STORE
+                    if(busy_o_edge == 'b1 & memWrite == 1) begin //STORE
                         state_n = D_WAIT; 
                         rwi = 'b01; 
                         freeze = 1; 
                         addrControl = 1; 
                         load_ct = 0;
-                    end else if (busy_o_edge == 1 & memRead == 1)  begin    //LOAD
+                    end else if (busy_o_edge == 1 & memRead == 1) begin //LOAD
                         state_n = D_WAIT; 
                         load_ct = load_ct + 1; 
                         rwi = 'b10; 
@@ -110,7 +110,7 @@ module t07_cpu_memoryHandler (
                     end 
                 end
              D_WAIT: 
-                 begin 
+                begin 
                     fetchRead = '0; 
                     addrControl = 1; 
                     freeze = 1;
