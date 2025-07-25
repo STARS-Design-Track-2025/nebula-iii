@@ -6,9 +6,9 @@ module t07_top_tb();
     t07_top top0(.clk(clk), .nrst(nrst), .FPUFlag(FPUFlag), .invalError(invalError));
 
     task reset(); begin
-        #1
+        #2
         nrst = ~nrst;        
-        #1
+        #2
         nrst = ~nrst;
     end
     endtask
