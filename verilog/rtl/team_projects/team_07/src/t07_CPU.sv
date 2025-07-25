@@ -66,6 +66,6 @@ module t07_CPU(
     t07_muxes muxImmReg(.a(dataRead2), .b(immediate), .sel(ALUSrc), .out(ALU_in2));
     t07_muxForPC muxPC(.immediate(immediate), .ALUResult(ALUResult), .Op(Op), .PCJump(PCJumpDist));
     t07_MuxWD toReg(.control_in(regWriteSrc), .ALUResult(ALUResult), .PCResult(pc_out), .FPUResult(FPUResult), .memResult(intMem_out), .immResult(immediate), .writeData(regData_in));
-    t07_muxes addrMux(.a(intMemAddr), .b(pcData_out), .sel(~addrControl), .out(externalMemAddr));
+    t07_muxes addrMux(.a(intMemAddr), .b(pcData_out), .sel(addrControl), .out(externalMemAddr));
 
 endmodule
