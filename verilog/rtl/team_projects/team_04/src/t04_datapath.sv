@@ -125,6 +125,7 @@ t04_PC pc_module(
     .rst(rst),
     .PC_Jalr(PC_Jalr),
     .Jalr(Jalr),
+    .i_ack(i_ack),
     .Jal(Jal),
     .Branch(BranchConditionFlag),
     .Freeze(main_freeze),

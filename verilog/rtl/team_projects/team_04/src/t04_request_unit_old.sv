@@ -35,6 +35,8 @@ module t04_request_unit_old(
     logic ack_mul_reg2;
     logic MUL_EN1;
     logic zero_multi1;
+    logic i_ack1;
+    logic i_ack2;
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -47,6 +49,8 @@ module t04_request_unit_old(
             ack_mul_reg2 <= 0;
             MUL_EN1 <= 0;
             zero_multi1 <= 0;
+            i_ack1 <= 0;
+            i_ack2 <= 0;
         end 
         else begin
             latched_instruction <= n_latched_instruction;
@@ -58,6 +62,8 @@ module t04_request_unit_old(
             ack_mul_reg2 <= ack_mul_reg;
             MUL_EN1 <= MUL_EN;
             zero_multi1 <= zero_multi;
+            i_ack1 <= i_ack;
+            i_ack2 <= i_ack1;
         end
     end
     //problem of repeating an instruction sometimes after a multiply
@@ -84,7 +90,12 @@ module t04_request_unit_old(
                 final_address = PC_Jalr - 32'd4; 
             end
             else begin
-                final_address = (((MemRead || MemWrite)) && (!(n_memread2 || n_memwrite2) || instruction_out != latched_instruction)) ? mem_address : PC;
+                if (i_ack2 && !i_ack) begin
+                    final_address = PC - 32'd4;
+                end
+                else begin
+                    final_address = (((MemRead || MemWrite)) && (!(n_memread2 || n_memwrite2) || instruction_out != latched_instruction)) ? mem_address : PC;
+                end
             end
         end
         mem_store = stored_data;
