@@ -12,6 +12,8 @@ module t08_I2C_and_interrupt_tb;
     logic [31:0] data_out;
     logic done;
 
+    logic test = 0;
+
     t08_I2C_and_interrupt I2C(.clk(clk), .nRst(nrst), .SDAin(SDAin), .SDAout(SDAout), .inter(inter), .scl(scl), .data_out(data_out), .done(done));
 
     task reset();
@@ -36,12 +38,10 @@ module t08_I2C_and_interrupt_tb;
     endtask
 
     task send_data_frame(logic [7:0] data);
-        
-        repeat (3) @ (negedge clk);
 
-        for (int i = 0; i < 8; i++) begin
+        for (int i = 7; i >= 0; i--) begin
 
-            SDAin = data[i]; repeat (6) @ (negedge clk);
+            SDAin = data[i]; @ (negedge scl);
 
         end
 
@@ -58,31 +58,53 @@ module t08_I2C_and_interrupt_tb;
 
         interrupt();
 
-        repeat (90) @ (negedge clk);
+        repeat (9) @ (negedge scl); repeat (6) @ (negedge clk);
 
+        //Acknowledge bit after slave address in XH
         acknowledge();
 
-        repeat (50) @ (negedge clk);
-        repeat (20) @ (negedge scl);
+        repeat (10) @ (negedge scl); 
+
+        //Acknowledge bit after data address in XL
+        acknowledge();
+
+        repeat (14) @ (negedge scl); 
+
+        //Acknowledge bit after slave address 2 in XL (ready for data frame)
+        acknowledge();
+
+        @ (negedge scl); @ (posedge scl);
+
+        test = 1;
+
+        send_data_frame(8'b11011001);
+
+        repeat (80) @ (negedge clk);
         @ (negedge clk);
+  
+        // acknowledge();
+        
+        // // repeat (80) @ (negedge clk);
+        // // @ (negedge clk);
 
-        acknowledge();
+        // // acknowledge();
 
-        send_data_frame(8'h3A);
+        // // repeat (80) @ (negedge clk);
+        // // @ (negedge clk);
 
-        repeat (50) @ (negedge clk);
-        repeat (30) @ (negedge scl);
-        @ (negedge clk);
+        // // acknowledge();
 
-        acknowledge();
+        // // repeat (80) @ (negedge clk);
+        // // @ (negedge clk);
 
-        repeat (50) @ (negedge clk);
-        repeat (30) @ (negedge scl);
-        @ (negedge clk);
+        // // acknowledge();
 
-        acknowledge();
+        // // repeat (80) @ (negedge clk);
+        // // @ (negedge clk);
 
-        repeat (150) @ (negedge clk);
+        // // acknowledge();
+
+        // repeat (150) @ (negedge clk);
 
         #1 $finish;
 
