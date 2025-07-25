@@ -33,14 +33,14 @@ module t07_cpu_memoryHandler (
     output logic [31:0] ExtAddress, // Address to write to external memory   
     output logic [31:0] dataToCPU,  // Data to the register
     output logic freeze,            // Freeze signal to pause CPU operations during memory access
-    output logic [1:0] rwi,          // Read/Write/Idle control signal for external memory operations
+    output logic [1:0] rwi,          // read - 01, write - 10, idle - 00, fetch -11 
     output logic fetchRead,
     output state_t state,
     output logic addrControl // control for address mux, 0 when fetch, 1 when l/s
 
 );
     //edge detector
-    logic load_ct;
+    // logic load_ct;
     logic prev_busy_o;
     logic busy_o_edge;
     state_t state_n;
@@ -66,35 +66,75 @@ module t07_cpu_memoryHandler (
 
     always_comb begin
         case(state) 
-            FETCH: begin addrControl = '0; fetchRead = '1; load_ct = '0; rwi = 'b00; //read - ftech instr
-                if(busy_o_edge == 'b1) begin state_n = F_WAIT; end 
-                else begin state_n = FETCH; end end
-            F_WAIT: begin addrControl = 0; fetchRead = '1; load_ct = '0; rwi = 'b00;
-                if(busy_o_edge == 'b1) begin state_n = DATA; end 
-                else begin state_n = F_WAIT; end end
-            DATA: begin addrControl = 1; fetchRead = '0; 
-                if(busy_o_edge == 'b1 & memWrite == 1) /*store*/ 
-                    begin state_n = D_WAIT; rwi = 'b01; load_ct = '0; end 
-                else if (busy_o_edge == 1 & memRead == 1) /*load*/ 
-                    begin state_n = D_WAIT; load_ct = load_ct + 1; rwi = 'b10; end 
-                else begin state_n = FETCH; rwi = 'b00; end 
+            FETCH: 
+                begin 
+                    addrControl = '0; 
+                    fetchRead = '1; 
+                    // load_ct = '0; 
+                    rwi = 'b11; 
+                    freeze = 0; //fetch instr 
+                    state_n = F_WAIT; 
                 end
-            D_WAIT: begin fetchRead = '0; addrControl = 1;
-                if(load_ct == 0) begin state_n = FETCH; end
-                else if (load_ct == 1) begin state_n = DATA; end
-                else state_n = FETCH; end
+            F_WAIT: 
+                begin 
+                    addrControl = 0; 
+                    fetchRead = '0; 
+                    // load_ct = '0; 
+                    rwi = 'b00; 
+                    freeze = 1;
+                    
+                    if(busy_o_edge == 'b1) begin 
+                        state_n = DATA; 
+                    end else begin
+                        state_n = F_WAIT; 
+                    end 
+                end
+            DATA: 
+                begin 
+                    fetchRead = '0; 
+
+                    if(busy_o_edge == 'b1 & memWrite == 1) begin            //STORE
+                        state_n = D_WAIT; 
+                        rwi = 'b01; 
+                        // load_ct = '0; 
+                        freeze = 1; 
+                        addrControl = 1; 
+                    end else if (busy_o_edge == 1 & memRead == 1)  begin    //LOAD
+                        state_n = D_WAIT; 
+                        // load_ct = load_ct + 1; //generates combinational loop, won't TB, TODO: put it in the ff block
+                        rwi = 'b10; 
+                        freeze = 1; 
+                        addrControl = 1; 
+                    end else /*if (busy_o_edge == 1)*/ begin 
+                        state_n = FETCH; 
+                    end 
+                end
+            // D_WAIT: 
+            //     begin 
+            //         fetchRead = '0; 
+            //         addrControl = 1; 
+            //         freeze = 1;
+            //         if(load_ct == 0) begin 
+            //             state_n = FETCH; 
+            //         end else if (load_ct == 1) begin 
+            //             state_n = DATA; 
+            //         end else begin
+            //             state_n = FETCH;
+            //         end
+            //     end
+            default:
+            freeze = 1;
         endcase
     end
 
 always_comb begin
     if (busy) begin
-        freeze = 1;
         write_data = 32'b0; // No data to write when busy
         ExtAddress = 32'b0; // No address to write to when busy
         dataToCPU = 32'b0; // No data to return to CPU when busy
         //rwi = 2'b00; // Idle state when busy
     end else begin
-        freeze = 0;
+        //freeze = 0;
     if(memWrite) begin 
         dataToCPU = 32'b0; // No data to return to CPU on write operation
         //rwi = 2'b01; // Write operation
@@ -143,7 +183,7 @@ always_comb begin
     end else begin
         //rwi = 2'b00; // Idle state
         write_data = 32'b0; // No data to write
-        ExtAddress = 32'b0; // No address to write to
+        ExtAddress = ALU_address; 
         dataToCPU = 32'b0; // No data to return to CPU
     end
     end
