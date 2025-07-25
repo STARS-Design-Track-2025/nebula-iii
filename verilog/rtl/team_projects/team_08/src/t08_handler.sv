@@ -139,7 +139,7 @@ always_comb begin
                         5: begin //LHU
                             nextregs = {16'b0, frommem[15:0]}; 
                         end
-                        default: begin  //LW or LUI;
+                        default: begin  //LW ;
                             nextregs = frommem; 
                         end
                     endcase

@@ -50,7 +50,8 @@ module t08_alu(
         BGE = 6'd31,
         BLTU = 6'd32,
         BGEU = 6'd33,
-
+        
+        LUI = 6'd34,
         AUIPC = 6'd35, // U type
 
         JALR = 6'd37
@@ -108,6 +109,8 @@ module t08_alu(
             BLT:    branch =     ($signed(in1) < $signed(in2));
             BLTU:   branch =     (in1 < in2);
             BNE:    branch =     (in1 != in2);
+
+            LUI:            data_out = immediate;
 
             default: begin
                 data_out = 32'b0;
