@@ -98,27 +98,56 @@ module t04_screensignalLogic (
           2: begin nextDcx = 0; end
           3: begin nextWrx = 0; nextData = swrstCommand; end 
           4: begin nextWrx = 1; end
-          5: begin nextWrx = 0; nextData = sleepoCommand; end
-          6: begin nextWrx = 1; end
-          7: begin nextWrx = 0; nextData = rgbCommand; end
-          8: begin nextWrx = 1; end
-          9: begin nextDcx = 1; end
-          10: begin nextWrx = 0; nextData = rgbParam; end
-          11: begin nextWrx = 1; end
-          12: begin nextDcx = 0; end
-          13: begin nextWrx = 0; nextData = oriCommand; end
-          14: begin nextWrx = 1; end
-          15: begin nextDcx = 1; end
-          16: begin nextWrx = 0; nextData = oriParam; end
-          17: begin nextWrx = 1; end
-          18: begin nextDcx = 0; end
-          19: begin nextWrx = 0; nextData = disponCommand; end
-          20: begin nextWrx = 1; end
-          21: begin nextCsx = 1; end
-          22: begin ack = 1; end
-          23: begin ack = 0; end 
+          20010: begin nextWrx = 0; nextData = sleepoCommand; end
+          20011: begin nextWrx = 1; end
+          1200012: begin nextWrx = 0; nextData = rgbCommand; end
+          1200013: begin nextWrx = 1; end
+          1200014: begin nextDcx = 1; end
+          1200015: begin nextWrx = 0; nextData = rgbParam; end
+          1200016: begin nextWrx = 1; end
+          1200017: begin nextDcx = 0; end
+          1200018: begin nextWrx = 0; nextData = oriCommand; end
+          1200019: begin nextWrx = 1; end
+          1200020: begin nextDcx = 1; end
+          1200021: begin nextWrx = 0; nextData = oriParam; end
+          1200022: begin nextWrx = 1; end
+          1200023: begin nextDcx = 0; end
+          1200024: begin nextWrx = 0; nextData = disponCommand; end
+          1200025: begin nextWrx = 1; end
+          1200026: begin nextCsx = 1; end
+          1200027: begin ack = 1; end
+          1200028: begin ack = 0; end 
         endcase
       end
+
+      // 32'b10000000: begin //reseton
+      //   case (ct) 
+      //     0: begin nextCsx = 1; nextWrx = 1; nextDcx = 1; nextData = 8'b0; end 
+      //     1: begin nextCsx = 0; end
+      //     2: begin nextDcx = 0; end
+      //     3: begin nextWrx = 0; nextData = swrstCommand; end 
+      //     4: begin nextWrx = 1; end
+      //     5: begin nextWrx = 0; nextData = sleepoCommand; end
+      //     6: begin nextWrx = 1; end
+      //     7: begin nextWrx = 0; nextData = rgbCommand; end
+      //     8: begin nextWrx = 1; end
+      //     9: begin nextDcx = 1; end
+      //     10: begin nextWrx = 0; nextData = rgbParam; end
+      //     11: begin nextWrx = 1; end
+      //     12: begin nextDcx = 0; end
+      //     13: begin nextWrx = 0; nextData = oriCommand; end
+      //     14: begin nextWrx = 1; end
+      //     15: begin nextDcx = 1; end
+      //     16: begin nextWrx = 0; nextData = oriParam; end
+      //     17: begin nextWrx = 1; end
+      //     18: begin nextDcx = 0; end
+      //     19: begin nextWrx = 0; nextData = disponCommand; end
+      //     20: begin nextWrx = 1; end
+      //     21: begin nextCsx = 1; end
+      //     22: begin ack = 1; end
+      //     23: begin ack = 0; end 
+      //   endcase
+      // end
 
       32'b100000: begin //display off
         case (ct)
@@ -135,7 +164,7 @@ module t04_screensignalLogic (
         endcase
       end
 
-      32'b1000000: begin //display on
+      32'b01000000: begin //display on
         case (ct)
           0: begin nextCsx = 1; nextWrx = 1; nextDcx = 1; nextData = 8'b0; end
           1: begin nextCsx = 0; end
