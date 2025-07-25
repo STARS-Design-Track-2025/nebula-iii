@@ -46,13 +46,13 @@ Setup
 
 setup:
 	/*Initializing fixed register values*/
-	addi x22, x0, 0x2A
-	addi x23, x0, 0x2B
-    addi x24, x0, 0x2C
-    addi x25, x0, 0x01
-	lui x30, 0xE1
-	addi x30, x0, 0x913
-	lui x31, 0x1D
+	addi x22, x0, 0x2A  //column address set command 
+	addi x23, x0, 0x2B  //page address set command
+    addi x24, x0, 0x2C  //memory write command
+    addi x25, x0, 0x01  //display screen software reset command
+	lui x30, 0xE1       
+	addi x30, x0, 0x913 //address for I2C data
+	lui x31, 0x1D       
 	addi x31, x0, 0x97C
 
 	/*Entering main loop*/

@@ -9,10 +9,11 @@ module t08_registers(
 
     input logic en_read_1, en_read_2, en_write, //Enable signals for reading from the registers and writing
 
-    input logic busy, //Disables all reading and writing
+    input logic enable, //enables all reading and writing
     
     output logic [31:0] data_out_r1, data_out_r2 //Output when registers are read from
 );
+
 
     logic [31:0] data_in;
     //logic [31:0] data_out_r1_n, data_out_r2_n;
@@ -77,7 +78,7 @@ module t08_registers(
 
         end 
 
-        if (en_write && !busy) begin //Write to a register
+        if (en_write &&  enable) begin //Write to a register
 
             data_n[address_rd] = data_in;
 
