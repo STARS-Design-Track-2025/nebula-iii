@@ -19,7 +19,7 @@ logic [7:0] currentout, nextout, command, nextcommand;
 logic [1:0] state, nextstate; 
 logic nextdcx, nextbusy, nextcsx;
 logic [3:0] count = 0, percount, nextpercount,  nextcount, counter, nextcounter;
-logic [23:0] delay = 24'd4800000;
+logic [23:0] delay = 24'd480;
 logic [23:0] timem, nexttimem;
 registering register, nextregister;
 assign outputs = currentout;
@@ -132,8 +132,8 @@ always_comb begin
                         8'b00111010: begin nextpercount = 1; end //pixel format set;
                         8'b00101001: begin nextpercount = 0; end //display on;
                         8'b0:        begin nextpercount = 0; end //no operation
-                        8'b00101100: begin nextpercount = 3; end //mem write
-                        8'b00101110: begin nextpercount = 3; end //mem read
+                        8'b00101100: begin nextpercount = 2; end //mem write
+                        8'b00101110: begin nextpercount = 2; end //mem read
                         8'h10:       begin nextpercount = 0; end // sleep mode on, 5 ms delay
                         8'h11:       begin nextpercount = 0; end //sleep out
                         default:     begin nextpercount = counter; end 
@@ -155,6 +155,7 @@ always_comb begin
                         case(command)
                             8'h01, 8'h10, 8'h11: begin
                                 nexttimem = timem + 1;
+                                nextbusy = 1;
                                 if (timem == delay) begin
                                     nexttimem = 0;
                                     nextstate = 3;

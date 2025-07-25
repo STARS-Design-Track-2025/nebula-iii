@@ -44,8 +44,8 @@ localparam [31:0] SPI_ADDRESS_C = 32'd121212; //SPI write command + counter
 localparam [31:0] SPI_ADDRESS_P = 32'd333333; //SPI write parameter
 localparam [31:0] I2C_ADDRESS = 32'd923923;
 
-assign mmio_busy_o = mem_busy_i;
-// assign mmio_busy_o = spi_busy_i | mem_busy_i | !(I2C_done_i); 
+//assign mmio_busy_o = mem_busy_i;
+assign mmio_busy_o = spi_busy_i | mem_busy_i | !(I2C_done_i); 
 assign I2C_done_o = I2C_done_i;
 assign mem_select_o = 4'b1111;
 assign mem_read_o = wb_read;
@@ -65,7 +65,7 @@ always_ff @(posedge clk, negedge nRst) begin
     end
 end
 
-assign mmio_done_o = m1 & m2;
+assign mmio_done_o = (!spi_busy_i)&(m1 & m2);
 
 always_comb begin
     mh_data_o = 0;                                             

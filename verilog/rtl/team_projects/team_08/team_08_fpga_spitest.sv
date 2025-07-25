@@ -16,18 +16,21 @@ module top (
   output logic txclk, rxclk,
   input  logic txready, rxready
 );
+logic [7:0] outputs;
+logic wrx,rdx,csx,dcx;
+t08_top topmodule(
+  .clk(hwclk), .nRst(reset), .en(1'b1), 
+  .touchscreen_interrupt(0), .SDAin(0), .SDAout(), .SDAoeb(), .touchscreen_scl(),
+  .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx));
 
-logic inputs = 
+ assign {right[5],ss4[4],left[0], ss1[5], ss1[4], left[1], ss4[5] , ss4[1]}= outputs;
+//R1,R3,R5, L1, L3, R2, R4, R6
 
-    t08_spi SPI(
-        .inputs(inputs),
-        .enable_parameter(enable_parameter), .enable_command(enable_command), .clk(clk), .nrst(nRst), 
-        .readwrite(SPI_write), 
-        .outputs(spi_outputs), 
-        .wrx(spi_wrx), .rdx(spi_rdx), .csx(spi_csx), .dcx(spi_dcx), 
-        .busy(SPI_busy)
-    );
-
+assign ss5[2] = wrx; //T2
+assign ss5[1] = rdx; //T1
+assign ss4[3] = csx; //T3
+assign ss4[6] = dcx; //T5
+endmodule
   /*Clock divider (12MHz to 2Hz)*/
  
   // GPIOs
@@ -122,4 +125,4 @@ logic inputs =
   //     // .wb_write_i(WRITE_I), .wb_read_i(READ_I)
   // );
 
-endmodule
+
