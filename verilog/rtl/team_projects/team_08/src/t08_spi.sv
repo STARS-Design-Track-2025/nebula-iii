@@ -132,8 +132,8 @@ always_comb begin
                         8'b00111010: begin nextpercount = 1; end //pixel format set;
                         8'b00101001: begin nextpercount = 0; end //display on;
                         8'b0:        begin nextpercount = 0; end //no operation
-                        8'b00101100: begin nextpercount = 3; end //mem write
-                        8'b00101110: begin nextpercount = 3; end //mem read
+                        8'b00101100: begin nextpercount = 2; end //mem write
+                        8'b00101110: begin nextpercount = 2; end //mem read
                         8'h10:       begin nextpercount = 0; end // sleep mode on, 5 ms delay
                         8'h11:       begin nextpercount = 0; end //sleep out
                         default:     begin nextpercount = counter; end 
