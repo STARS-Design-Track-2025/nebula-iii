@@ -1,30 +1,23 @@
 `timescale 1ns/1ps
 
-module t04_top_tb;
+module tb;
+  logic hwclk, reset;
+  logic [20:0] pb;
+  logic [7:0] left, right,
+         ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0;
+  logic red, green, blue;
 
-    logic clk, rst;
-    logic [3:0] row;
-
-    logic screenCsx;
-    logic screenDcx;
-    logic screenWrx;
-    logic [7:0] screenData;
+  // UART ports
+  logic [7:0] txdata;
+  logic [7:0] rxdata;
+  logic txclk, rxclk;
+  logic txready, rxready;
 
     // DUT instance (no .busy connection here)
-    t04_top dut (
-        .clk(clk),
-        .rst(rst),
-        .row(row),
-        .screenCsx(screenCsx),
-        .screenDcx(screenDcx),
-        .screenWrx(screenWrx),
-        .screenData(screenData)
-    );
-
+    t04_top1 dut (.*);
 
     // Clock generation
-    always #10 clk = ~clk;
-
+    always #10 hwclk = ~hwclk;
 
     // === Force RAM output into MMIO interface dynamically ===
     // always @(posedge clk) begin
@@ -68,38 +61,22 @@ module t04_top_tb;
     // === Initialize test ===
     initial begin
         //force dut.mmio.RAM_en = 0;
-        force dut.row = 4'b1000;
+        force dut.mmio.key_data = 0;
         //x2 is multiplier
         //x1 is multicand
         // force dut.datapath.rf.registers[1] = 0;
         // force dut.datapath.rf.registers[2] = 0;        
-        $dumpfile("t04_top.vcd");
-        $dumpvars(0, t04_top_tb);
+        $dumpfile("t04_top1.vcd");
+        $dumpvars(0, tb);
 
-        clk = 0;
-        rst = 1;
-        row = 0;
-
+        hwclk = 0;
+        reset = 1;
 
         // === Release reset ===
-        #15 rst = 0;
+        #15 reset = 0;
         #1020;
-        #1220;
-        #100000;
-        #10000;
-
-       $display("\nFINAL REGISTER VALUES HEX");
-        $display("----------------------");
-        $display("x1  = %0h ", dut.datapath.rf.registers[1]);   // address of data start
-        $display("x2  = %0h ", dut.datapath.rf.registers[2]);   // loaded from 0x24
-        $display("x3  = %0h ", dut.datapath.rf.registers[3]);   // loaded from 0x28
-        $display("x4  = %0h ", dut.datapath.rf.registers[4]);   // loaded from 0x2C
-        $display("x5  = %0h ", dut.datapath.rf.registers[5]);   // hardcoded value (set manually in CPU or TB)
-        $display("x10 = %0h ", dut.datapath.rf.registers[10]);  // x2 - x3
-        $display("x11 = %0h ", dut.datapath.rf.registers[11]);  // x4 & x5
-        $display("x12 = %0h ", dut.datapath.rf.registers[12]);  // x5 | x2
-        $display("x13 = %0h ", dut.datapath.rf.registers[13]);  // x2 < x4 (signed)
-        $display("x14 = %0h ", dut.datapath.rf.registers[14]);  // x3 << (x4 & 0x1F)
+        #100010000;
+        //#100000000;
         $finish;
     end
 

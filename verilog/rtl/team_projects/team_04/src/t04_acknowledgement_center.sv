@@ -23,11 +23,12 @@ logic DATA_STORING1;
 logic DATA_STORING2;
 
 always_comb begin
-    i_ack = DATA_STORING;
-    if (DATA_STORING || DATA_STORING1) begin //AS OF NOW Ram_En is hardwired to be 1. || DATA_STORING2
+    i_ack = DATA_STORING
+    //if (DATA_STORING || DATA_STORING1 || (DATA_STORING2)) begin                  //AS OF NOW Ram_En is hardwired to be 1. || DATA_STORING2
+    if (DATA_STORING || DATA_STORING1) begin
         d_ack = (display_ack);
     end
-    else if (Ram_En && !DATA_STORING1) begin
+    else if (Ram_En && !DATA_STORING1) begin //adrian added the !WEN
         d_ack = (~busy);
     end
     else begin

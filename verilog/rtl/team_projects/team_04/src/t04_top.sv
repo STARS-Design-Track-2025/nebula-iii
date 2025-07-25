@@ -12,13 +12,16 @@ module t04_top(
     output  logic screenDcx,
     output  logic screenWrx,
     output  logic [7:0] screenData,
-    output  logic checkX, checkY, checkC
+    output  logic checkX, checkY, checkC,
+    output  logic [7:0] pc,
+    output  logic [1:0] acks,
+    output  logic clk_meas
 );
 
     // === Internal wires ===
     logic [31:0] instruction;
     logic [31:0] memload;
-
+  
     logic [31:0] final_address;
     logic [31:0] mem_store;
 
@@ -26,6 +29,7 @@ module t04_top(
     logic MemRead, MemWrite;
 
     logic pulse_e;
+    assign pc = final_address[7:0];
     //logic [4:0] button;
     logic [1:0] app;
     logic rising;
@@ -34,7 +38,26 @@ module t04_top(
     logic [31:0] mem_store_display;
     logic WEN;
     logic d_ack_display;
+    logic [9:0] cnt, ncnt;
+  assign acks = {d_ack, d_ack_display};
 
+  always_ff @(posedge clk, posedge rst) begin
+    if(rst) begin
+      cnt <= '0;
+    end else begin
+      cnt <= ncnt;
+    end
+  end
+
+  always_comb begin
+    if(cnt == 1000) begin
+      ncnt = 0;
+    end else begin
+      ncnt = cnt + 1;
+    end
+  end
+
+  assign clk_meas = (cnt == 1000) ? 1 : 0;
 
     // === Instantiate Datapath ===
     t04_datapath datapath (

@@ -61,10 +61,13 @@ module top (
   .screenCsx(right[0]),
   .screenDcx(right[1]),
   .screenWrx(right[2]),
-  .screenData(left[7:0]),
+  .screenData(left),
   .checkC(red),
   .checkX(green),
-  .checkY(blue)
+  .checkY(blue),
+  .pc(ss7),
+  .acks(ss6[1:0]),
+  .clk_meas(right[4])
 );
 
 // // === Internal signals for datapath-MMIO connections ===
