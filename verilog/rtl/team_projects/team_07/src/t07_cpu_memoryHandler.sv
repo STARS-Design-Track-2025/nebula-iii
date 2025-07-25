@@ -67,8 +67,7 @@ module t07_cpu_memoryHandler (
     always_comb begin
         case(state) 
             FETCH: 
-                begin 
-                    addrControl = 1; //fetch addr
+                begin   
                     fetchRead = '1; 
                     load_ct = '0; 
                     rwi = 'b11; 
@@ -77,12 +76,10 @@ module t07_cpu_memoryHandler (
                 end
             F_WAIT: 
                 begin 
-                    addrControl = 1; //fetch addr
                     fetchRead = '0; 
                     load_ct = '0; 
                     rwi = 'b00; 
                     freeze = 1;
-                    
                     if(busy_o_edge == 'b1) begin 
                         state_n = DATA; 
                     end else begin
@@ -92,8 +89,6 @@ module t07_cpu_memoryHandler (
             DATA: 
                 begin 
                     fetchRead = '0; 
-                    addrControl = 0; //data s/l addr 
-
                     if(busy_o_edge == 'b1 & memWrite == 1) begin //STORE
                         state_n = D_WAIT; 
                         rwi = 'b01; 
@@ -111,7 +106,6 @@ module t07_cpu_memoryHandler (
              D_WAIT: 
                 begin 
                     fetchRead = '0; 
-                    addrControl = 0; //addr s/l data
                     freeze = 1;
                     if(load_ct == 0) begin 
                         state_n = FETCH; 
@@ -135,6 +129,7 @@ always_comb begin
     end else begin
         //freeze = 0;
     if(memWrite) begin 
+        addrControl = 0;
         dataToCPU = 32'b0; // No data to return to CPU on write operation
         //rwi = 2'b01; // Write operation
         if(memSource) begin
@@ -163,6 +158,7 @@ always_comb begin
             end 
         end 
     end else if(memRead) begin
+        addrControl = 0;
         //rwi = 2'b10; //Read operation
         ExtAddress = ALU_address; // Use ALU address for memory operations
         write_data = 32'b0; // No data to write in read operation
@@ -181,6 +177,7 @@ always_comb begin
         end
     end else begin
         //rwi = 2'b00; // Idle state
+        addrControl = 1; //fetch addr
         write_data = 32'b0; // No data to write
         ExtAddress = ALU_address; 
         dataToCPU = 32'b0; // No data to return to CPU
