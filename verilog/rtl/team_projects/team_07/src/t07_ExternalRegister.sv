@@ -1,5 +1,8 @@
 //External Register Module
 // This module is used to interface with the external registers, allowing for read and write operations.
+
+`timescale 1ns/1ps
+
 module t07_ExternalRegister (
     input logic clk,
     input logic nrst,
@@ -12,26 +15,30 @@ module t07_ExternalRegister (
 
 );
     logic [31:0] registers [31:0]; // 32 registers, each 32 bits wide
-    logic next_ack_REG;  // Next acknowledge signal to the memory handler
+    //logic next_ack_REG;  // Next acknowledge signal to the memory handler
     logic [31:0] next_read_data; // Next write data to the register
     
-    logic pre_ri, ri_edge;
+    // edge detector
+    logic ri_first, ri_f_n, ri_second, ri_s_n;
     always_ff @(negedge nrst, posedge clk) begin
         if (!nrst) begin 
-            pre_ri <= '0;
+            ri_first <= 0;
+            ri_second <= 0;
         end else begin
-            pre_ri <= ri;
+            ri_first <= ri_f_n;
+            ri_second <= ri_s_n;
         end
     end
 
-    assign ri_edge = (!ri && pre_ri);
+    always_comb begin
+        ri_f_n = ri;
+        ri_s_n = ri_first;
+    end
+
+    assign ack_REG = (ri_first && !ri_second);
 
     always_comb begin
-        ack_REG = 1'b0; // Default to not acknowledge
         next_read_data = registers[ReadRegister]; // Default read data from the register
-        if (ri_edge) begin // If read or idle signal is high 
-            ack_REG = 1'b1; // Acknowledge the read operation
-        end
     end
 
     // Write logic

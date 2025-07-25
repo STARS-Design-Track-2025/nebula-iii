@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module t07_MMIO (
 //inputs
     // inputs from internal memory
