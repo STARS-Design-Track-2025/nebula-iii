@@ -68,7 +68,7 @@ module t07_cpu_memoryHandler (
         case(state) 
             FETCH: 
                 begin 
-                    addrControl = '0; 
+                    addrControl = 1; //fetch addr
                     fetchRead = '1; 
                     load_ct = '0; 
                     rwi = 'b11; 
@@ -77,7 +77,7 @@ module t07_cpu_memoryHandler (
                 end
             F_WAIT: 
                 begin 
-                    addrControl = 0; 
+                    addrControl = 1; //fetch addr
                     fetchRead = '0; 
                     load_ct = '0; 
                     rwi = 'b00; 
@@ -92,19 +92,18 @@ module t07_cpu_memoryHandler (
             DATA: 
                 begin 
                     fetchRead = '0; 
+                    addrControl = 0; //data s/l addr 
 
                     if(busy_o_edge == 'b1 & memWrite == 1) begin //STORE
                         state_n = D_WAIT; 
                         rwi = 'b01; 
                         freeze = 1; 
-                        addrControl = 1; 
                         load_ct = 0;
                     end else if (busy_o_edge == 1 & memRead == 1) begin //LOAD
                         state_n = D_WAIT; 
                         load_ct = load_ct + 1; 
                         rwi = 'b10; 
                         freeze = 1; 
-                        addrControl = 1; 
                     end else begin 
                         state_n = FETCH; 
                     end 
@@ -112,7 +111,7 @@ module t07_cpu_memoryHandler (
              D_WAIT: 
                 begin 
                     fetchRead = '0; 
-                    addrControl = 1; 
+                    addrControl = 0; //addr s/l data
                     freeze = 1;
                     if(load_ct == 0) begin 
                         state_n = FETCH; 
