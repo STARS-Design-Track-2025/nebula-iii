@@ -155,6 +155,7 @@ always_comb begin
                         case(command)
                             8'h01, 8'h10, 8'h11: begin
                                 nexttimem = timem + 1;
+                                nextbusy = 1;
                                 if (timem == delay) begin
                                     nexttimem = 0;
                                     nextstate = 3;
