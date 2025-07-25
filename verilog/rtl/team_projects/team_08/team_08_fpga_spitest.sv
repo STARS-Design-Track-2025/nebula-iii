@@ -19,7 +19,7 @@ module top (
 logic [7:0] outputs;
 logic wrx,rdx,csx,dcx;
 t08_top topmodule(
-  .clk(hwclk), .nRst(reset), .en(1'b1), 
+  .clk(hwclk), .nRst(pb[19]), .en(1'b1), 
   .touchscreen_interrupt(0), .SDAin(0), .SDAout(), .SDAoeb(), .touchscreen_scl(),
   .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx));
 

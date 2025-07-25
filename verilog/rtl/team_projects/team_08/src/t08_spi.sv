@@ -22,6 +22,8 @@ logic [3:0] count = 0, percount, nextpercount,  nextcount, counter, nextcounter;
 logic [23:0] delay = 24'd480;
 logic [23:0] timem, nexttimem;
 registering register, nextregister;
+logic nextcontrol, control;
+
 assign outputs = currentout;
 
 always_ff@(posedge clk, negedge nrst) begin
@@ -38,6 +40,7 @@ always_ff@(posedge clk, negedge nrst) begin
         parameters <= '0;
         counter <= '0;
         timem <= 0;
+        control <= nextcontrol;
     end
     else begin
         currentout <= nextout;
@@ -53,6 +56,7 @@ always_ff@(posedge clk, negedge nrst) begin
         counter <= nextcounter;
         parameters <=nextparameters;
         timem <= nexttimem;
+        control <= nextcontrol;
     end
     // else begin
     //     csx <= 1;
@@ -64,6 +68,7 @@ always_ff@(posedge clk, negedge nrst) begin
 end
 
 always_comb begin
+    nextcontrol = control;
     wrx = 0;
     rdx = 0;
     nextbusy = busy;
@@ -79,6 +84,7 @@ always_comb begin
     nextcounter = counter;
     nextstate = state;
     nexttimem = timem;
+
 
     case(register)
         GETCOMMAND: begin
@@ -154,11 +160,14 @@ always_comb begin
                         nextcsx = 1;
                         case(command)
                             8'h01, 8'h10, 8'h11: begin
+                                nextcontrol = 1;
                                 nexttimem = timem + 1;
                                 nextbusy = 1;
+                                wrx = 0;
                                 if (timem == delay) begin
                                     nexttimem = 0;
                                     nextstate = 3;
+                                    nextcontrol = 0;
                                 end
                                 else nextstate = 1;
                             end
@@ -166,13 +175,15 @@ always_comb begin
 
                      end
                     else begin nextstate = 2; end
-                    if (readwrite) wrx = 1; else rdx = 1;
+                    if ((readwrite)) wrx = 1;
+                    else if (!readwrite) rdx = 1;
                     nextout = paroutput[31:24];
                 end
 
 
                 2: begin //param
                 //reading parameters from left to right. 
+                    
                     nextparoutput = {paroutput[23:0], 8'b0};
                     nextcount = count + 1;
                     nextdcx = 1;
@@ -188,6 +199,7 @@ always_comb begin
                     nextcsx = 1;
                     nextdcx = 0;
                     nextbusy = 0;
+                    
                     
                 end
 

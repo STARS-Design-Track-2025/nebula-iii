@@ -28,8 +28,8 @@ module t08_mmio (
     output logic        mmio_done_o,                //edge detector on mmio busy low
     //to SPI
     output logic [31:0] spi_data_o,
-    output logic        spi_read_o,
-    output logic        spi_write_o,
+    output logic        spi_writeread_o,
+
     output logic        spi_comm_enable_o,
     output logic        spi_param_enable_o,
     //to Memory: data / wishbone
@@ -70,8 +70,7 @@ assign mmio_done_o = (!spi_busy_i)&(m1 & m2);
 always_comb begin
     mh_data_o = 0;                                             
     spi_data_o = 0;
-    spi_read_o = 0;
-    spi_write_o = 0;
+    spi_writeread_o = 0;
     spi_comm_enable_o = 0;
     spi_param_enable_o = 0;      
     mem_data_o = 0;     
@@ -112,11 +111,11 @@ always_comb begin
                 if (!spi_busy_i) begin        
                     spi_data_o = mh_data_i;
                     spi_comm_enable_o = 1;
-                    spi_write_o = 1;
+                    spi_writeread_o = 1;
                 end
             end else if (address == SPI_ADDRESS_P) begin
                 spi_data_o = mh_data_i;
-                spi_write_o = 1;
+                spi_writeread_o = 1;
                 spi_param_enable_o = 1;
             end else if (address < 32'd2048) begin
                 if (!mem_busy_i) begin
