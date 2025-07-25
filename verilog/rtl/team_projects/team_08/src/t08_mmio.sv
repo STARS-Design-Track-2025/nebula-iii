@@ -65,7 +65,7 @@ always_ff @(posedge clk, negedge nRst) begin
     end
 end
 
-assign mmio_done_o = m1 & m2;
+assign mmio_done_o = (!spi_busy_i)&(m1 & m2);
 
 always_comb begin
     mh_data_o = 0;                                             
