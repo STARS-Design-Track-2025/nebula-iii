@@ -4,7 +4,7 @@
 
 module top (
   // I/O ports
-  input  logic hwclk, reset,
+  input  logic hz100, reset,
   input  logic [20:0] pb,
   output logic [7:0] left, right,
          ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0,
@@ -53,7 +53,7 @@ module top (
   //);
 
   t04_top team_04_inst (
-  .clk(hwclk),
+  .clk(hz100),
   .rst(pb[19]),
   .column(ss0[3:0]),
   .button(ss1[4:0]),

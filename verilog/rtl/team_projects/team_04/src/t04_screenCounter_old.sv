@@ -1,4 +1,4 @@
-module t04_screenCounter (
+module t04_screenCounter_old (
   input logic clk, rst, enableEdge, ack,
   output logic [22:0] ct
 );
