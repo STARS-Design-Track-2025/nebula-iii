@@ -88,19 +88,42 @@ module t04_top_tb;
       #100000000;
         #10000;
 
-       $display("\nFINAL REGISTER VALUES HEX");
-        $display("----------------------");
-        $display("x1  = %0h ", dut.datapath.rf.registers[1]);   // address of data start
-        $display("x2  = %0h ", dut.datapath.rf.registers[2]);   // loaded from 0x24
-        $display("x3  = %0h ", dut.datapath.rf.registers[3]);   // loaded from 0x28
-        $display("x4  = %0h ", dut.datapath.rf.registers[4]);   // loaded from 0x2C
-        $display("x5  = %0h ", dut.datapath.rf.registers[5]);   // hardcoded value (set manually in CPU or TB)
-        $display("x10 = %0h ", dut.datapath.rf.registers[10]);  // x2 - x3
-        $display("x11 = %0h ", dut.datapath.rf.registers[11]);  // x4 & x5
-        $display("x12 = %0h ", dut.datapath.rf.registers[12]);  // x5 | x2
-        $display("x13 = %0h ", dut.datapath.rf.registers[13]);  // x2 < x4 (signed)
-        $display("x14 = %0h ", dut.datapath.rf.registers[14]);  // x3 << (x4 & 0x1F)
-        $finish;
+       $display("=== Register File Dump ===");
+$display("x0  = %0h ", dut.datapath.rf.registers[0]);
+$display("x1  = %0h ", dut.datapath.rf.registers[1]);
+$display("x2  = %0h ", dut.datapath.rf.registers[2]);
+$display("x3  = %0h ", dut.datapath.rf.registers[3]);
+$display("x4  = %0h ", dut.datapath.rf.registers[4]);
+$display("x5  = %0h ", dut.datapath.rf.registers[5]);
+$display("x6  = %0h ", dut.datapath.rf.registers[6]);
+$display("x7  = %0h ", dut.datapath.rf.registers[7]);
+$display("x8  = %0h ", dut.datapath.rf.registers[8]);
+$display("x9  = %0h ", dut.datapath.rf.registers[9]);
+$display("x10 = %0h ", dut.datapath.rf.registers[10]);
+$display("x11 = %0h ", dut.datapath.rf.registers[11]);
+$display("x12 = %0h ", dut.datapath.rf.registers[12]);
+$display("x13 = %0h ", dut.datapath.rf.registers[13]);
+$display("x14 = %0h ", dut.datapath.rf.registers[14]);
+$display("x15 = %0h ", dut.datapath.rf.registers[15]);
+$display("x16 = %0h ", dut.datapath.rf.registers[16]);
+$display("x17 = %0h ", dut.datapath.rf.registers[17]);
+$display("x18 = %0h ", dut.datapath.rf.registers[18]);
+$display("x19 = %0h ", dut.datapath.rf.registers[19]);
+$display("x20 = %0h ", dut.datapath.rf.registers[20]);
+$display("x21 = %0h ", dut.datapath.rf.registers[21]);
+$display("x22 = %0h ", dut.datapath.rf.registers[22]);
+$display("x23 = %0h ", dut.datapath.rf.registers[23]);
+$display("x24 = %0h ", dut.datapath.rf.registers[24]);
+$display("x25 = %0h ", dut.datapath.rf.registers[25]);
+$display("x26 = %0h ", dut.datapath.rf.registers[26]);
+$display("x27 = %0h ", dut.datapath.rf.registers[27]);
+$display("x28 = %0h ", dut.datapath.rf.registers[28]);
+$display("x29 = %0h ", dut.datapath.rf.registers[29]);
+$display("x30 = %0h ", dut.datapath.rf.registers[30]);
+$display("x31 = %0h ", dut.datapath.rf.registers[31]);
+$display("==========================");
+$finish;
+
     end
 
 
