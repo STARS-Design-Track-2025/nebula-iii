@@ -9,11 +9,11 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
     input Rx;
     output Tx, CTSn, DCDn;
 
-    reg [15:0] ctr = 0;
+    reg [15:0] ctr = 0; 
     reg hz100 = 0;
     reg hz40M;
     always @ (posedge hwclk)
-      if (ctr == 50)
+      if (ctr == 1)
         begin
           ctr <= 0;
           hz100 <= ~hz100;
@@ -124,7 +124,7 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
     wire reset;
     reset_on_start ros (reset, hz100, pb[3] && pb[0] && pb[16]);
     top top_inst(
-      hz40M, reset, pb, //hz40M
+      hz100, reset, pb, //hz40M
       left, right, ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0,
       red, green, blue,
       txdata,

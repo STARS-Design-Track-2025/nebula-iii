@@ -185,53 +185,53 @@ module t04_screensignalLogic (
 
       32'b10000: begin //red
         case (ct)
-          02: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
-          04: begin nextCsx = 0; end
-          06: begin nextDcx = 0; end
-          08: begin nextWrx = 0; nextData = xCommand; end
-          10: begin nextWrx = 1; end
-          12: begin nextDcx = 1; end
-          14: begin nextData = xBus[31:24]; nextWrx = 0; end
-          16: begin nextWrx = 1; end
-          18: begin nextWrx = 0; nextData = xBus[23:16]; end
-          20: begin nextWrx = 1; end
-          22: begin nextWrx = 0; nextData = xBus[15:8]; end
-          24: begin nextWrx = 1; end
-          26: begin nextWrx = 0; nextData = xBus[7:0]; end
-          28: begin nextWrx = 1; end
-          30: begin nextDcx = 0; end
-          32: begin nextWrx = 0; nextData = yCommand; end
-          34: begin nextWrx = 1; end
-          36: begin nextDcx = 1; end
-          38: begin nextData = yBus[31:24]; nextWrx = 0; end
-          40: begin nextWrx = 1; end
-          42: begin nextWrx = 0; nextData = yBus[23:16]; end
-          44: begin nextWrx = 1; end
-          46: begin nextWrx = 0; nextData = yBus[15:8]; end
-          48: begin nextWrx = 1; end
-          50: begin nextWrx = 0; nextData = yBus[7:0]; end
-          52: begin nextWrx = 1; end
-          54: begin nextDcx = 0; end
-          56: begin nextData = memCommand; nextWrx = 0; end
-          58: begin nextWrx = 1; end
-          60: begin nextDcx = 1; end
-          62: begin nextWrx = 0; nextData = 8'b11111000; end
-          64: begin nextWrx = 1; end
-          66: begin nextWrx = 0; nextData = 8'b0; end
-          68: begin nextWrx = 1; end
-          70: begin nextCsx = 1; end
-          72: begin ack = 1; end
-          74: begin ack = 0; end
+          020: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
+          040: begin nextCsx = 0; end
+          060: begin nextDcx = 0; end
+          080: begin nextWrx = 0; nextData = xCommand; end
+          100: begin nextWrx = 1; end
+          120: begin nextDcx = 1; end
+          140: begin nextData = xBus[31:24]; nextWrx = 0; end
+          160: begin nextWrx = 1; end
+          180: begin nextWrx = 0; nextData = xBus[23:16]; end
+          200: begin nextWrx = 1; end
+          220: begin nextWrx = 0; nextData = xBus[15:8]; end
+          240: begin nextWrx = 1; end
+          260: begin nextWrx = 0; nextData = xBus[7:0]; end
+          280: begin nextWrx = 1; end
+          300: begin nextDcx = 0; end
+          320: begin nextWrx = 0; nextData = yCommand; end
+          340: begin nextWrx = 1; end
+          360: begin nextDcx = 1; end
+          380: begin nextData = yBus[31:24]; nextWrx = 0; end
+          400: begin nextWrx = 1; end
+          420: begin nextWrx = 0; nextData = yBus[23:16]; end
+          440: begin nextWrx = 1; end
+          460: begin nextWrx = 0; nextData = yBus[15:8]; end
+          480: begin nextWrx = 1; end
+          500: begin nextWrx = 0; nextData = yBus[7:0]; end
+          520: begin nextWrx = 1; end
+          540: begin nextDcx = 0; end
+          560: begin nextData = memCommand; nextWrx = 0; end
+          580: begin nextWrx = 1; end
+          600: begin nextDcx = 1; end
+          620: begin nextWrx = 0; nextData = 8'b11111000; end
+          640: begin nextWrx = 1; end
+          660: begin nextWrx = 0; nextData = 8'b0; end
+          680: begin nextWrx = 1; end
+          700: begin nextCsx = 1; end
+          720: begin ack = 1; end
+          740: begin ack = 0; end
         endcase
       end
 
       32'b100: begin //blue
         case (ct)
-          02: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
-          04: begin nextCsx = 0; end
-          06: begin nextDcx = 0; end
-          08: begin nextWrx = 0; nextData = xCommand; end
-          10: begin nextWrx = 1; end
+          10: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
+          20: begin nextCsx = 0; end
+          30: begin nextDcx = 0; end
+          40: begin nextWrx = 0; nextData = xCommand; end
+          50: begin nextWrx = 1; end
           12: begin nextDcx = 1; end
           14: begin nextData = xBus[31:24]; nextWrx = 0; end
           16: begin nextWrx = 1; end
@@ -311,43 +311,43 @@ module t04_screensignalLogic (
 
       32'b1000: begin //green
         case (ct)
-          02: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
-          04: begin nextCsx = 0; end
-          06: begin nextDcx = 0; end
-          08: begin nextWrx = 0; nextData = xCommand; end
+          1: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
+          2: begin nextCsx = 0; end
+          3: begin nextDcx = 0; end
+          4: begin nextWrx = 0; nextData = xCommand; end
+          5: begin nextWrx = 1; end
+          6: begin nextDcx = 1; end
+          7: begin nextData = xBus[31:24]; nextWrx = 0; end
+          8: begin nextWrx = 1; end
+          9: begin nextWrx = 0; nextData = xBus[23:16]; end
           10: begin nextWrx = 1; end
-          12: begin nextDcx = 1; end
-          14: begin nextData = xBus[31:24]; nextWrx = 0; end
-          16: begin nextWrx = 1; end
-          18: begin nextWrx = 0; nextData = xBus[23:16]; end
+          11: begin nextWrx = 0; nextData = xBus[15:8]; end
+          12: begin nextWrx = 1; end
+          13: begin nextWrx = 0; nextData = xBus[7:0]; end
+          14: begin nextWrx = 1; end
+          15: begin nextDcx = 0; end
+          16: begin nextWrx = 0; nextData = yCommand; end
+          17: begin nextWrx = 1; end
+          18: begin nextDcx = 1; end
+          19: begin nextData = yBus[31:24]; nextWrx = 0; end
           20: begin nextWrx = 1; end
-          22: begin nextWrx = 0; nextData = xBus[15:8]; end
+          21: begin nextWrx = 0; nextData = yBus[23:16]; end
+          22: begin nextWrx = 1; end
+          23: begin nextWrx = 0; nextData = yBus[15:8]; end
           24: begin nextWrx = 1; end
-          26: begin nextWrx = 0; nextData = xBus[7:0]; end
-          28: begin nextWrx = 1; end
-          30: begin nextDcx = 0; end
-          32: begin nextWrx = 0; nextData = yCommand; end
+          25: begin nextWrx = 0; nextData = yBus[7:0]; end
+          26: begin nextWrx = 1; end
+          27: begin nextDcx = 0; end
+          28: begin nextData = memCommand; nextWrx = 0; end
+          29: begin nextWrx = 1; end
+          30: begin nextDcx = 1; end
+          31: begin nextWrx = 0; nextData = 8'b00000111; end
+          32: begin nextWrx = 1; end
+          33: begin nextWrx = 0; nextData = 8'b11100000; end
           34: begin nextWrx = 1; end
-          36: begin nextDcx = 1; end
-          38: begin nextData = yBus[31:24]; nextWrx = 0; end
-          40: begin nextWrx = 1; end
-          42: begin nextWrx = 0; nextData = yBus[23:16]; end
-          44: begin nextWrx = 1; end
-          46: begin nextWrx = 0; nextData = yBus[15:8]; end
-          48: begin nextWrx = 1; end
-          50: begin nextWrx = 0; nextData = yBus[7:0]; end
-          52: begin nextWrx = 1; end
-          54: begin nextDcx = 0; end
-          56: begin nextData = memCommand; nextWrx = 0; end
-          58: begin nextWrx = 1; end
-          60: begin nextDcx = 1; end
-          62: begin nextWrx = 0; nextData = 8'b00000111; end
-          64: begin nextWrx = 1; end
-          66: begin nextWrx = 0; nextData = 8'b11100000; end
-          68: begin nextWrx = 1; end
-          70: begin nextCsx = 1; end
-          72: begin ack = 1; end
-          74: begin ack = 0; end
+          35: begin nextCsx = 1; end
+          36: begin ack = 1; end
+          37: begin ack = 0; end
         endcase
       end
 
