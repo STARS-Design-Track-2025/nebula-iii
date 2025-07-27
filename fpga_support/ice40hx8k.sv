@@ -9,7 +9,7 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
     input Rx;
     output Tx, CTSn, DCDn;
 
-    reg [15:0] ctr = 0;
+    reg [15:0] ctr = 0; 
     reg hz100 = 0;
     reg hz40M;
     always @ (posedge hwclk)
