@@ -66,7 +66,7 @@ module t07_cpu_memoryHandler (
 
     always_comb begin
         case(state) 
-            FETCH: 
+            FETCH: //state 0
                 begin   
                     fetchRead = '1; 
                     load_ct = '0; 
@@ -74,7 +74,7 @@ module t07_cpu_memoryHandler (
                     freeze = 0; //fetch instr 
                     state_n = F_WAIT; 
                 end
-            F_WAIT: 
+            F_WAIT: //state 1
                 begin 
                     fetchRead = '0; 
                     load_ct = '0; 
@@ -86,7 +86,7 @@ module t07_cpu_memoryHandler (
                         state_n = F_WAIT; 
                     end 
                 end
-            DATA: 
+            DATA: //state 2
                 begin 
                     fetchRead = '0; 
                     if(busy_o_edge == 'b1 & memWrite == 1) begin //STORE
@@ -103,7 +103,7 @@ module t07_cpu_memoryHandler (
                         state_n = FETCH; 
                     end 
                 end
-             D_WAIT: 
+             D_WAIT: //state 3
                 begin 
                     fetchRead = '0; 
                     freeze = 1;
@@ -127,61 +127,60 @@ always_comb begin
         dataToCPU = 32'b0; // No data to return to CPU when busy
         //rwi = 2'b00; // Idle state when busy
     end else begin
-        //freeze = 0;
-    if(memWrite) begin 
-        addrControl = 0;
-        dataToCPU = 32'b0; // No data to return to CPU on write operation
-        //rwi = 2'b01; // Write operation
-        if(memSource) begin
-            // If memSource is set, we are writing from the FPU register
-            ExtAddress = ALU_address; // Use ALU address for memory operations
-            if (memOp == 4'd6) begin // store byte
-                write_data = {24'b0, FPU_data[7:0]}; // Store byte from FPU data
-            end else if (memOp == 4'd7) begin // store half-word
-                write_data = {16'b0, FPU_data[15:0]}; // Store half-word from FPU data
-            end else if (memOp == 4'd8) begin // store word
-                write_data = FPU_data; // Store full word from FPU data
+        if(memWrite) begin //write - store word
+            addrControl = 0;
+            dataToCPU = 32'b0; // No data to return to CPU on write operation
+            //rwi = 2'b01; // Write operation
+            if(memSource) begin
+                // If memSource is set, we are writing from the FPU register
+                ExtAddress = ALU_address; // Use ALU address for memory operations
+                if (memOp == 4'd6) begin // store byte
+                    write_data = {24'b0, FPU_data[7:0]}; // Store byte from FPU data
+                end else if (memOp == 4'd7) begin // store half-word
+                    write_data = {16'b0, FPU_data[15:0]}; // Store half-word from FPU data
+                end else if (memOp == 4'd8) begin // store word
+                    write_data = FPU_data; // Store full word from FPU data
+                end else begin
+                    write_data = 32'b0; // Default case, no valid operation
+                end
             end else begin
-                write_data = 32'b0; // Default case, no valid operation
+                // Otherwise, we are writing from the Register file
+                ExtAddress = ALU_address; // Use ALU address for memory operations
+                if (memOp == 4'd6) begin // store byte
+                    write_data = {24'b0, Register_dataToMem[7:0]}; // Store byte from FPU data
+                end else if (memOp == 4'd7) begin // store half-word
+                    write_data = {16'b0, Register_dataToMem[15:0]}; // Store half-word from FPU data
+                end else if (memOp == 4'd8) begin // store word
+                    write_data = Register_dataToMem; // Store full word from FPU data
+                end else begin
+                    write_data = 32'b0; // Default case, no valid operation
+                end 
+            end 
+        end else if(memRead) begin //read - load word
+            addrControl = 0;
+            //rwi = 2'b10; //Read operation
+            ExtAddress = ALU_address; // Use ALU address for memory operations
+            write_data = 32'b0; // No data to write in read operation
+            if (memOp == 4'd1) begin //
+                dataToCPU = {{24{ExtData[7]}}, ExtData[7:0]}; // Read data from external memory
+            end else if (memOp == 4'd2) begin
+                dataToCPU = {{16{ExtData[15]}}, ExtData[15:0]}; // Read half-word from external memory
+            end else if (memOp == 4'd3) begin // Read full word from external memory
+                dataToCPU = ExtData; 
+            end else if (memOp == 4'd4) begin // Read byte unsigned
+                dataToCPU = {24'b0, ExtData[7:0]}; 
+            end else if (memOp == 4'd5) begin // Read half-word unsigned
+                dataToCPU = {16'b0, ExtData[15:0]};
+            end else begin
+                dataToCPU = 32'b0; // Default case, no valid operation
             end
         end else begin
-            // Otherwise, we are writing from the Register file
-            ExtAddress = ALU_address; // Use ALU address for memory operations
-            if (memOp == 4'd6) begin // store byte
-                write_data = {24'b0, Register_dataToMem[7:0]}; // Store byte from FPU data
-            end else if (memOp == 4'd7) begin // store half-word
-                write_data = {16'b0, Register_dataToMem[15:0]}; // Store half-word from FPU data
-            end else if (memOp == 4'd8) begin // store word
-                write_data = Register_dataToMem; // Store full word from FPU data
-            end else begin
-                write_data = 32'b0; // Default case, no valid operation
-            end 
-        end 
-    end else if(memRead) begin
-        addrControl = 0;
-        //rwi = 2'b10; //Read operation
-        ExtAddress = ALU_address; // Use ALU address for memory operations
-        write_data = 32'b0; // No data to write in read operation
-        if (memOp == 4'd1) begin //
-            dataToCPU = {{24{ExtData[7]}}, ExtData[7:0]}; // Read data from external memory
-        end else if (memOp == 4'd2) begin
-            dataToCPU = {{16{ExtData[15]}}, ExtData[15:0]}; // Read half-word from external memory
-        end else if (memOp == 4'd3) begin // Read full word from external memory
-            dataToCPU = ExtData; 
-        end else if (memOp == 4'd4) begin // Read byte unsigned
-            dataToCPU = {24'b0, ExtData[7:0]}; 
-        end else if (memOp == 4'd5) begin // Read half-word unsigned
-            dataToCPU = {16'b0, ExtData[15:0]};
-        end else begin
-            dataToCPU = 32'b0; // Default case, no valid operation
+            //rwi = 2'b00; // Idle state
+            addrControl = 1; //fetch addr
+            write_data = 32'b0; // No data to write
+            ExtAddress = ALU_address; 
+            dataToCPU = 32'b0; // No data to return to CPU
         end
-    end else begin
-        //rwi = 2'b00; // Idle state
-        addrControl = 1; //fetch addr
-        write_data = 32'b0; // No data to write
-        ExtAddress = ALU_address; 
-        dataToCPU = 32'b0; // No data to return to CPU
-    end
     end
 end
 endmodule
