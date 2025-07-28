@@ -70,7 +70,7 @@ end
 always_comb begin
     nextcontrol = control;
     wrx = 0;
-    rdx = 0;
+    rdx = 1;
     nextbusy = busy;
     nextout = currentout;
     nextparoutput = paroutput;
@@ -118,7 +118,7 @@ always_comb begin
 
         TRANSITION: begin 
             wrx = 0;
-            rdx = 0;
+       //     rdx = 1;
             nextbusy = 1;
             nextout = currentout;
             nextparoutput = paroutput;
@@ -149,7 +149,7 @@ always_comb begin
                     nextdcx = 0;
                     nextparoutput = parameters;
                     nextout = command; //getting the output ready
-                    if (readwrite) wrx = 0; else rdx = 0;
+                    if (readwrite) wrx = 0; 
                 end
 
                 1: begin //clock
@@ -176,7 +176,7 @@ always_comb begin
                      end
                     else begin nextstate = 2; end
                     if ((readwrite)) wrx = 1;
-                    else if (!readwrite) rdx = 1;
+                   // else if (!readwrite) rdx = 1;
                     nextout = paroutput[31:24];
                 end
 
@@ -188,7 +188,7 @@ always_comb begin
                     nextcount = count + 1;
                     nextdcx = 1;
                     nextstate = 1;
-                    if (readwrite) wrx = 0; else rdx = 0;
+                    if (readwrite) wrx = 0; 
                     nextcsx = 0;
                 end
 
