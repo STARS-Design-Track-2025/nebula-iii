@@ -1,4 +1,4 @@
-`timescale 1ps/1ps
+`timescale 1ns/1ps
 module t07_SPI_ESP32_tb;    
     // Testbench signals
     logic [7:0] ESP_in;

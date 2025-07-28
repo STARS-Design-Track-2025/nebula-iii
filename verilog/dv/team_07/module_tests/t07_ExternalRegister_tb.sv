@@ -9,7 +9,7 @@ module t07_ExternalRegister_tb;
     logic [31:0] write_data;
     logic ri;
     logic [4:0] SPIAddress; // Address for the SPI TFT
-
+    logic busy;
     // Outputs
     logic [31:0] read_data;
     logic ack_REG; // Acknowledge signal to the memory handler
@@ -20,27 +20,34 @@ module t07_ExternalRegister_tb;
     logic [31:0] writeData_outTFT; // Data to write to instruction/Data memory
     logic [31:0] addr_outTFT; // Address to write to SPI TFT
     logic wi_out; // Write or idle to SPI TFT
-    logic [1:0] rwi_out; // Read/Write/Idle to instruction/Data memory
+    logic read, write; // Read/Write/Idle to instruction/Data memory
     logic [31:0] addr_out; // Address to instruction/Data memory
     logic [31:0] writeData_out; // Data to write to instruction/Data memory
+    logic fetchRead_out, addrControl_out, fetchRead_in, addrControl_in;
     t07_MMIO mmio (
         .memData_in(32'b0), // Not used in this test
         .rwi_in(rwi_in), // Not used in this test
         .ExtData_in(32'b0), // Not used in this test
         .busy_o(1'b0), // Not used in this test
+        .fetchRead_in(fetchRead_in),
+        .addrControl_in(addrControl_in),
         .regData_in(read_data),
         .ack_REG(ack_REG),
         .ack_TFT(1'b0), // Not used in this test
         .addr_in(addr_in), //address for the external register
         .ri_out(ri),
         .addr_outREG(ReadRegister), // Address to external register
-        .ExtData_out(ExtData_out), 
+        .ExtData_out(ExtData_out),
+        .busy(busy), 
         .writeInstruction_out(inst), // Not used in this test
         .writeData_outTFT(writeData_outTFT), // Not used in this test
         .addr_outTFT(addr_outTFT), // Not used in this test
         .wi_out(wi_out), // Not used in this test
-        .rwi_out(rwi_out), // Not used in this test
+        .read(),
+        .write(),
         .addr_out(addr_out), // Not used in this test
+        .fetchRead_out(fetchRead_out),
+        .addrControl_out(addrControl_out),
         .writeData_out(writeData_out) // Not used in this test
     );
     // Instantiate the Unit Under Test (UUT)
@@ -111,6 +118,7 @@ module t07_ExternalRegister_tb;
         #10;
         ESP_in = 8'hCC; // Another example data
             rwi_in =2'b10; // Set to write operation
+            addr_in = 32'd1025;
         #10;
         ESP_in = 8'hDD; // Reset value
         #10;
@@ -172,10 +180,9 @@ module t07_ExternalRegister_tb;
     initial begin
         $dumpfile("t07_ExternalRegister.vcd");
         $dumpvars(0, t07_ExternalRegister_tb);
-        
         // Initialize Inputs
-        rwi_in = 2'b11; // Idle state for read/write/idle
-        addr_in = 32'd8193;
+        rwi_in = 2'b00; // Idle state for read/write/idle
+        addr_in = 32'd1024;
         nrst = 1;
         // ReadRegister = 5'h00000000;
         //write_data = 32'h00000000;
