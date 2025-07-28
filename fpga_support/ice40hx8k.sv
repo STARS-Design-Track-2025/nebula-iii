@@ -11,7 +11,7 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
 
     reg [15:0] ctr = 0;
     reg hz100 = 0;
-    reg hz40M;
+    reg hz10M;
     always @ (posedge hwclk)
       if (ctr == 60000)
         begin
@@ -50,10 +50,10 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
 //          (12 + 1 )
 
 
-// FOR PLL INSTANCE BELOW: Setting the clock frequency to 40 MHz
-//       12  * (9 + 1)
-//   ---------------------------- = 40
-//          ( 2 + 1 )
+// FOR PLL INSTANCE BELOW: Setting the clock frequency to 10 MHz
+//       12  * (4 + 1)
+//   ---------------------------- = 10
+//          ( 5 + 1 )
 
 
     /* The PLL instance */
@@ -68,13 +68,13 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
         .SHIFTREG_DIV_MODE(1'b0), // 0 => div-by-4; 1 => div-by-7
         .FDA_FEEDBACK(4'b0000),
         .FDA_RELATIVE(4'b0000),
-        .DIVR(4'd2),
-        .DIVF(7'd9),
+        .DIVR(4'd5),
+        .DIVF(7'd4),
         .DIVQ(3'd0),
         .FILTER_RANGE(3'b001), // 1
     ) pll (
         .REFERENCECLK (hwclk),
-        .PLLOUTCORE   (hz40M),
+        .PLLOUTCORE   (hz10M),
         .BYPASS       (BYPASS),
         .RESETB       (RESETB)
         //.LOCK (LOCK)
@@ -124,7 +124,7 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
     wire reset;
     reset_on_start ros (reset, hz100, pb[3] && pb[0] && pb[16]);
     top top_inst(
-      hz40M, reset, pb,
+      hz10M, reset, pb,
       left, right, ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0,
       red, green, blue,
       txdata,
