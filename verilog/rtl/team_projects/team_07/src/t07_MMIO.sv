@@ -66,15 +66,20 @@ always_comb begin
     fetchRead_out = fetchRead_in; //fetch read signal
     addrControl_out = addrControl_in; //address for next instr or data mem
 
+    if (ack_TFT || busy_o) begin busy = '1; end
+    else if ((addr_in > 32'd1024 && addr_in <= 32'd1056) & rwi_in == 2'b10 & ChipSelReg) begin busy = ack_REG; end
+    else if ((addr_in > 32'd1024 && addr_in <= 32'd1056) & ChipSelReg == '0 & rwi_in == 2'b10) begin busy = '1; end 
+    else begin busy = 0; end
+
     if (addr_in > 32'd1024) begin
         if (rwi_in == 2'b01) begin //write from internal memory of the CPU
             if (addr_in > 32'd1792 && addr_in < 32'd2048) begin //change address number later              // write to SPI TFT
-                busy = ack_TFT; //set busy signal to indicate memory handler is processing
+                //busy = ack_TFT; //set busy signal to indicate memory handler is processing
                 wi_out = 1'b1; //write to SPI TFT
                 addr_outTFT = addr_in; // address to write to SPI TFT
                 writeData_outTFT = memData_in; // data to write to SPI TFT
             end else if (addr_in > 32'd1056 && addr_in <= 32'd1792) begin //change address number later     // write to Data memory
-                busy = busy_o; //set busy signal to indicate memory handler is processing
+                //busy = busy_o; //set busy signal to indicate memory handler is processing
                 //rwi_out = 2'b01; //write to instruction/Data memory
                 addr_out = {8'h33, addr_in[23:0]}; // address to instruction/Data memory
                 writeData_out = memData_in; // data from instruction/Data memory
@@ -82,23 +87,22 @@ always_comb begin
         end else if (rwi_in == 2'b10) begin //read from internal memory of the CPU
             if(addr_in > 32'd1024 && addr_in <= 32'd1056) begin //change address number later          // read from external register
                 if(ChipSelReg == 1) begin
-                    busy = ack_REG; //set busy signal to indicate memory handler is processing
+                    //busy = ack_REG; //set busy signal to indicate memory handler is processing
                     ri_out = 1'b1; //read from external register
                     addr_outREG = addr_in[4:0]; // address to read from external register
                     ExtData_out = regData_in; // data from external register to internal memory
-                end else begin
-                    busy = 1'b1;
-                end
+                end //else begin
+                    //busy = 1'b1;
+                //end
             end else if (addr_in > 32'd1056 && addr_in <= 32'd1792) begin //change address number later     // read from data memory
-                busy = busy_o; //set busy signal to indicate memory handler is processing
+                //busy = busy_o; //set busy signal to indicate memory handler is processing
                 //rwi_out = 2'b10; //read from Data memory
                 addr_out = {8'h33, addr_in[23:0]}; // address to read from instruction/Data memory
                 ExtData_out = ExtData_in; // data from instruction/Data memory to internal memory
             end 
-        end
-    end else /*if (rwi_in == 2'b10)  */begin
+        end end else /*if (rwi_in == 2'b10)  */begin
         if (addr_in <= 32'd1024) begin //change address number later                           // write instruction to fetch module
-                busy = busy_o; //set busy signal to indicate memory handler is processing
+                //busy = busy_o; //set busy signal to indicate memory handler is processing
                 //if(fetchRead_in == 0) begin 
                 //rwi_out = 2'b11; end else begin
                         //rwi_out = 2'b10; //end //read from instruction

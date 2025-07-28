@@ -13,7 +13,7 @@
         F_WAIT = 1,
         DATA = 2,
         D_WAIT = 3
-    } state_t;
+    } state_t0;
 
 
 module t07_cpu_memoryHandler (
@@ -35,7 +35,7 @@ module t07_cpu_memoryHandler (
     output logic freeze,            // Freeze signal to pause CPU operations during memory access
     output logic [1:0] rwi,          // read - 01, write - 10, idle - 00, fetch -11 
     output logic fetchRead,
-    output state_t state,
+    output state_t0 state,
     output logic addrControl, // control for address mux, 0 when fetch, 1 when l/s
     output logic busy_o_edge
 
@@ -43,7 +43,7 @@ module t07_cpu_memoryHandler (
     //edge detector
     logic load_ct;
     logic prev_busy_o;
-    state_t state_n;
+    state_t0 state_n;
 
     always_ff @(negedge nrst, posedge clk) begin
         if(~nrst) begin
