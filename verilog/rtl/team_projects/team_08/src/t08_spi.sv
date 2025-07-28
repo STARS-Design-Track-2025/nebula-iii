@@ -142,6 +142,7 @@ always_comb begin
                         8'b00101110: begin nextpercount = 2; end //mem read
                         8'h10:       begin nextpercount = 0; end // sleep mode on, 5 ms delay
                         8'h11:       begin nextpercount = 0; end //sleep out
+                        8'h36:       begin nextpercount = 1; end // memory access control
                         default:     begin nextpercount = counter; end 
                     endcase
 
