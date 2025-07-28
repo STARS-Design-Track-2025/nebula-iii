@@ -62,7 +62,7 @@ always_comb begin
     writeData_out = 32'b0; // no data to instruction/Data memory
     writeData_outTFT = 32'b0; // no data to SPI TFT
     ExtData_out = 32'b0; // no data to internal memory
-    writeInstruction_out = 32'b0; // no instruction to fetch module
+    writeInstruction_out = 32'hDEADBEEF; // no instruction to fetch module
     addrControl_out = addrControl_in; //address for next instr or data mem
 
     if (ack_TFT || busy_o) begin busy = '1; end

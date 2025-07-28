@@ -106,11 +106,13 @@ module t07_cpu_memoryHandler (
                 begin 
                     addrControl = 0;
                     freeze = 1;
-                    if(load_ct == 0) begin 
+                    if(busy_o_edge & load_ct == 0) begin 
+                        //addrControl = 1;
                         state_n = FETCH; 
-                    end else if (load_ct > 1) begin 
+                    end else if (busy_o_edge & load_ct > 1) begin 
                         state_n = DATA; 
-                    end else begin
+                    end else if (busy_o_edge) begin
+                        //addrControl = 1;
                         state_n = FETCH;
                     end
                 end
