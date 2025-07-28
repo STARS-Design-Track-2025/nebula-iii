@@ -24,6 +24,7 @@ module t07_ExternalRegister_tb;
     logic [31:0] addr_out; // Address to instruction/Data memory
     logic [31:0] writeData_out; // Data to write to instruction/Data memory
     logic fetchRead_out, addrControl_out, fetchRead_in, addrControl_in;
+    logic ChipSelectIn, ChipSelectOut;
     t07_MMIO mmio (
         .memData_in(32'b0), // Not used in this test
         .rwi_in(rwi_in), // Not used in this test
@@ -33,6 +34,7 @@ module t07_ExternalRegister_tb;
         .addrControl_in(addrControl_in),
         .regData_in(read_data),
         .ack_REG(ack_REG),
+        .ChipSelReg(ChipSelectIn),
         .ack_TFT(1'b0), // Not used in this test
         .addr_in(addr_in), //address for the external register
         .ri_out(ri),
@@ -58,6 +60,7 @@ module t07_ExternalRegister_tb;
         .SPIAddress(SPIAddress),
         .write_data(write_data),
         .ri(ri),
+        .ChipSelect(ChipSelectIn),
         .read_data(read_data),
         .ack_REG(ack_REG)
     );
@@ -70,7 +73,9 @@ module t07_ExternalRegister_tb;
         .clk(clk),
         .nrst(nrst),
         .SPI_Address(SPIAddress),
-        .dataForExtReg(write_data),
+        .dataForExtReg(write_data),   
+        .ChipSelectIn(ChipSelectIn),
+        .ChipSelectOut(ChipSelectOut),
         .SCLK_out(SCLK_out) // Not used in this test
     );
 
@@ -117,8 +122,6 @@ module t07_ExternalRegister_tb;
         ESP_in = 8'hBB; // Example data
         #10;
         ESP_in = 8'hCC; // Another example data
-            rwi_in =2'b10; // Set to write operation
-            addr_in = 32'd1025;
         #10;
         ESP_in = 8'hDD; // Reset value
         #10;
@@ -128,6 +131,2105 @@ module t07_ExternalRegister_tb;
         #10; // Wait for a clock cycle
         ESP_in = 8'h01; // Reset value
         #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'h00;
+        addr_in = 32'd1024;
+        #10;
+        #10;
+        #10
+        rwi_in = 2'b10;
+        addr_in = 32'd1025;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1026;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1027;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1028;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1029;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1030;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1031;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1032;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1033;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1034;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1035;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1036;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1037;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1038;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1039;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1040;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1041;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1042;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1043;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1044;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1045;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1046;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1047;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1048;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1049;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1050;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1051;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1052;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1053;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1054;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1055;
+            #10;
+            #10;
+            rwi_in = 2'b01;
+            ESP_in = 8'hFF; // Final example data
+        #10
+        rwi_in = 2'b10;
+            addr_in = 32'd1056;        
+        
+        
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+            #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+    
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycleESP_in = 8'hAA; // Default value
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+            
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+            
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+            
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+            
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value // Wait for a clock cycle
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle // Wait for a clock cycle
+        ESP_in = 8'hAA; // Default value
+        #10;
+        ESP_in = 8'hBB; // Example data
+        #10;
+        ESP_in = 8'hCC; // Another example data
+        #10;
+        ESP_in = 8'hDD; // Reset value
+        #10;
+        ESP_in = 8'hEE;
+        #10;
+        ESP_in = 8'hFF; // Final example data
+        #10; // Wait for a clock cycle
+        ESP_in = 8'h01; // Reset value
+        #10; // Wait for a clock cycle
+         // Wait for a clock cycle
         ESP_in = 8'hAA; // Default value
         #10;
         ESP_in = 8'hBB; // Example data

@@ -42,7 +42,7 @@ module t07_ExternalRegister (
     end
 
     assign ack_REG = (ri_first && !ri_second);
-
+    
     always_ff @(negedge nrst, posedge clk) begin
         if (!nrst) begin
             state <= FILLREG;
@@ -57,17 +57,25 @@ module t07_ExternalRegister (
             FILLREG: 
                 begin 
                     ChipSelect = 0;
+                    if(ReadRegister == 31) begin
+                        ChipSelect = 1;
+                        next_read_data = registers[ReadRegister];
+                    end
                     if (SPIAddress == 31) begin
+                        //ChipSelect = 1;
                         n_state = WAIT;
+                        next_read_data = registers[ReadRegister];
                     end else begin
                         n_state = FILLREG;
+                        next_read_data = '0;
+                        //ChipSelect = 0;
                     end
                 end
             WAIT:
                 begin
                     ChipSelect = 1;
                     next_read_data = registers[ReadRegister];
-                    if (ReadRegister == 31) begin
+                    if (ReadRegister == 31 && ack_REG) begin
                         n_state = FILLREG;
                     end else begin
                         n_state = WAIT;
@@ -93,9 +101,9 @@ module t07_ExternalRegister (
             //ack_REG <= 1'b0; // Reset acknowledge signal
             read_data <= 32'b0; // Reset read data
             // Reset all registers to zero
-            // for (int i = 0; i < 32; i++) begin
-            //     registers[i] <= 32'b0;
-            // end
+            for (int i = 0; i < 32; i++) begin
+                registers[i] <= 32'b0;
+            end
         end else begin
             //registers[SPIAddress] <= write_data; // Write data to the register
             //ack_REG <= next_ack_REG; // Acknowledge signal to the memory handler
