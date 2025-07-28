@@ -2,6 +2,7 @@ module t04_keypad_interface(
     input logic clk, rst,
     input logic [3:0] column,
     input logic [3:0] row,
+    input logic pulse,
     output logic [4:0] button,
     output logic [1:0] app,
     output logic rising
@@ -9,7 +10,6 @@ module t04_keypad_interface(
 
 logic alpha;
 logic debounced;
-logic pulse;
 logic [3:0] row_d;
 
 

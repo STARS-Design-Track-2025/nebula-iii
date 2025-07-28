@@ -27,6 +27,8 @@ module t04_top(
 
     logic i_ack, d_ack;
     logic MemRead, MemWrite;
+    logic BranchConditionFlag;
+    logic JAL_O;
 
     logic pulse_e;
     assign pc = final_address[7:0];
@@ -70,7 +72,9 @@ module t04_top(
         .final_address(final_address),
         .mem_store(mem_store),
         .MemRead_O(MemRead),
-        .MemWrite_O(MemWrite)
+        .MemWrite_O(MemWrite),
+        .BranchConditionFlag(BranchConditionFlag),
+        .JAL_O(JAL_O)
     );
 
     // === Instantiate MMIO ===
@@ -85,15 +89,15 @@ module t04_top(
         .d_ack(d_ack),
         .instruction(instruction),
         .memload(memload),
+        .BranchConditionFlag(BranchConditionFlag),
+        .JAL_O(JAL_O),
         .button_pressed(button),
         .app(app),
         .rising(rising),
         .display_address(display_address),
         .mem_store_display(mem_store_display),
         .d_ack_display(d_ack_display),
-        .WEN(WEN),
-        .sus(),
-        .green()
+        .WEN(WEN)
     );
 
     // === KEYPAD INTERFACE ===
@@ -108,6 +112,7 @@ module t04_top(
     .clk(clk), .rst(rst),
     .column(column),
     .row(row),
+    .pulse(pulse_e),
     .button(button),
     .app(app),
     .rising(rising)

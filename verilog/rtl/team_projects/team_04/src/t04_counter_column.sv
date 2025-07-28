@@ -2,6 +2,7 @@ module t04_counter_column (
     input logic clk, rst,
     output logic [3:0] column,
     output logic pulse_e // the pulse to send to the decoder (the end pulse)
+    // output logic pulse_s // the pulse that represents the start of a column change
 );
 
 logic [10:0] count, count_n;

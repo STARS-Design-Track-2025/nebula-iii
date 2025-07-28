@@ -11,6 +11,8 @@ module t04_mmio (
     output logic d_ack,
     output logic [31:0] instruction,
     output logic [31:0] memload,
+    input logic BranchConditionFlag,
+    input logic JAL_O,
 
     // === Keypad ===
     input logic [4:0] button_pressed,
@@ -21,13 +23,8 @@ module t04_mmio (
     output logic [31:0] display_address,
     output logic [31:0] mem_store_display,
     input logic d_ack_display,
-    output logic WEN,
-
-    output logic sus,
-    output logic green
+    output logic WEN
 );
-    assign sus = rising;
-    assign green = (1);
     // === Internal Signals ===
     logic [31:0] memload_or_instruction;
     logic busy;
@@ -106,6 +103,8 @@ module t04_mmio (
     t04_keypad_register keyreg (
         .clk(clk),
         .reset(reset),
+        .BranchConditionFlag(BranchConditionFlag),
+        .JAL_O(JAL_O),
         .button_pressed(button_pressed),
         .app(app),
         .rising(rising),

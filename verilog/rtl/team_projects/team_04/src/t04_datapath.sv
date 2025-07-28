@@ -8,7 +8,9 @@ module t04_datapath(
     output logic [31:0] final_address,
     output logic [31:0] mem_store,
     output logic MemRead_O,
-    output logic MemWrite_O
+    output logic MemWrite_O,
+    output logic BranchConditionFlag,
+    output logic JAL_O
 );
 
 logic [4:0] Reg1;
@@ -31,7 +33,6 @@ logic [31:0] src_A, src_B;
 logic [31:0] ALU_result;
 logic [31:0] write_back_data;
 logic [31:0] instruction_out;
-logic BranchConditionFlag;
 logic MUL_EN;
 logic [31:0] mulitply_result;
 logic ack_mul;
@@ -39,6 +40,7 @@ logic mul_freeze;
 logic main_freeze;
 logic zero_multi;
 
+assign JAL_O = Jal || Jalr;
 assign PC_plus4 = PC + 32'd4;
 
 t04_register_file rf(
