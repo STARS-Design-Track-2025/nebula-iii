@@ -5,7 +5,7 @@ module t04_top(
     // === Keypad ===
     input  logic [3:0] row,
     output logic [3:0] column, // good boy (can I have this column to be named the same as an internal signal)
-    output logic [4:0] button, // this is temporary for testing
+    //output logic [4:0] button, // this is temporary for testing
 
     // // === Display ===
     output  logic screenCsx,
