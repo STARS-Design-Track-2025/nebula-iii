@@ -61,6 +61,12 @@ logic [4:0] addrToReg;
 logic [31:0] dataToTFT, addrToTFT;
 logic wi_out; 
 
+logic [7:0] ESP_in; // Input from the ESP32
+logic SCLK_out; // Clock signal for the ESP32
+logic ChipSelectOut;
+logic [4:0] SPIAddress;
+logic [31:0] write_data;
+
 t07_CPU CPU( .addrControl(addrControl), .busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
 .rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst));
 
