@@ -15,10 +15,13 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_registers.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_immGen.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_fp_fcsr.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_external_mem.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_MMIO.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_CPU.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_fixtofloat.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_floattofix.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_floattoint.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_inttofloat.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_fetch.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_top.sv
+

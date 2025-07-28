@@ -32,14 +32,14 @@ module t07_FPU_div (
             counter <= next_ctr;
         end
     end    
-
+//set busy back to 0
     always_comb begin
         sign = 0;
         next_rem = remainder;
         next_B = B;
         next_quot = quotient;
         next_ctr = counter;
-        if (counter <= '1 && busy) begin
+        if (counter < 5'b11111 && busy) begin
             next_rem = curr_rem - curr_B;
 
             if (curr_rem == 0) begin 

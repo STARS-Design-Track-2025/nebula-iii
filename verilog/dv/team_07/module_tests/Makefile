@@ -19,6 +19,7 @@ sim_%_src: %.vvp
 	else \
 		gtkwave $*.vcd; \
 	fi
+	rm -rf $*.vvp
 
 
 # Create file that lists the RTL code and testbench files to compile

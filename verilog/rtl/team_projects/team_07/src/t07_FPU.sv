@@ -1,8 +1,9 @@
-//NEED TO IMPLEMENT FIXTOFLOAT / FLOATTOFIX CONVERSIONS BEFORE AND AFTER MULT/DIV
+//ALL OPERATIONS ARE PERFORMED IN FIXED POINT, find API that inputs data in fixed point rather than floating
 
 module t07_FPU (
     input logic clk, nrst,
-    input signed [31:0] inA, inB, inC,
+    //input signed [31:0] inA, inB, inC,
+    input signed [31:0] valA, valB, valC,
     input logic [31:0]fcsr_in,
     input logic [4:0] FPUOp,
     output logic [31:0] result,
@@ -12,20 +13,16 @@ module t07_FPU (
 );
 
     //inputs converted from float to fixed point
-    logic [31:0] valA, valB, valC;
+    //logic [31:0] valA, valB, valC;
     logic signA, signB, signC;
 
     //all two input mult and div combinations within the FPU are instantiated here
     logic [31:0] prodAB, quotAB, remAB, intFloatRes, floatIntRes;
-    logic signAB;
+    logic signABmult, signABdiv;
     logic signSignal, invalid;
 
-    t07_FPU_floattofix fixedA (.in(inA), .out(valA), .sign(signA));
-    t07_FPU_floattofix fixedB (.in(inB), .out(valB), .sign(signB));
-    t07_FPU_floattofix fixedC (.in(inC), .out(valC), .sign(signC));
-
-    t07_FPU_mult mult(.clk(clk), .nrst(nrst), .inA(valA), .inB(valB), .busy(busy), .signA(valA[31]), .signB(valB[31]), .result(prodAB), .sign(signAB), .overflow(overflowFlag));
-    t07_FPU_div div(.clk(clk), .nrst(nrst), .inA(valA), .inB(valB), .signA(valA[31]), .signB(valB[31]), .quotient(quotAB), .remainder(remAB), .sign(signAB), .busy(busy));
+    //t07_FPU_mult mult(.clk(clk), .nrst(nrst), .inA(valA), .inB(valB), .busy(busy), .signA(valA[31]), .signB(valB[31]), .result(prodAB), .sign(signABmult), .overflow(overflowFlag));
+    //t07_FPU_div div(.clk(clk), .nrst(nrst), .inA(valA), .inB(valB), .signA(valA[31]), .signB(valB[31]), .quotient(quotAB), .remainder(remAB), .sign(signABdiv), .busy(busy));
     t07_FPU_inttofloat intFloat (.in(valA), .signSignal(signSignal), .out(intFloatRes), .overflow(overflowFlag));
     t07_FPU_floattoint floatInt (.in(valA), .signSignal(signSignal), .out(floatIntRes), .frm(fcsr_in[7:5]), .invalidFlag(invalid));
 
@@ -41,11 +38,11 @@ module t07_FPU (
         result = 32'b0;
         //signSignal = 1'b0;
         case (FPUOp)
-            //Fix op = 5'd0 - 5'd3 & op = 5'd6 and 5'd7 --> needs to include fixed point conversions in order to perform mult and div
-            5'd0: begin signSignal = 1'b0; result = {signAB, prodAB[31:1]} + valC; end //FMADD
-            5'd1: begin signSignal = 1'b0; result = {signAB, prodAB[31:1]} - valC; end //FMSUB
-            5'd2: begin signSignal = 1'b0; result = $signed({~signAB, prodAB[31:1]}) - valC; end //FNMSUB
-            5'd3: begin signSignal = 1'b0; result = $signed({~signAB, prodAB[31:1]}) - valC; end //FNMADD 
+
+            5'd0: begin signSignal = 1'b0; result = {signABmult, prodAB[31:1]} + valC; end //FMADD
+            5'd1: begin signSignal = 1'b0; result = {signABmult, prodAB[31:1]} - valC; end //FMSUB
+            5'd2: begin signSignal = 1'b0; result = $signed({~signABmult, prodAB[31:1]}) - valC; end //FNMSUB
+            5'd3: begin signSignal = 1'b0; result = $signed({~signABmult, prodAB[31:1]}) - valC; end //FNMADD 
             5'd4: begin //FADD
                 signSignal = 1'b0; 
                 if (valA[31] == 1 && valB[31] == 0) begin
@@ -70,8 +67,8 @@ module t07_FPU (
                     result = ~(((~valB + 1) + valA) - 1);
                 end
             end 
-            5'd6: begin signSignal = 1'b0; result = {signAB, prodAB[31:1]}; end //FMUL
-            5'd7: begin signSignal = 1'b0; result = {signAB, quotAB[31:1]}; end //FDIV 
+            5'd6: begin signSignal = 1'b0; result = {signABmult, prodAB[31:1]}; end //FMUL
+            5'd7: begin signSignal = 1'b0; result = {signABdiv, quotAB[31:1]}; end //FDIV 
             5'd8: begin signSignal = 1'b0; result = 32'b0; end //FSQRT- not implemented, sets result to 0 for now, but change it so that no instruction is passed/idle state
             5'd9: begin signSignal = 1'b0; result = {valB[31], valA[30:0]}; end //FSGNJ
             5'd10: begin signSignal = 1'b0; result = {~valB[31], valA[30:0]}; end //FSGNJN

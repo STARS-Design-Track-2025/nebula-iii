@@ -16,7 +16,7 @@ module t07_FPU_mult(
     assign product = curr_prod;
 
     logic [4:0] counter, next_ctr;
-    // logic next_busy;
+    logic next_busy;
 
     always_ff @(posedge clk, negedge nrst) begin
         if(~nrst) begin
@@ -37,8 +37,11 @@ module t07_FPU_mult(
         next_B = B;
         next_prod = product;
         next_ctr = counter;
-        // next_busy = 1;
-        if (counter <= '1 && busy) begin
+        sign = 1'b0;
+        result = 32'b0;
+        overflow = 1'b0;
+        next_busy = 1;
+        if (counter < 5'b11111 && busy) begin
             if (curr_B[counter[4:0]] == 0) begin 
                 next_prod =  curr_prod >> 1; 
                 next_B = B >> 1;
@@ -49,7 +52,7 @@ module t07_FPU_mult(
                 next_B = B >> 1;
             end
             next_ctr = counter + 1;
-            // if (counter == '1) next_busy = 0;
+            if (counter == '1) next_busy = 0;
         end
         
         //determines sign of product
@@ -61,10 +64,10 @@ module t07_FPU_mult(
 
         //parsing product to fit 32 bit normalized fixed point form; passes overflow flag
         if (product[63:55] == 9'b0) begin
-            assign result = product[54:23];
+            result = product[54:23];
             overflow = 0;
         end else begin
-            assign result = 32'b0;
+            result = 32'b0;
             overflow = 1;
         end
 

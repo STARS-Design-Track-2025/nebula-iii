@@ -1,11 +1,7 @@
-/// sta-blackbox
-
-// OpenRAM SRAM model
-// Words: 2048
-// Word size: 32
-// Write size: 8
-
-module sky130_sram_8kbyte_1r1w_32x2048_8(
+module sram_for_FPGA #(
+  // Uncomment if using external memory file
+  // parameter FILENAME = "filename.hex"  // THIS IS YOUR MEMORY FILE OR HEX FILE!!
+)(
 `ifdef USE_POWER_PINS
     vccd1,
     vssd1,
@@ -20,10 +16,6 @@ module sky130_sram_8kbyte_1r1w_32x2048_8(
   parameter DATA_WIDTH = 32 ;
   parameter ADDR_WIDTH = 11 ;
   parameter RAM_DEPTH = 1 << ADDR_WIDTH;
-  // FIXME: This delay is arbitrary.
-  parameter DELAY = 3 ;
-  parameter VERBOSE = 1 ; //Set to 0 to only display warnings
-  parameter T_HOLD = 1 ; //Delay to hold dout value after posedge. Value is arbitrary
 
 `ifdef USE_POWER_PINS
     inout vccd1;
@@ -41,14 +33,13 @@ module sky130_sram_8kbyte_1r1w_32x2048_8(
 
   reg [DATA_WIDTH-1:0]    mem [0:RAM_DEPTH-1];
 
+  // Uncomment if using external memory file
+  // initial $readmemh(FILENAME, mem, 0, 8);  // SPECIFY UP TO WHICH WORD ADDRESS YOU WILL WRITE!!
+
   reg  csb0_reg;
   reg [NUM_WMASKS-1:0]   wmask0_reg;
   reg [ADDR_WIDTH-1:0]  addr0_reg;
   reg [DATA_WIDTH-1:0]  din0_reg;
-
-  initial begin
-    $readmemh("instruction_ex.mem", mem);
-  end
 
   // All inputs are registers
   always @(posedge clk0)
@@ -57,8 +48,6 @@ module sky130_sram_8kbyte_1r1w_32x2048_8(
     wmask0_reg = wmask0;
     addr0_reg = addr0;
     din0_reg = din0;
-    if ( !csb0_reg && VERBOSE )
-      $display($time," Writing %m addr0=%b din0=%b wmask0=%b",addr0_reg,din0_reg,wmask0_reg);
   end
 
   reg  csb1_reg;
@@ -70,11 +59,6 @@ module sky130_sram_8kbyte_1r1w_32x2048_8(
   begin
     csb1_reg = csb1;
     addr1_reg = addr1;
-    if (!csb0 && !csb1 && (addr0 == addr1))
-         $display($time," WARNING: Writing and reading addr0=%b and addr1=%b simultaneously!",addr0,addr1);
-    #(T_HOLD) dout1 = 32'bx;
-    if ( !csb1_reg && VERBOSE ) 
-      $display($time," Reading %m addr1=%b dout1=%b",addr1_reg,mem[addr1_reg]);
   end
 
 
@@ -99,7 +83,7 @@ module sky130_sram_8kbyte_1r1w_32x2048_8(
   always @ (negedge clk1)
   begin : MEM_READ1
     if (!csb1_reg)
-       dout1 <= #(DELAY) mem[addr1_reg];
+       dout1 <= mem[addr1_reg];
   end
 
 endmodule

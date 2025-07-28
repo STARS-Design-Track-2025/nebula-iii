@@ -4,7 +4,9 @@ module t07_ALU (
     output logic [31:0] result,
     output logic [6:0] ALUflags
 );
-//choose operation- Page 51 RVALP
+
+
+    //choose operation- Page 51 RVALP
     always_comb begin
         case (ALUOp)
             4'd0: result = valA + valB; //add, has overflow 

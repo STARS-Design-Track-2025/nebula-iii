@@ -21,7 +21,7 @@ logic [31:0] read_data1, read_data2;
 
 t07_registers dut (
    .clk(clk),
-   .rst(rst),
+   .nrst(rst),
    .read_reg1(read_reg1),
    .read_reg2(read_reg2),
    .write_reg(write_reg),
@@ -47,7 +47,7 @@ initial begin
    $dumpfile("t07_registers.vcd");
    $dumpvars(0, t07_registers_tb);
    clk = 0;
-   rst = 0;
+   rst = 1;
    read_reg1 = 0;
    read_reg2 = 0;
    write_reg = 0;
@@ -57,6 +57,8 @@ initial begin
 
 
    //apply rst
+   #10
+   rst = 0;
    #10
    rst = 1;
 

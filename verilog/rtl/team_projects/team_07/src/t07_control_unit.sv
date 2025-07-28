@@ -83,7 +83,7 @@ always_comb begin
         7'b0010011: begin /*I-Type*/
             memSrc = 0;
             invalid_Op = 0;
-            regWriteSrc = 01;
+            regWriteSrc = 'b010;
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
@@ -108,11 +108,11 @@ always_comb begin
         end
 
         7'b0100011: begin /*(S-Type)*/
-            ALUOp = 4'd10; //ALU default
+            ALUOp = 4'd0; //ALU add = add rs1 & imm
             memSrc = 0;
             invalid_Op = 0;
-            ALUSrc = 0;
-            regWrite = 0;
+            ALUSrc = 1; //immediate value
+            regWrite = 0; //check
             branch = 0;
             memWrite = 1;
             memRead = 0;
