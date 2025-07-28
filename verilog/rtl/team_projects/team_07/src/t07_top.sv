@@ -86,32 +86,26 @@ sram_WB_Wrapper sramWrapper(.wb_clk_i(clk), .wb_rst_i(nrst), .wbs_stb_i(stb_out)
 .wbs_dat_i(data_out), .wbs_adr_i(addr_out), .wbs_ack_o(ackDec_in), .wbs_dat_o(dataDec_in));
 
 t07_ExternalRegister uut (
-        .clk(clk),
-        .nrst(nrst),
-        .ReadRegister(addrToReg),
-        .SPIAddress(SPIAddress),
-        .write_data(memData_in),
-        .ri(ri_out),
-        .ChipSelect(ChipSelectIn),
-        .read_data(write_data),
-        .ack_REG(ackReg)
-    );
+    .clk(clk),
+    .nrst(nrst),
+    .ReadRegister(addrToReg),
+    .SPIAddress(SPIAddress),
+    .write_data(memData_in),
+    .ri(ri_out),
+    .ChipSelect(ChipSelectIn),
+    .read_data(write_data),
+    .ack_REG(ackReg)
+);
 
-    logic [7:0] ESP_in; // Input from the ESP32
-    logic SCLK_out; // Clock signal for the ESP32
-    logic ChipSelectOut;
-    logic [4:0] SPIAddress;
-    logic [31:0] write_data;
-   
-    t07_SPI_ESP32 spi (
-        .ESP_in(ESP_in), 
-        .clk(clk),
-        .nrst(nrst),
-        .SPI_Address(SPIAddress),
-        .dataForExtReg(write_data),   
-        .ChipSelectIn(ChipSelectIn),
-        .ChipSelectOut(ChipSelectOut),
-        .SCLK_out(SCLK_out) // Not used in this test
-    );
+t07_SPI_ESP32 spi (
+    .ESP_in(ESP_in), 
+    .clk(clk),
+    .nrst(nrst),
+    .SPI_Address(SPIAddress),
+    .dataForExtReg(write_data),   
+    .ChipSelectIn(ChipSelectIn),
+    .ChipSelectOut(ChipSelectOut),
+    .SCLK_out(SCLK_out) // Not used in this test
+);
 
 endmodule
