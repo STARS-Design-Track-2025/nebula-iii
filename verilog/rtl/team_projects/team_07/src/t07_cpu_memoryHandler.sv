@@ -34,14 +34,13 @@ module t07_cpu_memoryHandler (
     output logic [31:0] dataToCPU,  // Data to the register
     output logic freeze,            // Freeze signal to pause CPU operations during memory access
     output logic [1:0] rwi,          // read - 01, write - 10, idle - 00, fetch -11 
-    output logic fetchRead,
     output state_t0 state,
     output logic addrControl, // control for address mux, 0 when fetch, 1 when l/s
     output logic busy_o_edge
 
 );
     //edge detector
-    logic load_ct;
+    logic load_ct, dataCt;
     logic prev_busy_o;
     state_t0 state_n;
 
@@ -67,8 +66,8 @@ module t07_cpu_memoryHandler (
     always_comb begin
         case(state) 
             FETCH: //state 0
-                begin   
-                    fetchRead = '1; 
+                begin
+                    dataCt = 0;   
                     load_ct = '0; 
                     rwi = 'b11; 
                     freeze = 0; //fetch instr 
@@ -76,7 +75,7 @@ module t07_cpu_memoryHandler (
                 end
             F_WAIT: //state 1
                 begin 
-                    fetchRead = '0; 
+                    dataCt = 0;
                     load_ct = '0; 
                     rwi = 'b00; 
                     freeze = 1;
@@ -88,26 +87,27 @@ module t07_cpu_memoryHandler (
                 end
             DATA: //state 2
                 begin 
-                    fetchRead = '0; 
                     if(busy_o_edge == 'b1 & memWrite == 1) begin //STORE
                         state_n = D_WAIT; 
+                        dataCt = 0;
                         rwi = 'b01; 
                         freeze = 1; 
                         load_ct = 0;
                     end else if (busy_o_edge == 1 & memRead == 1) begin //LOAD
                         state_n = D_WAIT; 
+                        dataCt = 0;
                         load_ct = load_ct + 1; 
                         rwi = 'b10; 
                         freeze = 1; 
-                    end else begin 
-                        state_n = FETCH; 
-                    end 
+                    end else if (dataCt < 1 & busy_o_edge == 1) begin 
+                        state_n = D_WAIT; 
+                        dataCt = 1;
+                    end else begin state_n = FETCH; end
                 end
              D_WAIT: //state 3
                 begin 
-                    fetchRead = '0; 
                     freeze = 1;
-                    if(load_ct == 0) begin 
+                    if(load_ct == 0 || dataCt == 1) begin 
                         state_n = FETCH; 
                     end else if (load_ct > 1) begin 
                         state_n = DATA; 

@@ -20,7 +20,7 @@ module t07_MMIO (
 
     // input from CPU top
     input logic [31:0] addr_in, // Program Counter address or Internal Memory address 
-    input logic fetchRead_in, addrControl_in,
+    input logic addrControl_in,
 
 
 
@@ -46,7 +46,7 @@ module t07_MMIO (
     output logic read, write, //rw for wishbone manager
     output logic [31:0] addr_out, // address to instruction/Data memory
     output logic [31:0] writeData_out, // data to write to instruction/Data memory
-    output logic fetchRead_out, addrControl_out
+    output logic addrControl_out
 );
 
 always_comb begin
@@ -63,7 +63,6 @@ always_comb begin
     writeData_outTFT = 32'b0; // no data to SPI TFT
     ExtData_out = 32'b0; // no data to internal memory
     writeInstruction_out = 32'b0; // no instruction to fetch module
-    fetchRead_out = fetchRead_in; //fetch read signal
     addrControl_out = addrControl_in; //address for next instr or data mem
 
     if (ack_TFT || busy_o) begin busy = '1; end

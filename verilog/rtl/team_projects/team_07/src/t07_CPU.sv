@@ -3,7 +3,7 @@ module t07_CPU(
     output logic [31:0] exMemData_out, externalMemAddr, //PCdata_out to MMIO or instr
     input logic clk, nrst, busy,
     output logic [1:0] rwi,
-    output logic fetchRead, addrControl, //for fetch
+    output logic addrControl, //for fetch
     output logic FPUFlag, invalError //to GPIO
 );
     logic [31:0] inst, externalMemData, externalMem_out;
@@ -59,7 +59,7 @@ module t07_CPU(
 
     t07_cpu_memoryHandler internalMem(.state(state), .clk(clk), .nrst(nrst), .busy(busy), .memOp(memOp), .memWrite(memWrite), .memRead(memRead), .memSource(memSource), .ALU_address(ALUResult), 
     .FPU_data('0), .Register_dataToMem(dataRead2), .ExtData(externalMemData), .write_data(exMemData_out), .ExtAddress(intMemAddr), .dataToCPU(intMem_out), 
-    .freeze(freeze), .rwi(rwi), .addrControl(addrControl), .fetchRead(fetchRead), .busy_o_edge(busy_o_edge));
+    .freeze(freeze), .rwi(rwi), .addrControl(addrControl), .busy_o_edge(busy_o_edge));
 
     t07_ALU ALU(.valA(dataRead1), .valB(ALU_in2), .result(ALUResult), .ALUflags(ALUFlags), .ALUOp(ALUOp));
     t07_muxes muxFPUReg(.a(fcsr_out), .b(dataRead2), .sel(FPUSrc), .out(memRegSource)); //check when FPU is added
