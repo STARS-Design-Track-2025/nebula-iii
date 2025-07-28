@@ -40,56 +40,56 @@ module t04_screensignalLogic (
     memCommand = 8'h2C;
 
     case (controlBus)
-      32'b100000000: begin
-        case (ct)
-          00: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
-          01: begin nextCsx = 0; end
-          02: begin nextDcx = 0; end
-          03: begin nextWrx = 0; nextData = xCommand; end
-          04: begin nextWrx = 1; end
-          05: begin nextDcx = 1; nextData = 8'b0; nextWrx = 0; end
-          06: begin nextWrx = 1; end
-          07: begin nextWrx = 0; nextData = 8'b0; end
-          08: begin nextWrx = 1; end
-          09: begin nextWrx = 0; nextData = 8'b1; end
-          10: begin nextWrx = 1; end
-          11: begin nextWrx = 0; nextData = 8'b00111111; end
-          12: begin nextWrx = 1; end
-          13: begin nextCsx = 1; nextData = 0; end // new com
-          14: begin nextCsx = 0; end
-          15: begin nextDcx = 0; end
-          16: begin nextWrx = 0; nextData = yCommand; end
-          17: begin nextWrx = 1; end
-          18: begin nextDcx = 1; nextData = 8'b0; nextWrx = 0; end
-          19: begin nextWrx = 1; end
-          20: begin nextWrx = 0; nextData = 8'd0; end
-          21: begin nextWrx = 1; end
-          22: begin nextWrx = 0; nextData = 8'b0; end
-          23: begin nextWrx = 1; end
-          24: begin nextWrx = 0; nextData = 8'd239; end
-          25: begin nextWrx = 1; end
-          26: begin nextCsx = 1; nextData = 0; end // new com
-          27: begin nextCsx = 0; end
-          28: begin nextDcx = 0; end
-          29: begin nextData = memCommand; nextWrx = 0; end
+      // 32'b100000000: begin
+      //   case (ct)
+      //     00: begin nextWrx = 1; nextDcx = 1; nextCsx = 1; nextData = 0; end
+      //     01: begin nextCsx = 0; end
+      //     02: begin nextDcx = 0; end
+      //     03: begin nextWrx = 0; nextData = xCommand; end
+      //     04: begin nextWrx = 1; end
+      //     05: begin nextDcx = 1; nextData = 8'b0; nextWrx = 0; end
+      //     06: begin nextWrx = 1; end
+      //     07: begin nextWrx = 0; nextData = 8'b0; end
+      //     08: begin nextWrx = 1; end
+      //     09: begin nextWrx = 0; nextData = 8'b1; end
+      //     10: begin nextWrx = 1; end
+      //     11: begin nextWrx = 0; nextData = 8'b00111111; end
+      //     12: begin nextWrx = 1; end
+      //     13: begin nextCsx = 1; nextData = 0; end // new com
+      //     14: begin nextCsx = 0; end
+      //     15: begin nextDcx = 0; end
+      //     16: begin nextWrx = 0; nextData = yCommand; end
+      //     17: begin nextWrx = 1; end
+      //     18: begin nextDcx = 1; nextData = 8'b0; nextWrx = 0; end
+      //     19: begin nextWrx = 1; end
+      //     20: begin nextWrx = 0; nextData = 8'd0; end
+      //     21: begin nextWrx = 1; end
+      //     22: begin nextWrx = 0; nextData = 8'b0; end
+      //     23: begin nextWrx = 1; end
+      //     24: begin nextWrx = 0; nextData = 8'd239; end
+      //     25: begin nextWrx = 1; end
+      //     26: begin nextCsx = 1; nextData = 0; end // new com
+      //     27: begin nextCsx = 0; end
+      //     28: begin nextDcx = 0; end
+      //     29: begin nextData = memCommand; nextWrx = 0; end
           
-          default: begin
-            if (ct >= 30 && ct < RANGE) begin
-              case (wct % 7)
-                0: begin nextWrx = 1; end
-                2: begin nextWrx = 0; nextDcx = 1; nextData = 8'b11111111; end
-                4: begin nextWrx = 1; end
-                6: begin nextWrx = 0; nextData = 8'b11111111; end
-              endcase
-            end
-          end
+      //     default: begin
+      //       if (ct >= 30 && ct < RANGE) begin
+      //         case (wct % 7)
+      //           0: begin nextWrx = 1; end
+      //           2: begin nextWrx = 0; nextDcx = 1; nextData = 8'b00000111; end
+      //           4: begin nextWrx = 1; end
+      //           6: begin nextWrx = 0; nextData = 8'b11100000; end
+      //         endcase
+      //       end
+      //     end
 
-          RANGE: begin nextWrx = 1; nextData = 0; end
-          RANGE + 1: begin nextCsx = 1; end
-          RANGE + 2: begin ack = 1; end
-          RANGE + 3: begin ack = 0; end
-        endcase
-      end
+      //     RANGE: begin nextWrx = 1; nextData = 0; end
+      //     RANGE + 1: begin nextCsx = 1; end
+      //     RANGE + 2: begin ack = 1; end
+      //     RANGE + 3: begin ack = 0; end
+      //   endcase
+      // end
 
       32'b10000000: begin //reseton
         case (ct)           
@@ -118,7 +118,7 @@ module t04_screensignalLogic (
           2450046: begin nextWrx = 1; end
           2450048: begin nextCsx = 1; end
           2450050: begin ack = 1; end
-          2450052: begin ack = 0; end 
+          2450052: begin ack = 0; end
         endcase
       end
 
