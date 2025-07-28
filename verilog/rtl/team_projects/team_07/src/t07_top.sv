@@ -52,6 +52,7 @@ logic [(32 * (10)) - 1:0] dataDec_in; //data from SRAM to WB Dec
 //inputs to MMIO from registers
 logic [31:0] regData_in;
 logic ackReg; 
+logic ChipSelectIn;
 //outputs to registers from MMIO
 logic ri_out;
 logic [4:0] addrToReg;
@@ -65,7 +66,7 @@ t07_CPU CPU( .addrControl(addrControl), .busy(busyCPU), .externalMemAddr(exMemAd
 
 t07_MMIO MMIO(.addrControl_in(addrControl), .addrControl_out(addrControlWB), .addr_in(exMemAddr_CPU), .memData_in(exMemData_CPU), .rwi_in(rwi_in), .ExtData_in(dataToMMIO), 
 .regData_in(regData_in), .ack_REG(ackReg), .ack_TFT(), .ri_out(ri_out), .addr_outREG(addrToReg), .ExtData_out(memData_in), .busy(busyCPU), .writeInstruction_out(instr), 
-.writeData_outTFT(dataToTFT), .wi_out(wi_out), .addr_outTFT(addrToTFT), .read(read), .write(write), .addr_out(addrToSRAM), .writeData_out(dataToSRAM), .busy_o(busyToMMIO));
+.writeData_outTFT(dataToTFT), .wi_out(wi_out), .addr_outTFT(addrToTFT), .read(read), .write(write), .addr_out(addrToSRAM), .writeData_out(dataToSRAM), .busy_o(busyToMMIO), .ChipSelReg(ChipSelectIn));
 
 wishbone_manager wishbone0(.nRST(nrst), .CLK(clk), .DAT_I(dataArToWM), .ACK_I(ackToWM), .CPU_DAT_I(dataToSRAM), 
 .ADR_I(addrToSRAM), .SEL_I(4'hF), .WRITE_I(write), .READ_I(read), .ADR_O(addrWMToAr), .DAT_O(dataWMToAr), 
@@ -83,5 +84,34 @@ wishbone_decoder wishboneD0 (.CLK(clk), .nRST(nrst), .wbs_ack_i_periph(ackDec_in
 
 sram_WB_Wrapper sramWrapper(.wb_clk_i(clk), .wb_rst_i(nrst), .wbs_stb_i(stb_out), .wbs_cyc_i(cyc_out), .wbs_we_i(we_out), .wbs_sel_i(sel_out),
 .wbs_dat_i(data_out), .wbs_adr_i(addr_out), .wbs_ack_o(ackDec_in), .wbs_dat_o(dataDec_in));
+
+t07_ExternalRegister uut (
+        .clk(clk),
+        .nrst(nrst),
+        .ReadRegister(addrToReg),
+        .SPIAddress(SPIAddress),
+        .write_data(memData_in),
+        .ri(ri_out),
+        .ChipSelect(ChipSelectIn),
+        .read_data(write_data),
+        .ack_REG(ackReg)
+    );
+
+    logic [7:0] ESP_in; // Input from the ESP32
+    logic SCLK_out; // Clock signal for the ESP32
+    logic ChipSelectOut;
+    logic [4:0] SPIAddress;
+    logic [31:0] write_data;
+   
+    t07_SPI_ESP32 spi (
+        .ESP_in(ESP_in), 
+        .clk(clk),
+        .nrst(nrst),
+        .SPI_Address(SPIAddress),
+        .dataForExtReg(write_data),   
+        .ChipSelectIn(ChipSelectIn),
+        .ChipSelectOut(ChipSelectOut),
+        .SCLK_out(SCLK_out) // Not used in this test
+    );
 
 endmodule

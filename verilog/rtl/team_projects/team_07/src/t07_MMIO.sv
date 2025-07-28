@@ -85,10 +85,11 @@ always_comb begin
             end
         end else if (rwi_in == 2'b10) begin //read from internal memory of the CPU
             if(addr_in > 32'd1024 && addr_in <= 32'd1056) begin //change address number later          // read from external register
+                addr_outREG = addr_in[4:0]; // address to read from external register
                 if(ChipSelReg == 1) begin
                     //busy = ack_REG; //set busy signal to indicate memory handler is processing
                     ri_out = 1'b1; //read from external register
-                    addr_outREG = addr_in[4:0]; // address to read from external register
+                    
                     ExtData_out = regData_in; // data from external register to internal memory
                 end //else begin
                     //busy = 1'b1;

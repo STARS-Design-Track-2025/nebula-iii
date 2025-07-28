@@ -38,7 +38,13 @@ end
 
 always_comb begin
     ChipSelectOut=ChipSelectIn;
-    if (bit_count == 0) begin
+    if (ChipSelectIn == 1) begin 
+        n_bit_count = 0; 
+        n_address = 0;
+        SPI_Address = 0;
+        n_MOSI_shiftReg = '0;
+        f_MOSI_shiftReg = '0;
+    end else if (bit_count == 0) begin
         n_MOSI_shiftReg = {MOSI_shiftReg[23:0], ESP_in}; // Shift in the incoming data
         n_bit_count = 1; // Start counting bits from 1
         n_address = address;
