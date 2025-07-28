@@ -3,8 +3,10 @@
 module t07_SPI_ESP32 (
     input logic [7:0] ESP_in, 
     input logic clk, nrst,
+    input logic ChipSelectIn,
     output logic [4:0] SPI_Address, // Address for the external register],
     output logic [31:0] dataForExtReg, // Data to write to the external register
+    output logic ChipSelectOut,
     output logic SCLK_out // Clock signal for the ESP32
 
 );
@@ -35,7 +37,7 @@ always_ff @(negedge nrst, posedge clk) begin
 end
 
 always_comb begin
-
+    ChipSelectOut=ChipSelectIn;
     if (bit_count == 0) begin
         n_MOSI_shiftReg = {MOSI_shiftReg[23:0], ESP_in}; // Shift in the incoming data
         n_bit_count = 1; // Start counting bits from 1
