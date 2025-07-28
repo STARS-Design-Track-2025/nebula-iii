@@ -55,10 +55,9 @@ module top (
   t04_top team_04_inst (
   .clk(hz100),
   .rst(pb[19]),
-  .column(ss0[3:0]),
+  .column(right[7:4]),
   .button(ss1[4:0]),
   .row(pb[17:14]),
-  .column(right[7:4]),
   .screenCsx(right[0]),
   .screenDcx(right[1]),
   .screenWrx(right[2]),
