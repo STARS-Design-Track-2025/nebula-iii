@@ -23,7 +23,7 @@ logic [21:0] clkdivcount = 0, clkdivcount_n;
 
 logic [5:0] count;
 t08_top topmodule(
-  .clk(hz2), .nRst(~pb[19]), .en(1'b1), 
+  .clk(hz2), .nRst(Q1), .en(1'b1), 
   .touchscreen_interrupt(0), .SDAin(0), .SDAout(), .SDAoeb(), .touchscreen_scl(),
   .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx));
 
@@ -54,6 +54,19 @@ assign red = hz2;
           clkdivcount_n = clkdivcount + 1;
       end
   end
+
+logic Q0, Q1;
+
+always_ff@(posedge hwclk, posedge reset) begin
+  if(reset) begin
+    Q0 <= 0;
+    Q1<= 0;
+  end
+  else begin
+   Q0  <= ~pb[19];
+   Q1 <= Q0&pb[19]; //~~pb19
+  end end
+
 
 
 endmodule
