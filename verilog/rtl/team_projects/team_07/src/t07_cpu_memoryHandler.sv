@@ -40,7 +40,7 @@ module t07_cpu_memoryHandler (
 
 );
     //edge detector
-    logic load_ct, dataCt;
+    logic load_ct;
     logic prev_busy_o;
     state_t0 state_n;
 
@@ -67,7 +67,7 @@ module t07_cpu_memoryHandler (
         case(state) 
             FETCH: //state 0
                 begin
-                    dataCt = 0;   
+                    addrControl = 1;
                     load_ct = '0; 
                     rwi = 'b11; 
                     freeze = 0; //fetch instr 
@@ -75,7 +75,7 @@ module t07_cpu_memoryHandler (
                 end
             F_WAIT: //state 1
                 begin 
-                    dataCt = 0;
+                    addrControl = 1;
                     load_ct = '0; 
                     rwi = 'b00; 
                     freeze = 1;
@@ -87,27 +87,26 @@ module t07_cpu_memoryHandler (
                 end
             DATA: //state 2
                 begin 
-                    if(busy_o_edge == 'b1 & memWrite == 1) begin //STORE
+                    addrControl = 1;
+                    if(memWrite == 1) begin //STORE
+                        addrControl = 0;
                         state_n = D_WAIT; 
-                        dataCt = 0;
                         rwi = 'b01; 
                         freeze = 1; 
                         load_ct = 0;
-                    end else if (busy_o_edge == 1 & memRead == 1) begin //LOAD
+                    end else if (memRead == 1) begin //LOAD
+                        addrControl = 0;
                         state_n = D_WAIT; 
-                        dataCt = 0;
                         load_ct = load_ct + 1; 
                         rwi = 'b10; 
                         freeze = 1; 
-                    end else if (dataCt < 1 & busy_o_edge == 1) begin 
-                        state_n = D_WAIT; 
-                        dataCt = 1;
                     end else begin state_n = FETCH; end
                 end
              D_WAIT: //state 3
                 begin 
+                    addrControl = 0;
                     freeze = 1;
-                    if(load_ct == 0 || dataCt == 1) begin 
+                    if(load_ct == 0) begin 
                         state_n = FETCH; 
                     end else if (load_ct > 1) begin 
                         state_n = DATA; 
@@ -122,13 +121,13 @@ module t07_cpu_memoryHandler (
 
 always_comb begin
     if (busy) begin
-        write_data = 32'b0; // No data to write when busy
-        ExtAddress = 32'b0; // No address to write to when busy
-        dataToCPU = 32'b0; // No data to return to CPU when busy
+        //write_data = 32'b0; // No data to write when busy
+        //ExtAddress = 32'b0; // No address to write to when busy
+        //dataToCPU = 32'b0; // No data to return to CPU when busy
         //rwi = 2'b00; // Idle state when busy
-    end else begin
+    //end else begin
         if(memWrite) begin //write - store word
-            addrControl = 0;
+            //addrControl = 0;
             dataToCPU = 32'b0; // No data to return to CPU on write operation
             //rwi = 2'b01; // Write operation
             if(memSource) begin
@@ -157,7 +156,7 @@ always_comb begin
                 end 
             end 
         end else if(memRead) begin //read - load word
-            addrControl = 0;
+            //addrControl = 1;
             //rwi = 2'b10; //Read operation
             ExtAddress = ALU_address; // Use ALU address for memory operations
             write_data = 32'b0; // No data to write in read operation
@@ -176,7 +175,7 @@ always_comb begin
             end
         end else begin
             //rwi = 2'b00; // Idle state
-            addrControl = 1; //fetch addr
+            //addrControl = 1; //fetch addr
             write_data = 32'b0; // No data to write
             ExtAddress = ALU_address; 
             dataToCPU = 32'b0; // No data to return to CPU
