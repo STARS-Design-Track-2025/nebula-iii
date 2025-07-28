@@ -13,6 +13,7 @@ module t07_MMIO (
     //inputs from external register
     input logic [31:0] regData_in, //data from external register
     input logic ack_REG, //acknowledge signal from external register
+    input logic ChipSelReg, // chip select from external register to indicate we can read
 
     //inputs from SPI TFT
     input logic ack_TFT, //acknowledge signal from SPI TFT
@@ -80,10 +81,14 @@ always_comb begin
             end
         end else if (rwi_in == 2'b10) begin //read from internal memory of the CPU
             if(addr_in > 32'd1024 && addr_in <= 32'd1056) begin //change address number later          // read from external register
-                busy = ack_REG; //set busy signal to indicate memory handler is processing
-                ri_out = 1'b1; //read from external register
-                addr_outREG = addr_in[4:0]; // address to read from external register
-                ExtData_out = regData_in; // data from external register to internal memory
+                if(ChipSelReg == 1) begin
+                    busy = ack_REG; //set busy signal to indicate memory handler is processing
+                    ri_out = 1'b1; //read from external register
+                    addr_outREG = addr_in[4:0]; // address to read from external register
+                    ExtData_out = regData_in; // data from external register to internal memory
+                end else begin
+                    busy = 1'b1;
+                end
             end else if (addr_in > 32'd1056 && addr_in <= 32'd1792) begin //change address number later     // read from data memory
                 busy = busy_o; //set busy signal to indicate memory handler is processing
                 //rwi_out = 2'b10; //read from Data memory
