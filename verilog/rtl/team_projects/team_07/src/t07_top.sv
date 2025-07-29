@@ -96,10 +96,10 @@ t07_ExternalRegister uut (
     .nrst(nrst),
     .ReadRegister(addrToReg),
     .SPIAddress(SPIAddress),
-    .write_data(memData_in),
+    .write_data(write_data),
     .ri(ri_out),
     .ChipSelect(ChipSelectIn),
-    .read_data(write_data),
+    .read_data(regData_in),
     .ack_REG(ackReg)
 );
 

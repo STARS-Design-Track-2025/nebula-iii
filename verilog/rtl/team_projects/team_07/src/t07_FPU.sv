@@ -113,4 +113,4 @@ module t07_FPU (
 //         if (valA != valB) begin FPUflags[5] = 1; end //not equal
 //         if (valA == valB) begin FPUflags[6] = 1; end //equal
 //     end
-// endmodule
+endmodule
