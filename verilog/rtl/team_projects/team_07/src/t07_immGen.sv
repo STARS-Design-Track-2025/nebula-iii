@@ -63,7 +63,7 @@ always_comb begin
     end
 
     7'b1100011: begin // b-type (all types)
-        immediate = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
+        immediate = {{20{instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
     end
     7'b1101111: begin // j-type
         immediate = {{12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0};
