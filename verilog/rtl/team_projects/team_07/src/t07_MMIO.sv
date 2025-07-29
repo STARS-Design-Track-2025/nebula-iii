@@ -1,5 +1,4 @@
 module t07_MMIO(
-    input clk, nrst, 
     //CPU
     input logic [31:0] addr_in, //addr for instruction fetch
     output logic [31:0] instr_out, //instr sent to fetch
@@ -108,6 +107,6 @@ always_comb begin
             displayData = memData_i; 
         end
     end
-    
+
 end
 endmodule
