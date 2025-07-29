@@ -62,7 +62,7 @@ logic [4:0] addrToReg;
 logic [31:0] dataToTFT, addrToTFT;
 logic wi_out; 
 
-logic [7:0] ESP_in; // Input from the ESP32
+//logic [7:0] ESP_in; // Input from the ESP32
 logic SCLK_out; // Clock signal for the ESP32
 logic ChipSelectOut;
 logic [4:0] SPIAddress;
