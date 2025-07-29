@@ -3,7 +3,8 @@ module t08_display_testing (
   input logic [22:0] ct,
   input logic clk, rst,
   output logic ack, dcx, wrx, csx,
-  output logic [7:0] data  
+  output logic [7:0] data,
+  output logic [22:0] ct_o
 );
   logic [7:0] nextData, currentData;
   logic nextDcx, nextCsx, nextWrx, currentDcx, currentCsx, currentWrx;
@@ -14,7 +15,8 @@ module t08_display_testing (
   assign wrx = currentWrx;
   assign dcx = currentDcx;
   assign data = currentData;
-
+  assign ct_o = ct;
+  
   always_comb begin
     nextData = currentData;
     nextCsx = currentCsx;
