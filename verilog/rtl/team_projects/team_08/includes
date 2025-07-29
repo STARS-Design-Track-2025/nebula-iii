@@ -13,3 +13,4 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_top.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_spi.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_ssdec.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_display.sv
