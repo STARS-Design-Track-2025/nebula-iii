@@ -6,7 +6,7 @@ module t07_CPU(
     output logic busy_edge_o,
     output logic FPUFlag, invalError //to GPIO
 );
-    logic [31:0] inst, externalMemData, externalMem_out;
+    logic [31:0] inst;
     logic freeze; //to external memory 
     //decoder out
     logic [6:0] Op, funct7;
@@ -58,7 +58,7 @@ module t07_CPU(
     .enable(regEnable), .read_data1(dataRead1), .read_data2(dataRead2));
 
     t07_memoryHandler internalMem(.state(state), .clk(clk), .nrst(nrst), .busy(busy), .memOp(memOp), .memWrite(memWrite), .memRead(memRead), .memSource(memSource), .ALU_address(ALUResult), 
-    .FPU_data('0), .Register_dataToMem(dataRead2), .ExtData(externalMemData), .write_data(exMemData_out), .ExtAddress(intMemAddr), .dataToReg(intMem_out), 
+    .FPU_data_i('0), .regData_i(dataRead2), .dataMMIO_i(memData_in), .dataMMIO_o(exMemData_out), .addrMMIO_o(intMemAddr), .regData_o(intMem_out), 
     .freeze(freeze), .rwi(rwi), .addrControl(addrControl), .busy_o_edge(busy_edge_o));
 
     t07_ALU ALU(.valA(dataRead1), .valB(ALU_in2), .result(ALUResult), .ALUflags(ALUFlags), .ALUOp(ALUOp));
