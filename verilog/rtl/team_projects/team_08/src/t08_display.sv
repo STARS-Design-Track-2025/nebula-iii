@@ -44,25 +44,27 @@ module t08_display (
           2: begin nextDcx = 0; end
           3: begin nextWrx = 0; nextData = swrstCommand; end 
           4: begin nextWrx = 1; end
-          20010: begin nextWrx = 0; nextData = sleepoCommand; end
-          20011: begin nextWrx = 1; end
-          1200012: begin nextWrx = 0; nextData = rgbCommand; end
-          1200013: begin nextWrx = 1; end
-          1200014: begin nextDcx = 1; end
-          1200015: begin nextWrx = 0; nextData = rgbParam; end
-          1200016: begin nextWrx = 1; end
-          1200017: begin nextDcx = 0; end
-          1200018: begin nextWrx = 0; nextData = oriCommand; end
-          1200019: begin nextWrx = 1; end
-          1200020: begin nextDcx = 1; end
-          1200021: begin nextWrx = 0; nextData = oriParam; end
-          1200022: begin nextWrx = 1; end
-          1200023: begin nextDcx = 0; end
-          1200024: begin nextWrx = 0; nextData = disponCommand; end
-          1200025: begin nextWrx = 1; end
-          1200026: begin nextCsx = 1; end
-          1200027: begin ack = 1; end
-          1200028: begin ack = 0; end 
+          
+          7: begin nextWrx = 0; nextData = sleepoCommand; end
+          8: begin nextWrx = 1; end
+          
+          12: begin nextWrx = 0; nextData = rgbCommand; end
+          13: begin nextWrx = 1; end
+          14: begin nextDcx = 1; end
+          15: begin nextWrx = 0; nextData = rgbParam; end
+          16: begin nextWrx = 1; end
+          17: begin nextDcx = 0; end
+          18: begin nextWrx = 0; nextData = oriCommand; end
+          19: begin nextWrx = 1; end
+          20: begin nextDcx = 1; end
+          21: begin nextWrx = 0; nextData = oriParam; end
+          22: begin nextWrx = 1; end
+          23: begin nextDcx = 0; end
+          24: begin nextWrx = 0; nextData = disponCommand; end
+          25: begin nextWrx = 1; end
+          26: begin nextCsx = 1; end
+          27: begin ack = 1; end
+          28: begin ack = 0; end 
         endcase
       end
 
