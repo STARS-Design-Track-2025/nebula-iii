@@ -1,7 +1,8 @@
 `timescale 1ns/1ps
 
 module t07_MMIO (
-//inputs
+    input clk, nrst, 
+
     // inputs from internal memory
     input logic [31:0] memData_in,  // data from internal memory
     input logic [1:0] rwi_in, //read write or idle from internal memory
@@ -22,9 +23,6 @@ module t07_MMIO (
     input logic [31:0] addr_in, // Program Counter address or Internal Memory address 
     input logic addrControl_in,
 
-
-
-//outputs
     // outputs to external register
     output logic ri_out, //read or idle signal to external register
     output logic [4:0] addr_outREG, // address to external register
@@ -34,7 +32,7 @@ module t07_MMIO (
     output logic busy, //to CPU internal memory handler
 
     // outputs to fetch
-    output logic [31:0] writeInstruction_out, // ext instruction to write to fetch module in CPU
+    output logic [31:0] instr_out, // ext instruction to write to fetch module in CPU
 
     //output to SPI TFT
     output logic [31:0] writeData_outTFT, // data to write to SPT TFT
@@ -49,6 +47,19 @@ module t07_MMIO (
     output logic addrControl_out
 );
 
+//edge detector
+logic prev_busy_o, busy_o_edge;
+
+always_ff @(negedge nrst, posedge clk) begin
+    if(~nrst) begin
+        prev_busy_o <= '0;
+    end else begin
+        prev_busy_o <= busy;
+    end
+end
+
+assign busy_o_edge = (~busy && prev_busy_o); //detects falling edge
+
 always_comb begin
     busy = 1'b0; // default busy signal to not busy
     ri_out = 1'b0; // idle external register
@@ -62,7 +73,7 @@ always_comb begin
     writeData_out = 32'b0; // no data to instruction/Data memory
     writeData_outTFT = 32'b0; // no data to SPI TFT
     ExtData_out = 32'b0; // no data to internal memory
-    writeInstruction_out = 32'hDEADBEEF; // no instruction to fetch module
+    instr_out = 32'hDEADBEEF; // no instruction to fetch module
     addrControl_out = addrControl_in; //address for next instr or data mem
 
     if (ack_TFT || busy_o) begin busy = '1; end
@@ -108,11 +119,14 @@ always_comb begin
                         //rwi_out = 2'b10; //end //read from instruction
                 addr_out = {8'h33, addr_in[23:0]}; // address for instruction/Data memory from cpu top mux
                 ExtData_out = 32'b0; // no data to internal memory
-                writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
+                instr_out = ExtData_in; // next instruction to write to fetch module in CPU
         end
     end 
 
-    if(rwi_in == 'b11) begin //fetch
+    if(busy_o_edge) begin
+        read = 0;
+        write = 0;
+    end else if(rwi_in == 'b11) begin //fetch
         read = 1;
         write = 0;
     end else if(rwi_in == 'b10) begin //read

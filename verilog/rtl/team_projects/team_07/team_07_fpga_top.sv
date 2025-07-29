@@ -54,9 +54,11 @@ module top (
 
   assign clk = hwclk;
   assign nrst = pb[19];
-  assign ESP_in = pb[7:0];
-  assign rwi_in = 2'b10;
-  assign addr_in = 32'd1025;
+  assign ESP_in = right[7:0];
+  assign rwi_in = pb[1:0];
+  assign SCLK_out = left[7];
+  assign ChipSelectOut = left[6];
+  //assign addr_in = 32'd1025;
 
   // Inputs
   logic clk;

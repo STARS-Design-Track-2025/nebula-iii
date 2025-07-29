@@ -23,13 +23,4 @@ always_ff @(negedge nrst, posedge clk) begin
     end
 end
 
-/*
-always_comb begin
-    if (ExtInstruction == 'hDEADBEEF) begin
-        n_ExtInstruction = '0;
-    end else begin
-        n_ExtInstruction = ExtInstruction;
-    end
-end
-*/
 endmodule
