@@ -34,7 +34,7 @@ module t07_MMIO (
     output logic busy, //to CPU internal memory handler
 
     // outputs to fetch
-    output logic [31:0] writeInstruction_out, // ext instruction to write to fetch module in CPU
+    output logic [31:0] instr_out, // ext instruction to write to fetch module in CPU
 
     //output to SPI TFT
     output logic [31:0] writeData_outTFT, // data to write to SPT TFT
@@ -62,7 +62,7 @@ always_comb begin
     writeData_out = 32'b0; // no data to instruction/Data memory
     writeData_outTFT = 32'b0; // no data to SPI TFT
     ExtData_out = 32'b0; // no data to internal memory
-    writeInstruction_out = 32'hDEADBEEF; // no instruction to fetch module
+    instr_out = 32'hDEADBEEF; // no instruction to fetch module
     addrControl_out = addrControl_in; //address for next instr or data mem
 
     if (ack_TFT || busy_o) begin busy = '1; end
@@ -108,7 +108,7 @@ always_comb begin
                         //rwi_out = 2'b10; //end //read from instruction
                 addr_out = {8'h33, addr_in[23:0]}; // address for instruction/Data memory from cpu top mux
                 ExtData_out = 32'b0; // no data to internal memory
-                writeInstruction_out = ExtData_in; // next instruction to write to fetch module in CPU
+                instr_out = ExtData_in; // next instruction to write to fetch module in CPU
         end
     end 
 
