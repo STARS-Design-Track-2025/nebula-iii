@@ -46,7 +46,7 @@ assign red = hz2;
   end
 
   always_comb begin : clock_divider
-      if (clkdivcount > 22'd300000) begin
+      if (clkdivcount > 22'd3) begin
           hz2_n = ~hz2;
           clkdivcount_n = 0;
       end else begin
