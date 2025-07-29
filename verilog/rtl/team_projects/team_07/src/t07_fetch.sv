@@ -6,7 +6,7 @@ module t07_fetch (
     input logic [31:0] programCounter, // Current program counter value
     
     // Outputs
-    output logic [31:0] Instruction, // Output instruction to CPU control unit
+    output logic [31:0] Instruction_out, // Output instruction to CPU control unit
     output logic [31:0] PC_out // Output program counter value  
 
 );
@@ -15,12 +15,21 @@ logic [31:0] n_ExtInstruction, n_PC_out; // Next instruction to fetch
 
 always_ff @(negedge nrst, posedge clk) begin
     if (~nrst) begin
-        Instruction <= 32'b0; // Reset instruction to zero on reset
+        Instruction_out <= 32'b0; // Reset instruction to zero on reset
         PC_out <= 32'b0; // Reset program counter output to zero
-    end if (busy_o_edge == 1) begin
-        Instruction <= ExtInstruction; // Fetch instruction from external memory when not frozen
+    end if (busy_o_edge == 1 & ExtInstruction != 'hDEADBEEF) begin
+        Instruction_out <= ExtInstruction; // Fetch instruction from external memory when not frozen
         PC_out <= programCounter; // Update program counter output
     end
 end
 
+/*
+always_comb begin
+    if (ExtInstruction == 'hDEADBEEF) begin
+        n_ExtInstruction = '0;
+    end else begin
+        n_ExtInstruction = ExtInstruction;
+    end
+end
+*/
 endmodule
