@@ -1,7 +1,8 @@
 `timescale 1ns/1ps
 
 module t07_MMIO (
-//inputs
+    input clk, nrst, 
+
     // inputs from internal memory
     input logic [31:0] memData_in,  // data from internal memory
     input logic [1:0] rwi_in, //read write or idle from internal memory
@@ -22,9 +23,6 @@ module t07_MMIO (
     input logic [31:0] addr_in, // Program Counter address or Internal Memory address 
     input logic addrControl_in,
 
-
-
-//outputs
     // outputs to external register
     output logic ri_out, //read or idle signal to external register
     output logic [4:0] addr_outREG, // address to external register
@@ -48,6 +46,19 @@ module t07_MMIO (
     output logic [31:0] writeData_out, // data to write to instruction/Data memory
     output logic addrControl_out
 );
+
+//edge detector
+logic prev_busy_o, busy_o_edge;
+
+always_ff @(negedge nrst, posedge clk) begin
+    if(~nrst) begin
+        prev_busy_o <= '0;
+    end else begin
+        prev_busy_o <= busy;
+    end
+end
+
+assign busy_o_edge = (~busy && prev_busy_o); //detects falling edge
 
 always_comb begin
     busy = 1'b0; // default busy signal to not busy
@@ -112,7 +123,10 @@ always_comb begin
         end
     end 
 
-    if(rwi_in == 'b11) begin //fetch
+    if(busy_o_edge) begin
+        read = 0;
+        write = 0;
+    end else if(rwi_in == 'b11) begin //fetch
         read = 1;
         write = 0;
     end else if(rwi_in == 'b10) begin //read
