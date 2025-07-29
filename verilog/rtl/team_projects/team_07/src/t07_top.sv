@@ -1,5 +1,6 @@
 module t07_top (
     input logic clk, nrst,
+    input logic [7:0] ESP_in,
     output logic FPUFlag, invalError
 );
 
