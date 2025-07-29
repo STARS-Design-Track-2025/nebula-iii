@@ -36,7 +36,8 @@ always_ff@(posedge clk, negedge nrst) begin
         writeout <= 0;
         readout <=0;
         instruction <= 0;
-        counter_on <= 1;
+        counter_on <= 0;
+
     end
     else begin
         toreg <= nextregs;

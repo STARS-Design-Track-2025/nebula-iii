@@ -54,13 +54,22 @@ module t08_top_tb;
         nRst = 1;
         //data_in = 0;
 
-        repeat (4000) @ (negedge clk);
+        repeat (500) @ (negedge clk);
         
         // nRst = 0; #4;
         // @(negedge clk);
         // nRst = 1;
 
         // repeat (200) @ (negedge clk);
+        nRst = 1;
+        #(0.1);
+
+        nRst = 0; #4;
+        @(negedge clk);
+    nRst = 1;
+
+        repeat (2000) @ (negedge clk);
+
         #1 $finish;
 
     end
