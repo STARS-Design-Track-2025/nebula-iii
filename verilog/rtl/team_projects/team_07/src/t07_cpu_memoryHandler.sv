@@ -77,7 +77,7 @@ module t07_cpu_memoryHandler (
                 begin 
                     addrControl = 1;
                     load_ct = '0; 
-                    rwi = 'b00; 
+                    rwi = 'b11; 
                     freeze = 1;
                     if(busy_o_edge == 'b1) begin 
                         state_n = DATA; 
