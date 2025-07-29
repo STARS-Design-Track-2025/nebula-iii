@@ -11,7 +11,7 @@ logic read, write, idle;
 logic busyCPU; //sent from MMIO to CPU
 logic [31:0] instr, memData_in, memData_out, exMemData_CPU, exMemAddr_CPU;
 logic [1:0] rwi_in; //read = 10, write = 01, idle = 00
-logic fetchReadToMMIO, addrControl; 
+logic fetchReadToMMIO, addrControl, busy_edge;
 
 //outputs of MMIO
 logic [31:0] addrToSRAM, dataToSRAM; //addr_out in MMIO 
@@ -60,7 +60,7 @@ logic [4:0] addrToReg;
 
 //outputs to SPI->TFT
 logic [31:0] dataToTFT, addrToTFT;
-logic wi_out; 
+logic wi_out, ackTFT;
 
 //logic [7:0] ESP_in; // Input from the ESP32
 logic SCLK_out; // Clock signal for the ESP32
@@ -68,12 +68,13 @@ logic ChipSelectOut;
 logic [4:0] SPIAddress;
 logic [31:0] write_data;
 
-t07_CPU CPU( .addrControl(addrControl), .busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
-.rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst));
+t07_CPU CPU(.busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
+.rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst), .busy_edge_o(busy_edge));
 
-t07_MMIO MMIO(.clk(clk), .nrst(nrst), .addrControl_in(addrControl), .addrControl_out(addrControlWB), .addr_in(exMemAddr_CPU), .memData_in(exMemData_CPU), .rwi_in(rwi_in), .ExtData_in(dataToMMIO), 
-.regData_in(regData_in), .ack_REG(ackReg), .ack_TFT(), .regRead(regRead), .addr_outREG(addrToReg), .ExtData_out(memData_in), .busy(busyCPU), .instr_out(instr), 
-.writeData_outTFT(dataToTFT), .wi_out(wi_out), .addr_outTFT(addrToTFT), .read(read), .write(write), .addr_out(addrToSRAM), .writeData_out(dataToSRAM), .busy_o(busyToMMIO), .ChipSelReg(ChipSelectIn));
+t07_MMIO MMIO(.addr_in(exMemAddr_CPU), .memData_i(exMemData_CPU), .rwi_in(rwi_in), .WBData_i(dataToMMIO), 
+.regData_i(regData_in), .ack_REG_i(ackReg), .ack_TFT_i(ackTFT), .regRead_o(regRead), .addr_outREG(addrToReg), .CPUData_out(memData_in), 
+.CPU_busy_o(busyCPU), .instr_out(instr), .displayData(dataToTFT), .displayWrite(wi_out), .displayAddr(addrToTFT), .WB_read_o(read), .WB_write_o(write),
+.addr_out(addrToSRAM), .WBData_out(dataToSRAM), .WB_busy_i(busyToMMIO), .WB_busy_edge_i(busy_edge), .ChipSelReg_i(ChipSelectIn));
 
 wishbone_manager wishbone0(.nRST(nrst), .CLK(clk), .DAT_I(dataArToWM), .ACK_I(ackToWM), .CPU_DAT_I(dataToSRAM), 
 .ADR_I(addrToSRAM), .SEL_I(4'hF), .WRITE_I(write), .READ_I(read), .ADR_O(addrWMToAr), .DAT_O(dataWMToAr), 
