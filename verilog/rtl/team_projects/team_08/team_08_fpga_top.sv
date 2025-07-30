@@ -243,7 +243,7 @@ logic [21:0] clkdivcount, clkdivcount_n;
   end
 
   always_comb begin
-      if (clkdivcount > 2000000) begin
+      if (clkdivcount > 1) begin
           hz2_n = ~hz2;
           clkdivcount_n = 0;
       end else begin
