@@ -8,7 +8,9 @@ module t08_top(
     output logic touchscreen_scl,
 
     output logic [7:0] spi_outputs,                     //SPI outputs to display screen
-    output logic spi_wrx, spi_rdx, spi_csx, spi_dcx
+    output logic spi_wrx, spi_rdx, spi_csx, spi_dcx,
+    output logic [31:0] program_counter,
+    output logic [2:0] state
 
     // input logic [31:0] wb_dat_i,                        //Wishbone manager inputs and outputs with wishbone interconnect
     // input logic wb_ack_i,
@@ -32,8 +34,11 @@ module t08_top(
     logic [31:0] CPU_data_in, CPU_data_out;
     logic [31:0] CPU_mem_address_out;
     logic CPU_read_out, CPU_write_out, wb_read, wb_write;
+   // logic [2:0] state;
 
     t08_CPU CPU(
+        .state(state),
+        .program_counter(program_counter),
         .gdone(mmio_done_o),
         .clk(clk), .nRst(nRst),                             //clock and reset
         .data_in(CPU_data_in),                              //mmio to memory handler: data in
@@ -91,7 +96,7 @@ module t08_top(
         .read(CPU_read_out), .write(CPU_write_out), .wb_read(wb_read), .wb_write(wb_write),                                //From memory handler
         .address(CPU_mem_address_out), .mh_data_i(CPU_data_out), 
         
-        .I2C_xy_i(I2C_data_out), .I2C_done_i(I2C_done),                                    //From I2C
+        .I2C_xy_i(I2C_data_out), .I2C_done_i(1),                                    //From I2C
         
         .spi_busy_i(SPI_busy),                                                             //From SPI
         

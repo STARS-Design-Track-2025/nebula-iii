@@ -9,8 +9,10 @@ module t08_handler(
     input logic write, read, clk, nrst, busy,done, gdone,
     input logic [2:0] func3,
     output logic [31:0] toreg,  tomem, addressnew, instruction,
-    output logic wb_write, writeout, wb_read, readout, counter_on
+    output logic wb_write, writeout, wb_read, readout, counter_on,
+    output logic [2:0] state
 );
+
 typedef enum logic[2:0] {
     INC, FETCH, LORS,REGOP, FWAIT, LWAIT
 } states;
@@ -24,7 +26,8 @@ assign wb_write = writeout&(~gdone);
 logic nextfreeze, nextwriteout, nextreadout, next_counter_on;
 logic [31:0] address, nextregs, nextmem, nextinst, nextnewadd; //tempo var
 //logic [2:0]  state,nextstate; 
-states state, nextstate;
+//states state, nextstate;
+states nextstate;
 
 always_ff@(posedge clk, negedge nrst) begin
     if(!nrst) begin

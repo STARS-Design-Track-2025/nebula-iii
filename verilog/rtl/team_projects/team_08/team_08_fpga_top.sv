@@ -26,16 +26,24 @@ assign left[4] = wrx; //F14
 assign left[2:0] = {rdx, csx,dcx}; //P15, R2, R5 
 assign red = hz2;
 // assign blue = sig;
+assign blue = hwclk;
 
 assign {right[5],ss4[4],right[0], ss1[5], ss1[4], right[4], ss4[5] , ss4[1]} = outputs;
 
 
 
 logic [5:0] count;
+logic [31:0] program_counter;
+logic [2:0] state;
+
+assign ss7= program_counter [7:0]; // E14,F16
+assign ss6[2:0] = state; // from 2 to 0 K15, J14, K14
+//ss2 ss3 = G16 B16
 t08_top topmodule(
-  .clk(hz2), .nRst(Q1), .en(1'b1), 
+    .state(state),
+  .clk(hwclk), .nRst(~reset), .en(1'b1), 
   .touchscreen_interrupt(0), .SDAin(0), .SDAout(), .SDAoeb(), .touchscreen_scl(),
-  .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx));
+  .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx), .program_counter(program_counter));
 
 //assign {right[5],ss4[4],right[0], ss1[5], ss1[4], right[4], ss4[5] , ss4[1]}= outputs;
 //R1,R3,B2, L1, L3, M2, R4, R6
@@ -45,7 +53,8 @@ t08_top topmodule(
 //assign red = hz2;
 
 
-  always_ff @ (posedge hwclk, posedge reset) begin : clock_divider_ff
+
+  always_ff @ (posedge hwclk, posedge reset) begin 
       if (reset) begin
         hz2 <= 0;
         clkdivcount <= 0;
@@ -55,8 +64,8 @@ t08_top topmodule(
       end
   end
 
-  always_comb begin : clock_divider
-      if (clkdivcount > 22'd1) begin
+  always_comb begin
+      if (clkdivcount > 500000) begin
           hz2_n = ~hz2;
           clkdivcount_n = 0;
       end else begin
@@ -67,15 +76,6 @@ t08_top topmodule(
 
 logic Q0, Q1;
 
-always_ff@(posedge hwclk, posedge reset) begin
-  if(reset) begin
-    Q0 <= 0;
-    Q1<= 0;
-  end
-  else begin
-   Q0  <= ~pb[19];
-   Q1 <= Q0&pb[19]; //~~pb19
-  end end
 
 
 

@@ -8,10 +8,12 @@ module t08_CPU (
     input logic done, busy, gdone,                //from mmio, if its busy, if data from i2c is done
     output logic [31:0] data_out,           //memory handler to mmio: data outputted 
     output logic [31:0] addressnew,        //memory handler to mmio: address in memory
-    output logic read_out, write_out, wb_read, wb_write        //memory handler to mmio: read and write enable
+    output logic read_out, write_out, wb_read, wb_write ,       //memory handler to mmio: read and write enable
+    output logic [31:0] program_counter,
+    output logic [2:0] state
 );
 
-    logic [31:0] program_counter;                               //Program counter
+    //logic [31:0] program_counter;                               //Program counter
     logic [31:0] return_address;                                //fetch to registers: return address to be stored 
     logic [31:0] instruction;                                   //instruction to cu
 
@@ -73,6 +75,7 @@ module t08_CPU (
     );
 
     t08_handler handler(
+        .state(state),
         .fromregister(reg_out_2), .frommem(data_in), 
         .mem_address(alu_data_out), 
         .counter(program_counter),
