@@ -168,7 +168,7 @@ always_comb begin
             ALUOp = 4'd10; //ALU default
             memSrc = 0;
             invalid_Op = 0;
-            regWriteSrc = 3'b011; //from ALU
+            regWriteSrc = 3'b010; //from ALU
             ALUSrc = 0;
             regWrite = 1;
             branch = 0;
