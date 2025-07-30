@@ -7,13 +7,30 @@ BUILD = sim_build
 # Running simulations with iVerilog
 #g flag enables sv support
 %.vvp: %_tb.sv
-	iverilog -pfileline=1 -Ttyp -DFUNCTIONAL -DSIM -DUSE_POWER_PINS -DUNIT_DELAY=#1 \
+	iverilog -Ttyp -DFUNCTIONAL -DSIM -DUSE_POWER_PINS -DUNIT_DELAY=#1 \
 	-g2012 \
 	-f$(USER_PROJECT_VERILOG)/includes/includes.rtl.caravel_user_project -o $@ $<
 
 .PHONY: sim_%_src
 sim_%_src: %.vvp
 	vvp  $<
+	if [ -f $*.gtkw ]; then \
+		gtkwave $*.gtkw; \
+	else \
+		gtkwave $*.vcd; \
+	fi
+
+.PHONY: sim_%_src_verilator
+sim_%_src_verilator:
+	mkdir -p build && rm -rf build/*;
+	verilator -binary -j 0 -Wno-TIMESCALEMOD --Mdir build --trace \
+		-y ../../../rtl/team_projects/team_08 \
+		-y ../../../rtl/team_projects/team_08/src \
+		-y ../../../rtl/wishbone_manager \
+		-y ../../../rtl/wishbone_interconnect \
+		-y ../../../rtl/sram \
+		$*_tb.sv;
+	build/V$*_tb
 	if [ -f $*.gtkw ]; then \
 		gtkwave $*.gtkw; \
 	else \
