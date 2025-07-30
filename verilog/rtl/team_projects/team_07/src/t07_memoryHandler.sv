@@ -99,12 +99,12 @@ module t07_memoryHandler (
                         if(memSource) begin
                             // If memSource is set, we are getting data from the FPU register
                             addrMMIO_o = ALU_address; // Use ALU address for memory operations
-                            if (memOp == 4'd6) begin // store byte
-                                dataMMIO_o = {24'b0, FPU_data_i[7:0]}; // Store byte from FPU data
-                            end else if (memOp == 4'd7) begin // store half-word
-                                dataMMIO_o = {16'b0, FPU_data_i[15:0]}; // Store half-word from FPU data
-                            end else if (memOp == 4'd8) begin // store word
-                                dataMMIO_o = FPU_data_i; // Store full word from FPU data
+                            if (memOp == 4'd6) begin // store byte - FPU
+                                dataMMIO_o = {24'b0, FPU_data_i[7:0]}; 
+                            end else if (memOp == 4'd7) begin // store half-word - FPU
+                                dataMMIO_o = {16'b0, FPU_data_i[15:0]}; 
+                            end else if (memOp == 4'd8) begin // store word - FPU
+                                dataMMIO_o = FPU_data_i; 
                             end else begin
                                 dataMMIO_o = 32'b0; // Default case, no valid operation
                             end
@@ -112,18 +112,18 @@ module t07_memoryHandler (
                             // get data from internal registers
                             addrMMIO_o = ALU_address; // Use ALU address for memory operations
                             if (memOp == 4'd6) begin // store byte
-                                dataMMIO_o = {24'b0, regData_i[7:0]}; // Store byte from FPU data
+                                dataMMIO_o = {24'b0, regData_i[7:0]}; 
                             end else if (memOp == 4'd7) begin // store half-word
-                                dataMMIO_o = {16'b0, regData_i[15:0]}; // Store half-word from FPU data
+                                dataMMIO_o = {16'b0, regData_i[15:0]}; 
                             end else if (memOp == 4'd8) begin // store word
-                                dataMMIO_o = regData_i; // Store full word from FPU data
+                                dataMMIO_o = regData_i; 
                             end else begin
                                 dataMMIO_o = 32'b0; // Default case, no valid operation
                             end 
                         end 
 
                     end else if (memRead == 1) begin //LOAD
-                        addrControl = 0;
+                        addrControl = 1;
                         state_n = D_WAIT; 
                         load_ct = load_ct + 1; 
                         rwi = 'b10; 
@@ -131,15 +131,15 @@ module t07_memoryHandler (
 
                         addrMMIO_o = ALU_address; // Use ALU address for memory operations
                         dataMMIO_o = 32'b0; // No data to write in read operation
-                        if (memOp == 4'd1) begin //
-                            regData_o = {{24{dataMMIO_i[7]}}, dataMMIO_i[7:0]}; // Read data from external memory
-                        end else if (memOp == 4'd2) begin
-                            regData_o = {{16{dataMMIO_i[15]}}, dataMMIO_i[15:0]}; // Read half-word from external memory
-                        end else if (memOp == 4'd3) begin // Read full word from external memory
+                        if (memOp == 4'd1) begin //load byte
+                            regData_o = {{24{dataMMIO_i[7]}}, dataMMIO_i[7:0]}; 
+                        end else if (memOp == 4'd2) begin // load half word
+                            regData_o = {{16{dataMMIO_i[15]}}, dataMMIO_i[15:0]}; 
+                        end else if (memOp == 4'd3) begin // load word
                             regData_o = dataMMIO_i; 
-                        end else if (memOp == 4'd4) begin // Read byte unsigned
+                        end else if (memOp == 4'd4) begin // load byte unsigned
                             regData_o = {24'b0, dataMMIO_i[7:0]}; 
-                        end else if (memOp == 4'd5) begin // Read half-word unsigned
+                        end else if (memOp == 4'd5) begin // load half word unisgned
                             regData_o = {16'b0, dataMMIO_i[15:0]};
                         end else begin
                             regData_o = 32'b0; // Default case, no valid operation
