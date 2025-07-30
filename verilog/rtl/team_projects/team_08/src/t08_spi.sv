@@ -16,10 +16,10 @@ typedef enum logic[2:0] {
 //assign counter = [11:8] commands;
 logic [31:0] paroutput, nextparoutput, parameters, nextparameters;
 logic [7:0] currentout, nextout, command, nextcommand;
-logic [1:0] state, nextstate; 
-logic nextdcx, nextbusy, nextcsx;
+logic [2:0] state, nextstate; 
+logic nextdcx, nextbusy, nextcsx, nextwrx;
 logic [3:0] count = 0, percount, nextpercount,  nextcount, counter, nextcounter;
-logic [23:0] delay = 24'd48;
+logic [23:0] delay = 24'd4800000;
 logic [23:0] timem, nexttimem;
 registering register, nextregister;
 logic nextcontrol, control;
@@ -40,9 +40,11 @@ always_ff@(posedge clk, negedge nrst) begin
         parameters <= '0;
         counter <= '0;
         timem <= 0;
-        control <= nextcontrol;
+        control <= 0;
+        wrx <= 0;
     end
     else begin
+        wrx <= nextwrx;
         currentout <= nextout;
         dcx<=nextdcx;
         state <=nextstate;
@@ -69,7 +71,7 @@ end
 
 always_comb begin
     nextcontrol = control;
-    wrx = 0;
+    nextwrx = 0;
     rdx = 1;
     nextbusy = busy;
     nextout = currentout;
@@ -117,8 +119,7 @@ always_comb begin
         end
 
         TRANSITION: begin 
-            wrx = 0;
-       //     rdx = 1;
+            nextwrx = 0;
             nextbusy = 1;
             nextout = currentout;
             nextparoutput = paroutput;
@@ -128,8 +129,8 @@ always_comb begin
             nextcsx = csx;
             case(state)
                 0: begin //command
-                    //nextpercount = percount;
-                    nextcsx = 0;
+
+                    
                     case (command) 
                         8'b00101010: begin nextpercount = 4; end //CASET, SC2, SC1, EC2, EC1 
                         8'b00101011: begin nextpercount = 4; end //PASET SP2 SP1 EP2 EP1
@@ -146,39 +147,46 @@ always_comb begin
                         default:     begin nextpercount = counter; end 
                     endcase
 
-                    nextstate = 1; 
+                    nextstate = 4; 
+                    nextcsx = 0;
                     nextdcx = 0;
                     nextparoutput = parameters;
                     nextout = command; //getting the output ready
-                    if (readwrite) wrx = 0; 
+                    //if (readwrite) nextwrx = 0; 
                 end
 
                 1: begin //clock
-                    nextdcx = 1;
+                   // nextdcx = 1;
                     if (count >= percount) begin 
-                        nextstate = 3; 
-                        nextbusy = 0;
-                        nextcsx = 1;
+                           nextstate = 3; 
+                           nextbusy = 1;
+                           nextcsx = 0;
                         case(command)
                             8'h01, 8'h10, 8'h11: begin
-                                nextcontrol = 1;
-                                nexttimem = timem + 1;
-                                nextbusy = 1;
-                                wrx = 0;
-                                if (timem == delay) begin
-                                    nexttimem = 0;
-                                    nextstate = 3;
-                                    nextcontrol = 0;
-                                end
-                                else nextstate = 1;
+                                nextstate = 5;
                             end
+                            default:;
                         endcase
+                        //         nextcontrol = 1;
+                        //         nexttimem = timem + 1;
+                        //         nextbusy = 1;
+                        //         nextwrx = 0;
+                        //         if (timem == delay) begin
+                        //             nexttimem = 0;
+                        //             nextstate = 3;
+                        //             nextcontrol = 0;
+                        //         end
+                        //         else nextstate = 1;
+                        //     end
+                        // endcase
 
-                     end
+                      end
                     else begin nextstate = 2; end
-                    if ((readwrite)) wrx = 1;
+                   nextwrx = 1;
+                   // if ((readwrite)) nextwrx = 1;
                    // else if (!readwrite) rdx = 1;
-                    nextout = paroutput[31:24];
+                   // nextout = paroutput[31:24];
+                    
                 end
 
 
@@ -186,11 +194,13 @@ always_comb begin
                 //reading parameters from left to right. 
                     
                     nextparoutput = {paroutput[23:0], 8'b0};
+                    nextout = paroutput[31:24];                    
                     nextcount = count + 1;
                     nextdcx = 1;
-                    nextstate = 1;
-                    if (readwrite) wrx = 0; 
                     nextcsx = 0;
+                    nextstate = 4;
+                    //if (readwrite) nextwrx = 0; 
+                    
                 end
 
                 3: begin //time for finish
@@ -204,10 +214,58 @@ always_comb begin
                     
                 end
 
+                4: begin //getting everyting together 
+                    nextstate = 1; //go to clock
+                    //nextbusy = 1;
+                    nextcsx = 0;
+                end
+                   
+                //    case(command)
+                //     8'h01, 8'h10, 8'h11: begin
+                    //     nextcontrol = 1;
+                    //     nexttimem = timem + 1;
+
+
+                    //     if (count >= percount) begin 
+                    //         nextstate = 3; 
+                    //     //    nextbusy = 0;
+                    //         nextcsx = 1;
+                    //         if (timem == delay) begin
+                    //             nexttimem = 0;
+                    //             nextstate = 1;
+                    //             nextcontrol = 0;
+                    //             nextcsx = 0;
+                    //         end
+                    //     else nextstate = 4;
+                    //     end
+                    // end
+                //     default :;
+                //     endcase    
+               
+                5: begin
+                        nextcontrol = 1;
+                        nexttimem = timem + 1;
+
+                        nextcsx = 1;
+                         if (count >= percount) begin 
+                             nextstate = 3; 
+                        // //    nextbusy = 0;
+                        //     nextcsx = 1;
+                            if (timem == delay) begin
+                                nexttimem = 0;
+                                nextstate = 3;
+                                nextcontrol = 0;
+                                nextcsx = 0;
+                            end
+                            else nextstate = 5; 
+                        end
+                        else begin nextstate = 2; end
+                    end
+
 
                 default: begin 
-                    nextstate = state;
-                    nextdcx = dcx;
+                    //nextstate = state;
+                   // nextdcx = dcx;
                     nextout = 0;
                 end
             endcase
