@@ -84,14 +84,14 @@ always_comb begin
         CPUData_out = 32'b0; //sending instruction to fetch, not internal mem
         instr_out = WBData_i; //next instruction to write to fetch module in CPU
     end else begin
-        if(addr_in > 32'd1024 & addr_in <= 32'd1056) begin //read from external registers
+        if(addr_in > 32'd1024 & addr_in <= 32'd1055) begin //read from external registers
             addr_outREG = addr_in[4:0]; // address to external register (to get correct ESP32 data)
             if(ChipSelReg_i == 1) begin
                 regRead_o = 1'b1; //read from external register
                 CPUData_out = regData_i; // data from external register to internal memory
             end
         end
-        else if (addr_in > 32'd1056 & addr_in <= 32'd1792) begin //access data memory
+        else if (addr_in > 32'd1055 & addr_in <= 32'd1792) begin //access data memory
             if(rwi_in == 2'b10) begin //load
                 addr_out = {8'h33, addr_in[23:0]}; //addr - read from data mem
                 CPUData_out = WBData_i; 

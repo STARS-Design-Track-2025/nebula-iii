@@ -25,7 +25,7 @@ module t07_top_tb();
         nrst = 1;
         reset();
 
-        #300
+        #400
         $finish;
     end
 
