@@ -60,13 +60,13 @@ module t08_top_tb;
         // @(negedge clk);
         // nRst = 1;
 
-        // repeat (200) @ (negedge clk);
-        nRst = 1;
-        #(0.1);
+    //     // repeat (200) @ (negedge clk);
+    //     nRst = 1;
+    //     #(0.1);
 
-        nRst = 0; #4;
-        @(negedge clk);
-    nRst = 1;
+    //     nRst = 0; #4;
+    //     @(negedge clk);
+    // nRst = 1;
 
         repeat (2000) @ (negedge clk);
 

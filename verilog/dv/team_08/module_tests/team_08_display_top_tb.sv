@@ -13,6 +13,7 @@ module team_08_display_top_tb;
         clk = 1;
         #1;
     end
+    //R1, R3, B2, L1, L3, M2, R4, R6
 
     assign {right[5],ss4[4],right[0], ss1[5], ss1[4], right[4], ss4[5] , ss4[1]} = data;
 

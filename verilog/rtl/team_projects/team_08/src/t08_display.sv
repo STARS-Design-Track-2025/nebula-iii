@@ -45,8 +45,8 @@ module t08_display (
           3: begin nextWrx = 0; nextData = swrstCommand; end 
           4: begin nextWrx = 1; end
           
-          7: begin nextWrx = 0; nextData = sleepoCommand; end
-          8: begin nextWrx = 1; end
+          10: begin nextWrx = 0; nextData = sleepoCommand; end
+          11: begin nextWrx = 1; end
           
           12: begin nextWrx = 0; nextData = rgbCommand; end
           13: begin nextWrx = 1; end
@@ -218,9 +218,19 @@ module t08_display (
           31: begin nextWrx = 1; end
           32: begin nextWrx = 0; nextData = 8'b0; end
           33: begin nextWrx = 1; end
-          34: begin nextCsx = 1; end
-          35: begin ack = 1; end
-          36: begin ack = 0; end
+
+          36: begin nextDcx = 0; end
+          37: begin nextData = memCommand; nextWrx = 0; end
+          38: begin nextWrx = 1; end
+          39: begin nextDcx = 1; end
+          40: begin nextWrx = 0; nextData = 8'b0; end
+          41: begin nextWrx = 1; end
+          42: begin nextWrx = 0; nextData = 8'b0; end
+          43: begin nextWrx = 1; end
+
+          54: begin nextCsx = 1; end
+          55: begin ack = 1; end
+          56: begin ack = 0; end
         endcase
       end
 
@@ -318,7 +328,7 @@ module t08_display (
       currentCsx <= 1;
       currentWrx <= 1;
       currentDcx <= 1;
-      currentData <= 8'b0;
+      currentData <= 8'b100;
     end else begin
       currentCsx <= nextCsx;
       currentWrx <= nextWrx;
