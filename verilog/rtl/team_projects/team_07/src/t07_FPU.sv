@@ -31,8 +31,8 @@ module t07_FPU (
     logic [2:0] frm; //page 41, last paragraph- check for static/dynamic rounding m
     assign frm = fcsr_in [7:5];
     
-    logic [4:0] fflags;
-    assign fflags = fcsr_in[4:0];
+//     logic [4:0] fflags;
+//     assign fflags = fcsr_in[4:0];
 
     //choose operation- Page 51 RVALP
     always_comb begin
@@ -107,16 +107,16 @@ module t07_FPU (
         endcase
     end
 
-    //flag logic- Page 58 RVALP
+//     //flag logic- Page 58 RVALP
 
-    always_comb begin
-        FPUflags = 7'd0;
-        if (result == 32'b0) begin FPUflags[0] = 1; end //zeroFlag
-        if (valA >= valB) begin FPUflags[1] = 1; end //greater than or equal 
-        if ($unsigned(valA) >= $unsigned(valB)) begin FPUflags[2] = 1; end //greater than or equal unsigned
-        if (valA < valB) begin FPUflags[3] = 1; end //less than
-        if ($unsigned(valA) < $unsigned(valB)) begin FPUflags[4] = 1; end //less than unsigned
-        if (valA != valB) begin FPUflags[5] = 1; end //not equal
-        if (valA == valB) begin FPUflags[6] = 1; end //equal
-    end
+//     always_comb begin
+//         FPUflags = 7'd0;
+//         if (result == 32'b0) begin FPUflags[0] = 1; end //zeroFlag
+//         if (valA >= valB) begin FPUflags[1] = 1; end //greater than or equal 
+//         if ($unsigned(valA) >= $unsigned(valB)) begin FPUflags[2] = 1; end //greater than or equal unsigned
+//         if (valA < valB) begin FPUflags[3] = 1; end //less than
+//         if ($unsigned(valA) < $unsigned(valB)) begin FPUflags[4] = 1; end //less than unsigned
+//         if (valA != valB) begin FPUflags[5] = 1; end //not equal
+//         if (valA == valB) begin FPUflags[6] = 1; end //equal
+//     end
 endmodule
