@@ -22,6 +22,7 @@ module t07_spitft (
 logic [63:0] dataforOutput, next_data;
 state_tft state, next_state;
 logic printState, busy_o_n;
+logic printState, busy_o_n;
 logic [6:0] counter, next_ctr;
 
 
@@ -47,6 +48,7 @@ always_comb begin
     chipSelect = 1;
     sclk = 0;
     next_ctr = counter;
+
 
     case(state)
         IDLE: begin 
