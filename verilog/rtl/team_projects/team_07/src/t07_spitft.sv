@@ -87,31 +87,6 @@ always_comb begin
         end
         default: begin sclk = '0; end
     endcase
-
-
-    /*
-    case (state) 
-      1'b0: begin if (wi == 1) begin next_ctr = 7'b0; chipSelect = 0; busy_o = 1; sclk = clk; next_data = {address[31:24], data[31:24],  address[23:16], data[23:16], address[15:8], data[15:8], address[7:0], data[7:0]}; next_state = 1'b1; end else begin next_state = 1'b0; end end //load 64 bits
-      1'b1: begin if (wi == 1 && counter < 7'd64) begin
-                busy_o = 1;
-                chipSelect = 0; 
-                bitData = dataforOutput[63];
-                next_data = dataforOutput << 1;
-                next_state = 1'b1;
-                next_ctr = counter + 1;
-        end else if (wi == 1 && counter == 7'd64) begin
-            busy_o = 0;
-            chipSelect = 1;
-            next_state = 1'b0;
-        end else if (wi == 0) begin
-            busy_o = 0;
-            chipSelect = 1;
-            sclk = 0;
-            next_state = 1'b0;
-        end //shift 64 bits
-      end
-      default: begin sclk = 0; busy_o_n = 0; end */
-
 end
 endmodule
 
