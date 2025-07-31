@@ -21,7 +21,7 @@ module t07_spitft (
 
 logic [63:0] dataforOutput, next_data;
 state_tft state, next_state;
-logic printState;
+logic printState, busy_o_n;
 logic [6:0] counter, next_ctr;
 
 
@@ -29,7 +29,7 @@ always_ff @(negedge nrst, posedge clk) begin
     if(~nrst) begin
         dataforOutput <= '0;
         counter <= 7'b0;
-        state <= 1'b0;
+        state <= IDLE;
         busy_o = '0;
     end else begin
         dataforOutput <= next_data;
@@ -48,7 +48,7 @@ always_comb begin
     sclk = 0;
     next_ctr = counter;
 
-    case(state_tft)
+    case(state)
         IDLE: begin 
             busy_o_n = '0;
             if(wi == '0) begin next_state = IDLE; end 
