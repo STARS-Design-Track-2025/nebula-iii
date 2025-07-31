@@ -74,6 +74,7 @@ module t08_CPU (
     );
 
     t08_handler handler(
+        .branch(branch),
         .fromregister(reg_out_2), .frommem(data_in), 
         .mem_address(alu_data_out), 
         .counter(program_counter),

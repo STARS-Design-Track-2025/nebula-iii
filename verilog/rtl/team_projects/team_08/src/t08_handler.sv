@@ -6,15 +6,16 @@
 
 module t08_handler(
     input logic [31:0] fromregister, frommem, mem_address, counter,
-    input logic write, read, clk, nrst, busy,done, gdone,
+    input logic write, read, clk, nrst, busy,done, gdone, branch,
     input logic [2:0] func3,
+
     output logic [31:0] toreg,  tomem, addressnew, instruction,
     output logic wb_write, writeout, wb_read, readout, counter_on
     //output logic [2:0] state
 );
 
 typedef enum logic[2:0] {
-    INC, FETCH, LORS,REGOP, FWAIT, LWAIT
+    INC, FETCH, LORS,REGOP, FWAIT, LWAIT, WAIT
 } states;
 
 localparam [31:0] I2C_ADDRESS = 32'd923923;
@@ -34,7 +35,7 @@ always_ff@(posedge clk, negedge nrst) begin
         toreg <= '0;
         tomem <= '0;
         addressnew <= 0;
-        state <= INC;
+        state <= FETCH;
     //    freeze <= 1;
         writeout <= 0;
         readout <=0;
@@ -71,6 +72,10 @@ always_comb begin
     case(state)
     INC: begin
         next_counter_on = 1;
+        nextstate = WAIT;
+    end
+
+    WAIT: begin
         nextstate = FETCH;
     end
 
@@ -118,12 +123,21 @@ always_comb begin
             end
         end
 
-        else begin
+  
+
+        else begin      
+            if (branch) begin
+                nextnewadd = addressnew;
+                nextstate = LWAIT;
+            end
+            else begin
             nextstate = INC;
+            end
         end
         end
 
     LWAIT: begin
+
             if (gdone) begin
                 if (read) begin 
                     nextstate = REGOP; 
@@ -156,6 +170,17 @@ always_comb begin
                     nextwriteout = 0; 
                     end
             end
+
+            else if (branch) begin
+                nextnewadd = addressnew; 
+                nextstate = INC;
+                // next_counter_on = 1;
+            end
+            
+            // else if (branch) begin
+            //     nextstate = INC;
+            // end
+           
             else begin nextstate = LWAIT; end
     end
 
@@ -183,6 +208,7 @@ always_comb begin
         // else if (mem_address == I2C_ADDRESS) begin nextstate = REGOP; end
 
     end
+
     endcase
 end
 
