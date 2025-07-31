@@ -4,7 +4,7 @@ module t07_top_tb();
     logic [3:0] ESP_in;
     logic FPUFlag, invalError;
 
-    t07_top top0(.clk(clk), .nrst(nrst), .FPUFlag(FPUFlag), .invalError(invalError), .ESP_in(ESP_in));
+    t07_top top0(.clk(clk), .nrst(nrst), .FPUFlag(FPUFlag), .invalError(invalError), .ESP_in(ESP_in), .chipSelectTFT(chipSelectTFT), .bitDataTFT(bitDataTFT), .sclkTFT(sclkTFT));
 
     task reset(); begin
         #2

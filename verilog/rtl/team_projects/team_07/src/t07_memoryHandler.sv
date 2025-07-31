@@ -160,7 +160,7 @@ module t07_memoryHandler (
                     if(busy_o_edge & load_ct == 0) begin //check that load_ct is correct and not load_count_n
                         //addrControl = 1;
                         state_n = FETCH; 
-                    end else if (busy_o_edge & load_ct > 1) begin 
+                    end else if (busy_o_edge & load_ct == 1) begin 
                         state_n = DATA; 
                     end else if (busy_o_edge) begin
                         //addrControl = 1;
