@@ -32,7 +32,7 @@ module t08_I2C_and_interrupt_tb;
 
     task acknowledge();
 
-        SDAin = 0; @ (negedge clk);
+        SDAin = 0; @ (negedge scl); //@ (negedge scl);
         SDAin = 1; @ (negedge clk);
 
     endtask
@@ -41,7 +41,7 @@ module t08_I2C_and_interrupt_tb;
 
         for (int i = 7; i >= 0; i--) begin
 
-            SDAin = data[i]; @ (negedge scl);
+            SDAin = data[i]; @ (negedge scl); //@ (posedge clk);
 
         end
 
@@ -58,53 +58,107 @@ module t08_I2C_and_interrupt_tb;
 
         interrupt();
 
-        repeat (9) @ (negedge scl); repeat (6) @ (negedge clk);
+        /*XH phase*/
+
+        repeat (9) @ (negedge scl); //repeat (4) @ (negedge clk);
+
+        // Acknowledge bit after slave address in XH
+        acknowledge();
+
+        repeat (10) @ (negedge scl); @ (negedge clk);
+
+        //Acknowledge bit after data address in XH
+        acknowledge();
+
+        repeat (14) @ (negedge scl); @ (negedge clk);
+
+        //Acknowledge bit after slave address 2 in XH (ready for data frame)
+        acknowledge();
+
+        //@ (negedge scl); @ (posedge scl); @ (posedge clk);
+
+        //test = 1;
+
+        send_data_frame(8'b11011001); //D9
+
+        repeat (3) @ (negedge scl);
+
+        /*XL phase*/
+
+        repeat (9) @ (negedge scl); //repeat (4) @ (negedge clk);
 
         //Acknowledge bit after slave address in XH
         acknowledge();
 
-        repeat (10) @ (negedge scl); 
+        repeat (10) @ (negedge scl); @ (negedge clk);
 
-        //Acknowledge bit after data address in XL
+        //Acknowledge bit after data address in XH
         acknowledge();
 
-        repeat (14) @ (negedge scl); 
+        repeat (14) @ (negedge scl); @ (negedge clk);
 
-        //Acknowledge bit after slave address 2 in XL (ready for data frame)
+        //Acknowledge bit after slave address 2 in XH (ready for data frame)
         acknowledge();
 
-        @ (negedge scl); @ (posedge scl);
+        //@ (negedge scl); @ (posedge scl); @ (posedge clk);
 
-        test = 1;
+        //test = 1;
 
-        send_data_frame(8'b11011001);
+        send_data_frame(8'b11011001); //D9
 
-        repeat (80) @ (negedge clk);
-        @ (negedge clk);
-  
+        repeat (3) @ (negedge scl);
+
+        /*YH phase*/
+
+        repeat (9) @ (negedge scl); //repeat (4) @ (negedge clk);
+
+        //Acknowledge bit after slave address in XH
+        acknowledge();
+
+        repeat (10) @ (negedge scl); @ (negedge clk);
+
+        //Acknowledge bit after data address in XH
+        acknowledge();
+
+        repeat (14) @ (negedge scl); @ (negedge clk);
+
+        //Acknowledge bit after slave address 2 in XH (ready for data frame)
+        acknowledge();
+
+        //@ (negedge scl); @ (posedge scl); @ (posedge clk);
+
+        //test = 1;
+
+        send_data_frame(8'b11011001); //D9
+
+        repeat (3) @ (negedge scl);
+
+        /*YL phase*/
+
+        // repeat (9) @ (negedge scl); //repeat (4) @ (negedge clk);
+
+        // //Acknowledge bit after slave address in XH
         // acknowledge();
-        
-        // // repeat (80) @ (negedge clk);
-        // // @ (negedge clk);
 
-        // // acknowledge();
+        // repeat (10) @ (negedge scl); @ (negedge clk);
 
-        // // repeat (80) @ (negedge clk);
-        // // @ (negedge clk);
+        // //Acknowledge bit after data address in XH
+        // acknowledge();
 
-        // // acknowledge();
+        // repeat (14) @ (negedge scl); @ (negedge clk);
 
-        // // repeat (80) @ (negedge clk);
-        // // @ (negedge clk);
+        // //Acknowledge bit after slave address 2 in XH (ready for data frame)
+        // acknowledge();
 
-        // // acknowledge();
+        // //@ (negedge scl); @ (posedge scl); @ (posedge clk);
 
-        // // repeat (80) @ (negedge clk);
-        // // @ (negedge clk);
+        // //test = 1;
 
-        // // acknowledge();
+        // send_data_frame(8'b11011001); //D9
 
-        // repeat (150) @ (negedge clk);
+        // repeat (2) @ (negedge scl);
+
+        // repeat(20) @ (negedge clk);
 
         #1 $finish;
 

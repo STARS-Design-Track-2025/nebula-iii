@@ -13,8 +13,17 @@ module t08_I2C_and_interrupt(
     output logic scl, //Clock for I2C sent to the touchscreen
 
     output logic [31:0] data_out, //All of the coordinate data sent to memory
-    output logic done //Done signal also sent to memory, indicating that the module has finished reading coordinate data after a given interrupt signal
+    output logic done, //Done signal also sent to memory, indicating that the module has finished reading coordinate data after a given interrupt signal
+
+    output logic [3:0] state_debug, //TEMPORARY OUTPUT FOR DEBUGGING PURPOSES
+    output logic [3:0] state_debug2,
+    output logic error_occurred
 );
+
+    assign state_debug = mid_step_counter;
+    assign state_debug2 = high_step_counter[3:0];
+
+    //logic error_occurred_n;
 
     logic inter_prev; //For edge detector of interrupt signal
     logic interrupt_received; //So that the edge detector will not cause an effect until the next positive clock edge
@@ -59,7 +68,7 @@ module t08_I2C_and_interrupt(
         XL = 8'h04,        //XL data address from touchscreen
         YH = 8'h05,        //YH data address from touchscreen
         YL = 8'h06,        //YL data address from touchscreen
-        SL = {7'h06, 1'b0} //Slave address (set to 0C as when only the most significant 7 bits are sent, this will be interpreted as 06)
+        SL = {7'h38, 1'b0} //Slave address (set to 0C as when only the most significant 7 bits are sent, this will be interpreted as 06)
     } high_steps; 
 
     /*
@@ -104,7 +113,9 @@ module t08_I2C_and_interrupt(
         WAIT_ACK_BIT,
         SEND_ACK_BIT,
 
-        SEND_STOP_BIT
+        SEND_STOP_BIT, 
+
+        ERROR
 
     } mid_steps;
 
@@ -162,6 +173,8 @@ module t08_I2C_and_interrupt(
             stop_bit_sent <= 0;
             ack_bit_received <= 0;
 
+            //error_occurred <= 0;
+
         end else begin
 
             inter_prev <= inter;
@@ -192,13 +205,15 @@ module t08_I2C_and_interrupt(
             stop_bit_sent <= stop_bit_sent_n;
             ack_bit_received <= ack_bit_received_n;
 
+            //error_occurred <= error_occurred_n;
+
         end
 
     end
 
     always_comb begin : SCL_control
 
-        if (scl_wouldbe_counter < 8'd2) begin //So that the process can continue to move forward in a synchronized way even when SCL is not oscillating
+        if (scl_wouldbe_counter < 8'd1) begin //So that the process can continue to move forward in a synchronized way even when SCL is not oscillating
 
             scl_wouldbe_counter_n = scl_wouldbe_counter + 8'd1;
             scl_wouldbe_n = scl_wouldbe;
@@ -240,6 +255,8 @@ module t08_I2C_and_interrupt(
         done_n = done;
         stop_bit_sent_n = stop_bit_sent;
         ack_bit_received_n = ack_bit_received;
+        error_occurred = 0;
+        //error_occurred_n = error_occurred;
 
         /*
         Throughout all of the steps of the protocol, a lot of actions will repeat multiple times, so the same state can appear for multiple
@@ -247,7 +264,10 @@ module t08_I2C_and_interrupt(
         */
         case (mid_step_counter) 
 
-            4'd0, 4'd1: begin
+            4'd0: begin
+                mid_step_state = ERROR;
+            end
+            4'd1: begin
                 mid_step_state = IDLE;
             end
 
@@ -295,13 +315,17 @@ module t08_I2C_and_interrupt(
             */
             case (mid_step_state) 
 
+                ERROR: begin
+                    error_occurred = 1;
+                end
+
                 IDLE: begin
 
                     SDAout_n = 1;
 
                     SDAoeb_n = 1; //SDA line taking input
 
-                    high_step_counter_n = XH;
+                    //high_step_counter_n = XH;
                     mid_step_counter_n = 1;
                     low_step_address_counter_n = 3'd7; //Counts backwards
                     low_step_register_counter_n = 5'd7;
@@ -345,7 +369,11 @@ module t08_I2C_and_interrupt(
                     if (!SDAout) begin //Wait until SDAout is confirmed to be low. 
 
                         high_step_counter_n = SL; //The start bit is always followed by sending the slave address.
-                        high_step_counter_prev_n = high_step_counter; //Preserving what high step counter was at before
+                        if (high_step_counter_prev != SL) begin
+                            high_step_counter_prev_n = high_step_counter_prev; //Preserving what high step counter was at before
+                        end else begin
+                            high_step_counter_prev_n = high_step_counter;
+                        end
 
                         //Moving to state SEND_ADDRESS, which should cause SCL to start toggling and thus to go low.
                         mid_step_counter_n = mid_step_counter + 1; 
@@ -425,13 +453,13 @@ module t08_I2C_and_interrupt(
                     data_out_n = data_out; //Not changing data_out
 
                     //Should wait for a low voltage
-                    if (!SDAin) begin
+                    // if (!SDAin) begin
 
-                        ack_bit_received_n = 1;
+                    //     ack_bit_received_n = 1;
 
-                    end
+                    // end
 
-                    if (ack_bit_received) begin
+                    if (!SDAin/*ack_bit_received*/) begin
 
                         //Moving to the next state (may be SEND_ADDRESS, READ_DATA_FRAME, or SEND_STOP_BIT)
                         mid_step_counter_n = mid_step_counter + 1;
@@ -463,7 +491,24 @@ module t08_I2C_and_interrupt(
                         low_step_register_counter == 5'd16 || low_step_register_counter == 5'd24) begin
 
                         mid_step_counter_n = mid_step_counter + 1;
-                        low_step_register_counter_n = low_step_register_counter + 5'd8;
+                        low_step_register_counter_n = low_step_register_counter + 5'd15;
+
+                        /*
+                        In a disorganized way, sending the acknowledge bit here
+                        */
+                        SDAoeb_n = 0; //SDA line giving output
+
+                        //Should send a low voltage
+                        SDAout_n = 0;
+
+                        // if (!SDAout) begin
+
+                        //     SDAout_n = 1; //Bring it back to high voltage
+
+                        //     //Go to next state (SEND_STOP_BIT).
+                        //     //mid_step_counter_n = mid_step_counter + 1;
+
+                        //  end
 
                     end else begin
 
@@ -476,21 +521,24 @@ module t08_I2C_and_interrupt(
 
                 SEND_ACK_BIT: begin
 
-                    SDAoeb_n = 0; //SDA line giving output
+                    //SDAoeb_n = 0; //SDA line giving output
 
                     data_out_n = data_out; //Not changing data_out
 
                     //Should send a low voltage
-                    SDAout_n = 0;
+                    //SDAout_n = 0;
 
-                    if (SDAout) begin
+                    //SDAout_n = 1;
+                    mid_step_counter_n = mid_step_counter + 1;
 
-                        SDAout_n = 1; //Bring it back to high voltage
+                    // if (!SDAout) begin
 
-                        //Go to next state (SEND_STOP_BIT).
-                        mid_step_counter_n = mid_step_counter + 1;
+                    //     SDAout_n = 1; //Bring it back to high voltage
 
-                    end
+                    //     //Go to next state (SEND_STOP_BIT).
+                    //     mid_step_counter_n = mid_step_counter + 1;
+
+                    // end
 
                 end
 
@@ -502,7 +550,7 @@ module t08_I2C_and_interrupt(
                     if (stop_bit_sent) begin
 
                         //If this was the last cycle, return to the IDLE state. 
-                        if (high_step_counter == YL) begin
+                        if (high_step_counter_prev == YL && mid_step_counter == 4'd15) begin
 
                             //Resetting the mid step counter. 
                             mid_step_counter_n = 4'd1; 
