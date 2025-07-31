@@ -81,14 +81,14 @@ always_comb begin
     if(WB_busy_edge_i) begin
         WB_read_o = 0;
         WB_write_o = 0;
-    end else if(rwi_in == 'b11) begin //fetch
+    end else if(rwi_in == 'b11 & addr_in <= 32'd1024) begin //fetch
         WB_read_o = 1;
         WB_write_o = 0;
-    end else if(rwi_in == 'b10) begin //read, // address
+    end else if(rwi_in == 'b10 & addr_in > 32'd1056 & addr_in <= 32'd1792) begin //read, // address
         WB_read_o = 1;
         WB_write_o = 0;
         //idle = 0;
-    end else if(rwi_in == 'b01) begin //write
+    end else if(rwi_in == 'b01 & addr_in > 32'd1056 & addr_in <= 32'd1792) begin //write
         WB_read_o = 0;
         WB_write_o = 1;
         //idle = 0;
