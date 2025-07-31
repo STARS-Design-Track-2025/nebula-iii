@@ -1,4 +1,6 @@
 module t07_MMIO(
+    input logic clk, nrst,
+
     //CPU
     input logic [31:0] addr_in, //addr for instruction fetch
     output logic [31:0] instr_out, //instr sent to fetch
@@ -24,7 +26,8 @@ module t07_MMIO(
     output logic displayWrite, // write or idle to SPI FTF
 
     //SPI for ESP32
-    input logic [31:0] SPIData_i
+    input logic [31:0] SPIData_i,
+    input logic SPIack_i //high when full word is ready
 
     //external registers
     //input logic [31:0] regData_i, 
@@ -34,6 +37,17 @@ module t07_MMIO(
     //output logic [4:0] addr_outREG, // address to external register
 );
 
+//registers - for holding SPI-ESP32 data
+logic [31:0] registers;
+
+//sequential logic for registers
+always_ff @(negedge nrst, posedge clk) begin
+    if (~nrst) begin
+        registers <= '0;
+    end else if (SPIack_i) begin //check 
+        registers <= SPIData_i;
+    end
+end
 
 always_comb begin
     //Peripheral Address Control
@@ -50,6 +64,7 @@ always_comb begin
     WBData_out = 'hDEADBEEF; 
     displayData = 'hDEADBEEF;
     displayAddr = 'hDEADBEEF;
+    displayWrite = '0;
 
     //busy signal logic -- based on WB busy, SPI busy, Reg busy
     if (ack_TFT_i || WB_busy_i) begin 
@@ -114,7 +129,9 @@ always_comb begin
     end
 
     //SPI - ESP32 data, sent into CPU
-
+    if (addr_in > 32'd1024 & addr_in <= 32'd1056) begin
+        CPUData_out = registers; 
+    end
 
 end
 endmodule
