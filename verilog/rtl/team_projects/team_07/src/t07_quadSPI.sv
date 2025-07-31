@@ -3,7 +3,7 @@ module t07_quadSPI (
     input logic [3:0] ESPData_i,
     input logic sclk_i, nrst, enable_i, //from MMIO
     output logic [31:0] MMIOData_o,
-    output logic sclk_o, enable_o
+    output logic sclk_o, enable_o, ack_o
 );
 
 logic [31:0] MMIOData_n;
@@ -25,10 +25,15 @@ end
 always_comb begin
     MMIOData_n = '0;
     ct_n = '0;
+    ack_o = '0;
 
-    if (ct < 'd9) begin
+    if(ct < 'd9) begin
         MMIOData_n = {MMIOData_o[31:4], ESPData_i};
         ct_n = ct + 'd1;
+        if(ct == 8) begin
+            ack_o = '1;
+    end else begin 
+        ack_o = '0; end
     end else begin
         ct_n = '0;
     end
