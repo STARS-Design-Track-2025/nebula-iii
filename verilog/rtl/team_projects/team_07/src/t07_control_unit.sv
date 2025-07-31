@@ -59,7 +59,7 @@ always_comb begin
             ALUOp = 4'd00; //add rs1 + imm
             memSrc = 0;
             invalid_Op = 0;
-            regWriteSrc = 3'b100; //from immediate
+            regWriteSrc = 3'b001; //from internal mem
             ALUSrc = 1;
             regWrite = 1;
             branch = 0;
