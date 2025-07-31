@@ -20,7 +20,7 @@ module t07_MMIO(
     output logic [31:0] WBData_out, //data sent to WB during store instr
 
     //SPI for TFT
-    input logic ack_TFT_i, 
+    input logic busyTFT_i, 
     output logic [31:0] displayData, // data to write to SPT TFT
     output logic [31:0] displayAddr, // address to write to SPI TFT]
     output logic displayWrite, // write or idle to SPI FTF
@@ -67,7 +67,7 @@ always_comb begin
     displayWrite = '0;
 
     //busy signal logic -- based on WB busy, SPI busy, Reg busy
-    if (ack_TFT_i || WB_busy_i) begin 
+    if (busyTFT_i || WB_busy_i) begin 
         CPU_busy_o = '1; 
         //end else if ((addr_in > 32'd1024 && addr_in <= 32'd1056) & rwi_in == 2'b10 & ChipSelReg_i) begin 
             //CPU_busy_o = ack_REG_i; 
