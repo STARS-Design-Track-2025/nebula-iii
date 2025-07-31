@@ -9,8 +9,7 @@ module t08_CPU (
     output logic [31:0] data_out,           //memory handler to mmio: data outputted 
     output logic [31:0] addressnew,        //memory handler to mmio: address in memory
     output logic read_out, write_out, wb_read, wb_write ,       //memory handler to mmio: read and write enable
-    output logic [31:0] program_counter,
-    output logic [2:0] state
+    output logic [31:0] program_counter
 );
 
     //logic [31:0] program_counter;                               //Program counter
@@ -75,7 +74,7 @@ module t08_CPU (
     );
 
     t08_handler handler(
-        .state(state),
+        .branch(branch),
         .fromregister(reg_out_2), .frommem(data_in), 
         .mem_address(alu_data_out), 
         .counter(program_counter),
