@@ -3,10 +3,14 @@ module t08_top(
     input logic en,                                     //Active high enable (NOT IMPLEMENTED YET)
 
     input logic touchscreen_interrupt,                  //I2C inputs and outputs with touchscreen
-    input logic SDAin, 
-    output logic SDAout, SDAoeb,
-    output logic touchscreen_scl,
 
+    input logic I2C_sda_in, 
+    output logic I2C_sda_out, 
+    output logic I2C_sda_oeb,
+    input logic I2C_scl_in,
+    output logic I2C_scl_out, 
+    output logic I2C_scl_oeb,
+    
     output logic [7:0] spi_outputs,                     //SPI outputs to display screen
     output logic spi_wrx, spi_rdx, spi_csx, spi_dcx,
     output logic [31:0] program_counter,
@@ -56,10 +60,11 @@ module t08_top(
     logic I2C_done;
 
     t08_I2C_and_interrupt I2C(
-        .clk(clk), .nRst(nRst),                               //clock and reset
-        .SDAin(SDAin), .SDAout(SDAout), .SDAoeb(SDAoeb),      //SDA line
-        .inter(touchscreen_interrupt), .scl(touchscreen_scl), //interrupt from touchscreen and SCL to touchscreen
-        .data_out(I2C_data_out), .done(I2C_done)              //outputs to mmio
+        .clk(clk), .nRst(nRst),                                            //clock and reset
+        .sda_in(I2C_sda_in), .sda_out(I2C_sda_out), .sda_oeb(I2C_sda_oeb), //SDA line
+        .inter(touchscreen_interrupt),                                     //interrupt from touchscreen 
+        .scl_in(I2C_scl_in), .scl_out(I2C_scl_out), .scl_oeb(I2C_scl_oeb), //SCL to touchscreen
+        .data_out(I2C_data_out), .done(I2C_done)                           //outputs to mmio
     );
 
     /*

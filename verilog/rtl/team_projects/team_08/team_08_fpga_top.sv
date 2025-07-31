@@ -63,9 +63,11 @@ module top (
   assign gpio_in[1] = pb[20]; //SDA line input = pb[20] (Inverting because of inverter?)
   assign gpio_in[0] = ~pb[1]; //Interrupt from touchscreen = pb[1]
 
+  assign gpio_in[2] = pb[10]; //SCL_in
+
   /*Outputs*/
 
-  assign left[1] = ~gpio_out[2]; //I2C SCL = left[1]
+  assign left[1] = ~gpio_out[2]; //I2C SCL_out = left[1]
   assign left[0] = ~gpio_out[1]; //SDA line output = left[0] (inverted because using open-drain MOSFET)
 
   //assign left[1] = '1; //SCL
@@ -75,14 +77,14 @@ module top (
   FPGA outputs use list: 
 
   left[7]   = I2C done
-  left[6:3] = state_debug
+  left[6:3] = state_debug (not connected right now)
   left[2]   = unused
   left[1]   = I2C SCL
   left[0]   = SDA line output
 
-  right[7:4] = state_debug2
-  right[3]   = error_occurred
-  right[2]   = unused
+  right[7:4] = state_debug2 (not connected right now)
+  right[3]   = error_occurred (not connected right now)
+  right[2]   = data_address_debug[0]
   right[1]   = hwclk
   right[0]   = unused
 
@@ -95,12 +97,14 @@ module top (
 
   logic [31:0] I2C_data_out;
 
+  logic [7:0] data_address_debug;
+  assign right[2] = data_address_debug[0];
+
   t08_I2C_and_interrupt I2C(
-    .clk(hz10k), .nRst(~reset), 
-    .SDAin(gpio_in[1]), .SDAout(gpio_out[1]), .SDAoeb(), 
-    .inter(gpio_in[0]), .scl(gpio_out[2]), 
-    .data_out(I2C_data_out), .done(left[7]), 
-    .state_debug(left[6:3]), .state_debug2(right[7:4]), .error_occurred(right[3])
+    .clk(hwclk), .nRst(~reset), 
+    .sda_in(gpio_in[1]), .sda_out(gpio_out[1]), .sda_oeb(), 
+    .inter(gpio_in[0]), .scl_in(gpio_in[2]), .scl_out(gpio_out[2]), 
+    .data_out(I2C_data_out), .done(left[7])
   );
 
   t08_ssdec s7(.in(I2C_data_out[31:28]), .enable(1'b1), .out(ss7[6:0]));

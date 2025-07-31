@@ -58,7 +58,7 @@ module team_08 (
 
         0:  Interrupt from touchscreen          (Input)
         1:  SDA line for I2C with touchscreen   (Input and output)
-        2:  SCL line for I2C with touchscreen   (Output)
+        2:  SCL line for I2C with touchscreen   (Input and output)
      3-10:  SPI outputs                         (Output)
        11:  spi_wrx                             (Output)
        12:  spi_rdx                             (Output)
@@ -71,8 +71,8 @@ module team_08 (
     t08_top top(
         .clk(clk), .nRst(nrst), .en(en),
         .touchscreen_interrupt(gpio_in[0]), 
-        .SDAin(gpio_in[1]), .SDAout(gpio_out[1]), .SDAoeb(gpio_oeb[1]), 
-        .touchscreen_scl(gpio_out[2]),
+        .sda_in(gpio_in[1]), .sda_out(gpio_out[1]), .sda_oeb(gpio_oeb[1]), 
+        .scl_in(gpio_in[2]), .scl_out(gpio_out[2]), .scl_oeb(gpio_oeb[2]),
 
         .spi_outputs(gpio_out[3:10]), 
         .spi_wrx(gpio_out[11]), .spi_rdx(gpio_out[12]), .spi_csx(gpio_out[13]), .spi_dcx(gpio_out[14])

@@ -2,7 +2,7 @@
 
 //WHAT I WAS DOING: Debugging testbench for I2C_2
 
-module t08_I2C_2_tb;
+module t08_I2C_old_version_2_tb;
 
     logic clk = 0;
     always #5 clk = ~clk;
@@ -19,7 +19,7 @@ module t08_I2C_2_tb;
     initial begin
 
         $dumpfile("t08_I2C_2.vcd");
-        $dumpvars(0, t08_I2C_2_tb);
+        $dumpvars(0, t08_I2C_old_version_2_tb);
 
         inter = 1;
 

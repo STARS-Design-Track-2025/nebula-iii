@@ -1,4 +1,4 @@
-module t08_I2C_2(
+module t08_I2C_old_version_2(
     input logic clk, nRst, //Clock and active-low reset
 
     input logic sda_in, //Input on the SDA line from the touchscreen
