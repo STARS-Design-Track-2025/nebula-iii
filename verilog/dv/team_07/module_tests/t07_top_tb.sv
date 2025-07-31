@@ -2,9 +2,9 @@
 module t07_top_tb();
     logic clk, nrst;
     logic [7:0] ESP_in;
-    logic FPUFlag, invalError;
+    logic FPUFlag, invalError, chipSelectTFT, bitDataTFT, sclkTFT;
 
-    t07_top top0(.clk(clk), .nrst(nrst), .FPUFlag(FPUFlag), .invalError(invalError), .ESP_in(ESP_in));
+    t07_top top0(.clk(clk), .nrst(nrst), .FPUFlag(FPUFlag), .invalError(invalError), .ESP_in(ESP_in), .chipSelectTFT(chipSelectTFT), .bitDataTFT(bitDataTFT), .sclkTFT(sclkTFT));
 
     task reset(); begin
         #2

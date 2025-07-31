@@ -1,7 +1,7 @@
 module t07_top (
     input logic clk, nrst,
     input logic [7:0] ESP_in,
-    output logic FPUFlag, invalError, chipSelectTFT, bitDataTFT, slckTFT
+    output logic FPUFlag, invalError, chipSelectTFT, bitDataTFT, sclkTFT
 );
 
 logic [1:0] rwiToWB;
