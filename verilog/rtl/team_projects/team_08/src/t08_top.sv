@@ -9,8 +9,8 @@ module t08_top(
 
     output logic [7:0] spi_outputs,                     //SPI outputs to display screen
     output logic spi_wrx, spi_rdx, spi_csx, spi_dcx,
-    output logic [31:0] program_counter,
-    output logic [2:0] state
+    output logic [31:0] program_counter
+
 
     // input logic [31:0] wb_dat_i,                        //Wishbone manager inputs and outputs with wishbone interconnect
     // input logic wb_ack_i,
@@ -37,7 +37,6 @@ module t08_top(
    // logic [2:0] state;
 
     t08_CPU CPU(
-        .state(state),
         .program_counter(program_counter),
         .gdone(mmio_done_o),
         .clk(clk), .nRst(nRst),                             //clock and reset

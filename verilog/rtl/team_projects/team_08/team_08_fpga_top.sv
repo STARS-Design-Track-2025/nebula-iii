@@ -40,7 +40,6 @@ assign ss7= program_counter [7:0]; // E14,F16
 assign ss6[2:0] = state; // from 2 to 0 K15, J14, K14
 //ss2 ss3 = G16 B16
 t08_top topmodule(
-    .state(state),
   .clk(hwclk), .nRst(~reset), .en(1'b1), 
   .touchscreen_interrupt(0), .SDAin(0), .SDAout(), .SDAoeb(), .touchscreen_scl(),
   .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx), .program_counter(program_counter));
