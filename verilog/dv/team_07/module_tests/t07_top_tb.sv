@@ -6,54 +6,6 @@ module t07_top_tb();
 
     t07_top top0(.clk(clk), .nrst(nrst), .FPUFlag(FPUFlag), .invalError(invalError), .ESP_in(ESP_in));
 
-    // task ESP_val(); begin
-    //     ESP_in = 8'hAA;
-    //     #4;
-    //     ESP_in = 8'hBB;
-    //     #4;
-    //     ESP_in = 8'hCC;
-    //     #4;
-    //     ESP_in = 8'hDD;
-    //     #4;
-    // end
-    // endtask
-
-    // task ESP_valLoop(); begin
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-
-    // end
-    // endtask
-
     task reset(); begin
         #2
         nrst = ~nrst;        
@@ -75,7 +27,7 @@ module t07_top_tb();
         ESP_in = '0;
         reset();
 
-        #400
+        #500
         $finish;
     end
 
