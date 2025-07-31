@@ -33,13 +33,13 @@ always_comb begin
     next_data = dataforOutput;
     next_state = state;
     ack = 0;
-    chipSelect = 0;
+    chipSelect = 1;
     sclk = 0;
 
     case (state) 
-      1'b0: begin if (wi == 1) begin ack = 0; sclk = clk; next_data = {address[31:24], data[31:24],  address[23:16], data[23:16], address[15:8], data[15:8], address[7:0], data[7:0]}; next_state = 1'b1; end else begin next_state = 1'b0; end end //load 64 bits
+      1'b0: begin if (wi == 1) begin chipSelect = 0; ack = 1; sclk = clk; next_data = {address[31:24], data[31:24],  address[23:16], data[23:16], address[15:8], data[15:8], address[7:0], data[7:0]}; next_state = 1'b1; end else begin next_state = 1'b0; end end //load 64 bits
       1'b1: begin if (wi == 1 && dataforOutput != '0) begin
-                ack = 0;
+                ack = 1;
                 chipSelect = 0; 
                 sclk = clk;
                 bitData = dataforOutput[63];
@@ -50,13 +50,13 @@ always_comb begin
             chipSelect = 1;
             next_state = 1'b0;
         end else if (wi == 0) begin
-            ack = 1;
+            ack = 0;
             chipSelect = 1;
             sclk = 0;
             next_state = 1'b0;
         end //shift 64 bits
       end
-      default: begin sclk = 0; end
+      default: begin sclk = 0; ack = 0; end
     endcase
 end
 
