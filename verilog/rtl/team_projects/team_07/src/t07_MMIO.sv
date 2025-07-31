@@ -46,6 +46,7 @@ always_comb begin
     WBData_out = 'hDEADBEEF; 
     displayData = 'hDEADBEEF;
     displayAddr = 'hDEADBEEF;
+    displayWrite = '0;
 
     //busy signal logic -- based on WB busy, SPI busy, Reg busy
     if (ack_TFT_i || WB_busy_i) begin 
@@ -84,7 +85,7 @@ always_comb begin
         CPUData_out = 32'b0; //sending instruction to fetch, not internal mem
         instr_out = WBData_i; //next instruction to write to fetch module in CPU
     end else begin
-        if(addr_in > 32'd1024 & addr_in <= 32'd1056 & rwi_in == 2'b10) begin //read from external registers
+        if(addr_in > 32'd1024 && addr_in <= 32'd1056 && rwi_in == 2'b10) begin //read from external registers
             addr_outREG = addr_in[4:0]; // address to external register (to get correct ESP32 data)
             if(ChipSelReg_i == 1) begin
                 regRead_o = 1'b1; //read from external register
