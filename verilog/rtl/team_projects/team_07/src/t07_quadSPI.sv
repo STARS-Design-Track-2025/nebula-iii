@@ -3,7 +3,7 @@ module t07_quadSPI (
     input logic [3:0] ESPData_i,
     input logic sclk_i, nrst, enable_i, //from MMIO
     output logic [31:0] MMIOData_o,
-    output logic sclk_o, enable_o, ack_o
+    output logic sclk_o, enable_o, ack_o //sclk, enable to ESP32, ack to MMIO
 );
 
 logic [31:0] MMIOData_n;
