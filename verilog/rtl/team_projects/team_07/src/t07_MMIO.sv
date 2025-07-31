@@ -51,12 +51,12 @@ always_comb begin
     //busy signal logic -- based on WB busy, SPI busy, Reg busy
     if (ack_TFT_i || WB_busy_i) begin 
         CPU_busy_o = '1; 
-        end else if ((addr_in > 32'd1024 && addr_in <= 32'd1056) & rwi_in == 2'b10 & ChipSelReg_i) begin 
+    end else if ((addr_in > 32'd1024 && addr_in <= 32'd1056) && rwi_in == 2'b10 & ChipSelReg_i) begin 
             CPU_busy_o = ack_REG_i; 
-            end else if ((addr_in > 32'd1024 && addr_in <= 32'd1056) & ChipSelReg_i == '0 & rwi_in == 2'b10) begin 
-                CPU_busy_o = '1; 
-                end else begin 
-                    CPU_busy_o = 0; 
+    end else if ((addr_in > 32'd1024 && addr_in <= 32'd1056) && ChipSelReg_i == '0 & rwi_in == 2'b10) begin 
+            CPU_busy_o = '1; 
+    end else begin 
+            CPU_busy_o = 0; 
                     end
 
     //read & write for wishbone manager

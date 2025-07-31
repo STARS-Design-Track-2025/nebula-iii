@@ -40,9 +40,10 @@ module t07_memoryHandler (
 
 );
     //edge detector
-    logic load_ct;
+    logic load_ct, load_ct_n;
     logic prev_busy_o;
     state_t0 state_n;
+
 
     always_ff @(negedge nrst, posedge clk) begin
         if(~nrst) begin
@@ -60,6 +61,7 @@ module t07_memoryHandler (
             state <= FETCH;
         end else begin
             state <= state_n;
+            load_ct <= load_ct_n;
         end
     end
 
@@ -68,7 +70,7 @@ module t07_memoryHandler (
             FETCH: //state 0
                 begin
                     addrControl = 1;
-                    load_ct = '0; 
+                    load_ct_n  = '0; 
                     rwi = 'b11; 
                     freeze = 0; //fetch instr 
                     state_n = F_WAIT; 
@@ -76,7 +78,7 @@ module t07_memoryHandler (
             F_WAIT: //state 1
                 begin 
                     addrControl = 1;
-                    load_ct = '0; 
+                    load_ct_n = '0; 
                     rwi = 'b11; 
                     freeze = 1;
                     if(busy_o_edge == 'b1) begin 
@@ -93,12 +95,11 @@ module t07_memoryHandler (
                         state_n = D_WAIT; 
                         rwi = 'b01; 
                         freeze = 1; 
-                        load_ct = 0;
-                        regData_o = 32'b0; // No data to return to internal registers on write operation
+                        load_ct_n = 0;
+                        regData_o = 32'b0; 
 
                         if(memSource) begin
-                            // If memSource is set, we are getting data from the FPU register
-                            addrMMIO_o = ALU_address; // Use ALU address for memory operations
+                            addrMMIO_o = ALU_address; 
                             if (memOp == 4'd6) begin // store byte - FPU
                                 dataMMIO_o = {24'b0, FPU_data_i[7:0]}; 
                             end else if (memOp == 4'd7) begin // store half-word - FPU
@@ -109,7 +110,6 @@ module t07_memoryHandler (
                                 dataMMIO_o = 32'b0; // Default case, no valid operation
                             end
                         end else begin
-                            // get data from internal registers
                             addrMMIO_o = ALU_address; // Use ALU address for memory operations
                             if (memOp == 4'd6) begin // store byte
                                 dataMMIO_o = {24'b0, regData_i[7:0]}; 
@@ -125,12 +125,13 @@ module t07_memoryHandler (
                     end else if (memRead == 1) begin //LOAD
                         addrControl = 1;
                         state_n = D_WAIT; 
-                        load_ct = load_ct + 1; 
+                        load_ct_n = load_ct + 1; 
                         rwi = 'b10; 
                         freeze = 1; 
 
-                        addrMMIO_o = ALU_address; // Use ALU address for memory operations
+                        addrMMIO_o = ALU_address; 
                         dataMMIO_o = 32'b0; // No data to write in read operation
+                        
                         if (memOp == 4'd1) begin //load byte
                             regData_o = {{24{dataMMIO_i[7]}}, dataMMIO_i[7:0]}; 
                         end else if (memOp == 4'd2) begin // load half word
@@ -142,21 +143,21 @@ module t07_memoryHandler (
                         end else if (memOp == 4'd5) begin // load half word unisgned
                             regData_o = {16'b0, dataMMIO_i[15:0]};
                         end else begin
-                            regData_o = 32'b0; // Default case, no valid operation
+                            regData_o = 32'b0; 
                         end
 
                     end else begin
                         state_n = FETCH;
-                        dataMMIO_o = 32'b0; // No data to write
+                        dataMMIO_o = 32'b0; 
                         addrMMIO_o = ALU_address; 
-                        regData_o = 32'b0; // No data to return to CPU end
+                        regData_o = 32'b0;
                     end
                 end
             D_WAIT: //state 3
                 begin 
                     addrControl = 0;
                     freeze = 1;
-                    if(busy_o_edge & load_ct == 0) begin 
+                    if(busy_o_edge & load_ct == 0) begin //check that load_ct is correct and not load_count_n
                         //addrControl = 1;
                         state_n = FETCH; 
                     end else if (busy_o_edge & load_ct > 1) begin 

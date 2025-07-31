@@ -1,6 +1,6 @@
 module t07_top (
     input logic clk, nrst,
-    input logic [7:0] ESP_in,
+    input logic [3:0] ESP_in,
     output logic FPUFlag, invalError
 );
 
@@ -50,31 +50,28 @@ logic [(4 * (10)) - 1:0] sel_out;
 logic [6 + 3:0] ackDec_in; //acknowledge
 logic [(32 * (10)) - 1:0] dataDec_in; //data from SRAM to WB Dec
 
-//inputs to MMIO from registers
-logic [31:0] regData_in;
-logic ackReg; 
-logic ChipSelectIn;
-//outputs to registers from MMIO
-logic regRead;
-logic [4:0] addrToReg;
+//inputs to MMIO from SPI -ESP32
+logic [31:0] SPIData_i;
 
 //outputs to SPI->TFT
 logic [31:0] dataToTFT, addrToTFT;
 logic wi_out, ackTFT;
 
-//logic [7:0] ESP_in; // Input from the ESP32
+//logic [4:0] ESP_in; // Input from the ESP32
 logic SCLK_out; // Clock signal for the ESP32
-logic ChipSelectOut;
-logic [4:0] SPIAddress;
+logic ChipSelectOut, ackReg, ChipSelectIn, regRead;
+logic [4:0] SPIAddress, addrToReg;
 logic [31:0] write_data;
+logic [31:0] regData_in;
 
 t07_CPU CPU(.busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
 .rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst), .busy_edge_o(busy_edge));
 
 t07_MMIO MMIO(.addr_in(exMemAddr_CPU), .memData_i(exMemData_CPU), .rwi_in(rwi_in), .WBData_i(dataToMMIO), 
-.regData_i(regData_in), .ack_REG_i(ackReg), .ack_TFT_i(ackTFT), .regRead_o(regRead), .addr_outREG(addrToReg), .CPUData_out(memData_in), 
+ .ack_TFT_i(ackTFT), .CPUData_out(memData_in), 
 .CPU_busy_o(busyCPU), .instr_out(instr), .displayData(dataToTFT), .displayWrite(wi_out), .displayAddr(addrToTFT), .WB_read_o(read), .WB_write_o(write),
-.addr_out(addrToSRAM), .WBData_out(dataToSRAM), .WB_busy_i(busyToMMIO), .WB_busy_edge_i(busy_edge), .ChipSelReg_i(ChipSelectIn));
+.addr_out(addrToSRAM), .WBData_out(dataToSRAM), .WB_busy_i(busyToMMIO), .WB_busy_edge_i(busy_edge), 
+.regData_i(regData_in), .ack_REG_i(ackReg), .ChipSelReg_i(ChipSelectIn), .regRead_o(regRead), .addr_outREG(addrToReg) );
 
 wishbone_manager wishbone0(.nRST(nrst), .CLK(clk), .DAT_I(dataArToWM), .ACK_I(ackToWM), .CPU_DAT_I(dataToSRAM), 
 .ADR_I(addrToSRAM), .SEL_I(4'hF), .WRITE_I(write), .READ_I(read), .ADR_O(addrWMToAr), .DAT_O(dataWMToAr), 
@@ -92,7 +89,7 @@ wishbone_decoder wishboneD0 (.CLK(clk), .nRST(nrst), .wbs_ack_i_periph(ackDec_in
 
 sram_WB_Wrapper sramWrapper(.wb_clk_i(clk), .wb_rst_i(nrst), .wbs_stb_i(stb_out), .wbs_cyc_i(cyc_out), .wbs_we_i(we_out), .wbs_sel_i(sel_out),
 .wbs_dat_i(data_out), .wbs_adr_i(addr_out), .wbs_ack_o(ackDec_in), .wbs_dat_o(dataDec_in));
-
+ 
 t07_ExternalRegister uut (
     .clk(clk),
     .nrst(nrst),

@@ -1,58 +1,10 @@
 `timescale 1ms / 1ps
 module t07_top_tb();
     logic clk, nrst;
-    logic [7:0] ESP_in;
+    logic [3:0] ESP_in;
     logic FPUFlag, invalError;
 
     t07_top top0(.clk(clk), .nrst(nrst), .FPUFlag(FPUFlag), .invalError(invalError), .ESP_in(ESP_in));
-
-    // task ESP_val(); begin
-    //     ESP_in = 8'hAA;
-    //     #4;
-    //     ESP_in = 8'hBB;
-    //     #4;
-    //     ESP_in = 8'hCC;
-    //     #4;
-    //     ESP_in = 8'hDD;
-    //     #4;
-    // end
-    // endtask
-
-    // task ESP_valLoop(); begin
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-    //     ESP_val();
-
-    // end
-    // endtask
 
     task reset(); begin
         #2
@@ -62,6 +14,54 @@ module t07_top_tb();
     end
     endtask
 
+    task TaskESPWord1(); begin
+        ESP_in = 4'hA;
+        #6;
+        ESP_in = 4'hA;
+        #4;
+        ESP_in = 4'hB;
+        #4;
+        ESP_in = 4'hB;
+        #4;
+        ESP_in = 4'hC;
+        #4;
+        ESP_in = 4'hC;
+        #4;
+        ESP_in = 4'hD;
+        #4;
+        ESP_in = 4'hD;
+        #4;
+    end
+    endtask
+
+    task TaskESPWord(); begin
+        ESP_in = 4'hA;
+        #4;
+        ESP_in = 4'hA;
+        #4;
+        ESP_in = 4'hB;
+        #4;
+        ESP_in = 4'hB;
+        #4;
+        ESP_in = 4'hC;
+        #4;
+        ESP_in = 4'hC;
+        #4;
+        ESP_in = 4'hD;
+        #4;
+        ESP_in = 4'hD;
+        #4;
+    end
+    endtask
+
+    task FullReg();
+        TaskESPWord1();
+        for(int i = 0; i < 30; i++) begin
+            TaskESPWord();
+        end
+        ESP_in = '0;
+    endtask
+    
     always begin
         #2
         clk = ~clk;
@@ -74,8 +74,8 @@ module t07_top_tb();
         nrst = 1;
         ESP_in = '0;
         reset();
-
-        #400
+        FullReg();
+        #500
         $finish;
     end
 
