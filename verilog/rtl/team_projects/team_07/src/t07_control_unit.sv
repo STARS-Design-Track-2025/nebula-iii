@@ -56,7 +56,7 @@ always_comb begin
         end
 
         7'b 0000011: begin /*(I-Type)*/
-            ALUOp = 4'd10; //ALU default
+            ALUOp = 4'd00; //add rs1 + imm
             memSrc = 0;
             invalid_Op = 0;
             regWriteSrc = 3'b100; //from immediate
