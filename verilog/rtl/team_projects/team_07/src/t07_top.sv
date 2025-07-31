@@ -55,7 +55,7 @@ logic [31:0] SPIData_i;
 
 //outputs to SPI->TFT
 logic [31:0] dataToTFT, addrToTFT;
-logic wi_out, ackTFT;
+logic displayWrite, ackTFT;
 
 //logic [4:0] ESP_in; // Input from the ESP32
 logic SCLK_out; // Clock signal for the ESP32

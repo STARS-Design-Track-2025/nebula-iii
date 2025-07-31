@@ -123,7 +123,7 @@ module t07_memoryHandler (
                         end 
 
                     end else if (memRead == 1) begin //LOAD
-                        addrControl = 1;
+                        addrControl = 0;//
                         state_n = D_WAIT; 
                         load_ct_n = load_ct + 1; 
                         rwi = 'b10; 
