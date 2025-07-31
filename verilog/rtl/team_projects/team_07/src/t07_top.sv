@@ -63,6 +63,7 @@ logic ChipSelectOut, ackReg, ChipSelectIn, regRead;
 logic [4:0] SPIAddress, addrToReg;
 logic [31:0] write_data;
 logic [31:0] regData_in;
+logic wi_out;
 
 t07_CPU CPU(.busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
 .rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst), .busy_edge_o(busy_edge));

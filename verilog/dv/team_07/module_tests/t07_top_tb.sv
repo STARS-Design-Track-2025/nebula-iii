@@ -9,14 +9,14 @@ module t07_top_tb();
     task reset(); begin
         #2
         nrst = ~nrst;        
-        #2
+        #4
         nrst = ~nrst;
     end
     endtask
 
     task TaskESPWord1(); begin
         ESP_in = 4'hA;
-        #6;
+        #4;
         ESP_in = 4'hA;
         #4;
         ESP_in = 4'hB;
