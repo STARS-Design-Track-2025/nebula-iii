@@ -62,12 +62,12 @@ assign {right[5],ss4[4],right[0], ss1[5], ss1[4], right[4], ss4[5] , ss4[1]} = o
 
 logic inter, sda_in, sda_out, scl_in, scl_out;
 
-assign sda_out = ss5[0];
-assign scl_out = ss5[1];
+assign sda_out = ss5[0]; //R15
+assign scl_out = ss5[1]; //T1
 
-assign sda_in = pb[4];
-assign scl_in = pb[1];
-assign inter = ~pb[2];
+assign sda_in = pb[4]; //A1
+assign scl_in = pb[1]; //B3
+assign inter = ~pb[2]; //C4
 
 
 
@@ -85,14 +85,16 @@ assign ss6[2:0] = state; // from 2 to 0 K15, J14, K14
 
 //ss2 ss3 = G16 B16
 
-t08_top topmodule(
+//assign sda_out = hwclk;
+
+// t08_top topmodule(
 
 
 
-  .clk(hwclk), .nRst(~reset), .en(1'b1), 
+//   .clk(hwclk), .nRst(~reset), .en(1'b1), 
 
-  .touchscreen_interrupt(inter), .I2C_sda_in(sda_in), .I2C_scl_in(scl_in), .I2C_sda_out(sda_out), .I2C_scl_out(scl_out),
-    .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx), .program_counter(program_counter));
+//   .touchscreen_interrupt(inter), .I2C_sda_in(sda_in), .I2C_scl_in(scl_in), .I2C_sda_out(/*sda_out*/), .I2C_scl_out(scl_out),
+//     .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx), .program_counter(program_counter));
 
 
 
@@ -201,13 +203,12 @@ t08_top topmodule(
 
   // logic [31:0] I2C_data_out;
 
-  // t08_I2C_and_interrupt I2C(
-  //   .clk(hz10k), .nRst(~reset), 
-  //   .SDAin(gpio_in[1]), .SDAout(gpio_out[1]), .SDAoeb(), 
-  //   .inter(gpio_in[0]), .scl(gpio_out[2]), 
-  //   .data_out(I2C_data_out), .done(left[7]), 
-  //   .state_debug(left[6:3]), .state_debug2(right[7:4]), .error_occurred(right[3])
-  // );
+  t08_I2C_and_interrupt I2C(
+    .clk(hwclk), .nRst(~reset), 
+    .sda_in(sda_in), .sda_out(sda_out), .sda_oeb(), 
+    .inter(inter), .scl_in(scl_in), .scl_out(scl_out), 
+    .data_out(), .done(left[7])
+  );
 
   // t08_ssdec s7(.in(I2C_data_out[31:28]), .enable(1'b1), .out(ss7[6:0]));
   // t08_ssdec s6(.in(I2C_data_out[27:24]), .enable(1'b1), .out(ss6[6:0]));
