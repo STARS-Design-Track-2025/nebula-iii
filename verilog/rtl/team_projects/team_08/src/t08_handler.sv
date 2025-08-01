@@ -73,20 +73,31 @@ always_comb begin
     INC: begin
         next_counter_on = 1;
         nextstate = WAIT;
+
     end
 
     WAIT: begin
+        if(!busy) begin
         nextstate = FETCH;
+        end
+        else begin
+            nextstate = WAIT;
+        end
     end
 
     FETCH: begin
+        if(!done) begin
+            nextstate = WAIT;
+        end
+        else begin
         nextreadout = 1;
         nextnewadd = counter;
         nextstate = FWAIT;
-
+        end
     end
 
     FWAIT: begin
+        if (done) begin
         if (gdone) begin
             nextinst = frommem;
             nextstate = LORS;
@@ -94,6 +105,10 @@ always_comb begin
         end
         else begin
             nextstate = FWAIT;
+        end
+        end
+        else begin
+            nextstate = WAIT;
         end
     end
 

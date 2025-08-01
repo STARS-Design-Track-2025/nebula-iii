@@ -60,9 +60,14 @@ assign blue = hwclk;
 
 assign {right[5],ss4[4],right[0], ss1[5], ss1[4], right[4], ss4[5] , ss4[1]} = outputs;
 
+logic inter, sda_in, sda_out, scl_in, scl_out;
 
+assign sda_out = ss5[0];
+assign scl_out = ss5[1];
 
-
+assign sda_in = pb[4];
+assign scl_in = pb[1];
+assign inter = ~pb[2];
 
 
 
@@ -86,7 +91,7 @@ t08_top topmodule(
 
   .clk(hwclk), .nRst(~reset), .en(1'b1), 
 
-  .touchscreen_interrupt(0), . I2C_sda_in(0), .I2C_scl_in(0), 
+  .touchscreen_interrupt(inter), .I2C_sda_in(sda_in), .I2C_scl_in(scl_in), .I2C_sda_out(sda_out), .I2C_scl_out(scl_out),
     .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx), .program_counter(program_counter));
 
 
