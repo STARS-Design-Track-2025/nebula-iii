@@ -2,7 +2,7 @@
 
 // FPGA top module for Team 01
 
-module top (
+module team_01_fpga_top (
   // I/O ports
   input  logic hwclk, reset,
   input  logic [20:0] pb,
@@ -57,7 +57,11 @@ module top (
   logic [3:0][3:0][2:0] next_block_preview;
   
   // Internal signals
+  logic clk_25m;
+  logic rst;
+  assign rst = reset;
   assign clk_25m = hwclk;
+  logic J39_b15, J39_c15, J40_n4;
   logic [9:0] x, y;
   logic [2:0] grid_color, score_color, starboy_color, final_color, grid_color_movement, grid_color_hold, credits;  
   logic onehuzz;
@@ -171,6 +175,8 @@ end
       .y(y),
       .shape_color(score_color)
     );
+
+    logic [2:0] next_block_color;
 
     t01_lookahead justinjiang (
         .x(x),
