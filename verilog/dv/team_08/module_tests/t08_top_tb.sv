@@ -7,9 +7,9 @@ module t08_top_tb;
 
     always begin
         clk = 0;
-        #1;
+        #10;
         clk = 1;
-        #1;
+        #10;
     end
 
     t08_top top(
@@ -53,7 +53,7 @@ module t08_top_tb;
         nRst = 1;
         #(0.1);
 
-        nRst = 0; #4;
+        nRst = 0; #5;
         @(negedge clk);
         nRst = 1;
         //data_in = 0;
@@ -62,7 +62,7 @@ module t08_top_tb;
 
         touchscreen_interrupt = 0; #4; @(negedge clk); touchscreen_interrupt = 1;
 
-        #2000000
+        #20000000
 
         //  nRst = 1;
         // #(0.1);

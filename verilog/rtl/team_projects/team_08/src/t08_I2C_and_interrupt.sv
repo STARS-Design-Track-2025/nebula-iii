@@ -69,7 +69,7 @@ module t08_I2C_and_interrupt(
 
                 bit_timer_counter_n = bit_timer_counter + 1;
 
-                if (bit_timer_counter == 8'd31) begin
+                if (bit_timer_counter == 8'd255) begin
                     bit_timer_state_n = TIMER_DONE;
                 end
 
