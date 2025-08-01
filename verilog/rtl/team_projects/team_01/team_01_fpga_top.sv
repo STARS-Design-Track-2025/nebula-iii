@@ -6,15 +6,16 @@ module team_01_fpga_top (
   // I/O ports
   input  logic hwclk, reset,
   input  logic [20:0] pb,
-  output logic [7:0] left, right,
-         ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0,
+  input logic J39_b15, J39_c15,
+  output logic left, 
+  output logic [1:0] right,
   output logic red, green, blue,
 
   // UART ports
-  output logic [7:0] txdata,
-  input  logic [7:0] rxdata,
-  output logic txclk, rxclk,
-  input  logic txready, rxready
+  // output logic [7:0] txdata,
+  // input  logic [7:0] rxdata,
+  // output logic txclk, rxclk,
+  // input  logic txready, rxready
 );
 
   // GPIOs
@@ -61,7 +62,7 @@ module team_01_fpga_top (
   logic rst;
   assign rst = reset;
   assign clk_25m = hwclk;
-  logic J39_b15, J39_c15, J40_n4;
+  logic  J40_n4;
   logic [9:0] x, y;
   logic [2:0] grid_color, score_color, starboy_color, final_color, grid_color_movement, grid_color_hold, credits;  
   logic onehuzz;
