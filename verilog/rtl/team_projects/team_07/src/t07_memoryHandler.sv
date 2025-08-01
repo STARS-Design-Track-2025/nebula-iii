@@ -1,12 +1,3 @@
-`default_nettype none
-
-/* CPU Memory Handler for Team 07
-
--This module handles memory operations for the CPU, including read and write operations.
--It interfaces with the memory and manages the data flow based on control signals.
--Takes in Data from the control unit and ALU, and outputs the read data and memory address.
-
-*/
 
  typedef enum logic [2:0] {  
         FETCH = 0,
@@ -32,12 +23,11 @@ module t07_memoryHandler (
     output logic [31:0] dataMMIO_o, // Data to write to external memory
     output logic [31:0] addrMMIO_o, // Address to write to external memory   
     output logic [31:0] regData_o,  // Data to the register
-    output logic freeze,            // Freeze signal to pause CPU operations during memory access
+    output logic freeze_o,            // Freeze signal to pause CPU operations during memory access
     output logic [1:0] rwi,          // read - 01, write - 10, idle - 00, fetch -11 
     output state_t0 state,
     output logic addrControl, // control for address mux, 0 when fetch, 1 when l/s
     output logic busy_o_edge,
-    output logic busy_o //for registers
 
 );
     //edge detector
@@ -45,7 +35,6 @@ module t07_memoryHandler (
     logic prev_busy_o;
     state_t0 state_n;
 
-    assign busy_o = busy;
 
     always_ff @(negedge nrst, posedge clk) begin
         if(~nrst) begin
@@ -68,13 +57,24 @@ module t07_memoryHandler (
     end
 
     always_comb begin
+    //default to prevent latch
+        freeze_o = '0;
+        addrControl = 0; //check this
+        rwi = 'b11; //check this - default to fetch correct?
+        regData_o = 'hDEADBEEF;
+        addrMMIO_o = 'hDEADBEEF; 
+        dataMMIO_o = 'hDEADBEEF;
+        
+        load_ct_n = '0;
+        state_n = FETCH; 
+
         case(state) 
             FETCH: //state 0
                 begin
                     addrControl = 1;
                     load_ct_n  = '0; 
                     rwi = 'b11; 
-                    freeze = 0; //fetch instr 
+                    freeze_o = 0; //fetch instr 
                     state_n = F_WAIT; 
                 end
             F_WAIT: //state 1
@@ -82,7 +82,7 @@ module t07_memoryHandler (
                     addrControl = 1;
                     load_ct_n = '0; 
                     rwi = 'b11; 
-                    freeze = 1;
+                    freeze_o = 1;
                     if(busy_o_edge == 'b1) begin 
                         state_n = DATA; 
                     end else begin
@@ -96,7 +96,7 @@ module t07_memoryHandler (
                         addrControl = 0;
                         state_n = D_WAIT; 
                         rwi = 'b01; 
-                        freeze = 1; 
+                        freeze_o = 1; 
                         load_ct_n = 0;
                         regData_o = 32'b0; 
 
@@ -129,7 +129,7 @@ module t07_memoryHandler (
                         state_n = D_WAIT; 
                         load_ct_n = load_ct + 1; 
                         rwi = 'b10; 
-                        freeze = 1; 
+                        freeze_o = 1; 
 
                         addrMMIO_o = ALU_address; 
                         dataMMIO_o = 32'b0; // No data to write in read operation
@@ -158,7 +158,7 @@ module t07_memoryHandler (
             D_WAIT: //state 3
                 begin 
                     addrControl = 0;
-                    freeze = 1;
+                    freeze_o = 1;
                     if(busy_o_edge & load_ct == 0) begin //check that load_ct is correct and not load_count_n
                         //addrControl = 1;
                         state_n = FETCH; 
@@ -170,7 +170,7 @@ module t07_memoryHandler (
                     end
                 end
             default:
-            freeze = 1;
+            freeze_o = 1;
         endcase
     end
 
