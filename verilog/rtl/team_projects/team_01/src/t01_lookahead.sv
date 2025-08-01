@@ -2,14 +2,15 @@
 /////////////////////////////////////////////////////////////////
 // HEADER
 //
-// Module : t01_tetrisCredits
-// Description : Display credits text beside the tetris grid
+// Module : t01_tlookahead
+// Description : Display next block preview with label
 //
 //
 /////////////////////////////////////////////////////////////////
-module t01_tetrisCredits(
+module t01_lookahead(
     input logic [9:0] x, y,
-    output logic [2:0] text_color
+    input logic [3:0][3:0][2:0] next_block_data, // 4x4 block data input
+    output logic [2:0] display_color
 );
 
 // Colors
@@ -20,15 +21,21 @@ localparam WHITE = 3'b111;
 localparam CHAR_WIDTH = 8;
 localparam CHAR_HEIGHT = 8;
 
-// Text display area - positioned to the right of the grid
-localparam TEXT_START_X = 10'd420; // Start after grid (395 + some margin)
-localparam TEXT_START_Y = 10'd100; // Align with grid start
+// Preview box parameters
+localparam PREVIEW_START_X = 10'd420; // Align with credits
+localparam PREVIEW_START_Y = 10'd250; // Below credits
+localparam PREVIEW_WIDTH = 10'd80;   // 4 blocks * 20 pixels each
+localparam PREVIEW_HEIGHT = 10'd80;  // 4 blocks * 20 pixels each
+localparam BLOCK_SIZE = 20;          // Size of each preview block
+
+// Text positioning
+localparam TEXT_START_X = PREVIEW_START_X;
+localparam TEXT_START_Y = PREVIEW_START_Y - 10'd20; // Above preview box
 
 // Font ROM for characters we need
-// Using same successful pattern as your starboy module
-logic [7:0] font_rom [0:28][0:7]; // 29 characters, 8 rows each
+logic [7:0] font_rom [0:25][0:7]; // A-Z characters
 
-// Character mapping: A=0, B=1, ..., Z=25, space=26, colon=27, comma=28
+// Initialize font ROM (A=0, B=1, ..., Z=25)
 initial begin
     // Character 'A' (index 0)
     font_rom[0][0] = 8'b00111100;
@@ -289,160 +296,101 @@ initial begin
     font_rom[25][5] = 8'b01000000;
     font_rom[25][6] = 8'b01111110;
     font_rom[25][7] = 8'b00000000;
-    
-    // Space (index 26)
-    font_rom[26][0] = 8'b00000000;
-    font_rom[26][1] = 8'b00000000;
-    font_rom[26][2] = 8'b00000000;
-    font_rom[26][3] = 8'b00000000;
-    font_rom[26][4] = 8'b00000000;
-    font_rom[26][5] = 8'b00000000;
-    font_rom[26][6] = 8'b00000000;
-    font_rom[26][7] = 8'b00000000;
-    
-    // Colon (index 27)
-    font_rom[27][0] = 8'b00000000;
-    font_rom[27][1] = 8'b00011000;
-    font_rom[27][2] = 8'b00011000;
-    font_rom[27][3] = 8'b00000000;
-    font_rom[27][4] = 8'b00000000;
-    font_rom[27][5] = 8'b00011000;
-    font_rom[27][6] = 8'b00011000;
-    font_rom[27][7] = 8'b00000000;
-    
-    // Comma (index 28)
-    font_rom[28][0] = 8'b00000000;
-    font_rom[28][1] = 8'b00000000;
-    font_rom[28][2] = 8'b00000000;
-    font_rom[28][3] = 8'b00000000;
-    font_rom[28][4] = 8'b00000000;
-    font_rom[28][5] = 8'b00011000;
-    font_rom[28][6] = 8'b00011000;
-    font_rom[28][7] = 8'b00110000;
 end
 
-// Text to display: "Made by:" on first line, names on subsequent lines
-// Character encoding: A=0, B=1, ..., Z=25, space=26, colon=27, comma=28
-logic [4:0] text_data [0:191]; // 6 lines * 32 chars max per line
-
-// Initialize text data
+// Text data for "NEXT BLOCK" (N=13, E=4, X=23, T=19, space=26, B=1, L=11, O=14, C=2, K=10)
+logic [4:0] text_string [0:9];
 initial begin
-    // Line 0: "Made by:"
-    text_data[0] = 12;  // M
-    text_data[1] = 0;   // a
-    text_data[2] = 3;   // d
-    text_data[3] = 4;   // e
-    text_data[4] = 26;  // space
-    text_data[5] = 1;   // b
-    text_data[6] = 24;  // y
-    text_data[7] = 27;  // colon
-    text_data[8] = 26;  // space (end of line marker)
-    
-    // Line 1: "Cristian, Safa,"
-    text_data[32] = 2;   // C
-    text_data[33] = 17;  // r
-    text_data[34] = 8;   // i
-    text_data[35] = 18;  // s
-    text_data[36] = 19;  // t
-    text_data[37] = 8;   // i
-    text_data[38] = 0;   // a
-    text_data[39] = 13;  // n
-    text_data[40] = 28;  // comma
-    text_data[41] = 26;  // space
-    text_data[42] = 18;  // S
-    text_data[43] = 0;   // a
-    text_data[44] = 5;   // f
-    text_data[45] = 0;   // a
-    text_data[46] = 28;  // comma
-    text_data[47] = 26;  // space (end of line)
-    
-    // Line 2: "Myles, Mixuan,"
-    text_data[64] = 12;  // M
-    text_data[65] = 24;  // y
-    text_data[66] = 11;  // l
-    text_data[67] = 4;   // e
-    text_data[68] = 18;  // s
-    text_data[69] = 28;  // comma
-    text_data[70] = 26;  // space
-    text_data[71] = 12;  // M
-    text_data[72] = 8;   // i
-    text_data[73] = 23;  // x
-    text_data[74] = 20;  // u
-    text_data[75] = 0;   // a
-    text_data[76] = 13;  // n
-    text_data[77] = 28;  // comma
-    text_data[78] = 26;  // space (end of line)
-    
-    // Line 3: "and PM Johnny"
-    text_data[96] = 0;   // a
-    text_data[97] = 13;  // n
-    text_data[98] = 3;   // d
-    text_data[99] = 26;  // space
-    text_data[100] = 15; // P
-    text_data[101] = 12; // M
-    text_data[102] = 26; // space
-    text_data[103] = 9;  // J
-    text_data[104] = 14; // o
-    text_data[105] = 7;  // h
-    text_data[106] = 13; // n
-    text_data[107] = 13; // n
-    text_data[108] = 24; // y
-    text_data[109] = 26; // space (end of line)
-    
-    // Initialize remaining positions to spaces
-    for (int i = 9; i < 32; i++) text_data[i] = 26;
-    for (int i = 48; i < 64; i++) text_data[i] = 26;
-    for (int i = 79; i < 96; i++) text_data[i] = 26;
-    for (int i = 110; i < 128; i++) text_data[i] = 26;
-    for (int i = 128; i < 192; i++) text_data[i] = 26;
+    text_string[0] = 13; // N
+    text_string[1] = 4;  // E
+    text_string[2] = 23; // X
+    text_string[3] = 19; // T
+    text_string[4] = 26; // space (using index 26 as placeholder)
+    text_string[5] = 1;  // B
+    text_string[6] = 11; // L
+    text_string[7] = 14; // O
+    text_string[8] = 2;  // C
+    text_string[9] = 10; // K
 end
 
-// Character rendering logic
-logic in_text_area;
-logic [4:0] char_index;
-logic [4:0] line_num;
-logic [4:0] char_in_line;
-logic [9:0] text_x, text_y;
-logic [2:0] char_x_offset;
-logic [2:0] char_y_offset;
-logic pixel_on;
+// Rendering logic
+logic in_text_area, in_preview_area, in_preview_border;
+logic [9:0] text_x, text_y, preview_x, preview_y;
+logic [3:0] char_pos;
+logic [2:0] char_x_offset, char_y_offset;
+logic [4:0] current_char;
+logic text_pixel, border_pixel;
+logic [1:0] block_x, block_y;
 
 always_comb begin
-    // Initialize all signals to prevent latches
-    text_color = BLACK;
+    // Initialize signals
+    display_color = BLACK;
     text_x = 10'd0;
     text_y = 10'd0;
+    preview_x = 10'd0;
+    preview_y = 10'd0;
     in_text_area = 1'b0;
-    line_num = 5'd0;
-    char_in_line = 5'd0;
-    char_index = 5'd0;
+    in_preview_area = 1'b0;
+    in_preview_border = 1'b0;
+    char_pos = 4'd0;
     char_x_offset = 3'd0;
     char_y_offset = 3'd0;
-    pixel_on = 1'b0;
+    current_char = 5'd0;
+    text_pixel = 1'b0;
+    border_pixel = 1'b0;
+    block_x = 2'd0;
+    block_y = 2'd0;
     
-    // Calculate position within text area
+    // Check text area
     text_x = x - TEXT_START_X;
     text_y = y - TEXT_START_Y;
+    in_text_area = (x >= TEXT_START_X) && (x < TEXT_START_X + 10*CHAR_WIDTH) &&
+                   (y >= TEXT_START_Y) && (y < TEXT_START_Y + CHAR_HEIGHT);
     
-    // Check if we're in the text display area
-    in_text_area = (x >= TEXT_START_X) && (x < TEXT_START_X + 32*CHAR_WIDTH) &&
-                   (y >= TEXT_START_Y) && (y < TEXT_START_Y + 6*CHAR_HEIGHT);
+    // Check preview area
+    preview_x = x - PREVIEW_START_X;
+    preview_y = y - PREVIEW_START_Y;
+    in_preview_area = (x >= PREVIEW_START_X) && (x < PREVIEW_START_X + PREVIEW_WIDTH) &&
+                      (y >= PREVIEW_START_Y) && (y < PREVIEW_START_Y + PREVIEW_HEIGHT);
     
+    // Check preview border (2-pixel thick border)
+    in_preview_border = ((x >= PREVIEW_START_X - 2) && (x < PREVIEW_START_X + PREVIEW_WIDTH + 2) &&
+                        (y >= PREVIEW_START_Y - 2) && (y < PREVIEW_START_Y + PREVIEW_HEIGHT + 2)) &&
+                       !in_preview_area;
+    
+    // Render text
     if (in_text_area) begin
-        // Calculate which character we're in
-        line_num = 5'(10'(text_y) / 10'(CHAR_HEIGHT));
-        char_in_line = 5'(10'(text_x) / 10'(CHAR_WIDTH));
-        char_index = text_data[line_num * 32 + char_in_line];
+        char_pos = 4'({22'd0, text_x} / 32'd8);  // Extend to 32-bit for division
+        if (char_pos < 10) begin
+            current_char = (char_pos == 4) ? 5'd26 : text_string[char_pos]; // Space character handling
+            char_x_offset = 3'({22'd0, text_x} % 32'd8);  // Extend to 32-bit for modulo
+            char_y_offset = 3'({22'd0, text_y} % 32'd8);  // Extend to 32-bit for modulo
+            
+            if (char_pos == 4) begin // Space between NEXT and BLOCK
+                text_pixel = 1'b0;
+            end else begin
+                text_pixel = (current_char < 26) ? font_rom[current_char][char_y_offset][7-char_x_offset] : 1'b0;
+            end
+            
+            display_color = text_pixel ? WHITE : BLACK;
+        end
+    end
+    // Render preview border
+    else if (in_preview_border) begin
+        display_color = WHITE;
+    end
+    // Render preview area
+    else if (in_preview_area) begin
+        // Calculate which 4x4 block position we're in
+        block_x = 2'({22'd0, preview_x} / 32'd20);  // Extend to 32-bit for division
+        block_y = 2'({22'd0, preview_y} / 32'd20);  // Extend to 32-bit for division
         
-        // Calculate position within character
-        char_x_offset = 3'(10'(text_x) % 10'(CHAR_WIDTH));
-        char_y_offset = 3'(10'(text_y) % 10'(CHAR_HEIGHT));
-        
-        // Get pixel from font ROM - using same pattern as your working module
-        pixel_on = font_rom[char_index][char_y_offset][7-char_x_offset];
-        
-        // Set color
-        text_color = pixel_on ? WHITE : BLACK;
+        // Display the block data
+        if ({30'd0, block_x} < 32'd4 && {30'd0, block_y} < 32'd4) begin
+            display_color = next_block_data[block_y][block_x];
+        end else begin
+            display_color = BLACK;
+        end
     end
 end
 

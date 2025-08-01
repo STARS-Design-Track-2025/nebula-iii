@@ -21,7 +21,7 @@ module t01_clkdiv10k (
     always_comb begin
         count_n = count;
         newclk_n = newclk;
-        if (count < 'd650) begin
+        if (count < 'd1250) begin
             count_n = count + 1;
         end else begin
             count_n = '0;

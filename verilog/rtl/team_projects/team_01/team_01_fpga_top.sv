@@ -52,7 +52,10 @@ module top (
 
   // );
 
-
+  // New signals for next block preview
+  logic [4:0] next_block_type;
+  logic [3:0][3:0][2:0] next_block_preview;
+  
   // Internal signals
   assign clk_25m = hwclk;
   logic [9:0] x, y;
@@ -128,23 +131,26 @@ end
       .gamestate(gamestate)
     );
     
-    // Game Logic
+    // Game Logic - UPDATED WITH NEW OUTPUTS
     t01_tetrisFSM plait (
-      .gamestate(gamestate),
       .clk(clk_25m), 
-      .onehuzz(onehuzz), 
       .reset(rst), 
-      .rotate_l(rotate_l), 
-      .final_display_color(final_display_color),
-      .speed_up_i(pb[8] || pb[11]), 
-      .right_i(right_i), 
-      .left_i(left_i), 
+      .onehuzz(onehuzz), 
+      .en_newgame(J39_b15),
+      .right_i(right), 
+      .left_i(left), 
+      .start_i(J39_b15),
       .rotate_r(rotate_r), 
-      .speed_mode_o(speed_mode_o),
+      .rotate_l(rotate_l), 
+      .speed_up_i(J39_c15), 
       .display_array(new_block_array), 
+      .final_display_color(final_display_color),
       .gameover(gameover), 
       .score(current_score), 
-      .start_i(pb[19])
+      .speed_mode_o(speed_mode_o),
+      .gamestate(gamestate),
+      .next_block_type_o(next_block_type),        // NEW OUTPUT
+      .next_block_preview(next_block_preview)     // NEW OUTPUT
     );
     
     // Tetris Grid Display
@@ -164,6 +170,13 @@ end
       .x(x),
       .y(y),
       .shape_color(score_color)
+    );
+
+    t01_lookahead justinjiang (
+        .x(x),
+        .y(y),
+        .next_block_data(next_block_preview),
+        .display_color(next_block_color)
     );
 
     // STARBOY Display
