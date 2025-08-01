@@ -1,8 +1,10 @@
-`timescale 1ms/10ps
+`timescale 1ns/10ps
 
 module t08_top_tb;
 
     logic clk, nRst;
+    logic touchscreen_interrupt;
+
     always begin
         clk = 0;
         #1;
@@ -13,9 +15,9 @@ module t08_top_tb;
     t08_top top(
         .clk(clk), .nRst(nRst), .en(1'b1),
 
-        .touchscreen_interrupt(1'b0), 
-        .I2C_sda_in(1'b0), .I2C_sda_out(), .I2C_sda_oeb(),
-        .I2C_scl_out(), .I2C_scl_in(),
+        .touchscreen_interrupt(touchscreen_interrupt), 
+        .I2C_sda_in(1'b1), .I2C_sda_out(), .I2C_sda_oeb(),
+        .I2C_scl_out(), .I2C_scl_in(1'b1),
 
         .spi_outputs(), 
         .spi_wrx(), .spi_rdx(), .spi_csx(), .spi_dcx()
@@ -46,6 +48,8 @@ module t08_top_tb;
         $dumpfile("t08_top.vcd");
         $dumpvars(0, t08_top_tb);
 
+        touchscreen_interrupt = 1;
+
         nRst = 1;
         #(0.1);
 
@@ -54,7 +58,11 @@ module t08_top_tb;
         nRst = 1;
         //data_in = 0;
 
-        repeat (20000) @ (negedge clk);
+        repeat (10000) @ (negedge clk);
+
+        touchscreen_interrupt = 0; #4; @(negedge clk); touchscreen_interrupt = 1;
+
+        #2000000
 
         //  nRst = 1;
         // #(0.1);

@@ -101,7 +101,7 @@ module t08_top(
         .read(CPU_read_out), .write(CPU_write_out), .wb_read(wb_read), .wb_write(wb_write),                                //From memory handler
         .address(CPU_mem_address_out), .mh_data_i(CPU_data_out), 
         
-        .I2C_xy_i(I2C_data_out), .I2C_done_i(1'b1),                                    //From I2C
+        .I2C_xy_i(I2C_data_out), .I2C_done_i(I2C_done),                                    //From I2C
         
         .spi_busy_i(SPI_busy),                                                             //From SPI
         
