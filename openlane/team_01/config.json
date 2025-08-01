@@ -1,13 +1,28 @@
 {
-    "DESIGN_NAME": "team_01",
+    "DESIGN_NAME": "team_01_fpga_top",
     "DESIGN_IS_CORE": 0,
     "VERILOG_FILES": [
         "dir::../../verilog/rtl/wb_wrapper.vh",
-        "dir::../../verilog/rtl/team_projects/team_01/team_01.sv"
+        "dir::../../verilog/rtl/team_projects/team_01/team_01_fpga_top.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_button_sync.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_clkdiv1hz.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_clkdiv10k.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_counter.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_debounce.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_lineclear.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_musicman.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_scoredisplay.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_speed_controller.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_starboyDisplay.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_synckey.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_tetrisCredits.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_tetrisFSM.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_tetrisGrid.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/src/t01_vgadriver.sv"
     ],
-    "CLOCK_PERIOD": 25,
+    "CLOCK_PERIOD": 40,
     "CLOCK_PORT": "clk",
-    "PL_TARGET_DENSITY": 0.55,
+    "PL_TARGET_DENSITY": 0.8,
     "RUN_HEURISTIC_DIODE_INSERTION": true,
     "VDD_NETS": "vccd1",
     "GND_NETS": "vssd1",
@@ -18,7 +33,7 @@
         "FP_CORE_UTIL": 20,
         "RT_MAX_LAYER": "met4",
         "scl::sky130_fd_sc_hd": {
-            "CLOCK_PERIOD": 25
+            "CLOCK_PERIOD": 40
         },
         "scl::sky130_fd_sc_hdll": {
             "CLOCK_PERIOD": 10

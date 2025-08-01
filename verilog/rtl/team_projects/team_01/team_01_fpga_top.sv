@@ -54,6 +54,7 @@ module top (
 
 
   // Internal signals
+  assign clk_25m = hwclk;
   logic [9:0] x, y;
   logic [2:0] grid_color, score_color, starboy_color, final_color, grid_color_movement, grid_color_hold, credits;  
   logic onehuzz;
