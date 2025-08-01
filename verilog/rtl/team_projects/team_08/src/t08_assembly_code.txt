@@ -6,32 +6,32 @@ Catalog of how registers are used:
         - This also serves as the display command for no operation. 
     - rs1: 
     - rs2: 
-    - rs3: Temp register for multiple purposes
-    - rs4: Temp register for multiple purposes
-    - rs5: Temp register for multiple purposes
+    - rs3: 
+    - rs4: 
+    - rs5: 
     - rs6: 
     - rs7: 
     - rs8: 
     - rs9: 
-    - rs10: Used for storing the parameter count for SPI commands
-    - rs11: 
-    - rs12: 
-    - rs13: 
-    - rs14: Used for storing the start and end columns for the display screen for the column address set command
-    - rs15: Used for storing the start and end pages for the display screen for the page address set command
-    - rs16: 
-    - rs17: 
-    - rs18: 
+    - rs10: 
+    - rs11: red color
+    - rs12: orange color
+    - rs13: yellow color
+    - rs14: green color
+    - rs15: blue color
+    - rs16: purple color
+    - rs17: pink color
+    - rs18: black color
     - rs19: Holds the coordinate input from I2C
     - rs20: Holds the done signal from I2C
     - rs21: 
     - rs22: Fixed at 2A (column address set command hex value)
     - rs23: Fixed at 2B (page address set command hex value)
     - rs24: Fixed at 2C (memory write command hex value)
-    - rs25: Fixed at 01 (software reset command hex value)
-    - rs26: 
-    - rs27: 
-    - rs28: 
+    - rs25: SPI command address 121212
+    - rs26: SPI parameters address 333333
+    - rs27: Used for storing the start and end columns for the display screen for the column address set command
+    - rs28: Used for storing the start and end pages for the display screen for the page address set command
     - rs29: 
     - rs30: Fixed at E1913 (address for coordinate input from I2C) 
         - The I2C done signal will be stored at a location 1 higher (E1914).
