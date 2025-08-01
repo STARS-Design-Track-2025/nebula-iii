@@ -165,6 +165,13 @@ end
       .shape_color(score_color)
     );
 
+    t01_lookahead justinjiang (
+        .x(x),
+        .y(y),
+        .next_block_data(next_block_preview),
+        .display_color(next_block_color)
+    );
+
     // STARBOY Display
     t01_starboyDisplay silly (
       .clk(onehuzz),
