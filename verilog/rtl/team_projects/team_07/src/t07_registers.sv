@@ -22,9 +22,9 @@ module t07_registers (
     input logic [31:0] write_data, // from memory handler
     input logic reg_write, // from control unit
     input logic enable, // from control unit
+    input logic busy_i,
 
     output logic [31:0] read_data1, read_data2
-
 );
 
     // Register file: 32 registers, each 32 bits wide
@@ -35,7 +35,7 @@ module t07_registers (
         if (~nrst) begin
             // Reset all registers to zero
             registers <= '0;
-        end else if (enable) begin
+        end else if (enable & busy_i == '0) begin
             if (reg_write && write_reg != 5'b0) begin
                 registers[write_reg] <= write_data;
             end 
