@@ -1,166 +1,53 @@
-`timescale 1ms/10ps
+`timescale 1ns/10ps
 
 module t08_I2C_and_interrupt_tb;
 
     logic clk = 0;
-    always clk = #5 ~clk;
-    logic nrst = 1;
-    logic SDAin = 1;
-    logic SDAout;
-    logic inter = 1; //Interrupt is active low
-    logic scl;
+    always #42 clk = ~clk;
+    logic nRst, sda_out, sda_in, scl_out, scl_in, inter, done;
     logic [31:0] data_out;
-    logic done;
 
-    logic test = 0;
+    logic sda_line, scl_line;
+    assign sda_line = sda_out && sda_in;
+    assign scl_line = scl_out && scl_in;
 
-    t08_I2C_and_interrupt I2C(.clk(clk), .nRst(nrst), .SDAin(SDAin), .SDAout(SDAout), .inter(inter), .scl(scl), .data_out(data_out), .done(done));
-
-    task reset();
-
-        nrst = 0; @ (negedge clk);
-        nrst = 1; @ (negedge clk);
-
-    endtask
-
-    task interrupt();
-
-        inter = 0; @ (negedge clk);
-        inter = 1; @ (negedge clk);
-
-    endtask
-
-    task acknowledge();
-
-        SDAin = 0; @ (negedge scl); //@ (negedge scl);
-        SDAin = 1; @ (negedge clk);
-
-    endtask
-
-    task send_data_frame(logic [7:0] data);
-
-        for (int i = 7; i >= 0; i--) begin
-
-            SDAin = data[i]; @ (negedge scl); //@ (posedge clk);
-
-        end
-
-        SDAin = 1;
-
-    endtask
+    t08_I2C_3 I2C(
+        .clk(clk), .nRst(nRst), 
+        .sda_in(sda_in), .sda_out(sda_out), .sda_oeb(), 
+        .inter(inter), .scl_in(scl_in), .scl_out(scl_out), 
+        .data_out(data_out), .done(done)
+    );
 
     initial begin
 
-        $dumpfile("t08_I2C_and_interrupt.vcd");
+        $dumpfile("t08_I2C_3.vcd");
         $dumpvars(0, t08_I2C_and_interrupt_tb);
 
-        reset();
+        sda_in = 1;
+        scl_in = 1;
 
-        interrupt();
+        inter = 1;
 
-        /*XH phase*/
+        nRst = 0; @ (negedge clk); nRst = 1;
 
-        repeat (9) @ (negedge scl); //repeat (4) @ (negedge clk);
+        inter = 0; @ (negedge clk); inter = 1;
 
-        // Acknowledge bit after slave address in XH
-        acknowledge();
+        //#22721
+        //#55229
+        //#55230
+        //#60000
 
-        repeat (10) @ (negedge scl); @ (negedge clk);
+        #200000
 
-        //Acknowledge bit after data address in XH
-        acknowledge();
+        scl_in = 0;
 
-        repeat (14) @ (negedge scl); @ (negedge clk);
+        #200000
 
-        //Acknowledge bit after slave address 2 in XH (ready for data frame)
-        acknowledge();
+        scl_in = 1;
 
-        //@ (negedge scl); @ (posedge scl); @ (posedge clk);
+        #10600000
 
-        //test = 1;
-
-        send_data_frame(8'b11011001); //D9
-
-        repeat (3) @ (negedge scl);
-
-        /*XL phase*/
-
-        repeat (9) @ (negedge scl); //repeat (4) @ (negedge clk);
-
-        //Acknowledge bit after slave address in XH
-        acknowledge();
-
-        repeat (10) @ (negedge scl); @ (negedge clk);
-
-        //Acknowledge bit after data address in XH
-        acknowledge();
-
-        repeat (14) @ (negedge scl); @ (negedge clk);
-
-        //Acknowledge bit after slave address 2 in XH (ready for data frame)
-        acknowledge();
-
-        //@ (negedge scl); @ (posedge scl); @ (posedge clk);
-
-        //test = 1;
-
-        send_data_frame(8'b11011001); //D9
-
-        repeat (3) @ (negedge scl);
-
-        /*YH phase*/
-
-        repeat (9) @ (negedge scl); //repeat (4) @ (negedge clk);
-
-        //Acknowledge bit after slave address in XH
-        acknowledge();
-
-        repeat (10) @ (negedge scl); @ (negedge clk);
-
-        //Acknowledge bit after data address in XH
-        acknowledge();
-
-        repeat (14) @ (negedge scl); @ (negedge clk);
-
-        //Acknowledge bit after slave address 2 in XH (ready for data frame)
-        acknowledge();
-
-        //@ (negedge scl); @ (posedge scl); @ (posedge clk);
-
-        //test = 1;
-
-        send_data_frame(8'b11011001); //D9
-
-        repeat (3) @ (negedge scl);
-
-        /*YL phase*/
-
-        // repeat (9) @ (negedge scl); //repeat (4) @ (negedge clk);
-
-        // //Acknowledge bit after slave address in XH
-        // acknowledge();
-
-        // repeat (10) @ (negedge scl); @ (negedge clk);
-
-        // //Acknowledge bit after data address in XH
-        // acknowledge();
-
-        // repeat (14) @ (negedge scl); @ (negedge clk);
-
-        // //Acknowledge bit after slave address 2 in XH (ready for data frame)
-        // acknowledge();
-
-        // //@ (negedge scl); @ (posedge scl); @ (posedge clk);
-
-        // //test = 1;
-
-        // send_data_frame(8'b11011001); //D9
-
-        // repeat (2) @ (negedge scl);
-
-        // repeat(20) @ (negedge clk);
-
-        #1 $finish;
+        $finish;
 
     end
 

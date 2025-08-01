@@ -1,611 +1,1100 @@
-/*
-Communicates with the touchscreen via I2C and obtains the coordinates of a touch event whenever a touch event occurs. 
-*/
-
 module t08_I2C_and_interrupt(
     input logic clk, nRst, //Clock and active-low reset
 
-    input logic SDAin, //Input on the SDA line from the touchscreen
-    output logic SDAout, //Output on the SDA line to the touchscreen
-    output logic SDAoeb, //is 1 whenever the SDA pin is an input and is 0 whenver it is an output
-
     input logic inter, //Interrupt signal from the touchscreen. NOTE: IT IS ACTIVE LOW. 
-    output logic scl, //Clock for I2C sent to the touchscreen
+
+    input logic sda_in, //Input on the SDA line from the touchscreen
+    output logic sda_out, //Output on the SDA line to the touchscreen
+    output logic sda_oeb, //is 1 whenever the SDA pin is an input and is 0 whenver it is an output
+    //SDA OEB NOT IMPLEMENTED HERE AT THE MOMENT
+
+    input logic scl_in,
+    output logic scl_out, //Clock for I2C sent to the touchscreen
+    output logic scl_oeb,
 
     output logic [31:0] data_out, //All of the coordinate data sent to memory
-    output logic done, //Done signal also sent to memory, indicating that the module has finished reading coordinate data after a given interrupt signal
-
-    output logic [3:0] state_debug, //TEMPORARY OUTPUT FOR DEBUGGING PURPOSES
-    output logic [3:0] state_debug2,
-    output logic error_occurred
+    output logic done //Done signal also sent to memory, indicating that the module has finished reading coordinate data after a given interrupt signal
 );
-
-    assign state_debug = mid_step_counter;
-    assign state_debug2 = high_step_counter[3:0];
-
-    //logic error_occurred_n;
-
-    logic inter_prev; //For edge detector of interrupt signal
-    logic interrupt_received; //So that the edge detector will not cause an effect until the next positive clock edge
-    logic interrupt_received_n;
-    
-    logic [31:0] data_out_n;
-    logic done_n;
-
-    logic SDAout_n;
-    logic SDAoeb_n;
-
-    logic scl_n;
-    logic scl_prev;
-
-    logic scl_wouldbe_n;
-    logic scl_wouldbe; //What scl would be if it was always in an oscillating state. To help with the timing of the module even when SCl oscillation is not being outputted.
-    logic scl_wouldbe_prev;
-
-    //For edge detectors
-    logic scl_negedge;
-    logic scl_posedge;
-    logic scl_wouldbe_negedge;
-    logic scl_wouldbe_posedge;
-    logic inter_negedge; //Inter = interrupt
-
-    //Implementing edge detectors
-    assign scl_negedge = !scl && scl_prev;
-    assign scl_posedge = scl && !scl_prev;
-    assign scl_wouldbe_negedge = !scl_wouldbe && scl_wouldbe_prev;
-    assign scl_wouldbe_posedge = scl_wouldbe && !scl_wouldbe_prev;
-    assign inter_negedge = !inter && inter_prev;
-
-    //For managing timing when sending the stop bit
-    logic stop_bit_sent;
-    logic stop_bit_sent_n;
-
-    logic ack_bit_received;
-    logic ack_bit_received_n;
-
-    typedef enum logic [7:0] {
-        XH = 8'h03,        //XH data address from touchscreen
-        XL = 8'h04,        //XL data address from touchscreen
-        YH = 8'h05,        //YH data address from touchscreen
-        YL = 8'h06,        //YL data address from touchscreen
-        SL = {7'h38, 1'b0} //Slave address (set to 0C as when only the most significant 7 bits are sent, this will be interpreted as 06)
-    } high_steps; 
-
     /*
-
-    The order of steps (done 4 times, once per data address): 
-    THESE CORRESPOND TO MID_STEP_COUNTER
-
-        1.  Idle state (until interrupt)
-        2.  Send start bit
-        3.  Send slave address
-        4.  Send write bit
-        5.  Wait for acknowledge bit
-        6.  Send data address
-        7.  Wait for acknowledge bit
-        8.  Send stop bit
-        9.  Send start bit
-        10. Send slave address
-        11. Send read bit
-        12. Wait for acknowledge bit
-        13. Read data frame
-        14. Send acknowledge bit
-        15. Send stop bit
-
+    Section for bit timer
     */
 
-    /*
-    These correspond to mid_step_state
-    */
-    typedef enum logic [3:0] {
+    typedef enum logic [1:0] {
+        TIMER_IDLE,
+        TIMER_COUNTING,
+        TIMER_DONE
+    } timer_states;
 
-        IDLE, 
+    timer_states bit_timer_state, bit_timer_state_n;
+    logic [7:0] bit_timer_counter, bit_timer_counter_n;
+    logic start_bit_timer;
+    logic start_bit_timer_acknowledged;
+    logic bit_timer_done;
+    logic bit_timer_done_acknowledged;
 
-        SEND_START_BIT,
-
-        SEND_ADDRESS,
-
-        SEND_WRITE_BIT,
-        SEND_READ_BIT, 
-
-        READ_DATA_FRAME,
-
-        WAIT_ACK_BIT,
-        SEND_ACK_BIT,
-
-        SEND_STOP_BIT, 
-
-        ERROR
-
-    } mid_steps;
-
-    //Counters for levels of the state machine
-    high_steps high_step_counter; //Counter for which address to request data from the touchscreen from
-    high_steps high_step_counter_prev; //Not previous in terms of flip flop states but in terms of what it was before it last changed 
-    mid_steps mid_step_state; //Counter for which step in the I2C protocol the module is at (For instance, waiting for an acknowledge bit)
-    logic [3:0] mid_step_counter; //Counter for the step in the 15 step process listed above the mid_steps enum (for instance, exactly which acknowledge bit in the process is being waited for)
-    logic [2:0] low_step_address_counter; //Counter for which bit within the requested address is currently being sent. 
-    logic [4:0] low_step_register_counter; //Counter for where in the output register to put the data that is obtained 
-
-    //Next states for the counters for the levels of the state machine
-    high_steps high_step_counter_n; //Counter for which address to request data from the touchscreen from
-    high_steps high_step_counter_prev_n; //Not previous in terms of flip flop states but in terms of what it was before it last changed 
-    //mid_steps mid_step_state; //Counter for which step in the I2C protocol the module is at (For instance, waiting for an acknowledge bit)
-    logic [3:0] mid_step_counter_n; //Counter for the step in the 15 step process listed above the mid_steps enum (for instance, exactly which acknowledge bit in the process is being waited for)
-    logic [2:0] low_step_address_counter_n; //Counter for which bit within the requested address is currently being sent. 
-    logic [4:0] low_step_register_counter_n; //Counter for where in the output register to put the data that is obtained 
-
-    //For determining the frequency of the SCL clock
-    logic [7:0] scl_counter; 
-    logic [7:0] scl_counter_n;
-
-    logic [7:0] scl_wouldbe_counter;
-    logic [7:0] scl_wouldbe_counter_n;
-
-    always_ff @ (posedge clk, negedge nRst) begin
-
+    always_ff @ (posedge clk, negedge nRst) begin : timer_flip_flops
         if (!nRst) begin
-
-            inter_prev <= 0;
-            data_out <= 0;
-            done <= 0;
-            SDAout <= 1;
-
-            SDAoeb <= 1; //Acts as an input by default
-
-            interrupt_received <= 0;
-
-            //Flip flops for SCL
-            scl <= 1;
-            scl_prev <= 1;
-            scl_counter <= 0;
-            scl_wouldbe <= 1;
-            scl_wouldbe_prev <= 1;
-            scl_wouldbe_counter <= 0;
-
-            //Flip flops for state machine
-            high_step_counter <= XH;
-            // mid_step_state <= IDLE;
-            mid_step_counter <= 4'd1; //Corresponds to IDLE state
-            low_step_address_counter <= 3'd7; //Counts backwards
-            low_step_register_counter <= 5'd7;
-
-            stop_bit_sent <= 0;
-            ack_bit_received <= 0;
-
-            //error_occurred <= 0;
-
+           bit_timer_state     <= TIMER_IDLE; 
+           bit_timer_counter   <= 0;
         end else begin
-
-            inter_prev <= inter;
-            data_out <= data_out_n;
-            done <= done_n;
-            SDAout <= SDAout_n;
-
-            SDAoeb <= SDAoeb_n;
-
-            interrupt_received <= interrupt_received_n;
-
-            //Flip flops for SCL
-            scl <= scl_n;
-            scl_counter <= scl_counter_n;
-            scl_prev <= scl;
-            scl_wouldbe <= scl_wouldbe_n;
-            scl_wouldbe_prev <= scl_wouldbe;
-            scl_wouldbe_counter <= scl_wouldbe_counter_n;
-
-            //Flip flops for state machine
-            high_step_counter <= high_step_counter_n;
-            high_step_counter_prev <= high_step_counter_prev_n;
-            // mid_step_state <= mid_step_state;
-            mid_step_counter <= mid_step_counter_n;
-            low_step_address_counter <= low_step_address_counter_n;
-            low_step_register_counter <= low_step_register_counter_n;
-
-            stop_bit_sent <= stop_bit_sent_n;
-            ack_bit_received <= ack_bit_received_n;
-
-            //error_occurred <= error_occurred_n;
-
+            bit_timer_state     <= bit_timer_state_n;
+            bit_timer_counter   <= bit_timer_counter_n;
         end
-
     end
 
-    always_comb begin : SCL_control
+    always_comb begin : bit_timer_state_machine
 
-        if (scl_wouldbe_counter < 8'd1) begin //So that the process can continue to move forward in a synchronized way even when SCL is not oscillating
+        //Defaults
+        bit_timer_state_n = bit_timer_state;
+        bit_timer_counter_n = bit_timer_counter;
+        bit_timer_done = 0;
+        start_bit_timer_acknowledged = 0;
 
-            scl_wouldbe_counter_n = scl_wouldbe_counter + 8'd1;
-            scl_wouldbe_n = scl_wouldbe;
-                
-        end else begin
+        //$assert(start_bit_timer && bit_timer_state == TIMER_IDLE);
 
-            scl_wouldbe_counter_n = 0;
-            scl_wouldbe_n = ~scl_wouldbe;
+        case (bit_timer_state)
 
-        end
+            TIMER_IDLE: begin
 
-        if (mid_step_state == IDLE || mid_step_state == SEND_START_BIT) begin //In idle state, SCL remains high. 
+                bit_timer_counter_n = 0;
 
-            scl_n = 1;
-            scl_counter_n = 0;
+                if (start_bit_timer) begin
+                    bit_timer_state_n = TIMER_COUNTING;
+                    start_bit_timer_acknowledged = 1;
+                end
 
-        end else begin //Otherwise, SCL will oscilllate at a frequency of 2.5 MHz (1/4 of clock frequency). 
-
-            scl_counter_n = scl_wouldbe_counter_n;
-            scl_n = scl_wouldbe_n;
-
-        end
-
-    end
-
-    always_comb begin : state_machine
-
-        //To avoid latches
-        data_out_n = data_out;
-        done_n = done;
-        interrupt_received_n = interrupt_received;
-        SDAout_n = SDAout;
-        SDAoeb_n = SDAoeb;
-        high_step_counter_n = high_step_counter;
-        high_step_counter_prev_n = high_step_counter_prev;
-        mid_step_counter_n = mid_step_counter;
-        low_step_address_counter_n = low_step_address_counter;
-        low_step_register_counter_n = low_step_register_counter;
-        done_n = done;
-        stop_bit_sent_n = stop_bit_sent;
-        ack_bit_received_n = ack_bit_received;
-        error_occurred = 0;
-        //error_occurred_n = error_occurred;
-
-        /*
-        Throughout all of the steps of the protocol, a lot of actions will repeat multiple times, so the same state can appear for multiple
-        values of the step counter. 
-        */
-        case (mid_step_counter) 
-
-            4'd0: begin
-                mid_step_state = ERROR;
-            end
-            4'd1: begin
-                mid_step_state = IDLE;
             end
 
-            4'd2, 4'd9: begin
-                mid_step_state = SEND_START_BIT;
+            TIMER_COUNTING: begin
+
+                bit_timer_counter_n = bit_timer_counter + 1;
+
+                if (bit_timer_counter == 8'd255) begin
+                    bit_timer_state_n = TIMER_DONE;
+                end
+
             end
 
-            4'd3, 4'd6, 4'd10: begin
-                mid_step_state = SEND_ADDRESS;
+            TIMER_DONE: begin
+
+                bit_timer_counter_n = 0;
+                bit_timer_done = 1;
+
+                if (bit_timer_done_acknowledged) begin
+                    bit_timer_state_n = TIMER_IDLE;
+                end
+
             end
 
-            4'd4: begin
-                mid_step_state = SEND_WRITE_BIT;
-            end
-
-            4'd5, 4'd7, 4'd12: begin
-                mid_step_state = WAIT_ACK_BIT;
-            end
-
-            4'd8, 4'd15: begin
-                mid_step_state = SEND_STOP_BIT;
-            end
-
-            4'd11: begin
-                mid_step_state = SEND_READ_BIT;
-            end
-
-            4'd13: begin
-                mid_step_state = READ_DATA_FRAME;
-            end
-
-            4'd14: begin
-                mid_step_state = SEND_ACK_BIT;
+            default: begin 
+                bit_timer_state_n = TIMER_IDLE;
             end
 
         endcase
 
-        /*
-        Negative edge detector for SCL (output and sampling of bits synchronized to SCL falling edge)
-        */
-        if ((scl_wouldbe_negedge) || mid_step_counter == 4'd1 /*(4'd1 = IDLE)*/) begin 
+    end
+    
+    /*
+    Section for output state machine
+    */
 
-            /*
-            This is where the actual steps of the protocol are carried out. 
-            */
-            case (mid_step_state) 
+    typedef enum logic [4:0] {
+        OUTPUT_IDLE, 
 
-                ERROR: begin
-                    error_occurred = 1;
+        OUTPUT_START_START, 
+        OUTPUT_START_WAIT_1,
+        OUTPUT_START_SDA,
+        OUTPUT_START_WAIT_2,
+        OUTPUT_START_SCL,
+        OUTPUT_START_WAIT_3, 
+        OUTPUT_START_DONE,
+
+        OUTPUT_SEND_BIT_START,
+        OUTPUT_SEND_BIT_WAIT_1,
+        OUTPUT_SEND_BIT_SCL_HIGH,
+        OUTPUT_SEND_BIT_WAIT_2, 
+        OUTPUT_SEND_BIT_SCL_LOW,
+        OUTPUT_SEND_BIT_WAIT_3,
+        OUTPUT_SEND_BIT_DONE,
+
+        OUTPUT_READ_BIT_START,
+        OUTPUT_READ_BIT_WAIT_1, 
+        OUTPUT_READ_BIT_SCL_HIGH,
+        OUTPUT_READ_BIT_WAIT_2,
+        OUTPUT_READ_BIT_SCL_LOW,
+        OUTPUT_READ_BIT_WAIT_3,
+        OUTPUT_READ_BIT_DONE,
+
+        OUTPUT_STOP_START,
+        OUTPUT_STOP_WAIT_1,
+        OUTPUT_STOP_SCL,
+        OUTPUT_STOP_WAIT_2, 
+        OUTPUT_STOP_SDA,
+        OUTPUT_STOP_WAIT_3,
+        OUTPUT_STOP_DONE
+    } output_states;
+
+    output_states output_state, output_state_n;
+    logic sda_out_n;
+    logic scl_out_n;
+    logic [31:0] data_out_n;
+    logic bit_to_send_ack;
+
+    logic start_done, send_bit_done, read_bit_done, stop_done; 
+
+    always_ff @ (posedge clk, negedge nRst) begin : output_state_machine_flip_flops
+        if (!nRst) begin
+            output_state <= OUTPUT_IDLE;
+            sda_out      <= 1;
+            scl_out      <= 1;
+            data_out     <= 0;
+        end else begin
+            output_state <= output_state_n;
+            sda_out     <= sda_out_n;
+            scl_out     <= scl_out_n;
+            data_out    <= data_out_n;
+        end
+    end
+
+    //assign bit_timer_done_acknowledged = start_done || send_bit_done || stop_done;
+
+    always_comb begin: output_state_machine_state_transitions
+
+        //Defaults
+        output_state_n = output_state;
+
+        case (output_state)
+
+            /*Idle*/
+
+            OUTPUT_IDLE: begin
+
+                if (initiate_start) begin
+                    output_state_n = OUTPUT_START_START;
+                end else if (initiate_send_bit || initiate_send_single_bit) begin
+                    output_state_n = OUTPUT_SEND_BIT_START;
+                end else if (initiate_read_bit) begin
+                    output_state_n = OUTPUT_READ_BIT_START;
+                end else if (initiate_stop) begin
+                    output_state_n = OUTPUT_STOP_START;
                 end
-
-                IDLE: begin
-
-                    SDAout_n = 1;
-
-                    SDAoeb_n = 1; //SDA line taking input
-
-                    //high_step_counter_n = XH;
-                    mid_step_counter_n = 1;
-                    low_step_address_counter_n = 3'd7; //Counts backwards
-                    low_step_register_counter_n = 5'd7;
-                    data_out_n = data_out; //Not changing data_out
-
-                    done_n = 1;
-
-                    stop_bit_sent_n = 0;
-
-                    // if (!inter && inter_prev) begin //Negative edge detector for interrupt signal
-
-                    //     interrupt_received_n = 1;
-
-                    // end
-
-                    if (inter_negedge /*interrupt_received*/) begin //Interrupt won't take effect until positive clock edge (not in effect right now)
-
-                        //Initiate the I2C protocol by moving to state SEND_START_BIT
-                        mid_step_counter_n = mid_step_counter + 1;
-                        //Output values may now be unstable so done is 0
-                        done_n = 0;
-
-                        interrupt_received_n = 0; //Reset interrupt_received
-
-                    end
-
-                end
-
-                SEND_START_BIT: begin
-
-                    //"Start Condition: The SDA line switches from a high voltage level to a low voltage level before the SCL line switches from high to low."
-
-                    SDAoeb_n = 0; //SDA line giving output
-
-                    SDAout_n = 0; //Tell SDAout to go low. 
-
-                    data_out_n = data_out; //Not changing data_out
-
-                    stop_bit_sent_n = 0;
-
-                    if (!SDAout) begin //Wait until SDAout is confirmed to be low. 
-
-                        high_step_counter_n = SL; //The start bit is always followed by sending the slave address.
-                        if (high_step_counter_prev != SL) begin
-                            high_step_counter_prev_n = high_step_counter_prev; //Preserving what high step counter was at before
-                        end else begin
-                            high_step_counter_prev_n = high_step_counter;
-                        end
-
-                        //Moving to state SEND_ADDRESS, which should cause SCL to start toggling and thus to go low.
-                        mid_step_counter_n = mid_step_counter + 1; 
-
-                    end
-
-                end
-
-                SEND_ADDRESS: begin
-
-                    data_out_n = data_out; //Not changing data_out
-
-                    SDAout_n = high_step_counter[low_step_address_counter]; //Output the current bit of the address. 
-
-                    /*
-                    Step 6 is sending the data address where all 8 bits should be used. 
-                    Steps 3 and 10 are sending the slave address where only the most significant 7 bits should be used. 
-                    */
-                    if ((mid_step_counter == 4'd6 && low_step_address_counter == 3'd0) || 
-                        ((mid_step_counter == 4'd3 || mid_step_counter == 4'd10) && low_step_address_counter == 3'd1)) begin 
-
-                        low_step_address_counter_n = 3'd7; //Reset the low step address counter. 
-
-                        /*
-                        Since this was the last bit, move to the next step.
-                        (May be SEND_WRITE_BIT, SEND_READ_BIT, or WAIT_ACK_BIT)
-                        */
-                        mid_step_counter_n = mid_step_counter + 1; 
-
-                    end else begin
-
-                        //Move to the next bit of the address and stay in the SEND_ADDRESS state. 
-                        low_step_address_counter_n--; 
-
-                    end
-
-                end
-
-                SEND_WRITE_BIT: begin
-
-                    data_out_n = data_out; //Not changing data_out
-
-                    //Sending data (write) = low voltage level
-                    SDAout_n = 0;
-
-                    if (!SDAout) begin
-
-                        //Move to the next state (WAIT_ACK_BIT).
-                        mid_step_counter_n = mid_step_counter + 1;
-
-                    end
-
-
-                end
-
-                SEND_READ_BIT: begin
-
-                    data_out_n = data_out; //Not changing data_out
-
-                    //Requesting data (read) = high voltage level
-                    SDAout_n = 1;
-
-                    if (SDAout) begin
-
-                        //Move to the next state (WAIT_ACK_BIT).
-                        mid_step_counter_n = mid_step_counter + 1;
-
-                    end
-
-                end
-
-                WAIT_ACK_BIT: begin
-
-                    SDAoeb_n = 1; //SDA line taking input
-
-                    SDAout_n = 1; //Not using the output right now
-                    data_out_n = data_out; //Not changing data_out
-
-                    //Should wait for a low voltage
-                    // if (!SDAin) begin
-
-                    //     ack_bit_received_n = 1;
-
-                    // end
-
-                    if (!SDAin/*ack_bit_received*/) begin
-
-                        //Moving to the next state (may be SEND_ADDRESS, READ_DATA_FRAME, or SEND_STOP_BIT)
-                        mid_step_counter_n = mid_step_counter + 1;
-
-                        //If the next state will be READ_DATA_FRAME, restore the preserved version of high_step_counter. 
-                        if (mid_step_counter == 4'd5) begin
-
-                            high_step_counter_n = high_step_counter_prev;
-
-                        end
-
-                        ack_bit_received_n = 0;
-
-                    end
-
-                end
-
-                READ_DATA_FRAME: begin
-
-                    SDAout_n = 1; //Not using the output right now
-
-                    data_out_n = data_out;
-                    data_out_n[low_step_register_counter] = SDAin;
-
-                    /*
-                    If the end of a byte has been reached, move to the next state (SEND_ACK_BIT).
-                    */
-                    if (low_step_register_counter == 5'd0 || low_step_register_counter == 5'd8 || 
-                        low_step_register_counter == 5'd16 || low_step_register_counter == 5'd24) begin
-
-                        mid_step_counter_n = mid_step_counter + 1;
-                        low_step_register_counter_n = low_step_register_counter + 5'd15;
-
-                        /*
-                        In a disorganized way, sending the acknowledge bit here
-                        */
-                        SDAoeb_n = 0; //SDA line giving output
-
-                        //Should send a low voltage
-                        SDAout_n = 0;
-
-                        // if (!SDAout) begin
-
-                        //     SDAout_n = 1; //Bring it back to high voltage
-
-                        //     //Go to next state (SEND_STOP_BIT).
-                        //     //mid_step_counter_n = mid_step_counter + 1;
-
-                        //  end
-
-                    end else begin
-
-                        //Move to the next bit in the output register. 
-                        low_step_register_counter_n = low_step_register_counter - 1;
-
-                    end
-
-                end
-
-                SEND_ACK_BIT: begin
-
-                    //SDAoeb_n = 0; //SDA line giving output
-
-                    data_out_n = data_out; //Not changing data_out
-
-                    //Should send a low voltage
-                    //SDAout_n = 0;
-
-                    //SDAout_n = 1;
-                    mid_step_counter_n = mid_step_counter + 1;
-
-                    // if (!SDAout) begin
-
-                    //     SDAout_n = 1; //Bring it back to high voltage
-
-                    //     //Go to next state (SEND_STOP_BIT).
-                    //     mid_step_counter_n = mid_step_counter + 1;
-
-                    // end
-
-                end
-
-                SEND_STOP_BIT: begin
-
-                    /*
-                    stop_bit_sent_n changes on the positive edge of scl_wouldbe. Scroll down a bit to see this. 
-                    */
-                    if (stop_bit_sent) begin
-
-                        //If this was the last cycle, return to the IDLE state. 
-                        if (high_step_counter_prev == YL && mid_step_counter == 4'd15) begin
-
-                            //Resetting the mid step counter. 
-                            mid_step_counter_n = 4'd1; 
-
-                        end else begin
-
-                            //If this was not the last cycle but was the last step of this cycle, imcrement the high step counter.
-                            if (mid_step_counter == 4'd15) begin
-
-                                high_step_counter_prev_n = high_steps'(int'(high_step_counter_prev) + 1); 
-                                //Go to the next state (SEND_START_BIT)
-                                mid_step_counter_n = 4'd2;
-
-                            end else begin
-
-                                //Go to the next state (SEND_START_BIT)
-                                mid_step_counter_n = 4'd9;
-
-                            end
-
-                        end
-
-                    end
-
-                end
-
-                /*
-                Not planning to use default case though ideally would make it display a visible error of some kind
-                */
-                default: begin end 
-
-            endcase
-
-        end 
-
-        /*
-        The only state that should be timed on the positive edge of the SCL line is the SEND_STOP_BIT state. 
-        */
-        else if ((scl_wouldbe_posedge) && mid_step_state == SEND_STOP_BIT) begin
-
-            //"Stop Condition: The SDA line switches from a low voltage level to a high voltage level after the SCL line switches from low to high."
-
-            SDAout_n = 0;
-
-            data_out_n = data_out; //Not changing data_out
-
-            if (SDAout == 0) begin
-
-                SDAout_n = 1;
-
-                stop_bit_sent_n = 1;
 
             end
 
+            /*Start*/
+
+            OUTPUT_START_START: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_START_WAIT_1;
+                end
+            end
+
+            OUTPUT_START_WAIT_1: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_START_SDA;
+                end
+            end
+
+            OUTPUT_START_SDA: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_START_WAIT_2;
+                end
+            end
+
+            OUTPUT_START_WAIT_2: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_START_SCL;
+                end
+            end
+
+            OUTPUT_START_SCL: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_START_WAIT_3;
+                end
+            end
+
+            OUTPUT_START_WAIT_3: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_START_DONE;
+                end
+            end
+
+            OUTPUT_START_DONE: begin
+                output_state_n = OUTPUT_IDLE;
+            end
+
+            /*Send bit*/
+
+            OUTPUT_SEND_BIT_START: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_SEND_BIT_WAIT_1;
+                end
+            end
+
+            OUTPUT_SEND_BIT_WAIT_1: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_SEND_BIT_SCL_HIGH;
+                end
+            end
+            
+            OUTPUT_SEND_BIT_SCL_HIGH: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_SEND_BIT_WAIT_2;
+                end
+            end
+
+            OUTPUT_SEND_BIT_WAIT_2: begin
+                if (bit_timer_done) begin 
+                    if (!scl_in) begin //To account for clock stretching
+                        output_state_n = OUTPUT_SEND_BIT_SCL_HIGH;
+                    end else begin
+                        output_state_n = OUTPUT_SEND_BIT_SCL_LOW;
+                    end
+                end
+            end
+
+            OUTPUT_SEND_BIT_SCL_LOW: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_SEND_BIT_WAIT_3;
+                end
+            end
+
+            OUTPUT_SEND_BIT_WAIT_3: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_SEND_BIT_DONE;
+                end
+            end
+
+            OUTPUT_SEND_BIT_DONE: begin
+                output_state_n = OUTPUT_IDLE;
+            end
+
+            /*Read bit*/
+
+            OUTPUT_READ_BIT_START: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_READ_BIT_WAIT_1;
+                end
+            end
+
+            OUTPUT_READ_BIT_WAIT_1: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_READ_BIT_SCL_HIGH;
+                end
+            end
+            
+            OUTPUT_READ_BIT_SCL_HIGH: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_READ_BIT_WAIT_2;
+                end
+            end
+
+            OUTPUT_READ_BIT_WAIT_2: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_READ_BIT_SCL_LOW;
+                end
+            end
+
+            OUTPUT_READ_BIT_SCL_LOW: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_READ_BIT_WAIT_3;
+                end
+            end
+
+            OUTPUT_READ_BIT_WAIT_3: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_READ_BIT_DONE;
+                end
+            end
+
+            OUTPUT_READ_BIT_DONE: begin
+                output_state_n = OUTPUT_IDLE;
+            end
+
+            /*Stop*/
+
+            OUTPUT_STOP_START: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_STOP_WAIT_1;
+                end
+            end
+
+            OUTPUT_STOP_WAIT_1: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_STOP_SCL;
+                end
+            end
+
+            OUTPUT_STOP_SCL: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_STOP_WAIT_2;
+                end
+            end
+
+            OUTPUT_STOP_WAIT_2: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_STOP_SDA;
+                end
+            end
+
+            OUTPUT_STOP_SDA: begin
+                if (start_bit_timer_acknowledged) begin
+                    output_state_n = OUTPUT_STOP_WAIT_3;
+                end
+            end
+
+            OUTPUT_STOP_WAIT_3: begin
+                if (bit_timer_done) begin
+                    output_state_n = OUTPUT_STOP_DONE;
+                end
+            end
+
+            OUTPUT_STOP_DONE: begin
+                output_state_n = OUTPUT_IDLE;
+            end
+
+            default: begin end
+
+        endcase
+
+    end
+
+    always_comb begin : output_state_machine_output_logic
+
+        //Defaults
+        sda_out_n = sda_out;
+        scl_out_n = scl_out;
+        start_bit_timer = 0;
+        start_done = 0;
+        send_bit_done = 0; //TODO: For some reason the testbench breaks when this is used instead of setting it in the states. 
+        read_bit_done = 0; //TODO: If the testbench breaks, try commenting this out. 
+        stop_done = 0;
+        bit_timer_done_acknowledged = 0;
+        data_out_n = data_out;
+
+        case (output_state)
+
+            /*Idle*/
+
+            OUTPUT_IDLE: begin
+                //Nothing besides the defaults
+
+                send_bit_done = 0;
+            end
+
+            /*Start*/
+
+            OUTPUT_START_START: begin
+                start_bit_timer = 1;
+
+                send_bit_done = 0; 
+            end
+
+            OUTPUT_START_WAIT_1: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_START_SDA: begin
+                sda_out_n = 0;
+                bit_timer_done_acknowledged = 1;
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_START_WAIT_2: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_START_SCL: begin
+                scl_out_n = 0;
+                bit_timer_done_acknowledged = 1;
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_START_WAIT_3: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_START_DONE: begin
+                start_done = 1;
+                bit_timer_done_acknowledged = 1; 
+            end
+
+            /*Send bit*/
+
+            OUTPUT_SEND_BIT_START: begin
+                if (I2C_state == I2C_CHECK_ACK_BIT_1 || I2C_state == I2C_CHECK_ACK_BIT_1_WAIT 
+                    || I2C_state == I2C_CHECK_ACK_BIT_2 || I2C_state == I2C_CHECK_ACK_BIT_2_WAIT 
+                    || I2C_state == I2C_CHECK_ACK_BIT_3 || I2C_state == I2C_CHECK_ACK_BIT_3_WAIT 
+                    || I2C_state == I2C_SEND_ACK_BIT || I2C_state == I2C_SEND_ACK_BIT_WAIT) begin
+                    sda_out_n = bit_to_send_ack;
+                end else begin
+                    sda_out_n = bit_to_send;
+                end
+                
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_SEND_BIT_WAIT_1: begin
+                //Nothing besides the defaults
+            end
+            
+            OUTPUT_SEND_BIT_SCL_HIGH: begin
+                scl_out_n = 1;
+                bit_timer_done_acknowledged = 1;
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_SEND_BIT_WAIT_2: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_SEND_BIT_SCL_LOW: begin
+                scl_out_n = 0;
+                bit_timer_done_acknowledged = 1;
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_SEND_BIT_WAIT_3: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_SEND_BIT_DONE: begin
+                send_bit_done = 1;
+                bit_timer_done_acknowledged = 1;
+            end
+
+            /*Read bit*/
+
+            OUTPUT_READ_BIT_START: begin
+                case (which_data_address)
+                    XH: begin
+                        data_out_n[5'd31 - {2'b0, within_byte_counter_reading}] = bit_being_read;
+                    end
+                    XL: begin
+                        data_out_n[5'd23 - {2'b0, within_byte_counter_reading}] = bit_being_read;
+                    end
+                    YH: begin
+                        data_out_n[5'd15 - {2'b0, within_byte_counter_reading}] = bit_being_read;
+                    end
+                    YL: begin
+                        data_out_n[5'd7 - {2'b0, within_byte_counter_reading}] = bit_being_read;
+                    end
+                    default: begin end
+                endcase
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_READ_BIT_WAIT_1: begin
+                //Nothing besides the defaults
+            end
+            
+            OUTPUT_READ_BIT_SCL_HIGH: begin
+                scl_out_n = 1;
+                bit_timer_done_acknowledged = 1;
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_READ_BIT_WAIT_2: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_READ_BIT_SCL_LOW: begin
+                scl_out_n = 0;
+                bit_timer_done_acknowledged = 1;
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_READ_BIT_WAIT_3: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_READ_BIT_DONE: begin
+                read_bit_done = 1;
+                bit_timer_done_acknowledged = 1;
+            end
+
+            /*Stop*/
+
+            OUTPUT_STOP_START: begin
+                sda_out_n = 0;
+                start_bit_timer = 1;
+
+                send_bit_done = 0;
+            end
+
+            OUTPUT_STOP_WAIT_1: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_STOP_SCL: begin
+                scl_out_n = 1;
+                bit_timer_done_acknowledged = 1;
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_STOP_WAIT_2: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_STOP_SDA: begin
+                sda_out_n = 1;
+                bit_timer_done_acknowledged = 1;
+                start_bit_timer = 1;
+            end
+
+            OUTPUT_STOP_WAIT_3: begin
+                //Nothing besides the defaults
+            end
+
+            OUTPUT_STOP_DONE: begin
+                stop_done = 1;
+                bit_timer_done_acknowledged = 1;
+            end
+
+            default: begin end
+
+        endcase
+
+    end
+
+    /*
+    Section for I2C brain
+    */
+
+    typedef enum logic [4:0] {
+        I2C_WAITING_INTER,
+
+        I2C_START_1, 
+        I2C_START_1_WAIT,
+
+        I2C_SEND_SLAVE_ADDRESS_WRITE, 
+        I2C_SEND_SLAVE_ADDRESS_WRITE_WAIT,
+
+        I2C_CHECK_ACK_BIT_1, //Though not planning to truly implement a checking mechanism yet. 
+        I2C_CHECK_ACK_BIT_1_WAIT, 
+
+        I2C_SEND_DATA_ADDRESS,
+        I2C_SEND_DATA_ADDRESS_WAIT,
+
+        I2C_CHECK_ACK_BIT_2, 
+        I2C_CHECK_ACK_BIT_2_WAIT,
+
+        I2C_STOP_1, 
+        I2C_STOP_1_WAIT,
+
+        I2C_START_2, 
+        I2C_START_2_WAIT,
+
+        I2C_SEND_SLAVE_ADDRESS_READ,
+        I2C_SEND_SLAVE_ADDRESS_READ_WAIT,
+
+        I2C_CHECK_ACK_BIT_3, 
+        I2C_CHECK_ACK_BIT_3_WAIT,
+        
+        I2C_READ_BYTE, 
+        I2C_READ_BYTE_WAIT,
+
+        I2C_SEND_ACK_BIT, 
+        I2C_SEND_ACK_BIT_WAIT, 
+
+        I2C_STOP_2, 
+        I2C_STOP_2_WAIT, 
+
+        I2C_TRANSITION_ADDRESS
+        
+    } I2C_states;
+
+    typedef enum logic [7:0] {
+        XH = 8'h03, 
+        XL = 8'h04, 
+        YH = 8'h05, 
+        YL = 8'h06
+    } data_addresses; 
+
+    typedef enum logic [7:0] {
+        SL_WRITE = {7'h38, 1'b0},
+        SL_READ = {7'h38, 1'b1}
+    } slave_addresses;
+
+    I2C_states I2C_state, I2C_state_n;
+    data_addresses which_data_address, which_data_address_n;
+    logic [7:0] byte_to_send;
+    logic initiate_start, initiate_send_byte, initiate_read_byte, initiate_stop;
+    logic done_n;
+
+    always_ff @ (posedge clk, negedge nRst) begin
+        if (!nRst) begin
+            I2C_state          <= I2C_WAITING_INTER;
+            which_data_address <= XH;
+            done               <= 1;
+        end else begin
+            I2C_state          <= I2C_state_n;
+            which_data_address <= which_data_address_n;
+            done               <= done_n;
         end
+    end
+
+    always_comb begin : I2C_state_machine_next_states
+
+        //Defaults
+        I2C_state_n = I2C_state;
+
+        case (I2C_state) 
+
+            I2C_WAITING_INTER: begin
+                if (inter_received) begin
+                    I2C_state_n = I2C_START_1;
+                end
+            end
+
+            I2C_START_1: begin
+                I2C_state_n = I2C_START_1_WAIT;
+            end
+
+            I2C_START_1_WAIT: begin
+                if (start_done) begin
+                    I2C_state_n = I2C_SEND_SLAVE_ADDRESS_WRITE;
+                end
+            end
+
+            I2C_SEND_SLAVE_ADDRESS_WRITE: begin
+                I2C_state_n = I2C_SEND_SLAVE_ADDRESS_WRITE_WAIT;
+            end
+
+            I2C_SEND_SLAVE_ADDRESS_WRITE_WAIT: begin
+                if (byte_manager_done) begin
+                    I2C_state_n = I2C_CHECK_ACK_BIT_1;
+                end
+            end
+
+            I2C_CHECK_ACK_BIT_1: begin
+                I2C_state_n = I2C_CHECK_ACK_BIT_1_WAIT;
+            end
+
+            I2C_CHECK_ACK_BIT_1_WAIT: begin
+                if (send_bit_done) begin //Technically sending a bit (sending "1" to signify just waiting for an SCL cycle)
+                    I2C_state_n = I2C_SEND_DATA_ADDRESS;
+                end
+            end
+
+            I2C_SEND_DATA_ADDRESS: begin
+                I2C_state_n = I2C_SEND_DATA_ADDRESS_WAIT;
+            end
+
+            I2C_SEND_DATA_ADDRESS_WAIT: begin
+                if (byte_manager_done) begin
+                    I2C_state_n = I2C_CHECK_ACK_BIT_2;
+                end
+            end
+
+            I2C_CHECK_ACK_BIT_2: begin
+                I2C_state_n = I2C_CHECK_ACK_BIT_2_WAIT;
+            end
+
+            I2C_CHECK_ACK_BIT_2_WAIT: begin
+                if (send_bit_done) begin //Technically sending a bit (sending "1" to signify just waiting for an SCL cycle)
+                    I2C_state_n = I2C_STOP_1;
+                end
+            end
+
+            I2C_STOP_1: begin
+                I2C_state_n = I2C_STOP_1_WAIT;
+            end
+
+            I2C_STOP_1_WAIT: begin
+                if (stop_done) begin
+                    I2C_state_n = I2C_START_2;
+                end
+            end
+
+            I2C_START_2: begin
+                I2C_state_n = I2C_START_2_WAIT;
+            end
+
+            I2C_START_2_WAIT: begin
+                if (start_done) begin
+                    I2C_state_n = I2C_SEND_SLAVE_ADDRESS_READ;
+                end
+            end
+
+            I2C_SEND_SLAVE_ADDRESS_READ: begin
+                I2C_state_n = I2C_SEND_SLAVE_ADDRESS_READ_WAIT;
+            end
+
+            I2C_SEND_SLAVE_ADDRESS_READ_WAIT: begin
+                if (byte_manager_done) begin
+                    I2C_state_n = I2C_CHECK_ACK_BIT_3;
+                end
+            end
+
+            I2C_CHECK_ACK_BIT_3: begin
+                I2C_state_n = I2C_CHECK_ACK_BIT_3_WAIT;
+            end
+
+            I2C_CHECK_ACK_BIT_3_WAIT: begin
+                if (send_bit_done) begin //Technically sending a bit (sending "1" to signify just waiting for an SCL cycle)
+                    I2C_state_n = I2C_READ_BYTE;
+                end
+            end
+
+            I2C_READ_BYTE: begin
+                I2C_state_n = I2C_READ_BYTE_WAIT;
+            end
+
+            I2C_READ_BYTE_WAIT: begin
+                if (read_byte_done) begin
+                    I2C_state_n = I2C_SEND_ACK_BIT;
+                end
+            end
+
+            I2C_SEND_ACK_BIT: begin
+                I2C_state_n = I2C_SEND_ACK_BIT_WAIT;
+            end
+
+            I2C_SEND_ACK_BIT_WAIT: begin
+                if (send_bit_done) begin
+                    I2C_state_n = I2C_STOP_2;
+                end
+            end
+
+            I2C_STOP_2: begin
+                I2C_state_n = I2C_STOP_2_WAIT;
+            end
+
+            I2C_STOP_2_WAIT: begin
+                if (stop_done) begin
+                    if (which_data_address == YL) begin
+                        I2C_state_n = I2C_WAITING_INTER;
+                    end else begin
+                        I2C_state_n = I2C_TRANSITION_ADDRESS;
+                    end
+                end
+            end
+
+            I2C_TRANSITION_ADDRESS: begin
+                I2C_state_n = I2C_START_1;
+            end
+
+            default: begin end
+
+        endcase
+
+    end
+
+    always_comb begin : I2C_state_machine_outputs
+
+        //Defaults
+        initiate_start = 0;
+        initiate_send_byte = 0;
+        initiate_send_single_bit = 0;
+        initiate_read_byte = 0;
+        initiate_stop = 0;
+        bit_to_send_ack = 1;
+        byte_to_send = '1;
+        inter_received_acknowledged = 0;
+        which_data_address_n = which_data_address; 
+        done_n = 0;
+
+        case (I2C_state)
+
+            I2C_WAITING_INTER: begin
+                done_n = 1;
+                which_data_address_n = XH;
+            end
+
+            I2C_START_1: begin
+                initiate_start = 1;
+                inter_received_acknowledged = 1;
+            end
+
+            I2C_SEND_SLAVE_ADDRESS_WRITE: begin
+                initiate_send_byte = 1;
+                byte_to_send = SL_WRITE;
+            end
+
+            I2C_SEND_SLAVE_ADDRESS_WRITE_WAIT: begin
+                byte_to_send = SL_WRITE;
+            end
+
+            I2C_CHECK_ACK_BIT_1: begin
+                bit_to_send_ack = 1;
+                initiate_send_single_bit = 1;
+            end
+
+            I2C_SEND_DATA_ADDRESS: begin 
+                initiate_send_byte = 1;
+                byte_to_send = which_data_address;
+            end
+
+            I2C_CHECK_ACK_BIT_2: begin
+                bit_to_send_ack = 1;
+                initiate_send_single_bit = 1;
+            end
+
+            I2C_SEND_DATA_ADDRESS_WAIT: begin 
+                byte_to_send = which_data_address;
+            end
+
+            I2C_START_2: begin
+                initiate_start = 1;
+            end
+
+            I2C_SEND_SLAVE_ADDRESS_READ: begin
+                initiate_send_byte = 1;
+                byte_to_send = SL_READ;
+            end
+
+            I2C_CHECK_ACK_BIT_3: begin
+                bit_to_send_ack = 1;
+                initiate_send_single_bit = 1;
+            end
+
+            I2C_SEND_SLAVE_ADDRESS_READ_WAIT: begin
+                byte_to_send = SL_READ;
+            end
+
+            I2C_READ_BYTE: begin
+                initiate_read_byte = 1;
+            end
+
+            I2C_SEND_ACK_BIT: begin
+                bit_to_send_ack = 1; //Technically, it isn't going to send an ack bit because it ACTUALLY WASN'T SUPPOSED TO
+                initiate_send_single_bit = 1;
+            end
+
+            I2C_SEND_ACK_BIT_WAIT: begin
+                bit_to_send_ack = 1;
+            end
+
+            I2C_STOP_1: begin
+                initiate_stop = 1;
+            end
+
+            I2C_STOP_2: begin
+                initiate_stop = 1;
+            end
+
+            I2C_TRANSITION_ADDRESS: begin
+                case (which_data_address) 
+                    XH: begin
+                        which_data_address_n = XL;
+                    end
+                    XL: begin
+                        which_data_address_n = YH;
+                    end
+                    YH: begin
+                        which_data_address_n = YL;
+                    end
+                    default: begin end
+                endcase
+            end
+
+            default: begin end
+
+        endcase
+
+    end
+
+    /*
+    Section for byte manager
+    */
+
+    typedef enum logic [1:0] {
+        BYTE_MANAGER_IDLE,
+        BYTE_MANAGER_SENDING, 
+        BYTE_MANAGER_DONE
+    } byte_manager_states;
+
+    byte_manager_states byte_manager_state, byte_manager_state_n;
+    logic [2:0] within_byte_counter_writing, within_byte_counter_writing_n;
+    logic bit_to_send;
+    logic initiate_send_bit;
+    logic initiate_send_single_bit;
+    logic byte_manager_done;
+
+    always_ff @ (posedge clk, negedge nRst) begin : byte_manager_flip_flops
+        if (!nRst) begin
+            byte_manager_state  <= BYTE_MANAGER_IDLE;
+            within_byte_counter_writing <= 0;
+        end else begin
+            byte_manager_state  <= byte_manager_state_n;
+            within_byte_counter_writing <= within_byte_counter_writing_n;
+        end
+    end
+
+    always_comb begin : byte_manager_next_state
+
+        //Defaults
+        byte_manager_state_n = byte_manager_state;
+
+        case (byte_manager_state)
+
+            BYTE_MANAGER_IDLE: begin
+                if (initiate_send_byte) begin
+                    byte_manager_state_n = BYTE_MANAGER_SENDING;
+                end
+            end
+
+            BYTE_MANAGER_SENDING: begin
+                if (within_byte_counter_writing == 3'd7 && send_bit_done) begin
+                    byte_manager_state_n = BYTE_MANAGER_DONE;
+                end
+            end
+
+            BYTE_MANAGER_DONE: begin
+                byte_manager_state_n = BYTE_MANAGER_IDLE;
+            end
+
+            default: begin end
+
+        endcase
+
+    end
+
+    always_comb begin : byte_manager_outputs
+
+        //Defaults
+        initiate_send_bit = 0;
+        byte_manager_done = 0;
+        bit_to_send = 1;
+        within_byte_counter_writing_n = within_byte_counter_writing;
+
+        case (byte_manager_state)
+
+            BYTE_MANAGER_IDLE: begin
+                within_byte_counter_writing_n = 0;
+            end
+
+            BYTE_MANAGER_SENDING: begin
+                initiate_send_bit = 1;
+                bit_to_send = byte_to_send[7 - within_byte_counter_writing]; //Sending bits in reverse order
+                if (send_bit_done) begin
+                    within_byte_counter_writing_n = within_byte_counter_writing + 1;
+                end
+            end
+
+            BYTE_MANAGER_DONE: begin
+                within_byte_counter_writing_n = 0;
+                byte_manager_done = 1;
+            end
+
+            default: begin end
+
+        endcase
+
+    end
+
+    /*
+    Section for interrupt receiver
+    */
+
+    logic inter_received, inter_received_n; 
+    logic inter_received_acknowledged;
+
+    always_ff @ (posedge clk, negedge nRst) begin : interrupt_receiver_flip_flops
+        if (!nRst) begin
+            inter_received <= 0;
+        end else begin
+            inter_received <= inter_received_n;
+        end
+    end
+
+    always_comb begin : interrupt_receiver
+
+        //Defaults
+        inter_received_n = 0;
+
+        if (!inter && ~inter_received_acknowledged) begin
+            inter_received_n = 1;
+        end
+
+    end
+
+    /*
+    Section for byte reader
+    */
+
+    typedef enum logic [2:0] {
+        READER_IDLE, 
+        READER_READING,
+        READER_DONE
+    } reader_states;
+
+    reader_states reader_state, reader_state_n;
+    logic [2:0] within_byte_counter_reading, within_byte_counter_reading_n;
+    logic initiate_read_bit;  
+    logic read_byte_done; 
+    logic bit_being_read;
+
+    always_ff @ (posedge clk, negedge nRst) begin : reader_flip_flops
+        if (!nRst) begin
+            reader_state                <= READER_IDLE;
+            within_byte_counter_reading <= 0;
+        end else begin
+            reader_state                <= reader_state_n;
+            within_byte_counter_reading <= within_byte_counter_reading_n;
+        end
+    end
+
+    always_comb begin : reader_next_states
+
+        //Defaults
+        reader_state_n = reader_state;
+
+        case (reader_state)
+
+            READER_IDLE: begin
+                if (initiate_read_byte) begin
+                    reader_state_n = READER_READING;
+                end
+            end
+
+            READER_READING: begin
+                if (within_byte_counter_reading == 3'd7 && read_bit_done) begin
+                    reader_state_n = READER_DONE;
+                end
+            end
+
+            READER_DONE: begin
+                reader_state_n = READER_IDLE;
+            end
+
+            default: begin end
+
+        endcase
+
+    end
+
+    always_comb begin : reader_outputs
+
+        //Defaults
+        read_byte_done= 0;
+        within_byte_counter_reading_n = within_byte_counter_reading;
+        bit_being_read = 1;
+        initiate_read_bit = 0;
+
+        case (reader_state)
+
+            READER_IDLE: begin
+                within_byte_counter_reading_n = 0;
+            end
+
+            READER_READING: begin
+                initiate_read_bit = 1;
+                bit_being_read = sda_in;
+                if (read_bit_done) begin
+                    within_byte_counter_reading_n = within_byte_counter_reading + 1;
+                end
+            end
+
+            READER_DONE: begin
+                within_byte_counter_reading_n = 0;
+                read_byte_done = 1;
+            end
+
+            default: begin end
+
+        endcase
 
     end
 
