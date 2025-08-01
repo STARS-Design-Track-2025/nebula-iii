@@ -1,6 +1,6 @@
 module t07_top (
     input logic clk, nrst,
-    input logic [7:0] ESP_in,
+    input logic [3:0] ESP_in,
     output logic FPUFlag, invalError, chipSelectTFT, bitDataTFT, sclkTFT
 );
 
@@ -63,6 +63,7 @@ logic ChipSelectOut;
 logic [4:0] SPIAddress;
 logic [31:0] write_data;
 
+
 t07_CPU CPU(.busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
 .rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst), .busy_edge_o(busy_edge));
 
@@ -70,6 +71,7 @@ t07_MMIO MMIO(.clk(clk), .nrst(nrst), .SPIack_i(), .addr_in(exMemAddr_CPU), .mem
  .busyTFT_i(busyTFT_o), .CPUData_out(memData_in), .CPU_busy_o(busyCPU), .instr_out(instr), .displayData(dataToTFT), .displayWrite(displayWrite), 
  .displayAddr(addrToTFT), .WB_read_o(read), .WB_write_o(write), .addr_out(addrToSRAM), .WBData_out(dataToSRAM), .WB_busy_i(busyToMMIO),
  .WB_busy_edge_i(busy_edge), .SPIData_i(SPIData_i));
+
 
 wishbone_manager wishbone0(.nRST(nrst), .CLK(clk), .DAT_I(dataArToWM), .ACK_I(ackToWM), .CPU_DAT_I(dataToSRAM), 
 .ADR_I(addrToSRAM), .SEL_I(4'hF), .WRITE_I(write), .READ_I(read), .ADR_O(addrWMToAr), .DAT_O(dataWMToAr), 
@@ -89,28 +91,9 @@ sram_WB_Wrapper sramWrapper(.wb_clk_i(clk), .wb_rst_i(nrst), .wbs_stb_i(stb_out)
 .wbs_dat_i(data_out), .wbs_adr_i(addr_out), .wbs_ack_o(ackDec_in), .wbs_dat_o(dataDec_in));
 
 t07_spitft display(.data(dataToTFT), .address(addrToTFT), .clk(clk), .nrst(nrst), .wi(displayWrite), .busy_o(busyTFT_o), .chipSelect(chipSelectTFT), .bitData(bitDataTFT), .sclk(sclkTFT));
- /*
-t07_ExternalRegister uut (
-    .clk(clk),
-    .nrst(nrst),
-    .ReadRegister(addrToReg),
-    .SPIAddress(SPIAddress),
-    .write_data(write_data),
-    .ri(regRead),
-    .ChipSelect(ChipSelectIn),
-    .read_data(regData_in),
-    .ack_REG(ackReg)
-);
 
-t07_SPI_ESP32 spi (
-    .ESP_in(ESP_in), 
-    .clk(clk),
-    .nrst(nrst),
-    .SPI_Address(SPIAddress),
-    .dataForExtReg(write_data),   
-    .ChipSelectIn(ChipSelectIn),
-    .ChipSelectOut(ChipSelectOut),
-    .SCLK_out(SCLK_out) // Not used in this test
-);
-*/
+t07_quadSPI espSPI(.ESPData_i(ESP_in), .sclk_i(clk), .nrst(nrst), .enable_i(), .MMIOData_o(), .sclk_o(), .enable_o(), .ack_o());
+
+
+
 endmodule
