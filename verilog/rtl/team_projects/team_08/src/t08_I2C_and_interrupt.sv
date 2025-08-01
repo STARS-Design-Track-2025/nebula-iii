@@ -366,7 +366,7 @@ module t08_I2C_and_interrupt(
         scl_out_n = scl_out;
         start_bit_timer = 0;
         start_done = 0;
-        send_bit_done = 0; //TODO: For some reason the testbench breaks when this is used instead of setting it in the states. 
+        // send_bit_done = 0; //TODO: For some reason the testbench breaks when this is used instead of setting it in the states. 
         read_bit_done = 0; //TODO: If the testbench breaks, try commenting this out. 
         stop_done = 0;
         bit_timer_done_acknowledged = 0;
