@@ -10,7 +10,7 @@ module t08_I2C_and_interrupt(
 
     input logic scl_in,
     output logic scl_out, //Clock for I2C sent to the touchscreen
-    output logic scl_oeb,
+    output logic scl_oeb, //1 = input, 0 = output
 
     output logic [31:0] data_out, //All of the coordinate data sent to memory
     output logic done //Done signal also sent to memory, indicating that the module has finished reading coordinate data after a given interrupt signal
@@ -136,7 +136,9 @@ module t08_I2C_and_interrupt(
 
     output_states output_state, output_state_n;
     logic sda_out_n;
+    logic sda_oeb_n;
     logic scl_out_n;
+    logic scl_oeb_n;
     logic [31:0] data_out_n;
     logic bit_to_send_ack;
 
@@ -146,12 +148,16 @@ module t08_I2C_and_interrupt(
         if (!nRst) begin
             output_state <= OUTPUT_IDLE;
             sda_out      <= 1;
+            sda_oeb      <= 0;
             scl_out      <= 1;
+            scl_oeb      <= 0;
             data_out     <= 0;
         end else begin
             output_state <= output_state_n;
             sda_out     <= sda_out_n;
+            sda_oeb     <= sda_oeb_n;
             scl_out     <= scl_out_n;
+            scl_oeb     <= scl_oeb_n;
             data_out    <= data_out_n;
         end
     end
@@ -818,6 +824,7 @@ module t08_I2C_and_interrupt(
         inter_received_acknowledged = 0;
         which_data_address_n = which_data_address; 
         done_n = 0;
+        sda_oeb_n = 0;
 
         case (I2C_state)
 
@@ -843,6 +850,11 @@ module t08_I2C_and_interrupt(
             I2C_CHECK_ACK_BIT_1: begin
                 bit_to_send_ack = 1;
                 initiate_send_single_bit = 1;
+                sda_oeb_n = 1;
+            end
+
+            I2C_CHECK_ACK_BIT_1_WAIT: begin
+                sda_oeb_n = 1;
             end
 
             I2C_SEND_DATA_ADDRESS: begin 
@@ -853,6 +865,11 @@ module t08_I2C_and_interrupt(
             I2C_CHECK_ACK_BIT_2: begin
                 bit_to_send_ack = 1;
                 initiate_send_single_bit = 1;
+                sda_oeb_n = 1;
+            end
+
+            I2C_CHECK_ACK_BIT_2_WAIT: begin
+                sda_oeb_n = 1;
             end
 
             I2C_SEND_DATA_ADDRESS_WAIT: begin 
@@ -871,6 +888,11 @@ module t08_I2C_and_interrupt(
             I2C_CHECK_ACK_BIT_3: begin
                 bit_to_send_ack = 1;
                 initiate_send_single_bit = 1;
+                sda_oeb_n = 1;
+            end
+
+            I2C_CHECK_ACK_BIT_3_WAIT: begin
+                sda_oeb_n = 1;
             end
 
             I2C_SEND_SLAVE_ADDRESS_READ_WAIT: begin
@@ -879,6 +901,11 @@ module t08_I2C_and_interrupt(
 
             I2C_READ_BYTE: begin
                 initiate_read_byte = 1;
+                sda_oeb_n = 1;
+            end
+
+            I2C_READ_BYTE_WAIT: begin
+                sda_oeb_n = 1;
             end
 
             I2C_SEND_ACK_BIT: begin
