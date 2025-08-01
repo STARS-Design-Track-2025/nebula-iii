@@ -11,7 +11,7 @@ module t08_I2C_and_interrupt_tb;
     assign sda_line = sda_out && sda_in;
     assign scl_line = scl_out && scl_in;
 
-    t08_I2C_3 I2C(
+    t08_I2C_and_interrupt I2C(
         .clk(clk), .nRst(nRst), 
         .sda_in(sda_in), .sda_out(sda_out), .sda_oeb(), 
         .inter(inter), .scl_in(scl_in), .scl_out(scl_out), 
@@ -20,7 +20,7 @@ module t08_I2C_and_interrupt_tb;
 
     initial begin
 
-        $dumpfile("t08_I2C_3.vcd");
+        $dumpfile("t08_I2C_and_interrupt.vcd");
         $dumpvars(0, t08_I2C_and_interrupt_tb);
 
         sda_in = 1;

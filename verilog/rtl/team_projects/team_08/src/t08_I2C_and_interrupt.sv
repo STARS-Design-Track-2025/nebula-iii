@@ -392,30 +392,36 @@ module t08_I2C_and_interrupt(
 
             OUTPUT_START_WAIT_1: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_START_SDA: begin
                 sda_out_n = 0;
                 bit_timer_done_acknowledged = 1;
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_START_WAIT_2: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_START_SCL: begin
                 scl_out_n = 0;
                 bit_timer_done_acknowledged = 1;
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_START_WAIT_3: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_START_DONE: begin
                 start_done = 1;
+                send_bit_done = 0;
                 bit_timer_done_acknowledged = 1; 
             end
 
@@ -430,32 +436,37 @@ module t08_I2C_and_interrupt(
                 end else begin
                     sda_out_n = bit_to_send;
                 end
-                
+                send_bit_done = 0;
                 start_bit_timer = 1;
             end
 
             OUTPUT_SEND_BIT_WAIT_1: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
             
             OUTPUT_SEND_BIT_SCL_HIGH: begin
                 scl_out_n = 1;
                 bit_timer_done_acknowledged = 1;
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_SEND_BIT_WAIT_2: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_SEND_BIT_SCL_LOW: begin
                 scl_out_n = 0;
                 bit_timer_done_acknowledged = 1;
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_SEND_BIT_WAIT_3: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_SEND_BIT_DONE: begin
@@ -482,35 +493,42 @@ module t08_I2C_and_interrupt(
                     default: begin end
                 endcase
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_READ_BIT_WAIT_1: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
             
             OUTPUT_READ_BIT_SCL_HIGH: begin
                 scl_out_n = 1;
                 bit_timer_done_acknowledged = 1;
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_READ_BIT_WAIT_2: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_READ_BIT_SCL_LOW: begin
                 scl_out_n = 0;
                 bit_timer_done_acknowledged = 1;
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_READ_BIT_WAIT_3: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_READ_BIT_DONE: begin
                 read_bit_done = 1;
                 bit_timer_done_acknowledged = 1;
+                send_bit_done = 0;
             end
 
             /*Stop*/
@@ -524,34 +542,40 @@ module t08_I2C_and_interrupt(
 
             OUTPUT_STOP_WAIT_1: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_STOP_SCL: begin
                 scl_out_n = 1;
                 bit_timer_done_acknowledged = 1;
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_STOP_WAIT_2: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_STOP_SDA: begin
                 sda_out_n = 1;
                 bit_timer_done_acknowledged = 1;
                 start_bit_timer = 1;
+                send_bit_done = 0;
             end
 
             OUTPUT_STOP_WAIT_3: begin
                 //Nothing besides the defaults
+                send_bit_done = 0;
             end
 
             OUTPUT_STOP_DONE: begin
                 stop_done = 1;
                 bit_timer_done_acknowledged = 1;
+                send_bit_done = 0;
             end
 
-            default: begin end
+            default: begin send_bit_done = 0; end
 
         endcase
 
