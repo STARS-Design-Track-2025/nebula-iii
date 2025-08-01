@@ -19,7 +19,7 @@ logic [7:0] currentout, nextout, command, nextcommand;
 logic [2:0] state, nextstate; 
 logic nextdcx, nextbusy, nextcsx, nextwrx;
 logic [3:0] count = 0, percount, nextpercount,  nextcount, counter, nextcounter;
-logic [23:0] delay = 24'd4800000;
+logic [23:0] delay = 24'd48;
 logic [23:0] timem, nexttimem;
 registering register, nextregister;
 logic nextcontrol, control;
