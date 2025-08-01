@@ -7,6 +7,7 @@ module team_01_fpga_top (
   input  logic hwclk, reset,
   input  logic [20:0] pb,
   input logic J39_b15, J39_c15,
+  input logic left, 
   output logic [1:0] right,
   output logic red, green, blue,
 

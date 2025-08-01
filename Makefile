@@ -614,7 +614,7 @@ gdsview_%_klayout:
 # Example target: make sv2v_team_00
 sv2v_%:
 	@mkdir -p verilog/rtl/team_projects/$*/converted_modules && \
-	sv2v -y verilog/rtl/team_projects/$*/src -w verilog/rtl/team_projects/$*/converted_modules verilog/rtl/team_projects/$*/$*.sv && \
+	sv2v -y verilog/rtl/team_projects/$*/src -w verilog/rtl/team_projects/$*/converted_modules verilog/rtl/team_projects/$*/$*_fpga_top.sv && \
 	echo "\nConversion complete!\n"
 
 

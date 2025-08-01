@@ -17,7 +17,7 @@ module team_01_fpga_top (
 	input wire [20:0] pb;
 	input wire J39_b15;
 	input wire J39_c15;
-	output wire left;
+	input wire left;
 	output wire [1:0] right;
 	output wire red;
 	output wire green;
