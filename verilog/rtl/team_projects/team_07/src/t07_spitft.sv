@@ -48,6 +48,7 @@ always_comb begin
     sclk = 0;
     next_ctr = counter;
 
+
     case(state)
         IDLE: begin 
             busy_o_n = '0;
