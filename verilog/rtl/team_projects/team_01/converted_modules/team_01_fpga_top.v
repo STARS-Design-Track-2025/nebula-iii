@@ -3,57 +3,31 @@ module team_01_fpga_top (
 	hwclk,
 	reset,
 	pb,
+	J39_b15,
+	J39_c15,
 	left,
 	right,
-	ss7,
-	ss6,
-	ss5,
-	ss4,
-	ss3,
-	ss2,
-	ss1,
-	ss0,
 	red,
 	green,
-	blue,
-	txdata,
-	rxdata,
-	txclk,
-	rxclk,
-	txready,
-	rxready
+	blue
 );
 	reg _sv2v_0;
 	input wire hwclk;
 	input wire reset;
 	input wire [20:0] pb;
-	output wire [7:0] left;
-	output wire [7:0] right;
-	output wire [7:0] ss7;
-	output wire [7:0] ss6;
-	output wire [7:0] ss5;
-	output wire [7:0] ss4;
-	output wire [7:0] ss3;
-	output wire [7:0] ss2;
-	output wire [7:0] ss1;
-	output wire [7:0] ss0;
+	input wire J39_b15;
+	input wire J39_c15;
+	output wire left;
+	output wire [1:0] right;
 	output wire red;
 	output wire green;
 	output wire blue;
-	output wire [7:0] txdata;
-	input wire [7:0] rxdata;
-	output wire txclk;
-	output wire rxclk;
-	input wire txready;
-	input wire rxready;
 	wire [4:0] next_block_type;
 	wire [47:0] next_block_preview;
 	wire clk_25m;
 	wire rst;
 	assign rst = reset;
 	assign clk_25m = hwclk;
-	wire J39_b15;
-	wire J39_c15;
 	wire J40_n4;
 	wire [9:0] x;
 	wire [9:0] y;
