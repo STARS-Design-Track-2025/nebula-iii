@@ -14,8 +14,8 @@ module t08_top_tb;
         .clk(clk), .nRst(nRst), .en(1'b1),
 
         .touchscreen_interrupt(1'b0), 
-        .SDAin(1'b0), .SDAout(), .SDAoeb(),
-        .touchscreen_scl(),
+        .I2C_sda_in(1'b0), .I2C_sda_out(), .I2C_sda_oeb(),
+        .I2C_scl_out(), .I2C_scl_in(),
 
         .spi_outputs(), 
         .spi_wrx(), .spi_rdx(), .spi_csx(), .spi_dcx()
@@ -54,7 +54,7 @@ module t08_top_tb;
         nRst = 1;
         //data_in = 0;
 
-        repeat (200000) @ (negedge clk);
+        repeat (20000) @ (negedge clk);
 
         //  nRst = 1;
         // #(0.1);
