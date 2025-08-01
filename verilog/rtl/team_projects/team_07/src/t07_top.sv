@@ -1,11 +1,7 @@
 module t07_top (
     input logic clk, nrst,
     input logic [3:0] ESP_in,
-<<<<<<< HEAD
     output logic FPUFlag, invalError, chipSelectTFT, bitDataTFT, sclkTFT
-=======
-    output logic FPUFlag, invalError
->>>>>>> 26fd0d06a2e4effc4473d4bbb776f2c5e27fdc4e
 );
 
 logic [1:0] rwiToWB;
@@ -73,12 +69,10 @@ logic wi_out;
 t07_CPU CPU(.busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
 .rwi(rwi_in), .FPUFlag(FPUFlag), .invalError(invalError), .clk(clk), .nrst(nrst), .busy_edge_o(busy_edge));
 
-t07_MMIO MMIO(.addr_in(exMemAddr_CPU), .memData_i(exMemData_CPU), .rwi_in(rwi_in), .WBData_i(dataToMMIO), 
- .ack_TFT_i(ackTFT), .CPUData_out(memData_in), 
-.CPU_busy_o(busyCPU), .instr_out(instr), .displayData(dataToTFT), .displayWrite(wi_out), .displayAddr(addrToTFT), .WB_read_o(read), .WB_write_o(write),
-.addr_out(addrToSRAM), .WBData_out(dataToSRAM), .WB_busy_i(busyToMMIO), .WB_busy_edge_i(busy_edge), 
-.regData_i(regData_in), .ack_REG_i(ackReg), .ChipSelReg_i(ChipSelectIn), .regRead_o(regRead), .addr_outREG(addrToReg) );
-
+t07_MMIO MMIO(.clk(clk), .nrst(nrst), .SPIack_i(), .addr_in(exMemAddr_CPU), .memData_i(exMemData_CPU), .rwi_in(rwi_in), .WBData_i(dataToMMIO), 
+ .busyTFT_i(busyTFT_o), .CPUData_out(memData_in), .CPU_busy_o(busyCPU), .instr_out(instr), .displayData(dataToTFT), .displayWrite(displayWrite), 
+ .displayAddr(addrToTFT), .WB_read_o(read), .WB_write_o(write), .addr_out(addrToSRAM), .WBData_out(dataToSRAM), .WB_busy_i(busyToMMIO),
+ .WB_busy_edge_i(busy_edge), .SPIData_i(SPIData_i));
 
 wishbone_manager wishbone0(.nRST(nrst), .CLK(clk), .DAT_I(dataArToWM), .ACK_I(ackToWM), .CPU_DAT_I(dataToSRAM), 
 .ADR_I(addrToSRAM), .SEL_I(4'hF), .WRITE_I(write), .READ_I(read), .ADR_O(addrWMToAr), .DAT_O(dataWMToAr), 
