@@ -53,42 +53,43 @@ module top (
   // );
 
 
-  // Color definitions  
-  localparam BLACK   = 3'b000;  // No color
-  localparam RED     = 3'b100;  // Red only
-  localparam GREEN   = 3'b010;  // Green only
-  localparam BLUE    = 3'b001;  // Blue only
-
-  // Mixed Colors
-  localparam YELLOW  = 3'b110;  // Red + Green
-  localparam MAGENTA = 3'b101;  // Red + Blue (Purple/Pink)
-  localparam CYAN    = 3'b011;  // Green + Blue (Aqua)
-  localparam WHITE   = 3'b111;  // All colors (Red + Green + Blue)
-
   // Internal signals
   logic [9:0] x, y;
-  logic [2:0] grid_color, score_color, starboy_color, final_color, grid_color_movement, grid_color_hold;  
+  logic [2:0] grid_color, score_color, starboy_color, final_color, grid_color_movement, grid_color_hold, credits;  
   logic onehuzz;
-  logic [7:0] current_score;
+  logic [9:0] current_score;
   logic finish, gameover;
+  logic [3:0] gamestate;
+
   logic [24:0] scoremod;
   logic [19:0][9:0] new_block_array;
   logic speed_mode_o;
-
+logic [19:0][9:0][2:0] final_display_color;
 // Color priority logic: starboy and score display take priority over grid
 always_comb begin
   if (starboy_color != 3'b000) begin  // If starboy display has color (highest priority)
     final_color = starboy_color;
   end else if (score_color != 3'b000) begin  // If score display has color
     final_color = score_color;
+  end else if (credits != 3'b000) begin
+    final_color = credits;
   end else begin
     final_color = grid_color_movement;
-  end 
+    end
 end
+
 
 //=================================================================================
 // MODULE INSTANTIATIONS
 //=================================================================================
+
+  logic right_i, left_i, rotate_r, rotate_l, start_i;
+
+  t01_debounce NIRAJMENONFANCLUB (.clk(clk_25m), .pb(pb[0]), .button(right_i));
+  t01_debounce BENTANAYAYAYAYAYAY (.clk(clk_25m), .pb(pb[3]), .button(left_i));
+  t01_debounce nandyhu (.clk(clk_25m), .pb(pb[4]), .button(rotate_r));
+  t01_debounce benmillerlite (.clk(clk_25m), .pb(pb[7]), .button(rotate_l));
+
 
     //=============================================================================
     // tetris game !!!
@@ -96,22 +97,22 @@ end
     
     // VGA driver 
     t01_vgadriver ryangosling (
-      .clk(hwclk), 
-      .rst(1'b0),  
+      .clk(clk_25m), 
+      .rst(rst),  
       .color_in(final_color),  
-      .red(left[5]),  
-      .green(left[4]), 
-      .blue(left[3]), 
-      .hsync(left[7]),  
-      .vsync(left[6]),  
+      .red(red),  
+      .green(green), 
+      .blue(blue), 
+      .hsync(right[0]),  
+      .vsync(right[1]),  
       .x_out(x), 
       .y_out(y)
     );
   
-    // Clock Divider
+    // Clock Divider (gurt)
     t01_clkdiv1hz yo (
-      .clk(hwclk), 
-      .rst(reset), 
+      .clk(clk_25m), 
+      .rst(rst), 
       .newclk(onehuzz), 
       .speed_up(speed_mode_o),
       .scoremod(scoremod)
@@ -119,23 +120,25 @@ end
 
     // Speed Controller
     t01_speed_controller jorkingtree (
-      .clk(hwclk),
-      .reset(reset),
+      .clk(clk_25m),
+      .reset(rst),
       .current_score(current_score),
-      .scoremod(scoremod)
+      .scoremod(scoremod),
+      .gamestate(gamestate)
     );
     
     // Game Logic
     t01_tetrisFSM plait (
-      .clk(hwclk), 
+      .gamestate(gamestate),
+      .clk(clk_25m), 
       .onehuzz(onehuzz), 
-      .reset(reset), 
-      .rotate_l(pb[11]), 
-      .speed_up_i(pb[12] | pb[15]), 
-      .right_i(pb[0]), 
-      .left_i(pb[3]), 
-      .rotate_r(pb[8]), 
-      .en_newgame(pb[19]), 
+      .reset(rst), 
+      .rotate_l(rotate_l), 
+      .final_display_color(final_display_color),
+      .speed_up_i(pb[8] || pb[11]), 
+      .right_i(right_i), 
+      .left_i(left_i), 
+      .rotate_r(rotate_r), 
       .speed_mode_o(speed_mode_o),
       .display_array(new_block_array), 
       .gameover(gameover), 
@@ -144,36 +147,69 @@ end
     );
     
     // Tetris Grid Display
-    t01_tetrisGrid durt (
+    t01_tetrisGrid miguelohara (
       .x(x),  
       .y(y),  
       .shape_color(grid_color_movement), 
-      .display_array(new_block_array), 
+      .final_display_color(final_display_color),
       .gameover(gameover)
     );
 
     // Score Display
-    // t01_scoredisplay ralsei (
-    //   .clk(onehuzz),
-    //   .rst(reset),
-    //   .score(current_score),
-    //   .x(x),
-    //   .y(y),
-    //   .shape_color(score_color)
-    // );
+    t01_scoredisplay ralsei (
+      .clk(onehuzz),
+      .rst(rst),
+      .score(current_score),
+      .x(x),
+      .y(y),
+      .shape_color(score_color)
+    );
 
     // STARBOY Display
-    // t01_starboyDisplay silly (
-    //   .clk(onehuzz),
-    //   .rst(reset),
-    //   .x(x),
-    //   .y(y),
-    //   .shape_color(starboy_color)
-    // );
+    t01_starboyDisplay silly (
+      .clk(onehuzz),
+      .rst(rst),
+      .x(x),
+      .y(y),
+      .shape_color(starboy_color)
+    );
 
-    
+    t01_tetrisCredits nebulabubu (
+        .x(x),
+        .y(y),
+        .text_color(credits)
+    );
+
+  logic [15:0] lfsr_reg;
+
+    t01_counter chchch (
+      .clk(clk10k),
+      .rst(rst),
+      .enable('1),
+      .lfsr_reg(lfsr_reg),
+      .block_type()
+    );
+
+  logic clk10k;
+
+    t01_clkdiv10k thebackofmyfavoritestorespencers(
+      .clk(clk_25m),
+      .rst(rst),
+      .newclk(clk10k)
+    );
+
+    // assign J40_n4 = lfsr_reg[0];
+
+    t01_musicman piercetheveil (
+      .clk(clk_25m),
+      .rst(rst),
+      .square_out(J40_n4),
+      .lfsr(lfsr_reg),
+      .gameover(gameover)
+    );
+
     //=============================================================================
     // agentic ai accelerator bsb saas yc startup bay area matcha lababu stussy !!!
     //=============================================================================
 
-endmodule
+  endmodule

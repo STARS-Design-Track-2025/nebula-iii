@@ -11,7 +11,7 @@
  
 module t01_tetrisGrid(
     input logic [9:0] x, y,
-    input logic [19:0][9:0] display_array,  // Game state as input (1 bit per cell)
+    input logic [19:0][9:0][2:0] final_display_color,
     input logic gameover,
     output logic [2:0] shape_color
 );
@@ -48,22 +48,22 @@ module t01_tetrisGrid(
                        (x == 10'd394) || (y == 10'd389);  // Right and bottom borders
         
         // Assign colors
-        if (in_grid) begin
-            if (on_grid_line && !gameover) begin
-                shape_color = WHITE;  // White grid lines
-            end else if (on_grid_line && gameover) begin
-                shape_color = RED;
-            end else begin
-                // Map array contents to grid
-                if (grid_y < 5'd20 && grid_x < 4'd10) begin
-                    shape_color = display_array[grid_y][grid_x] ? WHITE : BLACK;
-                end else begin
-                    shape_color = BLACK;  // Fallback color
-                end
-            end
+    if (in_grid) begin
+    if (on_grid_line && !gameover) begin
+        shape_color = WHITE;  // White grid lines
+    end else if (on_grid_line && gameover) begin
+        shape_color = RED;
+    end else begin
+        // Map colored array contents to grid
+        if (grid_y < 5'd20 && grid_x < 4'd10) begin
+            shape_color = final_display_color[grid_y][grid_x];  // Change this line
         end else begin
-            shape_color = BLACK;  // Black background outside grid
+            shape_color = BLACK;  // Fallback color
         end
+    end
+end else begin
+    shape_color = BLACK;  // Black background outside grid
+end
     end
 
 endmodule
