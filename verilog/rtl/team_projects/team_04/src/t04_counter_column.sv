@@ -20,15 +20,15 @@ always_ff @(posedge clk, posedge rst) begin
 end
 
 always_comb begin
-    if (count < 11'd49) begin
+    if (count < 11'd1999) begin
         count_n = count + 1;
         pulse_s = 0;
-        if (count == 11'd48) begin
+        if (count == 11'd1998) begin
             pulse_e = 1'b1;
         end else begin
             pulse_e = 0;
         end
-    end else if (count == 11'd49) begin
+    end else if (count == 11'd1999) begin
         pulse_e = 0;
         pulse_s = 1'b1;
         count_n = 0;

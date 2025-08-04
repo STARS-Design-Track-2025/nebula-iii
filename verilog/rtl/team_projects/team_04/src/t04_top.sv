@@ -15,7 +15,6 @@ module t04_top(
     output  logic checkX, checkY, checkC,
     output  logic [7:0] pc,
     output  logic [1:0] acks,
-    output  logic clk_meas
 );
 
     // === Internal wires ===
@@ -58,8 +57,6 @@ module t04_top(
       ncnt = cnt + 1;
     end
   end
-
-  assign clk_meas = (cnt == 1000) ? 1 : 0;
 
     // === Instantiate Datapath ===
     t04_datapath datapath (
@@ -110,9 +107,9 @@ module t04_top(
 
     t04_keypad_interface keypad (
     .clk(clk), .rst(rst),
-    //.column(column),
+    .column(column),
     .row(row),
-    //.pulse(pulse_e),
+    .pulse(pulse_e),
     .button(button),
     .app(app),
     .rising(rising)

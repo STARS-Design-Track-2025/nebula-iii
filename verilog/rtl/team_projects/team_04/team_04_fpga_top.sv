@@ -53,22 +53,21 @@ module top (
   //);
 
   t04_top team_04_inst (
-  .clk(hz100),
-  .rst(pb[19]),
-  .column(ss0[3:0]),
-  .button(ss1[4:0]),
-  .row(pb[17:14]),
-  .screenCsx(right[0]),
-  .screenDcx(right[1]),
-  .screenWrx(right[2]),
-  .screenData(left),
-  .checkC(red),
-  .checkX(green),
-  .checkY(blue),
-  .pc(ss7),
-  .acks(ss6[1:0]),
-  .clk_meas(right[4])
-);
+    .clk(hz100),
+    .rst(pb[19]),
+    .column(ss0[3:0]),
+    .button(ss1[4:0]),
+    .row(pb[15:12]),
+    .screenCsx(right[0]),
+    .screenDcx(right[1]),
+    .screenWrx(right[2]),
+    .screenData(ss3), //left
+    .checkC(red),
+    .checkX(green),
+    .checkY(blue),
+    .pc(ss7),
+    .acks(ss6[1:0])
+  );
 
 // // === Internal signals for datapath-MMIO connections ===
 // logic [4:0] button_pressed;

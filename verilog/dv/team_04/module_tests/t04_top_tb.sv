@@ -81,7 +81,7 @@ module t04_top_tb;
         #15 rst = 0;
         #1020;
         #1220;
-        #1000000;
+        #200000000;
 
        $display("=== Register File Dump ===");
         $display("x0  = %0d ", dut.datapath.rf.registers[0]);

@@ -13,7 +13,7 @@ module t04_register_file(
       end
     end
     else begin
-      if (reg_write) begin
+      if (reg_write && regd != 5'b0) begin
         registers[regd] <= write_data;
       end
     end
