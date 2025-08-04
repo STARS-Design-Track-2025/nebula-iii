@@ -54,7 +54,8 @@ module top (
 
   assign clk = hwclk;
   assign nrst = pb[19];
-  assign ESP_in = pb[7:0];
+  assign ESP_in = pb[3:0];
+  assign ChipSelectIn = pb[4];
   assign rwi_in = 2'b10;
   assign addr_in = 32'd1025;
 
@@ -118,12 +119,16 @@ module top (
       .ack_REG(ack_REG)
   );
 
-  logic [7:0] ESP_in; // Input from the ESP32
+  logic [3:0] ESP_in; // Input from the ESP32
   logic SCLK_out; // Clock signal for the ESP32
+  logic ChipSelectIn;
+  logic dataForExtReg;
   
   t07_SPI_ESP32 spi (
+      .dataForExtReg(dataForExtReg),
       .ESP_in(ESP_in), 
       .clk(clk),
+      .ChipSelectIn(ChipSelectIn),
       .nrst(nrst),
       .SPI_Address(SPIAddress),
       .dataForExtReg(write_data),
