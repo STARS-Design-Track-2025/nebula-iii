@@ -13,7 +13,7 @@ Catalog of how registers are used:
     - rs7: 
     - rs8: 
     - rs9: 
-    - rs10: 
+    - rs10: current color
     - rs11: red color
     - rs12: orange color
     - rs13: yellow color
@@ -24,15 +24,15 @@ Catalog of how registers are used:
     - rs18: black color
     - rs19: Holds the coordinate input from I2C
     - rs20: Holds the done signal from I2C
-    - rs21: 
+    - rs21: I2C address 923923
     - rs22: Fixed at 2A (column address set command hex value)
     - rs23: Fixed at 2B (page address set command hex value)
     - rs24: Fixed at 2C (memory write command hex value)
     - rs25: SPI command address 121212
     - rs26: SPI parameters address 333333
-    - rs27: Used for storing the start and end columns for the display screen for the column address set command
-    - rs28: Used for storing the start and end pages for the display screen for the page address set command
-    - rs29: 
+    - rs27: xbus- Used for storing the start and end columns for the display screen for the column address set command
+    - rs28: ybus- Used for storing the start and end pages for the display screen for the page address set command
+    - rs29: holds 320
     - rs30: Fixed at E1913 (address for coordinate input from I2C) 
         - The I2C done signal will be stored at a location 1 higher (E1914).
     - rs31: Fixed at 1D97C (address for SPI commands) 
