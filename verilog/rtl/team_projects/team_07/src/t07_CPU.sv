@@ -42,6 +42,7 @@ module t07_CPU(
     logic [2:0] state;
     logic addrControl;
     logic [31:0] pcData_out;
+    logic busyToReg;
     
     t07_fetch fetch_inst(.busy_o_edge(busy_edge_o), .clk(clk), .nrst(nrst), .ExtInstruction(exInst), .programCounter(pc_out), .Instruction_out(inst), .PC_out(pcData_out), .busy_o(busy));
     t07_decoder decoder(.instruction(inst), .Op(Op), .funct7(funct7), .funct3(funct3), .rs1(rs1), .rs2(rs2), .rd(rd));
@@ -55,11 +56,11 @@ module t07_CPU(
     t07_immGen immediate0(.func3(funct3), .instruction(inst), .immediate(immediate));
 
     t07_registers register(.clk(clk), .nrst(nrst), .read_reg1(rs1), .read_reg2(rs2), .write_reg(rd), .write_data(regData_in), .reg_write(regWrite), 
-    .enable(regEnable), .read_data1(dataRead1), .read_data2(dataRead2));
+    .enable(regEnable), .read_data1(dataRead1), .read_data2(dataRead2), .freeze_i(freeze));
 
     t07_memoryHandler internalMem(.state(state), .clk(clk), .nrst(nrst), .busy(busy), .memOp(memOp), .memWrite(memWrite), .memRead(memRead),
     .memSource(memSource), .ALU_address(ALUResult), .FPU_data_i('0), .regData_i(dataRead2), .dataMMIO_i(memData_in), .dataMMIO_o(exMemData_out),
-    .addrMMIO_o(intMemAddr), .regData_o(intMem_out), .freeze(freeze), .rwi(rwi), .addrControl(addrControl), .busy_o_edge(busy_edge_o));
+    .addrMMIO_o(intMemAddr), .regData_o(intMem_out), .freeze_o(freeze), .rwi(rwi), .addrControl(addrControl), .busy_o_edge(busy_edge_o));
 
     t07_ALU ALU(.valA(dataRead1), .valB(ALU_in2), .result(ALUResult), .ALUflags(ALUFlags), .ALUOp(ALUOp));
     t07_muxes muxFPUReg(.a(fcsr_out), .b(dataRead2), .sel(FPUSrc), .out(memRegSource)); //check when FPU is added
