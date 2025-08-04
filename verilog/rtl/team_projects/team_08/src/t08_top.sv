@@ -13,22 +13,15 @@ module t08_top(
     
     output logic [7:0] spi_outputs,                     //SPI outputs to display screen
     output logic spi_wrx, spi_rdx, spi_csx, spi_dcx,
-    output logic [31:0] program_counter
+    output logic [31:0] program_counter,
 
 
-    // input logic [31:0] wb_dat_i,                        //Wishbone manager inputs and outputs with wishbone interconnect
-    // input logic wb_ack_i,
-    // output logic [31:0] wb_adr_o, 
-    // output logic [31:0] wb_dat_o,
-    // output logic [3:0] wb_sel_o,
-    // output logic wb_we_o, wb_stb_o, wb_cyc_o
-
-    // input logic [31:0] wb_dat_o,                    //TEMPORARILY TRYING TO MOVE WISHBONE MANAGER OUT OF TOP
-    // input logic wb_busy_o,
-    // output logic [31:0] wb_dat_i,
-    // output logic [31:0] wb_adr_i,
-    // output logic [3:0] wb_sel_i,
-    // output logic wb_write_i, wb_read_i
+    input logic [31:0] wb_dat_i,                        //Wishbone manager inputs and outputs with wishbone interconnect
+    input logic wb_ack_i,
+    output logic [31:0] wb_adr_o, 
+    output logic [31:0] wb_dat_o,
+    output logic [3:0] wb_sel_o,
+    output logic wb_we_o, wb_stb_o, wb_cyc_o
 );
 
     /*
@@ -122,14 +115,6 @@ module t08_top(
     */
 
     logic [31:0] wb_data_to_mmio; //Data read into mmio from wishbone manager
-            
-
-    logic [31:0] wb_dat_i;                     
-    logic wb_ack_i;
-    logic [31:0] wb_adr_o;
-    logic [31:0] wb_dat_o;
-    logic [3:0] wb_sel_o;
-    logic wb_we_o, wb_stb_o, wb_cyc_o;
     logic wb_busy_o;                //Busy signal sent from wishbone manager to mmio
 
     wishbone_manager wm(
@@ -145,17 +130,6 @@ module t08_top(
         .WE_O(wb_we_o), .STB_O(wb_stb_o), .CYC_O(wb_cyc_o),  
 
         .CPU_DAT_O(wb_data_to_mmio), .BUSY_O(wb_busy_o)       //"output to user design"
-    );
-
-    /*
-    SRAM Wishbone wrapper
-    */
-
-    sram_WB_Wrapper sram_wb_w(
-        .wb_clk_i(clk), .wb_rst_i(!nRst), 
-        .wbs_stb_i(wb_stb_o), .wbs_cyc_i(wb_cyc_o), .wbs_we_i(wb_we_o), 
-        .wbs_sel_i(wb_sel_o), .wbs_dat_i(wb_dat_o), .wbs_adr_i(wb_adr_o), 
-        .wbs_ack_o(wb_ack_i), .wbs_dat_o(wb_dat_i)
     );
 
 endmodule

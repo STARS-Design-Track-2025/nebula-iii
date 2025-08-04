@@ -12,6 +12,13 @@ module t08_top_tb;
         #10;
     end
 
+    logic [31:0] wb_dat_i;                     
+    logic wb_ack_i;
+    logic [31:0] wb_adr_o;
+    logic [31:0] wb_dat_o;
+    logic [3:0] wb_sel_o;
+    logic wb_we_o, wb_stb_o, wb_cyc_o;
+
     t08_top top(
         .clk(clk), .nRst(nRst), .en(1'b1),
 
@@ -20,28 +27,20 @@ module t08_top_tb;
         .I2C_scl_out(), .I2C_scl_in(1'b1),
 
         .spi_outputs(), 
-        .spi_wrx(), .spi_rdx(), .spi_csx(), .spi_dcx()
+        .spi_wrx(), .spi_rdx(), .spi_csx(), .spi_dcx(),
 
-        // .wb_dat_o(dat_o), .wb_busy_o(busy_o),
-        // .wb_dat_i(dat_i), .wb_adr_o(adr_o), 
-        // .wb_sel_o(sel_o), 
-        // .wb_we_o(we_o), .wb_stb_o(stb_o), .wb_cyc_o(cyc_o) 
+        .wb_dat_o(wb_dat_o), .wb_dat_i(wb_dat_i), .wb_adr_o(wb_adr_o), 
+        .wb_sel_o(wb_sel_o), .wb_ack_i(wb_ack_i),
+        .wb_we_o(wb_we_o), .wb_stb_o(wb_stb_o), .wb_cyc_o(wb_cyc_o) 
     );
 
-    // wishbone_manager wm(
-    //     .nRST(nRst), .CLK(clk),                                     //reset and clock
+    sram_WB_Wrapper sram_wb_w(
+        .wb_clk_i(clk), .wb_rst_i(!nRst), 
+        .wbs_stb_i(wb_stb_o), .wbs_cyc_i(wb_cyc_o), .wbs_we_i(wb_we_o), 
+        .wbs_sel_i(wb_sel_o), .wbs_dat_i(wb_dat_o), .wbs_adr_i(wb_adr_o), 
+        .wbs_ack_o(wb_ack_i), .wbs_dat_o(wb_dat_i)
+);
 
-    //     .dat_i(), .ack_i(),                         //"input from wishbone interconnect"
-                                                                  
-    //     .CPU_DAT_I(dat_i), .ADR_I(ADR_I),               //"input from user design"
-    //     .SEL_I(SEL_I),  
-    //     .WRITE_I(WRITE_I), .READ_I(READ_I),    
-
-    //     .adr_o(adr_o), .dat_o(dat_o), .sel_o(sel_o),       //"output to wishbone interconnect"
-    //     .we_o(we_o), .stb_o(stb_o), .cyc_o(cyc_o),  
-
-    //     .CPU_DAT_O(dat_o), .BUSY_O(busy_o)       //"output to user design"
-    // );
 
     initial begin
 

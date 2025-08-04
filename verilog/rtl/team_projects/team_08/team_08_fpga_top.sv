@@ -87,14 +87,37 @@ assign ss6[2:0] = state; // from 2 to 0 K15, J14, K14
 
 //assign sda_out = hwclk;
 
+  logic [31:0] wb_dat_i;
+  logic wb_ack_i;
+  logic [31:0] wb_adr_o;
+  logic [31:0] wb_dat_o;
+  logic [3:0] wb_sel_o;
+  logic wb_we_o, wb_stb_o, wb_cyc_o;
+
 t08_top topmodule(
-
-
 
   .clk(hwclk), .nRst(~reset), .en(1'b1), 
 
   .touchscreen_interrupt(inter), .I2C_sda_in(sda_in), .I2C_scl_in(scl_in), .I2C_sda_out(sda_out), .I2C_scl_out(scl_out),
-    .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx), .program_counter(program_counter));
+  .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx), .program_counter(program_counter),
+  
+  .wb_dat_i(wb_dat_i), .wb_ack_i(wb_ack_i), 
+  .wb_adr_o(wb_adr_o), .wb_dat_o(wb_dat_o), .wb_sel_o(wb_sel_o), 
+  .wb_we_o(wb_we_o), .wb_stb_o(wb_stb_o), .wb_cyc_o(wb_cyc_o)
+    
+  );
+
+
+/*
+SRAM Wishbone wrapper
+*/
+
+sram_WB_Wrapper sram_wb_w(
+    .wb_clk_i(hwclk), .wb_rst_i(reset), 
+    .wbs_stb_i(wb_stb_o), .wbs_cyc_i(wb_cyc_o), .wbs_we_i(wb_we_o), 
+    .wbs_sel_i(wb_sel_o), .wbs_dat_i(wb_dat_o), .wbs_adr_i(wb_adr_o), 
+    .wbs_ack_o(wb_ack_i), .wbs_dat_o(wb_dat_i)
+);
 
 
 
