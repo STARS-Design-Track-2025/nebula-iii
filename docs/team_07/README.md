@@ -1,12 +1,12 @@
 # NEBULA III - Project Documentation
 
-## Team 07 - [Team Name]
-* **Peer Mentor:** [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Add more names, if needed]
+## Team 07 - [NYC Finance Bros]
+* **Peer Mentor:** [Andy Hu]
+* [Rose Freedman]
+* [Tylar Sparks]
+* [Kameswari Mantha]
+* [Anna Dalton]
+
 
 ## Project Overview
 In the project, we designed a 32-bit RISC-V CPU that processes stock value data stored in SRAM and displays visual results on a TFT screen. The CPU interfaces with the display via memory-mapped I/O and integrates both fixed-point and floating-point operations to enable precise data processing and graphical output.
