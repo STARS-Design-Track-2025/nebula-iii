@@ -1,11 +1,11 @@
 # NEBULA III - Project Documentation
 
-## Team 07 - [NYC Finance Bros]
-* **Peer Mentor:** [Andy Hu]
-* [Rose Freedman]
-* [Tylar Sparks]
-* [Kameswari Mantha]
-* [Anna Dalton]
+## Team 07 - NYC Finance Bros
+* **Peer Mentor:** Andy Hu
+* Rose Freedman
+* Tylar Sparks
+* Kameswari Mantha]
+* Anna Dalton
 
 
 ## Project Overview
