@@ -51,9 +51,9 @@ initial begin
     #20;
 
     wi = 1;    // Now trigger transfer
-    expected = 32'hAAAA5555;
-    address = 32'hAAAAAAAA;
-    data    = 32'h55555555;
+    //expected = 32'hAAAA5555;
+    address = 32'b10101010101010101010101001010101;
+    data    = 32'b10000000111110001010101111111101;
     #1000;
     #1000;
 
