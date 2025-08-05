@@ -21,16 +21,18 @@ module team_04 (
     // output logic [31:0] la_data_out,
     // input logic [31:0] la_oenb,
 
-
     // Wishbone master interface
-    // output wire [31:0] ADR_O,
-    // output wire [31:0] DAT_O,
-    // output wire [3:0]  SEL_O,
-    // output wire        WE_O,
-    // output wire        STB_O,
-    // output wire        CYC_O,
-    // input wire [31:0]  DAT_I,
-    // input wire         ACK_I,
+
+    // Uncommented the wishbone interface. These are the ports that
+    // will use to connect our design to the Wishbone bus.
+    output wire [31:0] ADR_O,
+    output wire [31:0] DAT_O,
+    output wire [3:0]  SEL_O,
+    output wire        WE_O,
+    output wire        STB_O,
+    output wire        CYC_O,
+    input wire [31:0]  DAT_I,
+    input wire         ACK_I,
 
     // 34 out of 38 GPIOs (Note: if you need up to 38 GPIO, discuss with a TA)
     input  logic [33:0] gpio_in, // Breakout Board Pins
@@ -48,5 +50,7 @@ module team_04 (
 
     assign gpio_out = '0;
     assign gpio_oeb = '0;
+
+    
 
 endmodule
