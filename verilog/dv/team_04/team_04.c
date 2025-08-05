@@ -23,7 +23,7 @@
 // List of Wishbone Slave Addresses
 
 // Change this to 300X0000 where X is your team number
-#define reg_team_04_EN (*(volatile uint32_t*)0x30000000)
+#define reg_team_04_EN (*(volatile uint32_t*)0x30040000)
 
 // GPIO Control
 #define reg_gpio_PIN_0TO7 (*(volatile uint32_t*)0x32000000)
@@ -139,11 +139,11 @@ void main()
 	// Each nibble is used by the GPIO control unit to determine the which input to the GPIO
 	// controls the output.  This allows for multiple projects to interface with the outside world
 	// simultaneously if desired.
-	reg_gpio_PIN_0TO7 = 0x00000000;
-	reg_gpio_PIN_8TO15 = 0x00000000;
-	reg_gpio_PIN_16TO23 = 0x00000000;
-	reg_gpio_PIN_24TO31 = 0x00000000;
-	reg_gpio_PIN_32TO37 = 0x000000;
+	reg_gpio_PIN_0TO7 = 0x44444444;
+	reg_gpio_PIN_8TO15 = 0x44444444;
+	reg_gpio_PIN_16TO23 = 0x44444444;
+	reg_gpio_PIN_24TO31 = 0x44444444;
+	reg_gpio_PIN_32TO37 = 0x444444;
 
 	// Load instructions to RAM - CPU teams: uncomment this!
 	// int num_instr = sizeof(instructions) / sizeof(instructions[0]);

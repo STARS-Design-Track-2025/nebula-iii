@@ -1,15 +1,16 @@
 # NEBULA III - Project Documentation
 
-## Team 04 - [Team Name]
-* **Peer Mentor:** [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Add more names, if needed]
+## Team 04 - [ADRIAN]
+* **Peer Mentor:** [Adrian Buczkowski]
+* [Omar Habli]
+* [Jeff Liu]
+* [Owen Yao]
+* [Darren Huang]
+* [Ethan Peyton]
 
 ## Project Overview
 Describe what your project is in 2-3 sentences. Do NOT mention functionality details, you will add those in the *Functionality Description and Testing* section.
+Our project is a graphing calculator that is powered by a CPU. The user types in an equation using the keypad and the graph of the equation will be displayed.
 
 ## Pin Layout
 Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
@@ -20,26 +21,26 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 02 [--]** - NOT ALLOWED
 * **Pin 03 [--]** - NOT ALLOWED
 * **Pin 04 [--]** - NOT ALLOWED
-* **Pin 05 [01]** - Input or Output? - Pin Function?
-* **Pin 06 [02]** - Input or Output? - Pin Function? 
-* **Pin 07 [03]** - Input or Output? - Pin Function? 
-* **Pin 08 [04]** - Input or Output? - Pin Function? 
-* **Pin 09 [05]** - Input or Output? - Pin Function? 
-* **Pin 10 [06]** - Input or Output? - Pin Function?
-* **Pin 11 [07]** - Input or Output? - Pin Function?
-* **Pin 12 [08]** - Input or Output? - Pin Function?
-* **Pin 13 [09]** - Input or Output? - Pin Function? 
-* **Pin 14 [10]** - Input or Output? - Pin Function? 
-* **Pin 15 [11]** - Input or Output? - Pin Function? 
-* **Pin 16 [12]** - Input or Output? - Pin Function? 
-* **Pin 17 [13]** - Input or Output? - Pin Function? 
-* **Pin 18 [14]** - Input or Output? - Pin Function? 
-* **Pin 19 [15]** - Input or Output? - Pin Function? 
-* **Pin 20 [16]** - Input or Output? - Pin Function? 
-* **Pin 21 [17]** - Input or Output? - Pin Function? 
-* **Pin 22 [18]** - Input or Output? - Pin Function? 
-* **Pin 23 [19]** - Input or Output? - Pin Function? 
-* **Pin 24 [20]** - Input or Output? - Pin Function? 
+* **Pin 05 [01]** - Output - column[0]
+* **Pin 06 [02]** - Output - column[1] 
+* **Pin 07 [03]** - Output - column[2] 
+* **Pin 08 [04]** - Output - column[3] 
+* **Pin 09 [05]** - Input - row[0]
+* **Pin 10 [06]** - Input - row[1]
+* **Pin 11 [07]** - Input - row[2]
+* **Pin 12 [08]** - Input - row[3]
+* **Pin 13 [09]** - Output - screenCsx 
+* **Pin 14 [10]** - Output - screenDcx 
+* **Pin 15 [11]** - Output - screenWrx 
+* **Pin 16 [12]** - Output - screenData[0] 
+* **Pin 17 [13]** - Output - screenData[1] 
+* **Pin 18 [14]** - Output - screenData[2] 
+* **Pin 19 [15]** - Output - screenData[3] 
+* **Pin 20 [16]** - Output - screenData[4] 
+* **Pin 21 [17]** - Output - screenData[5] 
+* **Pin 22 [18]** - Output - screenData[6] 
+* **Pin 23 [19]** - Output - screenData[7] 
+* **Pin 24 [20]** - Input or Output? - Pin Function?
 * **Pin 25 [21]** - Input or Output? - Pin Function? 
 * **Pin 26 [22]** - Input or Output? - Pin Function? 
 * **Pin 27 [23]** - Input or Output? - Pin Function? 
@@ -56,9 +57,12 @@ The first number represents the GPIO on the physical chip, while the second numb
 
 ## External Hardware
 List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
+4x4 matrix keypad
+TFT LCD screen
 
 ## Functionality Description and Testing
 Describe in detail how your project works and how to test it.
+The user will first interact with the keypad which will send a binary number to the CPU from 1:32 depending on the alpha state. The CPU will then read the value sent from the keypad and either display the corresponding value, operator, or swtich apps. After an equation is typed into the calculator, the graph will be displayed. 
 
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_04).
