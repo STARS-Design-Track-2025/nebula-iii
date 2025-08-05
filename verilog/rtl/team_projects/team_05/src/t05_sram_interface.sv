@@ -69,8 +69,7 @@ module t05_sram_interface (
     output logic [5:0] ctrl_done
 );
 
-    logic [31:0] FLV_HTREE_counter, FLV_HTREE_counter_n;
-
+    logic nextChar_n;
     logic [3:0] word_cnt_n;
 
     logic [63:0] comp_val_n, nulls_n;
@@ -90,13 +89,13 @@ module t05_sram_interface (
     assign cb_done = 0;
     assign ht_done = 0;
 
-    assign HTREE_log = {22'd0, find_least} - 32'd256;
+    assign HTREE_log = {23'd0, find_least} - 32'd128;
 
     logic [31:0] ht_write_1;
-    assign ht_write_1 = {24'd0, htree_write} + 32'd1;
+    assign ht_write_1 = {25'd0, htree_write} + 32'd1;
 
     logic [31:0] ht_index_1_over;
-    assign ht_index_1_over = ({24'd0, htreeindex} * 2'd2) + 32'd1;
+    assign ht_index_1_over = ({25'd0, htreeindex} * 2'd2) + 32'd1;
 
 
     logic [2:0] zero_cnt, zero_cnt_n;
@@ -109,12 +108,12 @@ module t05_sram_interface (
     logic [3:0] counter_HTREE, counter_HTREE_n;
 
     logic [31:0] char_index_1, char_index_2, char_index_3;
-    assign char_index_1 = ({24'd0, char_index} * 3'd4) + 32'd1;
-    assign char_index_2 = ({24'd0, char_index} * 3'd4) + 32'd2;
-    assign char_index_3 = ({24'd0, char_index} * 3'd4) + 32'd3;
+    assign char_index_1 = ({25'd0, char_index[6:0]} * 3'd4) + 32'd1;
+    assign char_index_2 = ({25'd0, char_index[6:0]} * 3'd4) + 32'd2;
+    assign char_index_3 = ({25'd0, char_index[6:0]} * 3'd4) + 32'd3;
 
     logic [31:0] curr_index_1;
-    assign curr_index_1 = {24'd0, curr_index} + 32'd1;
+    assign curr_index_1 = {25'd0, curr_index[6:0]} + 32'd1;
 
     logic CB_read_counter, CB_read_counter_n;
     logic [1:0] CB_write_counter, CB_write_counter_n;
@@ -126,9 +125,9 @@ module t05_sram_interface (
 
     logic [31:0] trn_1, trn_2, trn_3;
 
-    assign trn_1 = ({24'd0, translation} * 3'd4) + 32'd1;
-    assign trn_2 = ({24'd0, translation} * 3'd4) + 32'd2;
-    assign trn_3 = ({24'd0, translation} * 3'd4) + 32'd3;
+    assign trn_1 = ({25'd0, translation[6:0]} * 3'd4) + 32'd1;
+    assign trn_2 = ({25'd0, translation[6:0]} * 3'd4) + 32'd2;
+    assign trn_3 = ({25'd0, translation[6:0]} * 3'd4) + 32'd3;
 
 always_ff @( posedge clk, posedge rst) begin
     if (rst) begin
@@ -147,13 +146,13 @@ always_ff @( posedge clk, posedge rst) begin
         write_counter_FLV <= 0;
         write_HT_fin <= 0;
         counter_HTREE <= 0;
-        FLV_HTREE_counter <= 0;
         CB_read_counter <= 0;
         CB_write_counter <= 0;
         CB_read_complete <= 0;
         CB_write_complete <= 0;
         TRN_counter <= 0;
         TRN_complete <= 0;
+        nextChar <= 0;
     end else begin
         word_cnt <= word_cnt_n;
         comp_val <= comp_val_n;
@@ -171,13 +170,13 @@ always_ff @( posedge clk, posedge rst) begin
         FLV_done <= FLV_done_n;
         write_HT_fin <= write_HT_fin_n;
         counter_HTREE <= counter_HTREE_n;
-        FLV_HTREE_counter <= FLV_HTREE_counter_n;
         CB_read_counter <= CB_read_counter_n;
         CB_write_counter <= CB_write_counter_n;
         CB_read_complete <= CB_read_complete_n;
         CB_write_complete <= CB_write_complete_n;
         TRN_counter <= TRN_counter_n;
         TRN_complete <= TRN_complete_n;
+        nextChar <= nextChar_n;
     end
 end
 
@@ -186,7 +185,7 @@ always_comb begin
     addr = 32'h33000000;
     wr_en = 0;
     r_en = 0;
-    nextChar = 0;
+    nextChar_n = nextChar;
     nextChar_FLV = 0;
     data_i = 0;
     HTREE_complete = 0;
@@ -207,7 +206,6 @@ always_comb begin
     zero_cnt_n = zero_cnt;
     FLV_done_n = FLV_done;
     write_counter_FLV_n = write_counter_FLV;
-    FLV_HTREE_counter_n = FLV_HTREE_counter;
 
     counter_HTREE_n = counter_HTREE;
 
@@ -237,15 +235,19 @@ always_comb begin
             end else begin
                 data_i = histogram;
                 addr = 32'h33001024 + (histgram_addr * 4);
+
                 if(hist_r_wr == 1 && busy_o == 0) begin //(busy_o_last == 1 && busy_o == 0)) begin
                     wr_en = 1;
                     r_en = 0;
-                    nextChar = 1; 
+                    nextChar_n = 1; 
                     // addr = 32'h33000000 + (histgram_addr * 4);
                 end else if (hist_r_wr == 0 && busy_o == 0) begin // (busy_o_last == 1 && busy_o == 0)) begin
                     wr_en = 0;
                     r_en = 1;
                     // addr = 32'h33000000 + (histgram_addr * 4);
+                end
+                else if(!busy_o) begin
+                    nextChar_n = 0;
                 end
             end
             if (hist_read_latch) old_char_n = data_o;
@@ -255,7 +257,7 @@ always_comb begin
             case(word_cnt)
                 0: begin //IDLE
                     addr = '0;
-                    if(find_least == 384 && write_counter_FLV == 4) begin
+                    if(find_least == 256 && write_counter_FLV == 4) begin
                         FLV_done_n = 1;
                         word_cnt_n = 0;
                         write_counter_FLV_n = 0;
@@ -271,23 +273,22 @@ always_comb begin
                     end
                 end
                 1: begin //Determining histogram or htree
-                    if(find_least == 384 && wipe_the_char) begin
+                    if(find_least == 256 && wipe_the_char) begin
                         addr = 32'h33001024 + (charwipe1 * 4);
                         data_i = '0;
                         write_counter_FLV_n = write_counter_FLV + 1;
                         wr_en = 1;
                         word_cnt_n = 9;
                         
-                    end else if (find_least < 256) begin
+                    end else if (find_least < 128) begin
                         addr = 32'h33001024 + (find_least * 4);
                         if(!flv_r_wr) begin
                             r_en = 1;
                         end
                         word_cnt_n = 2;
                         nextChar_FLV = 1;
-                    end else if (find_least > 255) begin
-                        FLV_HTREE_counter_n = HTREE_log * 2;
-                        addr = 32'h33000000 + (FLV_HTREE_counter * 4);
+                    end else if (find_least > 127) begin
+                        addr = 32'h33000000 + (HTREE_log * 2 * 4);
                         if(!flv_r_wr) begin
                             r_en = 1;
                         end
@@ -312,7 +313,7 @@ always_comb begin
                 end
                 3: begin //First HTREE read state
                     if(!busy_o) begin
-                        addr = 32'h33000000 + ((FLV_HTREE_counter + 1) * 4);
+                        addr = 32'h33000000 + (((HTREE_log * 2) + 1) * 4);
                         if(!flv_r_wr) begin
                             r_en = 1;
                         end
@@ -505,13 +506,13 @@ always_comb begin
                 end
                 1: begin
                     if(cb_r_wr) begin
-                        addr = 32'h33001024 + (char_index * 4 * 4);
+                        addr = 32'h33001024 + (char_index[6:0] * 4 * 4);
                         wr_en = 1;
                         data_i = codebook_path [127:96];
                         word_cnt_n = 2;
                     end
                     else if (!cb_r_wr) begin
-                        addr = 32'h33000000 + (curr_index * 4);
+                        addr = 32'h33000000 + (curr_index[6:0] * 4);
                         r_en = 1;
                         word_cnt_n = 7;
                     end
@@ -603,7 +604,7 @@ always_comb begin
                     end        
                 end
                 3: begin
-                    addr = 32'h33001024 + (translation * 4 * 4);
+                    addr = 32'h33001024 + (translation[6:0] * 4 * 4);
                     TRN_counter_n = TRN_counter + 1;
                     word_cnt_n = 1;
                     r_en = 1;

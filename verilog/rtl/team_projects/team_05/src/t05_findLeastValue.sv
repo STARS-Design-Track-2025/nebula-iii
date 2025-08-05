@@ -65,7 +65,7 @@ always @(*) begin
             alt = 1;
             alternator_timer_n = 0;
         end
-    end else if (histo_index > 255) begin
+    end else if (histo_index > 127) begin
         if(alternator_timer < 9) begin
             alternator_timer_n = alternator_timer + 1;
         end else begin
@@ -81,7 +81,7 @@ always @(*) begin
             alternator_timer_n = 0;
         end
     end
-    if(((histo_index < 384 && alt) || startup ) && en_state == 2) begin
+    if(((histo_index < 256 && alt) || startup ) && en_state == 2) begin
         if(startup) begin
             count_n = 0;
             //pulse_FLV = 1;
@@ -101,25 +101,25 @@ always @(*) begin
     charWipe2_n = charWipe2;
     least1_n = least1;
     least2_n = least2;
-    sumCount = histo_index - 256;
+    sumCount = histo_index - 128;
     sum_n = sum;
     fin_state_n = fin_state;
     flv_r_wr = 0;
     wipe_the_char = 1;
 
-    if(compVal != 0 && histo_index < 384 && histo_index != 26 && fin_state != 1) begin //&& histo_index != 0) begin
-        if(val1 > compVal && histo_index < 256) begin
+    if(compVal != 0 && histo_index < 256 && histo_index != 26 && fin_state != 1) begin //&& histo_index != 0) begin
+        if(val1 > compVal && histo_index < 128) begin
             least2_n = least1;
             charWipe2_n = charWipe1;
             val2_n = val1;
             least1_n = {1'b0, histo_index[7:0]};
             charWipe1_n = histo_index[7:0];
             val1_n = compVal;
-        end else if (val2 > compVal && histo_index < 256) begin
+        end else if (val2 > compVal && histo_index < 128) begin
             least2_n = {1'b0, histo_index[7:0]};
             charWipe2_n = histo_index[7:0];
             val2_n = compVal;
-        end else if (val1 > compVal && histo_index > 255) begin
+        end else if (val1 > compVal && histo_index > 127) begin
             least2_n = least1;
             charWipe2_n = charWipe1;
             val2_n = val1;
@@ -127,7 +127,7 @@ always @(*) begin
             charWipe1_n = '0;
             val1_n = compVal;
             wipe_the_char = 0;
-        end else if (val2 > compVal && histo_index > 255) begin
+        end else if (val2 > compVal && histo_index > 127) begin
             least2_n = {1'b1, sumCount[7:0]};
             charWipe2_n = '0;
             val2_n = compVal;
@@ -138,7 +138,7 @@ always @(*) begin
     if(val1 != '1 && val2 != '1) begin
         sum_n = val1 + val2;
     end
-    if(histo_index == 384 && FLV_done) begin
+    if(histo_index == 256 && FLV_done) begin
         fin_state_n = 1;
         flv_r_wr = 1;
     end

@@ -9,10 +9,15 @@ module t05_top (
     output logic finished_signal,
 
     //HISTOGRAM
+    input logic read_in_pulse,
+    input logic [6:0] in,
     input logic [31:0] sram_in,
     output logic [31:0] sram_out,
     output logic [7:0] hist_addr,
     output logic [1:0] wr,
+    output logic readEn,
+    output logic out_of_init,
+    output logic busy_o,
 
     //FLV
     //input logic [63:0] compVal,
@@ -28,7 +33,6 @@ module t05_top (
     //SPI
     output logic mosi, 
     input logic miso,
-    input logic [7:0] read_out,
 
     //Starting states
     output logic [3:0] en_state,
@@ -44,8 +48,8 @@ module t05_top (
     output logic nextChar,
     output logic init,
     input logic wbs_ack_i,
-    input logic [31:0] wbs_dat_i,
-    input logic pulse_in
+    input logic [31:0] wbs_dat_i
+    //input logic pulse_in
 );
   logic serial_clk;
   logic sclk;
@@ -98,7 +102,7 @@ module t05_top (
 
   //SRAM TRN
   logic [127:0] path;
-  logic readEn;
+  //logic readEn;
 
   //CB SRAM
   logic [6:0] curr_index;
@@ -109,6 +113,7 @@ module t05_top (
   //SPI
   logic writeBit_HS, writeBit_TL;
   logic flag;
+  logic [6:0] read_out;
 
   //SOMETHING
   logic HT_fin_reg;
@@ -125,7 +130,7 @@ module t05_top (
   logic write_i, read_i;
   logic [31:0] addr_i;
   logic [3:0] sel_i;
-  logic busy_o;
+  //logic busy_o;
 
   wishbone_manager WB (
     .nRST(!reset),
@@ -266,25 +271,58 @@ module t05_top (
     .finished_signal(finished_signal)
     );
 
+    logic [7:0] out;
+    logic out_valid;
+    logic [2:0] leftover_count;
+    logic [6:0] leftover_data;
+    // logic eof_check;
+
+    t05_bytecount dut (
+        .clk(hwclk),                        //clock
+        .en(1'd1),                          //synchronous enable
+        .nrst(!reset),                      //active-low reset
+        .pulse(read_in_pulse),              //pulse: new 7-bit input available this cycle
+        .in(in),                            //7-bit chunk
+        .out(out),                          //assembled byte
+        .out_valid(out_valid),              //high when `out` is valid this cycle
+        .leftover_data(leftover_data),      //leftover bits (right-aligned)
+        .leftover_count(leftover_count)     //number of valid leftover bits (0..7)
+    );
+
+  always_comb begin
+    // eof_check = 0;
+    if(read_in_pulse) begin
+      read_out = in;
+    end
+    // if(out_valid) begin
+    //   if(out == 8'h1A) begin
+    //     eof_check = 1;
+    //   end
+    // end
+  end
+
   t05_histogram histogram (
     .clk(hwclk), 
     .rst(reset), 
     .busy_i(busy_o),
     .init(init),
-    .pulse(pulse_in),
+    .pulse(read_in_pulse),
     .en_state(en_state),
-    .spi_in(read_out), 
+    .spi_in({1'd0, read_out}), 
     .write_i(write_i),
     .read_i(read_i),
     .sram_in(hist_data_o), 
-    .eof(fin_state_HG), 
+    .eof(fin_state_HG),
+    .out_valid(out_valid), 
+    .out(out),
     .complete(readEn),
     .total(totChar), 
     .sram_out(sram_out), 
     .hist_addr(hist_addr),
     .wr_r_en(wr),
     .get_data(hist_read_latch),
-    .confirm(spi_confirm_out)
+    .confirm(spi_confirm_out),
+    .out_of_init(out_of_init)
     );
 
   t05_findLeastValue findLeastValue (
@@ -384,7 +422,7 @@ module t05_top (
     .clk(hwclk), 
     .rst(reset), 
     .totChar(totChar),
-    .charIn(read_out), 
+    .charIn({1'd0, read_out}), 
     .path(path), 
     .writeBin(writeBit_TL), 
     .writeEn(writeEn_TL),

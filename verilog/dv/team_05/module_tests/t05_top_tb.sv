@@ -5,7 +5,7 @@ module t05_top_tb;
     logic mosi, cont_en;
     //logic SRAM_finished;
     logic [5:0] op_fin; // when SRAM finishes
-    logic [7:0] read_out;
+    logic [6:0] read_out;
     //logic [63:0] compVal, nulls;
     logic [8:0] fin_State;      // Output from top module        // outputs from modules
     logic error_detected;      // For error status tracking
@@ -34,6 +34,13 @@ module t05_top_tb;
     logic pulse, confirm;
 
     logic nextChar, init;
+    logic histo_complete;
+    logic out_of_init;
+
+    logic read_in_pulse;
+    logic [6:0] in;
+
+    logic busy_o;
 
     t05_top top (
     .hwclk(hwclk),
@@ -41,14 +48,19 @@ module t05_top_tb;
     .mosi(mosi),
     .miso(miso),
     .op_fin(op_fin),
-    .read_out(read_out),
+    //.read_out(read_out),
     .finished_signal(finished_signal),
     .en_state(en_state),
     .cont_en(cont_en),
-    .pulse_in(pulse),
+    //.pulse_in(pulse),
     .spi_confirm_out(confirm),
     .nextChar(nextChar),
     .init(init),
+    .in(in),
+    .read_in_pulse(read_in_pulse),
+    .readEn(histo_complete),
+    .out_of_init(out_of_init),
+    .busy_o(busy_o),
 
     //WRAPPER
     .wbs_stb_o(wbs_stb_i),
@@ -106,6 +118,42 @@ module t05_top_tb;
     //     #37000 $finish;
     // end
 
+    logic [4:0] index, index_n;
+    
+    logic alt, alt_n;
+
+    logic [6:0] in_hold;
+
+    logic [6:0] mem [23:0];
+    initial begin
+        $readmemb("test2.mem", mem, 0, 23);
+    end
+
+    always_ff @(posedge hwclk, posedge reset) begin
+        if(reset) begin
+            index <= '0;
+            alt <= 0;
+            in_hold <= '0;
+        end else begin
+            index <= index_n;
+            alt <= alt_n;
+            in_hold <= in;
+        end
+    end
+
+    always_comb begin
+        alt_n = !alt;
+        index_n = index;
+        read_in_pulse = 0;
+        in = in_hold;
+
+        if((!init && !out_of_init && !wbs_ack_o) || (nextChar && !busy_o)) begin
+            index_n = index + 1;
+            read_in_pulse = 1;
+            in = mem[index][6:0];
+        end
+    end
+
     initial begin
         $dumpfile("t05_top.vcd");
         $dumpvars(0, t05_top_tb);
@@ -128,7 +176,7 @@ module t05_top_tb;
         // TEST 1: Basic Reset and Normal Flow
         // $display("\n=== TEST 1: Basic Flow with Node Progression ===");
         // test_num = 1;
-        // resetOn();
+        resetOn();
         // #15000;
 
         // pulse = 1;
@@ -163,7 +211,6 @@ module t05_top_tb;
         // pulseit (1, 8'h1A);
         // #27200;
 
-
         // read_out = 65;
         // #250;
         // read_out = 66;
@@ -172,39 +219,39 @@ module t05_top_tb;
         // #250;
         // read_out = 68;
         // #250
-        // read_out = 8'h1A;
+        // read_out = 7'h1A;
 
         // #32800
 
-        test_num = 3;
-        resetOn();
-        #15000;
+        // test_num = 3;
+        // resetOn();
+        // #15000;
 
-        pulse = 1;
-        read_out = 65;
-        @(posedge confirm);
-        @(negedge hwclk);
-        pulse = 0;
-        pulseit (2, 66);
-        pulseit (3, 67);
-        pulseit (3, 68);
-        pulseit (3, 69);
-        pulseit (1, 8'h1A);
-        #32550;
+        // pulse = 1;
+        // read_out = 65;
+        // @(posedge confirm);
+        // @(negedge hwclk);
+        // pulse = 0;
+        // pulseit (2, 66);
+        // pulseit (3, 67);
+        // pulseit (3, 68);
+        // pulseit (3, 69);
+        // pulseit (1, 8'h1A);
+        // #32550;
 
-        read_out = 65;
-        #276;
-        read_out = 66;
-        #276;
-        read_out = 67;
-        #276;
-        read_out = 68;
-        #276;
-        read_out = 69;
-        #276;
-        read_out = 8'h1A;
+        // read_out = 65;
+        // #276;
+        // read_out = 66;
+        // #276;
+        // read_out = 67;
+        // #276;
+        // read_out = 68;
+        // #276;
+        // read_out = 69;
+        // #276;
+        // read_out = 8'h1A;
 
-        #27450;
+        // #27450;
         // test_num = 3;
         // resetOn();
         // #15000;

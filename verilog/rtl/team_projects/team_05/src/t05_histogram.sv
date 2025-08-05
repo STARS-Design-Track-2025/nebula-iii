@@ -4,14 +4,16 @@ module t05_histogram(
     input logic [7:0] spi_in,        // input byte from SPI
     input logic [31:0] sram_in,       // value from SRAM
     input logic busy_i, init,
-    input logic read_i, write_i, pulse,
+    input logic read_i, write_i, pulse, out_valid,
+    input logic [7:0] out,
     output logic eof,
     output logic complete, // eof = end of file; complete = done with byte
     output logic [31:0] total, sram_out,  //total number of characters within the file,  the updated data going to the sram 
     output logic [7:0]  hist_addr,     // address to SRAM
     output logic [1:0] wr_r_en,        // enable going to sram to tell it to read or write
     output logic get_data,          // Tell SRAM to give data read
-    output logic confirm        // Handshake confirm to SPI
+    output logic confirm,        // Handshake confirm to SPI
+    output logic out_of_init
 );
 //send a controller enable to controller
 //accept an enable from sram to know when to procccess new data
@@ -48,7 +50,7 @@ logic confirm_n;
 
 logic [31:0] sram_out_n;
 
-logic out_of_init, out_of_init_n;
+logic out_of_init_n;
 
 
 always_ff @( posedge clk, posedge rst ) begin
@@ -92,7 +94,6 @@ always_comb begin
     complete_n = complete;
     eof_n = eof;
     hist_addr_n = hist_addr;
-    complete_n = complete;
     total_n = total;
     wait_cnt_n = wait_cnt;
     timer_n = timer;
@@ -109,11 +110,18 @@ always_comb begin
             hist_addr_n = 0;
         end
         READ:  begin  //giving the sram the character that it wants to pull
-        if(!out_of_init) begin
+        if(out_valid) begin
+            if(out == 8'h1A) begin
+                next_state = HALT;
+                eof_n = 1;
+                wr_r_en_n = 2'd3;
+            end
+        end
+        else if(!out_of_init) begin
             next_state = IDLE;
             out_of_init_n = 1;
         end
-        if(out_of_init) begin
+        else if(out_of_init) begin
             next_state = WAITREAD_1;
             wr_r_en_n  = 2'd3;
             hist_addr_n = spi_in;
@@ -144,14 +152,20 @@ always_comb begin
         end
 
         WRITE: begin  //pulling the data from the sram and adding 1
-            if (spi_in == end_file) begin
-                next_state = HALT;
-                eof_n = 1;
-                wr_r_en_n = 2'd3;
-            end else begin
+            // if (spi_in == end_file) begin
+            //     next_state = HALT;
+            //     eof_n = 1;
+            //     wr_r_en_n = 2'd3;
+
+            // end
+            // if (eof_check) begin
+            //     next_state = HALT;
+            //     eof_n = 1;
+            //     wr_r_en_n = 2'd3;
+            // end else begin
                 next_state = WAITWRITE;
                 wr_r_en_n = 2'd3;
-            end
+            // end
         end
         DONE: begin  //done with that 1 cycle
             next_state = DONE;

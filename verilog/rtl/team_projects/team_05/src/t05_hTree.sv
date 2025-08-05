@@ -159,6 +159,7 @@ end
                         WorR = 1'b0; 
                         // Create new internal node from two least frequent nodes
                         // Tree format: {clkCount, least1, least2, sum}
+                        //tree = {clkCount, least1, least2, sum[45:0]};
                         if(!write_HT_fin && !closing) begin
                             tree = {clkCount, least1, least2, sum[45:0]};                   // Uses clkCount_reg, not clkCount
                             pulse = 1;
