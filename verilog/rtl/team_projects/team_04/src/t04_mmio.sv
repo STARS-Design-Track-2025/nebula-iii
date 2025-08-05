@@ -26,16 +26,18 @@ module t04_mmio (
     output logic WEN,
 
     // === Wishbone Interface ===
-    input logic ack,
-    input logic [31:0] dat_i,
-    output logic stb,
-    output logic cyc,
-    output logic we,
-    output logic [3:0] sel,
-    output logic [31:0] adr,
-    output logic [31:0] dat_o
 
+    // These signals are coming from the Wishbone bus.
+    input logic stb,
+    input logic cyc,
+    input logic we,
+    input logic [3:0] sel,
+    input logic [31:0] adr,
+    input logic [31:0] dat_i,
+    output logic ack,
+    output logic [31:0] dat_o
 );
+
     // === Internal Signals ===
     logic [31:0] memload_or_instruction;
     logic busy;
