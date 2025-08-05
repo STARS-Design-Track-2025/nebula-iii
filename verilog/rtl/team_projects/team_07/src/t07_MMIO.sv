@@ -20,13 +20,6 @@ module t07_MMIO(
     output logic [31:0] addr_out, //address send to instr or data mem
     output logic [31:0] WBData_out, //data sent to WB during store instr
 
-    //external registers
-    input logic [31:0] regData_i, 
-    input logic ack_REG_i,
-    input logic ChipSelReg_i, // chip select from external register to indicate we can read
-    output logic regRead_o, //read or idle signal to external register
-    output logic [4:0] addr_outREG, // address to external register
-
     //SPI for TFT
     input logic busyTFT_i, 
     input logic [7:0] dataTFT_i,
@@ -70,13 +63,13 @@ always_comb begin
         CPU_busy_o = '1; 
         end else begin 
             CPU_busy_o = 0; 
-                    end
+        end
 
     //read & write for wishbone manager
     if(WB_busy_edge_i) begin
         WB_read_o = 0;
         WB_write_o = 0;
-    end else if(rwi_in == 'b11 & addr_in <= 32'd1024) begin //fetch
+    end else if(rwi_in == 'b11) begin //fetch
         WB_read_o = 1;
         WB_write_o = 0;
     end else if(rwi_in == 'b10 & addr_in > 32'd1056 & addr_in <= 32'd1792) begin //read, // address
