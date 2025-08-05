@@ -45,15 +45,15 @@ module t08_CPU (
     );
 
     t08_control_unit control_unit(
-        .instruction(instruction), 
-        .read(mem_en_read), .write(mem_en_write), 
-        .funct3(func3), 
+        .instruction(instruction), //instruction for cpu
+        .read(mem_en_read), .write(mem_en_write), //read or write command
+        .funct3(func3), //type of instr
         .data_in_control(data_in_control), 
-        .reg1(reg1), .reg2(reg2), .regd(regd), 
+        .reg1(reg1), .reg2(reg2), .regd(regd),  //registers
         .en_read_1(reg_en_read_1), .en_read_2(reg_en_read_2), .en_write(reg_en_write), 
         .immediate(immediate), 
         .alu_control(alu_control), 
-        .jump(jump)
+        .jump(jump) //jump command
     );
 
     t08_alu alu(

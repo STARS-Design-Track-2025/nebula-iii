@@ -64,13 +64,13 @@ always_comb begin
 
 
     case(state)
-    INC: begin
+    INC: begin //increments program counter
         next_counter_on = 1;
         nextstate = WAIT;
 
     end
 
-    WAIT: begin
+    WAIT: begin //wait for incrementation
         if(!busy) begin
         nextstate = FETCH;
         end
@@ -79,7 +79,7 @@ always_comb begin
         end
     end
 
-    FETCH: begin
+    FETCH: begin //fetching instruction 
         if(!done) begin
             nextstate = WAIT;
         end
@@ -90,7 +90,7 @@ always_comb begin
         end
     end
 
-    FWAIT: begin
+    FWAIT: begin //waiting until instruction is fetched
         if (done) begin
         if (gdone) begin
             nextinst = frommem;
@@ -106,7 +106,7 @@ always_comb begin
         end
     end
 
-    LORS: begin
+    LORS: begin //check if instruction need extra ime - for load/store/ branch
         if (read|write) begin
             nextnewadd = mem_address;
             nextstate = LWAIT;
@@ -145,7 +145,7 @@ always_comb begin
         end
         end
 
-    LWAIT: begin
+    LWAIT: begin //waits for load instruction
 
             if (gdone) begin
                 if (read) begin 
@@ -190,7 +190,7 @@ always_comb begin
             else begin nextstate = LWAIT; end
     end
 
-    REGOP: begin
+    REGOP: begin //extra time for registers to get data
         nextstate = INC;
     end
 

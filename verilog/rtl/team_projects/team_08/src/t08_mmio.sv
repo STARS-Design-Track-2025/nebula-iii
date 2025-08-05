@@ -59,8 +59,8 @@ always_ff @(posedge clk, negedge nRst) begin
         m2 <= 0;
     end
     else begin
-        m1 <= mmio_busy_o;
-        m2 <= m1;
+        m1 <= mmio_busy_o; //registered busy signal
+        m2 <= m1; 
     end
 end
 
@@ -75,13 +75,13 @@ always_comb begin
     mem_data_o = 0;     
     mem_address_o = 0;         
         
-        if (!write && read) begin
-            if (address == I2C_ADDRESS) begin
+        if (!write && read) begin //read operation
+            if (address == I2C_ADDRESS) begin // read from I2C
                 if (I2C_done_i) begin
                     mh_data_o = I2C_xy_i;
                 end
             end 
-            else if (address < 32'd2048) begin
+            else if (address < 32'd2048) begin//read from memory
                 if (mem_busy_i) begin
                     mh_data_o = 32'hDEADBEEF;
                 end 
@@ -95,18 +95,18 @@ always_comb begin
         end
 
     else
-    if (write && !read) begin
-            if (address == SPI_ADDRESS_C) begin
+    if (write && !read) begin //write operation
+            if (address == SPI_ADDRESS_C) begin //write comand to display
                 if (!spi_busy_i) begin        
                     spi_data_o = mh_data_i;
                     spi_comm_enable_o = 1;
                     spi_writeread_o = 1;
                 end
-            end else if (address == SPI_ADDRESS_P) begin
+            end else if (address == SPI_ADDRESS_P) begin //write parameter to display
                 spi_data_o = mh_data_i;
                 spi_writeread_o = 1;
                 spi_param_enable_o = 1;
-            end else if (address < 32'd2048) begin
+            end else if (address < 32'd2048) begin //write to memory
                 if (!mem_busy_i) begin
                     mem_data_o = mh_data_i;     
                     mem_address_o = address;            
