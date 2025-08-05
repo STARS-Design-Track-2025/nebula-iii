@@ -8,7 +8,8 @@ module t05_findLeastValue (
     output logic fin_state,                              //Finish Enable
     output logic flv_r_wr,
     output logic pulse_FLV,
-    output logic wipe_the_char,
+    output logic wipe_the_char_1,
+    output logic wipe_the_char_2,
     input logic nextChar,
     input logic [3:0] word_cnt,
     input logic FLV_done,
@@ -22,6 +23,8 @@ logic fin_state_n;
 logic startup, startup_n;
 logic alt;
 logic [3:0] alternator_timer, alternator_timer_n;
+logic wipe_the_char_1_n;
+logic wipe_the_char_2_n;
 
 always_ff @(posedge clk, posedge rst) begin
     if(rst || HTREE_complete) begin
@@ -36,6 +39,8 @@ always_ff @(posedge clk, posedge rst) begin
         fin_state <= 0;
         startup <= 1;
         alternator_timer <= 0;
+        wipe_the_char_1 <= 0;
+        wipe_the_char_2 <= 0;
     end else if (en_state == 2) begin
         least1 <= least1_n;
         least2 <= least2_n;
@@ -48,6 +53,8 @@ always_ff @(posedge clk, posedge rst) begin
         fin_state <= fin_state_n;
         startup <= startup_n;
         alternator_timer <= alternator_timer_n;
+        wipe_the_char_1 <= wipe_the_char_1_n;
+        wipe_the_char_2 <= wipe_the_char_2_n;
     end
 end
 
@@ -105,33 +112,39 @@ always @(*) begin
     sum_n = sum;
     fin_state_n = fin_state;
     flv_r_wr = 0;
-    wipe_the_char = 1;
+    wipe_the_char_1_n = wipe_the_char_1;
+    wipe_the_char_2_n = wipe_the_char_2;
 
-    if(compVal != 0 && histo_index < 256 && histo_index != 26 && fin_state != 1) begin //&& histo_index != 0) begin
+    if(compVal != 0 && histo_index < 256 && fin_state != 1) begin //&& histo_index != 0) begin
         if(val1 > compVal && histo_index < 128) begin
             least2_n = least1;
             charWipe2_n = charWipe1;
             val2_n = val1;
+            wipe_the_char_2_n = wipe_the_char_1;
             least1_n = {1'b0, histo_index[7:0]};
             charWipe1_n = histo_index[7:0];
             val1_n = compVal;
+            wipe_the_char_1_n = 1;
         end else if (val2 > compVal && histo_index < 128) begin
             least2_n = {1'b0, histo_index[7:0]};
             charWipe2_n = histo_index[7:0];
             val2_n = compVal;
+            wipe_the_char_2_n = 1;
         end else if (val1 > compVal && histo_index > 127) begin
             least2_n = least1;
             charWipe2_n = charWipe1;
             val2_n = val1;
+            wipe_the_char_2_n = wipe_the_char_1;
             least1_n = {1'b1, sumCount[7:0]};
             charWipe1_n = '0;
             val1_n = compVal;
-            wipe_the_char = 0;
+            wipe_the_char_1_n = 0;
         end else if (val2 > compVal && histo_index > 127) begin
             least2_n = {1'b1, sumCount[7:0]};
             charWipe2_n = '0;
             val2_n = compVal;
-            wipe_the_char = 0;
+            wipe_the_char_2_n = 0;
+            wipe_the_char_2_n = 0;
         end
     end
 

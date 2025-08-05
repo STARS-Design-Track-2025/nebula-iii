@@ -31,10 +31,7 @@ typedef enum logic [3:0] {
     FINISH = 4,
     INIT = 5,
     SEND = 6,
-    SEND_WAIT = 7,
-    TRACK_GPS = 8,
-    TRACK_GPS2 = 9,
-    TRACK_GPS3 = 10
+    SEND_WAIT = 7
 } state_cb;
 
 logic [8:0] least1, least2;
@@ -54,27 +51,19 @@ logic [127:0] char_path_n;
 logic setup, setup_n;
 logic left_check, left_check_n;
 logic check_right, check_right_n;
-logic [6:0] prev_index, prev_index_n;
-logic [8:0] saved_least1, saved_least1_n, saved_least2, saved_least2_n;
-logic track_check, track_check_n;
-logic relapse, relapse_n;
-logic backed, backed_n;
-logic [8:0] parent, parent_n;
-logic [8:0] left_parent, left_parent_n;
 logic [7:0] char_index_n;
 
 logic [6:0] cb_length, cb_length_n;
 logic [6:0] end_cnt, end_cnt_n;
-logic [6:0] end_track, end_track_n;
 logic end_cond, end_cond_n;
 logic end_check, end_check_n;
+logic [6:0] end_track, end_track_n;
 logic cb_enable, cb_enable_n;
-logic [6:0] bad_path, bad_path_n;
-logic [8:0] bad_parent, bad_parent_n;
-logic go_back, go_back_n;
-logic found_bad, found_bad_n;
-logic reseting, reseting_n;
-logic [8:0] left_parent_hold_n, left_parent_hold;
+
+logic [127:0] temp_path, temp_path_n;
+logic [6:0] i, i_n;
+logic pulse_first, pulse_first_n;
+logic pulse_counter, pulse_counter_n;
 
 always_ff @(posedge clk, posedge rst) begin
   if (rst) begin
@@ -91,27 +80,17 @@ always_ff @(posedge clk, posedge rst) begin
     setup <= 1;
     left_check <= 0;
     check_right <= 0;
-    prev_index <= 0;
-    saved_least1 <= 0;
-    saved_least2 <= 0;
-    track_check <= 0;
-    relapse <= 0;
-    backed <= 0;
-    parent <= 0;
     cb_length <= '0;
     end_cnt <= 127;
-    end_track <= 0;
     end_check <= 0;
     cb_enable <= 0;
     end_cond <= 0;
+    end_track <= '0;
     char_index <= 0;
-    left_parent <= 0;
-    bad_path <= 0;
-    bad_parent <= 0;
-    go_back <= 0;
-    found_bad <= 0;
-    reseting <= 0;
-    left_parent_hold <= '0;
+    temp_path <= 128'b1;
+    i <= 0;
+    pulse_first <= 0;
+    pulse_counter <= 1;
   end
   else if (en_state == 4) begin
     char_path <= char_path_n;
@@ -127,27 +106,16 @@ always_ff @(posedge clk, posedge rst) begin
     setup <= setup_n;
     left_check <= left_check_n;
     check_right <= check_right_n;
-    prev_index <= prev_index_n;
-    saved_least1 <= saved_least1_n;
-    saved_least2 <= saved_least2_n;
-    track_check <= track_check_n;
-    relapse <= relapse_n;
-    backed <= backed_n;
-    parent <= parent_n;
     cb_length <= cb_length_n;
     end_cnt <= end_cnt_n;
-    end_track <= end_track_n;
     end_check <= end_check_n;
     cb_enable <= cb_enable_n;
     end_cond <= end_cond_n;
     char_index <= char_index_n;
-    left_parent <= left_parent_n;
-    bad_path <= bad_path_n;
-    bad_parent <= bad_parent_n;
-    go_back <= go_back_n;
-    found_bad <= found_bad_n;
-    reseting <= reseting_n;
-    left_parent_hold <= left_parent_hold_n;
+    temp_path <= temp_path_n;
+    i <= i_n;
+    pulse_first <= pulse_first_n;
+    pulse_counter <= pulse_counter_n;
   end
 end
 
@@ -173,25 +141,15 @@ always_comb begin
   check_right_n = check_right;
   cb_r_wr = 0;
   left_check_n = left_check;
-  prev_index_n = prev_index;
-  saved_least1_n = saved_least1;
-  saved_least2_n = saved_least2;
-  track_check_n = track_check;
-  relapse_n = relapse;
-  backed_n = backed;
-  parent_n = parent;
-  left_parent_n = left_parent;
   cb_length_n = cb_length;
   end_cnt_n = end_cnt;
   end_track_n = end_track;
   end_check_n = end_check;
   cb_enable_n = cb_enable;
-  bad_path_n = bad_path;
-  bad_parent_n = bad_parent;
-  go_back_n = go_back;
-  found_bad_n = found_bad;
-  reseting_n = reseting;
-  left_parent_hold_n = left_parent_hold;
+  temp_path_n = temp_path;
+  i_n = i;
+  pulse_first_n = pulse_first;
+  pulse_counter_n = pulse_counter;
 
   case (curr_state)
     INIT: begin 
@@ -239,7 +197,6 @@ always_comb begin
           next_index = least1[6:0] * 2; // set next index to get from htree to the sum
           next_wait_cycle = 1;
           cb_length_n = cb_length + 1;
-          left_parent_n = least1;
         end
       end
       else begin
@@ -300,106 +257,68 @@ always_comb begin
       end
     end
     TRACK: begin // after backtrack state when a character was found, use that backtracked path to start from the top of the tree and then retrieve the htree element
-      if (wait_cycle == 0 && !SRAM_enable) begin
-        go_back_n = 0;
-        if(!track_check) begin
-          next_state = state_cb'((track_length >= pos) ? TRACK : RIGHT);
-          next_wait_cycle = 1;
-          if (track_length >= pos) begin // if the h_tree element of the previous node hasn't been reached
-            if (curr_path[track_length - pos] == 1'b0) begin// if the movement in the tree is left
-              next_index = least1[6:0] * 2; // set next index to get from htree to LSE
-              next_pos = pos + 1; // remove one from the tracking length
-            end
-            else if (curr_path[track_length - pos] == 1'b1) begin// if the movement in the tree is right
-              next_index = least2[6:0] * 2; // set next index to get from htree to RSE
-              next_pos = pos + 1; // remove one from the tracking length
-              left_check_n = 1;
-              next_state = RIGHT;
-              //cb_length_n = cb_length + 1;
-            end
+        if (wait_cycle == 0 && (read_complete || write_complete)) begin
+          pulse = 1;
+          if(pulse_first) begin
+            pulse_first_n = 0;
+            i_n = i + 1;
           end
           else begin
-            next_pos = 1; // to account for track length index being one less than actual length
+            if(i < cb_length) begin
+                if(!least1[8]) begin
+                  next_state = LEFT;
+                  check_right_n = 1;
+                end
+                else if(!curr_path[(cb_length) - i] && least1[8]) begin
+                    next_index = least1[6:0] * 2;
+                    next_state = TRACK;
+                end
+                else if(curr_path[(cb_length) - i] && least2[8]) begin
+                    next_index = least2[6:0] * 2;
+                    next_state = TRACK;
+                end
+                i_n = i + 1;
+            end
+            else if(i == cb_length) begin
+                next_path = {1'b0, curr_path[127:1]}; // right shift path to remove last move to "backtrack"
+                cb_length_n = cb_length - 1;
+                //left_check_n = 1;
+                next_state = RIGHT;
+                i_n = 0;
+            end
           end
         end
-        else if (track_check && (read_complete || write_complete)) begin
-          if(backed && read_complete) begin
-            backed_n = 0;
-            if(least1 == 9'b110000000 || least2 == 9'b110000000) begin
-              next_state = FINISH;
-            end
-            if (!least1[8]) begin // || (least1[8] && least1 != left_parent_hold)) begin
-              track_check_n = 0;
-              next_state = LEFT;
-              check_right_n = 1;
-              cb_length_n = cb_length + 1;              
-            end
-            else if(!least2[8] || (least2[8] && least2 != parent)) begin
-              track_check_n = 0;
-              next_state = RIGHT;
-              left_check_n = 1;
-              cb_length_n = cb_length + 1;
-            end
-            // else begin
-            next_index = prev_index;
-            relapse_n = 0;
-            saved_least1_n = least1;
-            saved_least2_n = least2;
-            // end
-          end
-          else if (bad_parent == least1 || least1 == left_parent_hold) begin
-            next_index = least2[6:0] * 2;
-            go_back_n = 1;
-            next_state = TRACK_GPS3;
-            found_bad_n = 0;
-            next_path = {curr_path[126:0], 1'b1};
-            cb_length_n = cb_length + 1;
-            //left_parent_hold_n = bad_parent;
-          end
-          else if(least1 != saved_least1 && least2 != saved_least2) begin //&& least1 != left_parent) begin
-            if(parent != least2 && !found_bad) begin
-              left_parent_hold_n = least1;
-            end
-            if(parent != least2 && !found_bad) begin
-              bad_parent_n = least1;
-            end else if (parent == least2) begin
-              found_bad_n = 1;
-              next_index = max_index;
-              go_back_n = 1;
-            end
-            next_state = TRACK_GPS2;
-          end
-          else if (least1 == saved_least1 && least2 == saved_least2 && relapse) begin
-            next_index = prev_index;
-            next_state = TRACK_GPS3;
-          end else begin
-            next_index = max_index;
-            next_state = TRACK_GPS;
-          end
+        else begin
+            next_wait_cycle = 0;
         end
-      end
-      else begin
-        next_wait_cycle = 0;
-      end
     end
     BACKTRACK: begin // after a char was found and bits were written through the spi (header portion) start to backtrack until you can move right again
       next_wait_cycle = 1;
       // if the top of the tree has been reached and left and right have already been traversed, next state is FINISH
-      next_state = state_cb'(track_length < 7'b1 && curr_path[0] == 1'b1 ? FINISH : (curr_path[0] == 1'b1 ? BACKTRACK : TRACK)); 
-      if (curr_path[0] == 1'b1 && track_length > 0) begin // if last move was right and the number moves is greater than 0 (not at top of tree)
+      //next_state = state_cb'(track_length < 7'b1 && curr_path[0] == 1'b1 ? FINISH : (curr_path[0] == 1'b1 ? BACKTRACK : TRACK)); 
+      if (curr_path[0] == 1'b1 && cb_length > 0) begin // if last move was right and the number moves is greater than 0 (not at top of tree)
         next_sent = 0; // once SEND is done and state is backtrack again, set sent to 0 and remove the last move to reach the top of the tree
         next_path = {1'b0, curr_path[127:1]}; // right shift path to remove last move to "backtrack"
-        next_sent = 0;
-        next_track_length = track_length - 1; // remove one from track length
         cb_length_n = cb_length - 1;
+        next_index = max_index - 2;
+        temp_path_n = curr_path;
+        pulse_first_n = 1;
+        if(next_path[0] && cb_length > 0) begin
+          next_state = BACKTRACK;
+        end else begin
+          next_state = TRACK;
+        end
       end
-      else if (curr_path[0] == 1'b0 && track_length > 0) begin // if not at top and didn't go right but went left
-        next_index = max_index;
+      else if (curr_path[0] == 1'b0 && cb_length > 0) begin // if not at top and didn't go right but went left
+        next_index = max_index - 2;
         next_path = {1'b0, curr_path[127:1]};
-        next_track_length = track_length - 1;
-        cb_length_n = 0;
+        cb_length_n = cb_length - 1;
+        if(!least1[8]) begin
+          left_check_n = 1;
+        end
+        next_state = RIGHT;
       end
-      else if (curr_path[0] == 1'b1 && track_length < 1) begin
+      else if (curr_path[0] == 1'b1 && cb_length  == 0) begin
         next_state = FINISH;
       end
     end
@@ -417,22 +336,17 @@ always_comb begin
             char_index_n = least2[7:0]; // set output character (index) to LSE, NOT to tracking index
             char_found = 1'b1;
             next_state = SEND;
-            saved_least1_n = least1;
-            saved_least2_n = least2;
-            track_check_n = 1;
             if(left_check) begin
               next_path = {curr_path[126:0], 1'b1}; // right shift and add 0 (right) to next path
               char_path_n = next_path;
               left_check_n = 0;
               cb_length_n = cb_length + 1;
-              reseting_n = 1;
             end
           end
         end
         else if (least2[8] == 1'b1 && (read_complete || write_complete)) begin // if RSE is a sum
           pulse = 1;
           next_path = {curr_path[126:0], 1'b1}; // right shift and add 0 (right) to next path
-          parent_n = least2;
           next_index = least2[6:0] * 2; // set next index to get from htree to the sum
           char_path_n = next_path;
           next_num_lefts = 0; // reset lefts counted to only count lefts after going right
@@ -444,27 +358,6 @@ always_comb begin
       else begin
         next_wait_cycle = 0;
       end
-    end
-    TRACK_GPS: begin
-      pulse = 1;
-      next_state = TRACK;
-    end
-    TRACK_GPS2: begin
-      pulse = 1;
-      relapse_n = 1;
-      prev_index_n = curr_index;
-      if(least1[8] && !go_back) begin
-        next_index = least1[6:0] * 2; // set next index to get from htree to the sum
-      end
-      else if (!least1[8] && !go_back) begin
-        next_index = least2[6:0] * 2;
-      end
-      next_state = TRACK;
-    end
-    TRACK_GPS3: begin
-      pulse = 1;
-      next_state = TRACK;
-      backed_n = 1;
     end
     FINISH: begin
       finished = 1; // FIN state sent to (CONTROLLER)

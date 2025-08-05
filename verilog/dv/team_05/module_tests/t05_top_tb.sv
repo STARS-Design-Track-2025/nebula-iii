@@ -118,15 +118,19 @@ module t05_top_tb;
     //     #37000 $finish;
     // end
 
-    logic [4:0] index, index_n;
+    logic [7:0] index, index_n;
     
     logic alt, alt_n;
 
     logic [6:0] in_hold;
 
-    logic [6:0] mem [23:0];
+    //logic [6:0] mem [135:0];
+    // logic [6:0] mem [23:0];
+    logic [6:0] mem [47:0];
+
+
     initial begin
-        $readmemb("test2.mem", mem, 0, 23);
+        $readmemb("test1.mem", mem);
     end
 
     always_ff @(posedge hwclk, posedge reset) begin
@@ -266,7 +270,7 @@ module t05_top_tb;
         // end
         // pulseit (1, 8'h1A);
 
-        #100000 $finish;
+        #930000 $finish;
     end
 
 endmodule

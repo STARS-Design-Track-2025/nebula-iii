@@ -11,7 +11,8 @@ module t05_sram_interface (
     input logic [7:0] charwipe1, charwipe2,
     input logic flv_r_wr,
     input logic pulse_FLV,
-    input logic wipe_the_char,
+    input logic wipe_the_char_1,
+    input logic wipe_the_char_2,
     //htree inputs
     input logic [70:0] new_node,
     input logic [6:0] htreeindex,
@@ -273,13 +274,15 @@ always_comb begin
                     end
                 end
                 1: begin //Determining histogram or htree
-                    if(find_least == 256 && wipe_the_char) begin
+                    if(find_least == 256 && wipe_the_char_1) begin
                         addr = 32'h33001024 + (charwipe1 * 4);
                         data_i = '0;
                         write_counter_FLV_n = write_counter_FLV + 1;
                         wr_en = 1;
                         word_cnt_n = 9;
-                        
+                    end else if (find_least == 256) begin
+                        write_counter_FLV_n = write_counter_FLV + 1;
+                        word_cnt_n = 9;
                     end else if (find_least < 128) begin
                         addr = 32'h33001024 + (find_least * 4);
                         if(!flv_r_wr) begin
@@ -337,10 +340,15 @@ always_comb begin
                     end
                 end
                 5: begin //Finish overwriting histogram state
-                    if(!busy_o) begin
+                    if(!busy_o && wipe_the_char_2) begin
                         addr = 32'h33001024 + (charwipe2 * 4);
                         data_i = '0;
                         wr_en = 1;
+                        write_counter_FLV_n = write_counter_FLV + 1;
+                        nextChar_FLV = 1;
+                        word_cnt_n = 11; 
+                    end
+                    else if (!busy_o) begin
                         write_counter_FLV_n = write_counter_FLV + 1;
                         nextChar_FLV = 1;
                         word_cnt_n = 11; 
@@ -383,7 +391,7 @@ always_comb begin
                     if(HT_state == 3 && !busy_o && counter_HTREE == 4 && least1_HTREE[8] && least2_HTREE[8] && least1_HTREE != 384 && least2_HTREE != 384) begin
                         HT_over_complete = 1;
                     end
-                    else if (((htree_write == '0 && counter_HTREE == 2 && !busy_o) || ((HT_state == 5 || HT_state == 3) && counter_HTREE == 4 && !busy_o)) && !HT_over_complete) begin
+                    else if ((/*(htree_write == '0 && counter_HTREE == 2 && !busy_o) || */((HT_state == 5 || HT_state == 3) && counter_HTREE == 4 && !busy_o)) && !HT_over_complete) begin
                         HTREE_complete = 1;
                         counter_HTREE_n = '0;
                     end

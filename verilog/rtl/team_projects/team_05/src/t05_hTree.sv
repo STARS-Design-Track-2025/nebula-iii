@@ -303,17 +303,17 @@ end
                     end
                 endcase
             end
-        end else begin
-            if(HT_en == 0) begin
-                // When HT_en is low, reset to NEWNODE for next operation
-                next_state = NEWNODE;
-                // Don't clear tree, null1, null2 - preserve the results
-                nullSumIndex_reg = 7'b0;
-                HT_fin = 1'b0;
-                WorR = 1'b0;
-                node = 71'b0;                           // no update, keep previous value
-                nullsum_delay_counter = 3'b0;           // Reset delay counter when disabled
-            end
-        end
+        end// end else begin
+        //     if(HT_en == 0) begin
+        //         // When HT_en is low, reset to NEWNODE for next operation
+        //         next_state = NEWNODE;
+        //         // Don't clear tree, null1, null2 - preserve the results
+        //         nullSumIndex_reg = 7'b0;
+        //         HT_fin = 1'b0;
+        //         WorR = 1'b0;
+        //         node = 71'b0;                           // no update, keep previous value
+        //         nullsum_delay_counter = 3'b0;           // Reset delay counter when disabled
+        //     end
+        // end
     end
 endmodule

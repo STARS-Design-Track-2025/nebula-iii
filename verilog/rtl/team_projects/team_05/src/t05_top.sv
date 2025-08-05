@@ -157,7 +157,7 @@ module t05_top (
   logic pulse_FLV;
   logic nextChar_FLV;
   logic FLV_done;
-  logic wipe_the_char;
+  logic wipe_the_char_1, wipe_the_char_2;
   logic write_HT_fin;
   logic pulse_HTREE;
   logic HT_complete;
@@ -186,7 +186,8 @@ module t05_top (
     .flv_r_wr(flv_r_wr),
     .pulse_FLV(pulse_FLV),
     .FLV_done(FLV_done),
-    .wipe_the_char(wipe_the_char),
+    .wipe_the_char_1(wipe_the_char_1),
+    .wipe_the_char_2(wipe_the_char_2),
     //HTREE INPUTS
     .new_node(node_reg),
     .htreeindex(nullSumIndex),
@@ -342,7 +343,8 @@ module t05_top (
     .nextChar(nextChar_FLV),
     .word_cnt(word_cnt),
     .FLV_done(FLV_done),
-    .wipe_the_char(wipe_the_char),
+    .wipe_the_char_1(wipe_the_char_1),
+    .wipe_the_char_2(wipe_the_char_2),
     .HTREE_complete(HT_complete),
     .HT_fin(HT_fin_reg)
     );
