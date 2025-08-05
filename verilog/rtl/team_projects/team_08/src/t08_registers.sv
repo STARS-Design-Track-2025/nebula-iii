@@ -16,7 +16,6 @@ module t08_registers(
 
 
     logic [31:0] data_in;
-    //logic [31:0] data_out_r1_n, data_out_r2_n;
 
     logic [31:0] [31:0] data;
     logic [31:0] [31:0] data_n;
@@ -26,17 +25,7 @@ module t08_registers(
 
     always_ff @ (/*posedge clk, */negedge clk, negedge nRst) begin
         if (!nRst) begin
-            
-            //data_out_r1 <= 0;
-            //data_out_r2 <= 0;
             data <= {1024'b0};
-
-        // end else if (clk == 1) begin
-
-        //     data_out_r1 <= data_out_r1_n;
-        //     data_out_r2 <= data_out_r2_n;
-
-        // 
         end else begin
 
             data <= data_n;

@@ -3,16 +3,15 @@ The top level module for the CPU (brings the parts of the CPU together)
 */
 
 module t08_CPU (
-    input logic clk, nRst,                  //Clock and active-low reset. 
-    input logic [31:0] data_in,             //memory to memory handler: data in
-    input logic done, busy, gdone,                //from mmio, if its busy, if data from i2c is done
-    output logic [31:0] data_out,           //memory handler to mmio: data outputted 
-    output logic [31:0] addressnew,        //memory handler to mmio: address in memory
+    input logic clk, nRst,                                      //Clock and active-low reset. 
+    input logic [31:0] data_in,                                 //memory to memory handler: data in
+    input logic done, busy, gdone,                              //from mmio, if its busy, if data from i2c is done
+    output logic [31:0] data_out,                               //memory handler to mmio: data outputted 
+    output logic [31:0] addressnew,                             //memory handler to mmio: address in memory
     output logic read_out, write_out, wb_read, wb_write ,       //memory handler to mmio: read and write enable
-    output logic [31:0] program_counter
 );
 
-    //logic [31:0] program_counter;                               //Program counter
+    logic [31:0] program_counter;                               //Program counter
     logic [31:0] return_address;                                //fetch to registers: return address to be stored 
     logic [31:0] instruction;                                   //instruction to cu
 

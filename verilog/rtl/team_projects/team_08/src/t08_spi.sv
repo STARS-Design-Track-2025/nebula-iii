@@ -1,19 +1,13 @@
 module t08_spi(
-//input logic [31:0] parameters,
-//TODO redo for 2 32 bits inputs
-//input logic [7:0] command,
 input logic [31:0] inputs,
-// input logic [31:0] commands
 input logic enable_command, enable_parameter, clk, nrst, readwrite, 
-//input logic [3:0] counter,
 output logic [7:0] outputs,
 output logic wrx, rdx, csx, dcx, busy
 );
 typedef enum logic[2:0] {
     GETCOMMAND, GETPAR, TRANSITION
 } registering;
-//assign command = [7:0]commands;
-//assign counter = [11:8] commands;
+
 logic [31:0] paroutput, nextparoutput, parameters, nextparameters;
 logic [7:0] currentout, nextout, command, nextcommand;
 logic [2:0] state, nextstate; 
@@ -60,13 +54,6 @@ always_ff@(posedge clk, negedge nrst) begin
         timem <= nexttimem;
         control <= nextcontrol;
     end
-    // else begin
-    //     csx <= 1;
-    //     busy <= 0;
-    //     count <= 0;
-    //     state <= 0;
-    //     //percount
-    // end
 end
 
 always_comb begin
@@ -152,11 +139,9 @@ always_comb begin
                     nextdcx = 0;
                     nextparoutput = parameters;
                     nextout = command; //getting the output ready
-                    //if (readwrite) nextwrx = 0; 
                 end
 
                 1: begin //clock
-                   // nextdcx = 1;
                     if (count >= percount) begin 
                            nextstate = 3; 
                            nextbusy = 1;
@@ -167,39 +152,21 @@ always_comb begin
                             end
                             default:;
                         endcase
-                        //         nextcontrol = 1;
-                        //         nexttimem = timem + 1;
-                        //         nextbusy = 1;
-                        //         nextwrx = 0;
-                        //         if (timem == delay) begin
-                        //             nexttimem = 0;
-                        //             nextstate = 3;
-                        //             nextcontrol = 0;
-                        //         end
-                        //         else nextstate = 1;
-                        //     end
-                        // endcase
-
                       end
                     else begin nextstate = 2; end
                    nextwrx = 1;
-                   // if ((readwrite)) nextwrx = 1;
-                   // else if (!readwrite) rdx = 1;
-                   // nextout = paroutput[31:24];
-                    
                 end
 
 
                 2: begin //param
                 //reading parameters from left to right. 
-                    
                     nextparoutput = {paroutput[23:0], 8'b0};
                     nextout = paroutput[31:24];                    
                     nextcount = count + 1;
                     nextdcx = 1;
                     nextcsx = 0;
                     nextstate = 4;
-                    //if (readwrite) nextwrx = 0; 
+
                     
                 end
 
@@ -216,32 +183,9 @@ always_comb begin
 
                 4: begin //getting everyting together 
                     nextstate = 1; //go to clock
-                    //nextbusy = 1;
                     nextcsx = 0;
                 end
                    
-                //    case(command)
-                //     8'h01, 8'h10, 8'h11: begin
-                    //     nextcontrol = 1;
-                    //     nexttimem = timem + 1;
-
-
-                    //     if (count >= percount) begin 
-                    //         nextstate = 3; 
-                    //     //    nextbusy = 0;
-                    //         nextcsx = 1;
-                    //         if (timem == delay) begin
-                    //             nexttimem = 0;
-                    //             nextstate = 1;
-                    //             nextcontrol = 0;
-                    //             nextcsx = 0;
-                    //         end
-                    //     else nextstate = 4;
-                    //     end
-                    // end
-                //     default :;
-                //     endcase    
-               
                 5: begin
                         nextcontrol = 1;
                         nexttimem = timem + 1;
@@ -249,8 +193,6 @@ always_comb begin
                         nextcsx = 1;
                          if (count >= percount) begin 
                              nextstate = 3; 
-                        // //    nextbusy = 0;
-                        //     nextcsx = 1;
                             if (timem == delay) begin
                                 nexttimem = 0;
                                 nextstate = 3;
@@ -262,10 +204,7 @@ always_comb begin
                         else begin nextstate = 2; end
                     end
 
-
                 default: begin 
-                    //nextstate = state;
-                   // nextdcx = dcx;
                     nextout = 0;
                 end
             endcase
