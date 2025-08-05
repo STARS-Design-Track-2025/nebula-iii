@@ -42,10 +42,6 @@ module team_08_tb;
 		clock = 0;
 	end
 
-	// NOTE: The external clock is 10 MHz, but the clock for the user 
-	// project will be configured to 40 MHz using the digital PLL.
-	// Hence, your design will be clocked at 40 MHz.
-
 	// STUDENTS: This block here is important, don't erase it! However, don't worry about trying to understand it
 	`ifdef ENABLE_SDF
 		initial begin
@@ -164,12 +160,13 @@ module team_08_tb;
 	// Main Test Bench Process
 	initial begin
 
-		// *******************************
-		// WRITE TESTBENCH HERE!!
-		// 
-		// Wait for design to be enabled
-		// before doing any checks
-		// *******************************
+		touchscreen_interrupt = 1;
+
+        repeat (10000) @ (negedge clk);
+
+        touchscreen_interrupt = 0; #4; @(negedge clk); touchscreen_interrupt = 1;
+
+        #20000000
 		
 		$display("%c[1;32m",27);
 		`ifdef GL

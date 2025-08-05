@@ -50,8 +50,11 @@ module team_08 (
 
 
     assign gpio_oeb[33:15] = '1;
-    assign gpio_oeb[14:2] = '0;
+    assign gpio_oeb[14:3] = '0;
     assign gpio_oeb[0] = 1;
+
+    // Setting unused outputs to 0 (just cause)
+    assign gpio_out[33:15] = '0;
 
     /*
     List of pins used: 
@@ -69,12 +72,12 @@ module team_08 (
     */
 
     t08_top top(
-        .clk(clk), .nRst(nrst), .en(en),
+        .clk(clk), .nRst(nrst && en),
         .touchscreen_interrupt(gpio_in[0]), 
         .sda_in(gpio_in[1]), .sda_out(gpio_out[1]), .sda_oeb(gpio_oeb[1]), 
         .scl_in(gpio_in[2]), .scl_out(gpio_out[2]), .scl_oeb(gpio_oeb[2]),
 
-        .spi_outputs(gpio_out[3:10]), 
+        .spi_outputs(gpio_out[10:3]), 
         .spi_wrx(gpio_out[11]), .spi_rdx(gpio_out[12]), .spi_csx(gpio_out[13]), .spi_dcx(gpio_out[14]),
 
         .wb_dat_i(DAT_I), .wb_ack_i(ACK_I), 

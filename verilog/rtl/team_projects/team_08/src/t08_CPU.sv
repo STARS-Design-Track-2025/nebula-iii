@@ -8,7 +8,7 @@ module t08_CPU (
     input logic done, busy, gdone,                              //from mmio, if its busy, if data from i2c is done
     output logic [31:0] data_out,                               //memory handler to mmio: data outputted 
     output logic [31:0] addressnew,                             //memory handler to mmio: address in memory
-    output logic read_out, write_out, wb_read, wb_write ,       //memory handler to mmio: read and write enable
+    output logic read_out, write_out, wb_read, wb_write        //memory handler to mmio: read and write enable
 );
 
     logic [31:0] program_counter;                               //Program counter

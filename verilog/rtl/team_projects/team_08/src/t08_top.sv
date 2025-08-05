@@ -1,6 +1,6 @@
 module t08_top(
     input logic clk, nRst,                              //Clock and active-low reset
-    input logic en,                                     //Active high enable (NOT IMPLEMENTED YET)
+    //input logic en,                                     //Active high enable (NOT IMPLEMENTED YET)
 
     input logic touchscreen_interrupt,                  //I2C inputs and outputs with touchscreen
 

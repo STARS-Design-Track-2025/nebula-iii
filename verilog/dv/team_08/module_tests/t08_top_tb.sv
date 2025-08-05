@@ -20,7 +20,7 @@ module t08_top_tb;
     logic wb_we_o, wb_stb_o, wb_cyc_o;
 
     t08_top top(
-        .clk(clk), .nRst(nRst), .en(1'b1),
+        .clk(clk), .nRst(nRst),
 
         .touchscreen_interrupt(touchscreen_interrupt), 
         .I2C_sda_in(1'b1), .I2C_sda_out(), .I2C_sda_oeb(),
