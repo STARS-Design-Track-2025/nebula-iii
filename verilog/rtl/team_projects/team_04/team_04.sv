@@ -48,9 +48,19 @@ module team_04 (
     // You can also have input registers controlled by the Caravel Harness's on chip processor
 );
 
-    assign gpio_out = '0;
-    assign gpio_oeb = '0;
+    // === Keypad ===
+    logic [3:0] row;
+    logic [3:0] column; // good boy (can I have this column be named the same as an internal signal)
 
+    // === Display ===
+    logic screenCsx;
+    logic screenDcx;
+    logic screenWrx;
+    logic [7:0] screenData;
+    logic [7:0] pc;
+    logic [1:0] acks;
+
+    // === Internal Wires ===
     logic [31:0] instruction;
     logic [31:0] memload;
   
@@ -63,7 +73,6 @@ module team_04 (
     logic JAL_O;
 
     logic pulse_e;
-    assign pc = final_address[7:0];
     logic [4:0] button;
     logic [1:0] app;
     logic rising;
@@ -73,23 +82,48 @@ module team_04 (
     logic WEN;
     logic d_ack_display;
     logic [9:0] cnt, ncnt;
-  assign acks = {d_ack, d_ack_display};
 
-  always_ff @(posedge clk, posedge rst) begin
-    if(rst) begin
-      cnt <= '0;
-    end else begin
-      cnt <= ncnt;
-    end
-  end
+    assign pc = final_address[7:0];
+    assign acks = {d_ack, d_ack_display};
 
-  always_comb begin
-    if(cnt == 1000) begin
-      ncnt = 0;
-    end else begin
-      ncnt = cnt + 1;
+    // === GPIO Pin Assignments ===
+    assign gpio_oeb = 34'b1111000011111111111111111111111111;
+
+    assign column[0] = gpio_out[01];
+    assign column[1] = gpio_out[02];
+    assign column[2] = gpio_out[03];
+    assign column[3] = gpio_out[04];
+    assign row[0] = gpio_in[05];
+    assign row[1] = gpio_in[06];
+    assign row[2] = gpio_in[07];
+    assign row[3] = gpio_in[08];
+    assign screenCsx = gpio_out[09];
+    assign screenDcx = gpio_out[10];
+    assign screenWrx = gpio_out[11];
+    assign screenData[0] = gpio_out[12];
+    assign screenData[1] = gpio_out[13];
+    assign screenData[2] = gpio_out[14];
+    assign screenData[3] = gpio_out[15];
+    assign screenData[4] = gpio_out[16];
+    assign screenData[5] = gpio_out[17];
+    assign screenData[6] = gpio_out[18];
+    assign screenData[7] = gpio_out[19];
+
+    always_ff @(posedge clk, posedge rst) begin
+        if(rst) begin
+        cnt <= '0;
+        end else begin
+        cnt <= ncnt;
+        end
     end
-  end
+
+    always_comb begin
+        if(cnt == 1000) begin
+        ncnt = 0;
+        end else begin
+        ncnt = cnt + 1;
+        end
+    end
 
     // === Instantiate Datapath ===
     t04_datapath datapath (

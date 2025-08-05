@@ -2,22 +2,20 @@ module t04_top(
     input  logic clk,
     input  logic rst,
 
-    
-    
-);
+    // === Keypad ===
+    input  logic [3:0] row,
+    output logic [3:0] column, // good boy (can I have this column be named the same as an internal signal)
+    //output logic [4:0] button, // this is temporary for testing
 
     // // === Display ===
-    logic screenCsx,
-    logic screenDcx,
-    logic screenWrx,
-    logic [7:0] screenData,
-    logic checkX, checkY, checkC,
-    logic [7:0] pc,
-    logic [1:0] acks
-
-    // === Keypad ===
-    logic [3:0] row,
-    logic [3:0] column, // good boy (can I have this column be named the same as an internal signal)
+    output  logic screenCsx,
+    output  logic screenDcx,
+    output  logic screenWrx,
+    output  logic [7:0] screenData,
+    output  logic checkX, checkY, checkC,
+    output  logic [7:0] pc,
+    output  logic [1:0] acks
+);
 
     // === Internal wires ===
     logic [31:0] instruction;
@@ -33,7 +31,7 @@ module t04_top(
 
     logic pulse_e;
     assign pc = final_address[7:0];
-    logic [4:0] button;
+    //logic [4:0] button;
     logic [1:0] app;
     logic rising;
 
