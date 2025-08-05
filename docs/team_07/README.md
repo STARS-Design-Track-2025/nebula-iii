@@ -4,7 +4,7 @@
 * **Peer Mentor:** Andy Hu
 * Rose Freedman
 * Tylar Sparks
-* Kameswari Mantha]
+* Kameswari Mantha
 * Anna Dalton
 
 
