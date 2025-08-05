@@ -1,11 +1,14 @@
+/* communication of CPU with the display
+gets command and parameters ands stores it
+proceeds to send everything by 8 bits, controlling an wrx signal of the display */
 module t08_spi(
-input logic [31:0] inputs,
+input logic [31:0] inputs, //inputs from mmio, contains either command or parameters
 input logic enable_command, enable_parameter, clk, nrst, readwrite, 
-output logic [7:0] outputs,
-output logic wrx, rdx, csx, dcx, busy
+output logic [7:0] outputs, //outputs of 8 bits each
+output logic wrx, rdx, csx, dcx, busy //spi inputs
 );
 typedef enum logic[2:0] {
-    GETCOMMAND, GETPAR, TRANSITION
+    GETCOMMAND, GETPAR, TRANSITION //waiting for cpu to send all data
 } registering;
 
 logic [31:0] paroutput, nextparoutput, parameters, nextparameters;
@@ -105,7 +108,7 @@ always_comb begin
             end
         end
 
-        TRANSITION: begin 
+        TRANSITION: begin //starts sending data to display after receiving evrything needed
             nextwrx = 0;
             nextbusy = 1;
             nextout = currentout;
@@ -118,7 +121,7 @@ always_comb begin
                 0: begin //command
 
                     
-                    case (command) 
+                    case (command) //some essential commands
                         8'b00101010: begin nextpercount = 4; end //CASET, SC2, SC1, EC2, EC1 
                         8'b00101011: begin nextpercount = 4; end //PASET SP2 SP1 EP2 EP1
                         8'b00000001: begin nextpercount = 0; end //software reset, 120 msec delay
@@ -186,7 +189,7 @@ always_comb begin
                     nextcsx = 0;
                 end
                    
-                5: begin
+                5: begin //waiting pause period for setup commands
                         nextcontrol = 1;
                         nexttimem = timem + 1;
 

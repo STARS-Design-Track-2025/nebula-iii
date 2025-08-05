@@ -36,11 +36,11 @@ module t08_CPU (
    
 
     t08_fetch fetch(
-        .imm_address(immediate), 
+        .imm_address(immediate), //immediate value
         .clk(clk), .nrst(nRst), 
-        .jump(jump), .branch(branch), 
+        .jump(jump), .branch(branch),  //jump or branch operation
         .program_counter(program_counter), 
-        .ret_address(return_address),
+        .ret_address(return_address), //stores return address
         .counter_on(counter_on)
     );
 
@@ -73,17 +73,17 @@ module t08_CPU (
     );
 
     t08_handler handler(
-        .branch(branch),
-        .fromregister(reg_out_2), .frommem(data_in), 
-        .mem_address(alu_data_out), 
+        .branch(branch), //branching operation
+        .fromregister(reg_out_2), .frommem(data_in), //getting data  
+        .mem_address(alu_data_out),  //address for memory
         .counter(program_counter),
-        .write(mem_en_write), .read(mem_en_read), 
+        .write(mem_en_write), .read(mem_en_read), //write/read op
         .clk(clk), .nrst(nRst), 
-        .busy(busy), .done(done), .gdone(gdone), .counter_on(counter_on),
+        .busy(busy), .done(done), .gdone(gdone), .counter_on(counter_on), //busy signals
         .func3(func3), 
-        .toreg(mem_to_reg), .tomem(data_out), 
+        .toreg(mem_to_reg), .tomem(data_out), //sending data
         .addressnew(addressnew), 
-        .instruction(instruction),
+        .instruction(instruction), //sending inst
         .writeout(write_out), .readout(read_out), .wb_read(wb_read), .wb_write(wb_write)
     );
 
