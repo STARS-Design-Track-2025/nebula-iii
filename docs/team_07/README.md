@@ -63,6 +63,7 @@ This project implements a custom 32-bit RISC-V CPU designed to process stock val
 The system integrates both integer and floating-point computation: integer arithmetic handles control logic, address calculation, and screen positioning, while RV32F single-precision floating-point operations enable accurate comparison and scaling of stock values. Communication with the display is accomplished by memory-mapped I/O, where specific register addresses are written to in order to issue drawing commands to the RA8875.
 
 Testing Procedure:
+
 To verify system behavior, fixed-point stock value data must be preloaded into SRAM starting at address 0x0421 (decimal 1057) and continuing up to 0x0700 (decimal 1792). The final value in the data-set must be 0x0E0F0E0F, which signals to the CPU that all data has been read. When the program is executed, the CPU reads and processes each value, rendering a corresponding 3×3 pixel block on the TFT display. Proper functionality is confirmed by verifying that each block appears in the correct location and is color-coded according to the value’s relationship to the previously processed values. The output should display a continuous, color-coded timeline of the dataset.
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_07).
