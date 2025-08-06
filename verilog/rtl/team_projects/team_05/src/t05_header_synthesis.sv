@@ -3,15 +3,15 @@ module t05_header_synthesis (
     input logic rst,
     input logic [7:0] char_index,
     input logic char_found,
-    input logic [127:0] curr_path,
+    input logic curr_path, /*[127:0]*/ 
     input logic [6:0] track_length,
     input logic state_3,
     input logic left, // if the char found is a left char
     input logic [7:0] num_lefts, // num of lefts from htree
     output logic [8:0] header,
     output logic enable,
-    output logic bit1,
-    output logic write_finish
+    output logic bit1
+    // output logic write_finish
 );
 logic char_added;
 logic [8:0] next_header;
@@ -24,7 +24,7 @@ logic [7:0] next_count;
 // logic [8:0] next_path_count;
 logic next_bit1;
 logic next_char_added;
-logic next_write_finish;
+// logic next_write_finish;
 logic start;
 logic next_write_zeroes;
 logic write_zeroes;
@@ -44,7 +44,7 @@ always_ff @(posedge clk, posedge rst) begin
       count <= 0;
       bit1 <= 0;
       char_added <= 0;
-      write_finish <= 0;
+      // write_finish <= 0;
       write_zeroes <= 0;
       start <= 0;
       // zero_sent <= 0;
@@ -59,7 +59,7 @@ always_ff @(posedge clk, posedge rst) begin
       count <= next_count;
       bit1 <= next_bit1;
       char_added <= next_char_added;
-      write_finish <= next_write_finish;
+      // write_finish <= next_write_finish;
       write_zeroes <= next_write_zeroes;
       start <= next_start;
       // zero_sent <= next_zero_sent; 
@@ -76,7 +76,7 @@ always_comb begin
     next_count = count;
     next_bit1 = bit1;
     next_char_added = char_added;
-    next_write_finish = write_finish;
+    // next_write_finish = write_finish;
     next_write_zeroes = write_zeroes;
     next_start = start;
     next_write_char_path = write_char_path;
@@ -90,18 +90,18 @@ always_comb begin
       next_char_added = 1;
       next_enable = 0;
       next_start = 1;
-      next_write_finish = 0;
+      // next_write_finish = 0;
       next_write_char_path = 1;
     end
-    if ((state_3 && !char_added && !char_found && curr_path[0] == 1 && track_length > 0)) begin // send one zero for each backtrack (not while char is being added)
+    if ((state_3 && !char_added && !char_found && curr_path == 1 && track_length > 0)) begin // send one zero for each backtrack (not while char is being added)
       next_write_zeroes = 1;
       next_enable = 1;
-      next_write_finish = 0;
+      // next_write_finish = 0;
       next_bit1 = 0;
       next_zeroes = zeroes + 1;
     end
     else if (write_zeroes) begin // reset variables when state is no longer backtrack
-      next_write_finish = 1;
+      // next_write_finish = 1;
       next_write_zeroes = 0;
       next_enable = 0;
       next_zeroes = 0;
@@ -125,7 +125,7 @@ always_comb begin
             else begin // once all bits are sent, reset all intermediate variables and set write_finish to 1
                 next_count = 0;
                 next_enable = 0;
-                next_write_finish = 1;
+                // next_write_finish = 1;
                 next_bit1 = 0;
                 next_char_added = 0;
                 // next_zero_sent = 0;
@@ -133,7 +133,7 @@ always_comb begin
               	next_write_char_path = 0;
               if (num_lefts != 0 && left) begin
                   next_write_num_lefts = 1;
-                  next_write_finish = 0;
+                  // next_write_finish = 0;
                 end
             end
         end
@@ -159,7 +159,7 @@ always_comb begin
       next_enable = 0;
       next_bit1 = 0;
       next_write_num_lefts = 0;
-      next_write_finish = 1;
+      // next_write_finish = 1;
       // next_path_count = 0;
     end
   end

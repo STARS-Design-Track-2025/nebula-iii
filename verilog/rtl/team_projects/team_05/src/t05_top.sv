@@ -36,7 +36,7 @@ module t05_top (
   logic [8:0] least1_FLV, least2_FLV;
   logic [63:0] sum;
   logic [5:0] op_fin;
-  logic finished_signal;
+  // logic finished_signal;
   logic [3:0] en_state;
   logic [1:0] wr;
   logic readEn;
@@ -233,12 +233,12 @@ module t05_top (
     .CB_write_complete(CB_write_complete),
     //TLN OUTPUTS
     .path(path),
-    .TRN_complete(TRN_sram_complete),
+    .TRN_complete(TRN_sram_complete)
     //Controller Output
-    .ctrl_done(ctrl_state) //output going to the controller to let it kow which module hase finished reading/writing
+    // .ctrl_done(ctrl_state) //output going to the controller to let it kow which module hase finished reading/writing
   );
 
-  logic [5:0] ctrl_state;
+  // logic [5:0] ctrl_state;
   //logic [3:0] in_state;
   logic [31:0] hist_data_o;
 
@@ -247,10 +247,10 @@ module t05_top (
   t05_controller controller (
     .clk(hwclk),
     .rst(reset), 
-    .cont_en(1),  // // TODO: Seems like this is not used anywhere inside. Set to 1.
-    .restart_en('0), 
+    // .cont_en(1),  // // TODO: Seems like this is not used anywhere inside. Set to 1.
+    // .restart_en('0), 
+    // .op_fin(ctrl_state), 
     .finState(fin_State), 
-    .op_fin(ctrl_state), 
     .fin_idle(fin_state_idle),
     .fin_HG(fin_state_HG),
     .fin_FLV(fin_state_FLV),
@@ -259,8 +259,8 @@ module t05_top (
     .fin_CBS(fin_state_CB),
     .fin_TRN(fin_state_TL),
     .fin_SPI(fin_state_SPI),
-    .state_reg(en_state), 
-    .finished_signal(finished_signal)
+    .state_reg(en_state)
+    // .finished_signal(finished_signal)
     );
 
     logic [7:0] out;
@@ -378,7 +378,7 @@ module t05_top (
     .rst(reset),
     .max_index(max_index), 
     .h_element(h_element), 
-    .write_finish(),  // TODO: This doesn't do anything in t05_cb_synthesis bruh
+    // .write_finish(),  // TODO: This doesn't do anything in t05_cb_synthesis bruh
     .en_state(en_state), 
     .char_found(char_found),
     .char_path(char_path), 
@@ -398,21 +398,21 @@ module t05_top (
     );
 
   // TODO: Had to uncomment this because it's cooked
-  // t05_header_synthesis header_synthesis (
-  //   .clk(hwclk), 
-  //   .rst(reset), 
-  //   .char_index(char_index), 
-  //   .char_found(char_found), 
-  //   .curr_path(curr_path),
-  //   .track_length(track_length),
-  //   .state_3(state_3),
-  //   .left(left),
-  //   .num_lefts(num_lefts),
-  //   .header(header),
-  //   .enable(writeEn_HS), 
-  //   .bit1(writeBit_HS),
-  //   .write_finish(write_finish)
-  //   );
+  t05_header_synthesis header_synthesis (
+    .clk(hwclk), 
+    .rst(reset), 
+    .char_index(char_index), 
+    .char_found(char_found), 
+    .curr_path(curr_path[0]),
+    .track_length(track_length),
+    .state_3(state_3),
+    .left(left),
+    .num_lefts(num_lefts),
+    .header(header),
+    .enable(writeEn_HS), 
+    .bit1(writeBit_HS)
+    // .write_finish(write_finish)
+    );
 
   t05_translation translation (
     .clk(hwclk), 

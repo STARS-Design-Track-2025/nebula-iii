@@ -65,9 +65,9 @@ module t05_sram_interface (
     output logic CB_write_complete,
     //translation outputs
     output logic [127:0] path,
-    output logic TRN_complete,
+    output logic TRN_complete
     //controller output
-    output logic [5:0] ctrl_done
+    // output logic [5:0] ctrl_done
 );
 
     logic nextChar_n;

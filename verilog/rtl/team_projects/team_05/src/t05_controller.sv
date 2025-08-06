@@ -1,12 +1,12 @@
 `default_nettype none
 
 module t05_controller (
- input logic clk, rst, cont_en,restart_en,
+ input logic clk, rst, /*cont_en, restart_en,*/
  input logic [7:0] finState,
- input logic [5:0] op_fin, // assumed to be registered - from SRAM
+//  input logic [5:0] op_fin, // assumed to be registered - from SRAM
  input logic fin_idle, fin_HG, fin_FLV, fin_HT, fin_FINISHED, fin_CBS, fin_TRN, fin_SPI,
- output logic [3:0] state_reg,
- output logic finished_signal
+ output logic [3:0] state_reg
+//  output logic finished_signal
 );
 
     typedef enum logic [3:0] {
@@ -31,18 +31,17 @@ module t05_controller (
         SPI_FIN=        8'b11101111
     } fin_State_t;
     
-    typedef enum logic [5:0] {
-        IDLE_S = 0,
-        HIST_S = 1,
-        FLV_S = 2,
-        HTREE_S = 3,
-        CBS_S = 4,
-        TRN_S = 5,
-        SPI_S = 6
-    } op_fin_t;
+    // typedef enum logic [5:0] {
+    //     IDLE_S = 0,
+    //     HIST_S = 1,
+    //     FLV_S = 2,
+    //     HTREE_S = 3,
+    //     CBS_S = 4,
+    //     TRN_S = 5,
+    //     SPI_S = 6
+    // } op_fin_t;
 
-    logic finished;
-    logic en_reg;
+    // logic finished;
     logic [7:0] fin_reg;
     logic [7:0] finState_next;// signal modules send when they are done
     state_t next_state;
@@ -52,24 +51,18 @@ module t05_controller (
     always_ff @(posedge clk, posedge rst) begin
         if (rst) begin
             state_reg <= IDLE;
-            en_reg <= 1'b0;
             fin_reg <= '0;
-            finished_signal <= 1'b0;
+            // finished_signal <= 1'b0;
         end else begin
             // Always update state machine - not conditional on cont_en
             fin_reg <= finState;
             state_reg <= next_state;
-            finished_signal <= finished;
-            
-            // Track enable signal
-            if (cont_en) begin
-                en_reg <= 1'b1;
-            end
+            // finished_signal <= finished;
         end
     end
    
     always_comb begin
-        finished = finished_signal;
+        // finished = finished_signal;
         
             //finState_next = fin_reg;
             case (fin_reg)
