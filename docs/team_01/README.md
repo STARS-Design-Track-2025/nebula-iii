@@ -93,4 +93,12 @@ VGA:
 
 <img width="855" height="420" alt="VGA" src="https://github.com/user-attachments/assets/02f6d256-4f8f-4f1c-8a4d-3efcdd583173" />
 
+Line Clear & LFSR: 
+
+<img width="1176" height="701" alt="BlockGenandLFSR drawio" src="https://github.com/user-attachments/assets/0d5e3a18-592c-4aa7-a9f1-0d752a523c1c" />
+
+Block Positioning & Movement:
+
+<img width="1200" height="699" alt="BlockMovement" src="https://github.com/user-attachments/assets/757949a9-4c70-4f40-a942-207ad8baea39" />
+
 
