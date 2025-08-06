@@ -16,6 +16,8 @@ This document will go over button layouts, features/hardware, and general gamepl
 Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
 The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
 
+Although we used the ECP5 FPGA for the 2nd half of this project, the layout pins will be in the form of our original ICE40 FPGA. 
+
 * **Pin 00 [00]** - Input or Output? - Pin Function?
 * **Pin 01 [--]** - NOT ALLOWED
 * **Pin 02 [--]** - NOT ALLOWED
