@@ -4,8 +4,8 @@ module t05_top (
     input logic hwclk, reset,
 
     //HISTOGRAM
-    // input logic read_in_pulse,
-    // input logic [6:0] in,
+    input logic read_in_pulse,
+    input logic [6:0] in,
     // input logic [31:0] sram_in,
     // output logic [31:0] sram_out,
     // output logic [7:0] hist_addr,
@@ -36,14 +36,11 @@ module t05_top (
   logic [8:0] least1_FLV, least2_FLV;
   logic [63:0] sum;
   logic [5:0] op_fin;
-  logic cont_en;
   logic finished_signal;
   logic [3:0] en_state;
   logic [1:0] wr;
   logic readEn;
   logic spi_confirm_out;
-  logic read_in_pulse;
-  logic [6:0] in;
   logic [31:0] sram_in;
   logic [31:0] sram_out;
   logic [7:0] hist_addr;
@@ -250,7 +247,7 @@ module t05_top (
   t05_controller controller (
     .clk(hwclk),
     .rst(reset), 
-    .cont_en(cont_en),
+    .cont_en(1),  // // TODO: Seems like this is not used anywhere inside. Set to 1.
     .restart_en('0), 
     .finState(fin_State), 
     .op_fin(ctrl_state), 

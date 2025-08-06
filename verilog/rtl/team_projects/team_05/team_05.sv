@@ -51,9 +51,9 @@ module team_05 (
     assign {gpio_out[33:2], gpio_out[0]} = '0;
 
     // Se OEBs
-    assign gpio_oeb[2] = '1;  //Inputs
+    assign gpio_oeb[10:2] = '1;  //Inputs
     assign gpio_oeb[1] = '0;  //Outputs
-    assign {gpio_oeb[33:3], gpio_oeb[0]} = '1;  //Unused set to all 1s (doesn't really matter)
+    assign {gpio_oeb[33:11], gpio_oeb[0]} = '1;  //Unused set to all 1s (doesn't really matter)
     
     // T05 Top Instantiation
     t05_top top (
@@ -61,6 +61,10 @@ module team_05 (
         .reset(~nrst | ~en),
         .mosi(gpio_out[1]),
         .miso(gpio_in[2]),
+
+        // HISTOGRAM
+        .read_in_pulse(gpio_in[3]),
+        .in(gpio_in[10:4]),
 
         //WRAPPER
         .wbs_stb_o(STB_O),
