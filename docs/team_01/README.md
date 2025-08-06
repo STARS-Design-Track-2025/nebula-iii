@@ -81,10 +81,15 @@ This project is a recreation of Tetris, so all the same rules apply. The best wa
 See presentation for demo video @ testbench example [HERE](https://docs.google.com/presentation/d/e/2PACX-1vQ5J6eAg-fM0MYb9h2nug7m4cWLqn1QPYuZf28jpfTcCsExHs7RleSBiXM36svMkUjVlpEQlcR1J1pw/pub?start=false&loop=false&delayms=3000#slide=id.g372a1441054_2_34)
 
 POINT SYSTEM:
+
 1 line - 1 point
+
 2 lines - 3 points
+
 3 lines - 5 points
+
 4 lines (TETRIS) - 8 points
+
 
 If you get to a point where you spawn a block on another block (reaching the top of the grid), you will reach a GAMEOVER state, you can easily reset to the beginning by pressing the MOVE RIGHT button followed by the PLAYER START button.
 
