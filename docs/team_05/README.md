@@ -57,12 +57,14 @@ The first number represents the GPIO on the physical chip, while the second numb
 ## External Hardware
 List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
 
-## Functionality Description and Testing
+# Functionality Description and Testing
 This project consists of both modules with implement the Huffman Algorithm, and interfacing modules for the SRAM and SD card (SPI). Compression and Decompression Processes are display on LCD and VGA displays.
 
-- ## SPI
+# SPI
 The Serial Peripheral Interface (SPI) is a standard protocol for interacting with microcontrollers/peripherals. This module is necessary to interface with this design's main peripheral: an SD card. It stores and sends SD file data to and from the working modules. MISO (Master in Slave out) is used to send data outputted from the SD to the SPI (read). This read data is sent from the SPI to the modules in parallel (8 bits at a time). MOSI (Master our Slave in) is used to send data outputted from the working modules and SPI to the SD card (write). This write data is sent from the modules to the SPI serially.
-- ## Compression Modules: All src modules may be found in ~/verilog/rtl/team_projects/team_05/src. All testbench modules may be found in ~/verilog/dv/team_05/module_tests.
+# Compression Modules
+  
+All src modules may be found in ~/verilog/rtl/team_projects/team_05/src. All testbench modules may be found in ~/verilog/dv/team_05/module_tests.
 
 Compression SRAM interface (t05_sram_interface.sv) - An explicit state for each of the following modules (except header synthesis) is created for storing and retrieving information from the SRAM.
 
@@ -85,7 +87,7 @@ Header Synthesis Module - Works in parallel with Codebook synthesis. The header 
 Translation Module - Reads 8 bit characters from the input file via the SPI, sends the ASCII character index to SRAM to retrieve the character path from the codebook, and sends the code serially to the SPI. A newline followed by the total number of characters determined by the histogram module are also written after the header. 
 
 
-- ## Decompression Modules:  
+# Decompression Modules:  
 Describe in detail how your project works and how to test it.
 
 ## RTL Diagrams
