@@ -60,7 +60,7 @@ List all the required external hardware components and upload a breadboard with 
 Two micro-SD cards are used for reading and writing files.
 Product Link: 
 
-# Micro-SD Breakout Boards (x2)
+#### Micro-SD Breakout Boards (x2)
 Used to connect the micro-SD cards to the breadboard.
 Product Link: https://www.adafruit.com/product/254?gad_source=1&gad_campaignid=21079227318&gclid=CjwKCAjw-svEBhB6EiwAEzSdrlKv_9erB0mv_1FO6r7wPmKpIe0ngq9ml7zTtjgyD5Iac6_eAgcsphoC2ioQAvD_BwE 
 
@@ -69,6 +69,7 @@ Product Link: https://www.adafruit.com/product/254?gad_source=1&gad_campaignid=2
 
 ### LCD
 The Liquid Crystal Display (LCD) is a type of display that is commonly used in electronics and hardware projects. This project uses the LCD to create a user interface which allows for selection between file compression and decompression on an SD, and the current state of the process.
+Product Link: 
 
 ## Functionality Description and Testing
 This project consists of both modules with implement the Huffman Algorithm, and interfacing modules for the SRAM and SD card (SPI). Compression and Decompression Processes are display on LCD and VGA displays.
