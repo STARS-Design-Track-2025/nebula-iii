@@ -38,6 +38,11 @@ module t05_bytecount (
     //combinational logic: build next state, output, and leftover info
     always @(*) begin
         //default: hold current
+        leftover_bits = '0;
+        shift_amount = '0;
+        mask = '0;
+        tbam = '0;
+        
         bit_buf_next      = bit_buf;
         bits_in_buf_next  = bits_in_buf;
         out_next          = out;

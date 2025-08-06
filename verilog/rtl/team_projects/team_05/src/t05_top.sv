@@ -53,6 +53,7 @@ module t05_top (
   logic init;
 
   assign mosi = 0;
+  assign read_out = '0;
   //Controller
   // logic [3:0] en_state;
   //logic [3:0] fin_state;
