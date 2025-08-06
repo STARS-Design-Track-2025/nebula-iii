@@ -24,13 +24,13 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 07 [03]** - Output - MOSI line for the RA8875 driver
 * **Pin 08 [04]** - Output - Chip Select (CS) for the RA8875 driver
 * **Pin 09 [05]** - Output - Screen Reset, RA8875
-* **Pin 10 [06]** - Input or Output? - Pin Function?
-* **Pin 11 [07]** - Input or Output? - Pin Function?
-* **Pin 12 [08]** - Input or Output? - Pin Function?
-* **Pin 13 [09]** - Input or Output? - Pin Function? 
-* **Pin 14 [10]** - Input or Output? - Pin Function? 
-* **Pin 15 [11]** - Input or Output? - Pin Function? 
-* **Pin 16 [12]** - Input or Output? - Pin Function? 
+* **Pin 10 [06]** - Output - FPU Flags (zeroFlag)
+* **Pin 11 [07]** - Output - FPU Flags (greaterThanOrEqualFlag, signed)
+* **Pin 12 [08]** - Output - FPU Flags (greaterThanOrEqualFlag, unsigned)
+* **Pin 13 [09]** - Output - FPU Flags (lessThanFlag, signed)
+* **Pin 14 [10]** - Output - FPU Flags (lessThanFlag, unsigned)
+* **Pin 15 [11]** - Output - FPU Flags (notEqualFlag)
+* **Pin 16 [12]** - Output - FPU Flags (equalFlag)
 * **Pin 17 [13]** - Input or Output? - Pin Function? 
 * **Pin 18 [14]** - Input or Output? - Pin Function? 
 * **Pin 19 [15]** - Input or Output? - Pin Function? 
