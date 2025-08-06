@@ -77,5 +77,9 @@ POINT SYSTEM:
 3 lines - 5 points
 4 lines (TETRIS) - 8 points
 
+If you get to a point where you spawn a block on another block (reaching the top of the grid), you will reach a GAMEOVER state, you can easily reset to the beginning by pressing the MOVE RIGHT button followed by the PLAYER START button.
+
+Note: If you're at an edge or by a block, you may not be able to rotate. This is by design, as theres a check to see if the next rotation would be valid and not bump into anything. Make some room to rotate :3
+
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_01).
