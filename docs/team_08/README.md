@@ -1,6 +1,6 @@
 # NEBULA III - Project Documentation
 
-## Team 08 - [Team Name]
+## Team 08 - AZE
 * **Peer Mentor:** Andy Hu
 * Arina Harlanovich
 * Zoe Amerman
@@ -59,7 +59,6 @@ To connect screen with the chip, follow the pinmap and conect IM ports of the sc
 
 ## Functionality Description and Testing
 
-
 ### I2C
 #### Module description
 The touchscreen peripheral communicates information about a touch event (most importantly, the coordinates on the screen where the touch occurred) through the I2C communication protocol. The design has a module called t08_I2C_and_interrupt designed for handling this communication with the touchscreen. When a touch event occurs, the screen will send an interrupt signal as an input to the module, and the module will then use I2C to first, specify the address of the screen and the address of a register that it needs to read from within the screen, then second, to read that data. The resultant data is then sent to mmio so that it can be stored in memory.
@@ -87,15 +86,15 @@ The module accepts an enable signal from memory handler and increments program c
 #### Testbenching
 Simulates different operations and makes sure program counter increments approopriately
 
-
 #### Control unit
-
+Decodes/parses instructions and sends relevant information to other modules based on those instructions. 
 
 #### Memory handler
-#### Module description
+
+##### Module description
 The module send data from the memory and to the memory. It handles all the timing between mmio and cpu by having a state machine with multiple 'wait' states, giving more time for load and store instructions. The last state is a program counter increment enable signal, making sure pc moves on only after we are done transmitting information
 
-#### Testbenching
+##### Testbenching
 We test multiple load/ store/ branching operations to make sure CPU doe not skip anythings, correctly recieves information and does not fall behind wishbone manager.
 
 #### MMIO
@@ -103,10 +102,22 @@ We test multiple load/ store/ branching operations to make sure CPU doe not skip
 
 #### ALU
 Performs arithmetic and logical operations on the contents of registers and/or an immediate value and/or the program counter. Evaluates branch conditions.
+Testing was done through setting multiple combinations of possible inputs and for each of them, running through every operation and verifying that it gives the correct value. 
+
 #### Registers
 A small and very easily accessible memory for the CPU.
-
-
+Testing was done through making sure that when enable signals are not on, those respective changes (reading = updating output and writing = changing register values) will not occur. It was made sure across several instances that when a value is written to one of the registers, it can later be read back from that register. 
 
 ## RTL Diagrams
-Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_08).
+
+Overall RTL: 
+
+![](images/overall_rtl.png)
+
+CPU RTL: 
+
+![](images/cpu_rtl.png)
+
+Operation flowchart: 
+
+![](images/flowchart.png)
