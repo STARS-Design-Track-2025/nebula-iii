@@ -99,20 +99,20 @@ module t07_memoryHandler (
     assign pcOut = pc_i;
     //state machine
     always_comb begin
-        rwi = '0;
-        addrControl = '0;
-        freeze_o = '0;
-        dataMMIO_o = '0;
-        addrMMIO_comb_o = 0;
-        addrMMIO_o_n = '0;
-        regData_o_n = '0;
-        instr_n = '0;
-        pc_n = '0;
-        loadCt_n = '0;
-        load2Ct_n = '0; 
-        load3Ct_n = '0;
-        storeCt_n = '0;
-        state_n = FETCH;
+        // rwi = '0;
+        // addrControl = '0;
+        // freeze_o = '0;
+        // dataMMIO_o = '0;
+        // addrMMIO_comb_o = 0;
+        // addrMMIO_o_n = '0;
+        // regData_o_n = '0;
+        // instr_n = '0;
+        // pc_n = '0;
+        // loadCt_n = '0;
+        // load2Ct_n = '0; 
+        // load3Ct_n = '0;
+        // storeCt_n = '0;
+        // state_n = FETCH;
 
         case(state)
             INC: //state 0 - 1 cycle
@@ -167,6 +167,7 @@ module t07_memoryHandler (
             F_WAIT: //state 2 - 1 cycle
                 begin
                     freeze_o = 1;
+                    instr_n = instructionOut;
 
                     addrControl = 1;
                     rwi = 'b00;
@@ -328,7 +329,7 @@ module t07_memoryHandler (
                     loadCt_n = '0;
                     load2Ct_n = '0;
                     load3Ct_n = '0;
-                    //storeCt_n = storeCt + 1;
+                    storeCt_n = storeCt + 1;
 
 
                     addrMMIO_o_n = ALU_address; 
@@ -382,7 +383,7 @@ module t07_memoryHandler (
                 loadCt_n = '0;
                 load2Ct_n = '0;
                 load3Ct_n = '0;
-                //storeCt_n = storeCt + 1;
+                storeCt_n = storeCt;
 
 
                 addrMMIO_o_n = ALU_address; 

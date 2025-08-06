@@ -1,14 +1,14 @@
 module t07_top (
     input logic clk, nrst,
     input logic misoDriver_i, //for SPITFT from RA8875
-    output logic FPUFlag, invalError, chipSelectTFT, bitDataTFT, sclkTFT, FPU_overflowFlag, FPUcarryout, //GPIO
-    output logic [6:0] FPUFlags,
+    output logic invalError, chipSelectTFT, bitDataTFT, sclkTFT, FPU_overflowFlag, FPUcarryout, //GPIO
+    output logic [6:0] FPUFlags
     //inputs & outputs for SRAM
-    input logic [31:0] dataArToWM, ackToWM,
+    // input logic [31:0] dataArToWM, ackToWM,
 
-    output logic [31:0] dataWMToAr, addrWMToAr, 
-    output logic [3:0] selToAr,
-    output logic weToAr, stbToAr, cycToAr,
+    // output logic [31:0] dataWMToAr, addrWMToAr, 
+    // output logic [3:0] selToAr,
+    // output logic weToAr, stbToAr, cycToAr
 );
 
 logic [1:0] rwiToWB;
@@ -25,31 +25,38 @@ logic [31:0] addrToSRAM, dataToSRAM; //addr_out in MMIO
 logic fetchReadToWB, addrControlWB; //makes sure fetch doesnt run twice
 
 //wishbone manager output to wishbone arbitrator
-// logic [31:0] addrWMToAr, dataWMToAr;
-// logic [3:0] selToAr;
-// logic weToAr, stbToAr, cycToAr;
+logic [31:0] addrWMToAr, dataWMToAr;
+// logic [191:0] addrWMToAr;
+logic [3:0] selToAr;
+logic weToAr, stbToAr, cycToAr;
 
 //wishbone arbitrator output to wishbone decoder
-// logic cycToDec, stbToDec, weToDec;
-// logic [31:0] addrToDec, dataToDec; 
-// logic [3:0] selToDec;
+logic cycToDec, stbToDec, weToDec;
+logic [31:0] addrToDec, dataToDec; 
+logic [3:0] selToDec;
 
+//wishbone arbitrator output to wishbone manger
+logic [31:0] /*ackToWM,*/ dataArToWM;
+logic ackToWM;
+//wishbone decoder output to wishbone arbitrator
+logic ackToAr;
+logic [31:0] dataDecToAr;
 
 //wishbone manager output to user design
 logic [31:0] dataToMMIO;
 logic busyToMMIO;
 
 //outputs of WB decoder
-// logic [6 + 3:0] cyc_out;
-// logic [6 + 3:0] stb_out;
-// logic [6 + 3:0] we_out;
-// logic [(32 * (10)) - 1:0] addr_out; 
-// logic [(32 * (10)) - 1:0] data_out;
-// logic [(4 * (10)) - 1:0] sel_out;
+logic cyc_out;
+logic stb_out;
+logic we_out;
+logic [31:0] addr_out; 
+logic [31:0] data_out;
+logic [3:0] sel_out;
 
 //input SRAM to decoder
-// logic [6 + 3:0] ackDec_in; //acknowledge
-// logic [(32 * (10)) - 1:0] dataDec_in; //data from SRAM to WB Dec
+logic ackDec_in; //acknowledge
+logic [31:0] dataDec_in; //data from SRAM to WB Dec
 
 //outputs to SPI->TFT
 logic [31:0] dataToTFT, addrToTFT, MISOtoMMIO;
@@ -71,17 +78,8 @@ wishbone_manager wishbone0(.nRST(nrst), .CLK(clk), .DAT_I(dataArToWM), .ACK_I(ac
 .SEL_O(selToAr), .WE_O(weToAr), .STB_O(stbToAr), .CYC_O(cycToAr), .CPU_DAT_O(dataToMMIO), .BUSY_O(busyToMMIO));
 
 //SRAM
-// wishbone_arbitrator wishboneA0(.CLK(clk), .nRST(nrst), .A_ADR_I(addrWMToAr), .A_DAT_I(dataWMToAr), .A_SEL_I(selToAr), 
-// .A_WE_I(weToAr), .A_STB_I(stbToAr), .A_CYC_I(cycToAr), .A_DAT_O(dataArToWM), .A_ACK_O(ackToWM), .DAT_I(dataDecToAr), 
-// .ACK_I(ackToAr), .ADR_O(addrToDec), .DAT_O(dataToDec), .SEL_O(selToDec), .WE_O(weToDec), .STB_O(stbToDec), .CYC_O(cycToDec));
-
-// wishbone_decoder wishboneD0 (.CLK(clk), .nRST(nrst), .wbs_ack_i_periph(ackDec_in), .wbs_dat_i_periph(dataDec_in), .wbs_ack_o_m(ackToAr), 
-// .wbs_dat_o_m(dataDecToAr), .wbs_cyc_i_m(cycToDec), .wbs_stb_i_m(stbToDec), .wbs_we_i_m(weToDec), .wbs_adr_i_m(addrToDec), 
-// .wbs_dat_i_m(dataToDec), .wbs_sel_i_m(selToDec), .wbs_cyc_o_periph(cyc_out), .wbs_stb_o_periph(stb_out), .wbs_we_o_periph(we_out), 
-// .wbs_adr_o_periph(addr_out), .wbs_dat_o_periph(data_out), .wbs_sel_o_periph(sel_out));
-
-// sram_WB_Wrapper sramWrapper(.wb_clk_i(clk), .wb_rst_i(nrst), .wbs_stb_i(stb_out), .wbs_cyc_i(cyc_out), .wbs_we_i(we_out), .wbs_sel_i(sel_out),
-// .wbs_dat_i(data_out), .wbs_adr_i(addr_out), .wbs_ack_o(ackDec_in), .wbs_dat_o(dataDec_in));
+sram_WB_Wrapper sramWrapper(.wb_clk_i(clk), .wb_rst_i(~nrst), .wbs_stb_i(stbToAr), .wbs_cyc_i(cycToAr), .wbs_we_i(weToAr), .wbs_sel_i(selToAr),
+.wbs_dat_i(dataWMToAr), .wbs_adr_i(addrWMToAr), .wbs_ack_o(ackToWM), .wbs_dat_o(dataArToWM));
 
 t07_spiTFTHu display(.clk(clk), .nrst(nrst), .MOSI_data(dataToTFT), .read_in(displayRead), .write_in(displayWrite), .MISO_out(MISOtoMMIO), 
 .ack(busyTFT_o), .MISO_in(misoDriver_i), .chipSelect(chipSelectTFT), .bitData(bitDataTFT), .sclk(sclkTFT));

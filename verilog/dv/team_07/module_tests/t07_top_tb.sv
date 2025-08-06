@@ -2,14 +2,16 @@
 module t07_top_tb();
     logic clk, nrst;
     logic [3:0] ESP_in;
-    logic FPUFlag, invalError, chipSelectTFT, bitDataTFT, sclkTFT, misoDriver_i;
+    logic [6:0] FPUFlag;
+    logic invalError, chipSelectTFT, bitDataTFT, sclkTFT, misoDriver_i, FPUoverflow, FPUcarryout;
 
-    t07_top top0(.clk(clk), .nrst(nrst), .FPUFlag(FPUFlag), .invalError(invalError), .ESP_in(ESP_in), .chipSelectTFT(chipSelectTFT), .bitDataTFT(bitDataTFT), .sclkTFT(sclkTFT), .misoDriver_i(misoDriver_i));
+    t07_top top0(.clk(clk), .nrst(nrst), .FPUFlags(FPUFlag), .invalError(invalError), .chipSelectTFT(chipSelectTFT), .bitDataTFT(bitDataTFT), .sclkTFT(sclkTFT), .misoDriver_i(misoDriver_i)
+    , .FPU_overflowFlag(FPUoverflow), .FPUcarryout(FPUcarryout));
 
     task reset(); begin
         #2
         nrst = ~nrst;        
-        #4
+        #2
         nrst = ~nrst;
     end
     endtask

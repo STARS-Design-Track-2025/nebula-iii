@@ -1,7 +1,7 @@
 
 
 module wishbone_arbitrator #(
-    parameter NUM_MANAGERS = 6
+    parameter NUM_MANAGERS = 1
 )(
     `ifdef USE_POWER_PINS
         inout vccd1,	// User area 1 1.8V supply
