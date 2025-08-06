@@ -428,7 +428,11 @@ module t05_top (
     .pulse(pulse_TRN),
     .sram_complete(TRN_sram_complete),
     .char_index(TRN_char_index),
-    .word_cnt(word_cnt)
+    .word_cnt(word_cnt),
+    .ser_pulse(),
+    .head_bit(),
+    .head_write_en(),
+    .input_valid()
     );
 
 endmodule

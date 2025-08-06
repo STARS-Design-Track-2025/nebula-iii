@@ -34,13 +34,13 @@ typedef enum logic [3:0] {
     SEND_WAIT = 7
 } state_cb;
 
-logic [8:0] least1, least2;
 
 // next state logic
-logic [127:0] next_path; // store current path
-logic [6:0] next_index; // htree element index
-state_cb next_state, curr_state; // current codebook state
-logic [6:0] next_track_length; // current path length (for tracking state)
+logic [8:0] least1, least2;
+logic [127:0] next_path;              // store current path
+logic [6:0] next_index;               // htree element index
+state_cb next_state, curr_state;      // current codebook state
+logic [6:0] next_track_length;        // current path length (for tracking state)
 logic wait_cycle, next_wait_cycle;
 logic [6:0] pos, next_pos;
 logic sent, next_sent;
@@ -168,7 +168,6 @@ always_comb begin
     LEFT: begin // move left (add 0 to path)
       if (wait_cycle == 0 && !SRAM_enable) begin
         next_track_length = track_length + 1; // update total path length
-        // next_state = state_cb'((least1[8] == 1'b0) ? SEND : LEFT);
         if (least1[8] == 1'b0 || least1 == 9'b110000000) begin // if LSE is a char (or there is no element)
           if (least1 != 9'b110000000 && (read_complete || write_complete)) begin // if there is a char (not no element)
             char_index_n = least1[7:0]; // set output character (index) to LSE, NOT to tracking index

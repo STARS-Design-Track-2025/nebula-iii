@@ -3,6 +3,7 @@
 module t05_controller (
  input logic clk, rst, /*cont_en, restart_en,*/
  input logic [7:0] finState,
+ //input logic comp,
 //  input logic [5:0] op_fin, // assumed to be registered - from SRAM
  input logic fin_idle, fin_HG, fin_FLV, fin_HT, fin_FINISHED, fin_CBS, fin_TRN, fin_SPI,
  output logic [3:0] state_reg
