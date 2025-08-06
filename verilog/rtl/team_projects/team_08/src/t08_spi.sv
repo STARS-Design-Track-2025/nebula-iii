@@ -8,7 +8,7 @@ output logic [7:0] outputs, //outputs of 8 bits each
 output logic wrx, rdx, csx, dcx, busy //spi inputs
 );
 typedef enum logic[2:0] {
-    GETCOMMAND, GETPAR, TRANSITION //waiting for cpu to send all data
+    GETCOMMAND, GETPAR, TRANSITION, WAIT //waiting for cpu to send all data
 } registering;
 
 logic [31:0] paroutput, nextparoutput, parameters, nextparameters;
@@ -16,7 +16,7 @@ logic [7:0] currentout, nextout, command, nextcommand;
 logic [2:0] state, nextstate; 
 logic nextdcx, nextbusy, nextcsx, nextwrx;
 logic [3:0] count = 0, percount, nextpercount,  nextcount, counter, nextcounter;
-logic [23:0] delay = 24'd1200000;
+logic [23:0] delay = 24'd12;
 logic [23:0] timem, nexttimem;
 registering register, nextregister;
 logic nextcontrol, control;
@@ -85,13 +85,18 @@ always_comb begin
             if (enable_command) begin
                 nextcommand = inputs[7:0];
                 nextcounter = inputs[11:8];
-                nextregister = GETPAR;
-                nextbusy = 0;
+                nextregister = WAIT;
+                nextbusy = 1;
             end
             else begin
                 nextregister = GETCOMMAND;
                 nextbusy = 0;
             end
+        end
+
+        WAIT: begin
+            nextbusy = 0;
+            nextregister = GETPAR;
         end
 
         GETPAR: begin

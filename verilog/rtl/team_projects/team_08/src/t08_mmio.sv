@@ -49,22 +49,26 @@ assign mmio_busy_o = spi_busy_i | mem_busy_i | !(I2C_done_i);
 assign I2C_done_o = I2C_done_i;
 assign mem_select_o = 4'b1111;
 assign mem_read_o = wb_read;
-assign mem_write_o = wb_write;
+//assign mem_write_o = wb_write;
 
-logic m1, m2;
+logic m1, m2, s1, s2;
 
 always_ff @(posedge clk, negedge nRst) begin
     if (~nRst) begin
         m1 <= 0;
         m2 <= 0;
+        s1 <= 0;
+        s2 <= 0;
     end
     else begin
         m1 <= mmio_busy_o; //registered busy signal
-        m2 <= m1; 
+        m2 <= m1;
+        s1 <= spi_busy_i;
+        s2 <= s1; 
     end
 end
 
-assign mmio_done_o = (!spi_busy_i)&(m1 & m2);
+assign mmio_done_o = ((!spi_busy_i)&(m1 & m2))|(!s1 & s2);
 
 always_comb begin
     mh_data_o = 0;                                             
@@ -73,7 +77,8 @@ always_comb begin
     spi_comm_enable_o = 0;
     spi_param_enable_o = 0;      
     mem_data_o = 0;     
-    mem_address_o = 0;         
+    mem_address_o = 0;      
+    mem_write_o = 0;   
         
         if (!write && read) begin //read operation
             if (address == I2C_ADDRESS) begin // read from I2C
@@ -108,6 +113,7 @@ always_comb begin
                 spi_param_enable_o = 1;
             end else if (address < 32'd2048) begin //write to memory
                 if (!mem_busy_i) begin
+                    mem_write_o = wb_write;
                     mem_data_o = mh_data_i;     
                     mem_address_o = address;            
                 end
