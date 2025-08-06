@@ -18,16 +18,16 @@ The first number represents the GPIO on the physical chip, while the second numb
 
 Although we used the ECP5 FPGA for the 2nd half of this project, the layout pins will be in the form of our original ICE40 FPGA. 
 
-* **Pin 00 [00]** - Input or Output? - Pin Function?
+* **Pin 00 [00]** - Not Used
 * **Pin 01 [--]** - NOT ALLOWED
 * **Pin 02 [--]** - NOT ALLOWED
 * **Pin 03 [--]** - NOT ALLOWED
 * **Pin 04 [--]** - NOT ALLOWED
-* **Pin 05 [pb[3]** - Input - MOVE LEFT
+* **Pin 05 [pb[3]]** - Input - MOVE LEFT
 * **Pin 06 [pb[0]]** - Input - MOVE RIGHT
 * **Pin 07 [pb[7]]** - Input - ROTATE LEFT
 * **Pin 08 [pb[4]]** - Input - ROTATE RIGHT
-* **Pin 09 [pb[8] || pb [11]]** - Input - SOFT DROP
+* **Pin 09 [pb[8]]** - Input - SOFT DROP
 * **Pin 10 [pb[19]]** - Input - PLAYER START
 * **Pin 11 [pb[16]]** - Input - AI START
 * **Pin 12 [left[7]]** - Output - VGA HSYNC
@@ -36,26 +36,26 @@ Although we used the ECP5 FPGA for the 2nd half of this project, the layout pins
 * **Pin 15 [green]** - Output - VGA GREEN
 * **Pin 16 [blue]** - Output - VGA BLUE
 * **Pin 17 [left[5]]** - Output - SPEAKER
-* **Pin 18 [14]** - Input or Output? - Pin Function? 
-* **Pin 19 [15]** - Input or Output? - Pin Function? 
-* **Pin 20 [16]** - Input or Output? - Pin Function? 
-* **Pin 21 [17]** - Input or Output? - Pin Function? 
-* **Pin 22 [18]** - Input or Output? - Pin Function? 
-* **Pin 23 [19]** - Input or Output? - Pin Function? 
-* **Pin 24 [20]** - Input or Output? - Pin Function? 
-* **Pin 25 [21]** - Input or Output? - Pin Function? 
-* **Pin 26 [22]** - Input or Output? - Pin Function? 
-* **Pin 27 [23]** - Input or Output? - Pin Function? 
-* **Pin 28 [24]** - Input or Output? - Pin Function? 
-* **Pin 29 [25]** - Input or Output? - Pin Function?
-* **Pin 30 [26]** - Input or Output? - Pin Function?
-* **Pin 31 [27]** - Input or Output? - Pin Function?
-* **Pin 32 [28]** - Input or Output? - Pin Function?
-* **Pin 33 [29]** - Input or Output? - Pin Function?
-* **Pin 34 [30]** - Input or Output? - Pin Function?
-* **Pin 35 [31]** - Input or Output? - Pin Function?
-* **Pin 36 [32]** - Input or Output? - Pin Function?
-* **Pin 37 [33]** - Input or Output? - Pin Function?
+* **Pin 18 [14]** - Not Used 
+* **Pin 19 [15]** - Not Used 
+* **Pin 20 [16]** - Not Used 
+* **Pin 21 [17]** - Not Used 
+* **Pin 22 [18]** - Not Used 
+* **Pin 23 [19]** - Not Used 
+* **Pin 24 [20]** - Not Used 
+* **Pin 25 [21]** - Not Used 
+* **Pin 26 [22]** - Not Used 
+* **Pin 27 [23]** - Not Used 
+* **Pin 28 [24]** - Not Used 
+* **Pin 29 [25]** - Not Used
+* **Pin 30 [26]** - Not Used
+* **Pin 31 [27]** - Not Used
+* **Pin 32 [28]** - Not Used
+* **Pin 33 [29]** - Not Used
+* **Pin 34 [30]** - Not Used
+* **Pin 35 [31]** - Not Used
+* **Pin 36 [32]** - Not Used
+* **Pin 37 [33]** - Not Used
 
 ## External Hardware
 VGA BREAKOUT BOARD & CABLE - <img width="1100" height="1100" alt="image" src="https://github.com/user-attachments/assets/bec0ba27-aaed-40e8-8317-df5e80f49e8e" />

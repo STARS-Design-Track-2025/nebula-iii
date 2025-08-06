@@ -89,15 +89,15 @@ module team_01_Wrapper (
     
     assign gpio_oeb[4:1] = 4'b1111;//Set all to inputs
     assign gpio_out[4:1] = 4'b0;//Doesn't matter since inputs
-//     assign la_data_out = 32'b0;
+    assign la_data_out = 32'b0;
 
     //Unused connection to nebula wishbone arbitrator
-//     assign ADR_O = 32'b0;
-//     assign DAT_O = 32'b0;
-//     assign SEL_O = 4'b0;
-//     assign  WE_O = 1'b0;
-//     assign STB_O = 1'b0;
-//     assign CYC_O = 1'b0;
+    assign ADR_O = 32'b0;
+    assign DAT_O = 32'b0;
+    assign SEL_O = 4'b0;
+    assign  WE_O = 1'b0;
+    assign STB_O = 1'b0;
+    assign CYC_O = 1'b0;
 
     // Instantiate Bus Wrapper module here
     team_01_WB team_01_WB (
@@ -118,18 +118,18 @@ module team_01_Wrapper (
         .ack_o(wbs_ack_o),
         .we_i(wbs_we_i),
         .IRQ(),//1 bit
-    .la_data_in(la_data_in),
-    .la_data_out(la_data_out),
-    .la_oenb(la_oenb),
+//     .la_data_in(la_data_in),
+//     .la_data_out(la_data_out),
+//     .la_oenb(la_oenb),
         // Add master ports
-    .ADR_O(ADR_O),
-    .DAT_O(DAT_O),
-    .SEL_O(SEL_O),
-    .WE_O(WE_O),
-    .STB_O(STB_O),
-    .CYC_O(CYC_O),
-    .ACK_I(ACK_I),
-    .DAT_I(DAT_I),
+//     .ADR_O(ADR_O),
+//     .DAT_O(DAT_O),
+//     .SEL_O(SEL_O),
+//     .WE_O(WE_O),
+//     .STB_O(STB_O),
+//     .CYC_O(CYC_O),
+//     .ACK_I(ACK_I),
+//     .DAT_I(DAT_I),
 
         .gpio_in({gpio_in[37:5], gpio_in[0]}), //In general, GPIO 4:1 should not be used but can be. Ask a TA if needed
         .gpio_out({gpio_out[37:5], gpio_out[0]}), //In general, GPIO 4:1 should not be used but can be. Ask a TA if needed

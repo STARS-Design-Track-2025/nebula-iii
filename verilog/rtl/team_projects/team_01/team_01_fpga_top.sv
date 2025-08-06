@@ -7,7 +7,7 @@ module team_01_fpga_top (
   input  logic hwclk, reset,
   input  logic [20:0] pb,
   input logic J39_b15, J39_c15,
-  input logic left, 
+  input logic [7:0] left, 
   output logic [1:0] right,
   output logic red, green, blue,
 
@@ -112,8 +112,8 @@ end
       .red(red),  
       .green(green), 
       .blue(blue), 
-      .hsync(right[0]),  
-      .vsync(right[1]),  
+      .hsync(left[7]),  
+      .vsync(left[6]),  
       .x_out(x), 
       .y_out(y)
     );
@@ -141,13 +141,12 @@ end
       .clk(clk_25m), 
       .reset(rst), 
       .onehuzz(onehuzz), 
-      .en_newgame(J39_b15),
-      .right_i(right), 
-      .left_i(left), 
-      .start_i(J39_b15),
+      .right_i(right_i), 
+      .left_i(left_i), 
+      .start_i(pb[19]),
       .rotate_r(rotate_r), 
       .rotate_l(rotate_l), 
-      .speed_up_i(J39_c15), 
+      .speed_up_i(pb[8]), 
       .display_array(new_block_array), 
       .final_display_color(final_display_color),
       .gameover(gameover), 
@@ -224,7 +223,7 @@ end
     t01_musicman piercetheveil (
       .clk(clk_25m),
       .rst(rst),
-      .square_out(J40_n4),
+      .square_out(left[5]),
       .lfsr(lfsr_reg),
       .gameover(gameover)
     );
