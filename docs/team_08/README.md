@@ -55,8 +55,6 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 37 [33]** - not used
 
 ## External Hardware
-List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
-
 We are using a capacitive touchscreen+display component
 Link: https://learn.adafruit.com/adafruit-2-8-and-3-2-color-tft-touchscreen-breakout-v2/overview
 
