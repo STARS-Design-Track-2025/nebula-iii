@@ -261,7 +261,7 @@ always_comb begin
       end
       else begin
         next_sent = 1;
-        next_state = state_cb'(curr_state);
+        next_state = curr_state;
       end
     end
     TRACK: begin // after backtrack state when a character was found, use that backtracked path to start from the top of the tree and then retrieve the htree element
@@ -377,7 +377,7 @@ always_comb begin
     end
     default: begin
       state_3_n = 0;
-      next_state = state_cb'(curr_state);
+      next_state = curr_state;
     end
   endcase
 end
