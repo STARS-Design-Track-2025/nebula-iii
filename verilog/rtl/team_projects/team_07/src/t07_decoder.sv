@@ -1,5 +1,5 @@
 module t07_decoder (
-    input logic [31:0] instruction, //come from data memory
+    input logic [31:0] instruction, //from memory handler
     output logic [6:0] Op, funct7, //to control unit
     output logic [2:0] funct3, //to control unit
     output logic [4:0] rs1, rs2, rd //to internal register
