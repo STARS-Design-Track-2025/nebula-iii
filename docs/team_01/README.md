@@ -83,3 +83,11 @@ Note: If you're at an edge or by a block, you may not be able to rotate. This is
 
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_01).
+
+Overall RTL:
+<img width="1631" height="737" alt="FinalRTLTetris drawio" src="https://github.com/user-attachments/assets/13a0f349-db41-42a7-a5cb-3705e18e6a4d" />
+
+VGA: 
+<img width="855" height="420" alt="VGA" src="https://github.com/user-attachments/assets/02f6d256-4f8f-4f1c-8a4d-3efcdd583173" />
+
+
