@@ -3,22 +3,33 @@
     "DESIGN_IS_CORE": 0,
     "VERILOG_FILES": [
         "dir::../../verilog/rtl/wb_wrapper.vh",
-        "dir::../../verilog/rtl/team_projects/team_05/team_05.sv"
+        "dir::../../verilog/rtl/team_projects/team_05/team_05.sv",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_bytecount.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_cb_synthesis.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_controller.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_findLeastValue.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_header_synthesis.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_histogram.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_hTree.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_sram_interface.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_translation.v",
+        "dir::../../verilog/rtl/team_projects/team_05/converted_modules/t05_top.v",
+        "dir::../../verilog/rtl/wishbone_manager/wishbone_manager.sv"
     ],
-    "CLOCK_PERIOD": 25,
+    "CLOCK_PERIOD": 100,
     "CLOCK_PORT": "clk",
-    "PL_TARGET_DENSITY": 0.55,
+    "PL_TARGET_DENSITY": 0.65,
     "RUN_HEURISTIC_DIODE_INSERTION": true,
     "VDD_NETS": "vccd1",
     "GND_NETS": "vssd1",
     "FP_PDN_CORE_RING": 0,
     "FP_SIZING": "absolute",
-    "DIE_AREA": "0 0 300 300",
+    "DIE_AREA": "0 0 200 200",
     "pdk::sky130*": {
-        "FP_CORE_UTIL": 20,
+        "FP_CORE_UTIL": 12,
         "RT_MAX_LAYER": "met4",
         "scl::sky130_fd_sc_hd": {
-            "CLOCK_PERIOD": 25
+            "CLOCK_PERIOD": 100
         },
         "scl::sky130_fd_sc_hdll": {
             "CLOCK_PERIOD": 10
