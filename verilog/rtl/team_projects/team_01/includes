@@ -3,23 +3,23 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_Wrapper.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01.sv
 
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_blockgen.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_button_sync.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_clkdiv1hz.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_clkdiv10k.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_counter.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_lineclear.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_lookahead.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_musicman.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_scoredisplay.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_starboyDisplay.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_speed_controller.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_synckey.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_tetrisCredits.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_tetrisFSM.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_tetrisGrid.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_vgadriver.sv
--v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_debounce.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_blockgen.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_button_sync.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_clkdiv1hz.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_clkdiv10k.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_counter.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_lineclear.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_lookahead.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_musicman.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_scoredisplay.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_starboyDisplay.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_speed_controller.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_synckey.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisCredits.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisFSM.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisGrid.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_vgadriver.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_debounce.v
 
 
 # AI

@@ -152,7 +152,7 @@ module team_01_tb;
 		$dumpvars(0, team_01_tb.mprj_io, team_01_tb.uut.chip_core.mprj);
 
 		// Repeat cycles of 1000 clock edges as needed to complete testbench
-		repeat (1000) begin
+		repeat (10000) begin
 			repeat (1000) @(posedge clock);
 		end
 		$display("%c[1;31m",27);
@@ -172,7 +172,7 @@ module team_01_tb;
 		wait(uut.chip_core.mprj.mprj.team_01_Wrapper.team_01_WB.instance_to_wrap.en == 1);
 
 		// Wait a bit more
-		repeat (10000) @(negedge clk);
+		repeat (100000) @(negedge clk);
 		
 		$display("%c[1;32m",27);
 		`ifdef GL

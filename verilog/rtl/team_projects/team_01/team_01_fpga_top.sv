@@ -7,7 +7,7 @@ module team_01_fpga_top (
   input  logic hwclk, reset,
   input  logic [20:0] pb,
   input logic J39_b15, J39_c15,
-  input logic [7:0] left, 
+  output logic [7:0] left, 
   output logic [1:0] right,
   output logic red, green, blue
 
@@ -225,7 +225,7 @@ end
     t01_musicman piercetheveil (
       .clk(clk_25m),
       .rst(rst),
-      .square_out(J40_n4),
+      .square_out(left[5]),
       .lfsr(lfsr_reg),
       .gameover(gameover)
     );
