@@ -60,7 +60,7 @@ List all the required external hardware components and upload a breadboard with 
 We are using a capacitive touchscreen+display component
 Link: https://learn.adafruit.com/adafruit-2-8-and-3-2-color-tft-touchscreen-breakout-v2/overview
 
-To connect screen with the chip, follow the pinmap and conect IM ports of the screen to GND. Here s the picture: ![screen](<bro breadboard.png>)
+To connect screen with the chip, follow the pinmap and conect IM ports of the screen to GND. Here s the picture: ![screen pins](<Screenshot from 2025-08-06 15-24-12.png>)
 
 ## Functionality Description and Testing
 Describe in detail how your project works and how to test it.
