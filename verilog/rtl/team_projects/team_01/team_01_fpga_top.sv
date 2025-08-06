@@ -75,7 +75,7 @@ module team_01_fpga_top (
   logic speed_mode_o;
   
 logic [19:0][9:0][2:0] final_display_color;
-// Color priority logic: starboy and score display take priority over grid
+
 //Color priority logic: starboy and score display take priority over grid
 always_comb begin
   if (starboy_color != 3'b000) begin  // If starboy display has color (highest priority)
