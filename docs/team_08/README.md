@@ -55,7 +55,7 @@ We are using a capacitive touchscreen+display component
 
 Link: https://learn.adafruit.com/adafruit-2-8-and-3-2-color-tft-touchscreen-breakout-v2/overview
 
-To connect screen with the chip, follow the pinmap and conect IM ports of the screen to GND. Here s the picture: ![screen pinmap](<Screenshot from 2025-08-06 15-25-37.png>)
+To connect screen with the chip, follow the pinmap and conect IM ports of the screen to GND. Here s the picture: ![screen pinmap](<images/screen_pins.png>)
 
 ## Functionality Description and Testing
 
