@@ -67,7 +67,7 @@ logic wb_we_o, wb_stb_o, wb_cyc_o;
 
 t08_top topmodule(
 
-  .clk(hwclk), .nRst(~reset), .en(1'b1), 
+  .clk(hwclk), .nRst(~reset),
 
   .touchscreen_interrupt(inter), .I2C_sda_in(sda_in), .I2C_scl_in(scl_in), .I2C_sda_out(sda_out), .I2C_scl_out(scl_out),
   .spi_outputs(outputs), .spi_wrx(wrx), .spi_rdx(rdx), .spi_csx(csx), .spi_dcx(dcx), 
