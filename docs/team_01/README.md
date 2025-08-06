@@ -67,7 +67,7 @@ MONITOR - Compatible VGA Display (needs to support 640 x 480 @ 60 Hz, 25 MHz clo
 SPEAKER  & AMPLIFIER -
 <img width="2205" height="2015" alt="image" src="https://github.com/user-attachments/assets/6204af3d-272e-4158-bbe0-0e92222c4fcc" />
 The amplifier connects to the speaker and ground and FPGA itself.
-For speakers, we used a Logitech 
+For speakers, we used a Logitech z150, but any speaker should work theoretically.
 
 ## Functionality Description and Testing
 This project is a recreation of Tetris, so all the same rules apply. The best way to test functionality is to wire up buttons and test if inputs are correspond and are valid. 
