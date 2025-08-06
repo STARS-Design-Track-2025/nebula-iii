@@ -6,8 +6,6 @@ module t05_OPFIN (
  output logic [3:0] opFin,
  output logic finished_signal, compEN_reg, decompEN_reg
 );
-
-
     logic compDecomp_reg;
 
     typedef enum logic [3:0]{

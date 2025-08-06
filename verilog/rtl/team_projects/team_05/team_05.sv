@@ -56,25 +56,25 @@ module team_05 (
     assign {gpio_oeb[33:11], gpio_oeb[0]} = '1;  //Unused set to all 1s (doesn't really matter)
     
     // T05 Top Instantiation
-    t05_top top (
-        .hwclk(clk), 
-        .reset(~nrst | ~en),
-        .mosi(gpio_out[1]),
-        .miso(gpio_in[2]),
+    // t05_top top (
+    //     .hwclk(clk), 
+    //     .reset(~nrst | ~en),
+    //     .mosi(gpio_out[1]),
+    //     .miso(gpio_in[2]),
 
-        // HISTOGRAM
-        .read_in_pulse(gpio_in[3]),
-        .in(gpio_in[10:4]),
+    //     // HISTOGRAM
+    //     .read_in_pulse(gpio_in[3]),
+    //     .in(gpio_in[10:4]),
 
-        //WRAPPER
-        .wbs_stb_o(STB_O),
-        .wbs_cyc_o(CYC_O),
-        .wbs_we_o(WE_O),
-        .wbs_sel_o(SEL_O),
-        .wbs_dat_o(DAT_O),
-        .wbs_adr_o(ADR_O),
-        .wbs_ack_i(ACK_I),
-        .wbs_dat_i(DAT_I)
-    );
+    //     //WRAPPER
+    //     .wbs_stb_o(STB_O),
+    //     .wbs_cyc_o(CYC_O),
+    //     .wbs_we_o(WE_O),
+    //     .wbs_sel_o(SEL_O),
+    //     .wbs_dat_o(DAT_O),
+    //     .wbs_adr_o(ADR_O),
+    //     .wbs_ack_i(ACK_I),
+    //     .wbs_dat_i(DAT_I)
+    // );
 
 endmodule
