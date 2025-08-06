@@ -29,11 +29,11 @@ logic start;
 logic next_write_zeroes;
 logic write_zeroes;
 logic next_start;
-logic zero_sent;
-logic next_zero_sent;
+// logic zero_sent;
+// logic next_zero_sent;
 logic write_char_path;
 logic next_write_char_path;
-logic next_first_char;
+// logic next_first_char;
 logic write_num_lefts, next_write_num_lefts;
 
 always_ff @(posedge clk, posedge rst) begin
@@ -47,7 +47,7 @@ always_ff @(posedge clk, posedge rst) begin
       write_finish <= 0;
       write_zeroes <= 0;
       start <= 0;
-      zero_sent <= 0;
+      // zero_sent <= 0;
       write_char_path <= 0;
       // path_count <= 0;
       write_num_lefts <= 0;
@@ -62,7 +62,7 @@ always_ff @(posedge clk, posedge rst) begin
       write_finish <= next_write_finish;
       write_zeroes <= next_write_zeroes;
       start <= next_start;
-      zero_sent <= next_zero_sent; 
+      // zero_sent <= next_zero_sent; 
       write_char_path <= next_write_char_path;
       // path_count <= next_path_count;
       write_num_lefts <= next_write_num_lefts;
@@ -83,7 +83,7 @@ always_comb begin
     // next_path_count = path_count;
     next_write_num_lefts = write_num_lefts;
 
-    next_zero_sent = 0;
+    // next_zero_sent = 0;
     
     if ((char_found == 1'b1)) begin
       next_header = {1'b1, char_index}; // add control bit, beginning 1, and character index for header
@@ -128,7 +128,7 @@ always_comb begin
                 next_write_finish = 1;
                 next_bit1 = 0;
                 next_char_added = 0;
-                next_zero_sent = 0;
+                // next_zero_sent = 0;
                 // next_path_count = 0;
               	next_write_char_path = 0;
               if (num_lefts != 0 && left) begin

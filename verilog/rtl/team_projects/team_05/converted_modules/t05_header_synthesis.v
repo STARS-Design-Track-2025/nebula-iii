@@ -42,11 +42,8 @@ module t05_header_synthesis (
 	reg next_write_zeroes;
 	reg write_zeroes;
 	reg next_start;
-	reg zero_sent;
-	reg next_zero_sent;
 	reg write_char_path;
 	reg next_write_char_path;
-	wire next_first_char;
 	reg write_num_lefts;
 	reg next_write_num_lefts;
 	always @(posedge clk or posedge rst)
@@ -60,7 +57,6 @@ module t05_header_synthesis (
 			write_finish <= 0;
 			write_zeroes <= 0;
 			start <= 0;
-			zero_sent <= 0;
 			write_char_path <= 0;
 			write_num_lefts <= 0;
 		end
@@ -74,7 +70,6 @@ module t05_header_synthesis (
 			write_finish <= next_write_finish;
 			write_zeroes <= next_write_zeroes;
 			start <= next_start;
-			zero_sent <= next_zero_sent;
 			write_char_path <= next_write_char_path;
 			write_num_lefts <= next_write_num_lefts;
 		end
@@ -92,7 +87,6 @@ module t05_header_synthesis (
 		next_start = start;
 		next_write_char_path = write_char_path;
 		next_write_num_lefts = write_num_lefts;
-		next_zero_sent = 0;
 		if (char_found == 1'b1) begin
 			next_header = {1'b1, char_index};
 			next_char_added = 1;
@@ -135,7 +129,6 @@ module t05_header_synthesis (
 					next_write_finish = 1;
 					next_bit1 = 0;
 					next_char_added = 0;
-					next_zero_sent = 0;
 					next_write_char_path = 0;
 					if ((num_lefts != 0) && left) begin
 						next_write_num_lefts = 1;
