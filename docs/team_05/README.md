@@ -60,7 +60,7 @@ List all the required external hardware components and upload a breadboard with 
 Two micro-SD cards are used for reading and writing files.
 Product Link: 
 
-#### Micro-SD Breakout Boards (x2)
+### Micro-SD Breakout Boards (x2)
 Used to connect the micro-SD cards to the breadboard.
 Product Link: https://www.adafruit.com/product/254?gad_source=1&gad_campaignid=21079227318&gclid=CjwKCAjw-svEBhB6EiwAEzSdrlKv_9erB0mv_1FO6r7wPmKpIe0ngq9ml7zTtjgyD5Iac6_eAgcsphoC2ioQAvD_BwE 
 
