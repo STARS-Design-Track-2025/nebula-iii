@@ -56,14 +56,24 @@ The first number represents the GPIO on the physical chip, while the second numb
 
 ## External Hardware
 List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
-### SD Cards (Reading and Writing) 
+### SD Cards (x2) 
+Two micro-SD cards are used for reading and writing files.
+Product Link: 
+
+# Micro-SD Breakout Boards (x2)
+Used to connect the micro-SD cards to the breadboard.
+Product Link: https://www.adafruit.com/product/254?gad_source=1&gad_campaignid=21079227318&gclid=CjwKCAjw-svEBhB6EiwAEzSdrlKv_9erB0mv_1FO6r7wPmKpIe0ngq9ml7zTtjgyD5Iac6_eAgcsphoC2ioQAvD_BwE 
+
+### ESP32
+
+
 ### LCD
 The Liquid Crystal Display (LCD) is a type of display that is commonly used in electronics and hardware projects. This project uses the LCD to create a user interface which allows for selection between file compression and decompression on an SD, and the current state of the process.
 
 ## Functionality Description and Testing
 This project consists of both modules with implement the Huffman Algorithm, and interfacing modules for the SRAM and SD card (SPI). Compression and Decompression Processes are display on LCD and VGA displays.
 
-### LCD Interfaces
+### LCD Interface
 #### Driver Module (t05_driver_1602.sv)
 
 
@@ -76,7 +86,9 @@ The Serial Peripheral Interface (SPI) is a standard protocol for interacting wit
   
 All src modules may be found in ~/verilog/rtl/team_projects/team_05/src. All testbench modules may be found in ~/verilog/dv/team_05/module_tests.
 
-#### Compression SRAM interface (t05_sram_interface.sv) - An explicit state for each of the following modules (except header synthesis) is created for storing and retrieving information from the SRAM.
+#### Compression SRAM interface (t05_sram_interface.sv)
+
+An explicit state for each of the following modules (except header synthesis) is created for storing and retrieving information from the SRAM.
 
 - Histogram Module - [256][32] array to store the occurrences for each ASCII character from the input file. Memory Allocation is 256 (words).
 - Find Least Value - Does not store data in SRAM. Retrieves elements from the histogram array stored in SRAM.
