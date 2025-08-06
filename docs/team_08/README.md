@@ -1,19 +1,15 @@
 # NEBULA III - Project Documentation
 
 ## Team 08 - [Team Name]
-* **Peer Mentor:** [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Add more names, if needed]
+* **Peer Mentor:** Andy Hu
+* Arina Harlanovich
+* Zoe Amerman
+* Eileen Koh
 
 ## Project Overview
 Describe what your project is in 2-3 sentences. Do NOT mention functionality details, you will add those in the *Functionality Description and Testing* section.
 
 ## Pin Layout
-Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
-The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
 
 * **Pin 00 [00]** - input - interrupt from touchscreen 
 * **Pin 01 [--]** - NOT ALLOWED
@@ -56,12 +52,61 @@ The first number represents the GPIO on the physical chip, while the second numb
 
 ## External Hardware
 We are using a capacitive touchscreen+display component
+
 Link: https://learn.adafruit.com/adafruit-2-8-and-3-2-color-tft-touchscreen-breakout-v2/overview
 
 To connect screen with the chip, follow the pinmap and conect IM ports of the screen to GND. Here s the picture: ![screen pinmap](<Screenshot from 2025-08-06 15-25-37.png>)
 
 ## Functionality Description and Testing
-Describe in detail how your project works and how to test it.
+
+
+### I2C
+#### Module description
+The touchscreen peripheral communicates information about a touch event (most importantly, the coordinates on the screen where the touch occurred) through the I2C communication protocol. The design has a module called t08_I2C_and_interrupt designed for handling this communication with the touchscreen. When a touch event occurs, the screen will send an interrupt signal as an input to the module, and the module will then use I2C to first, specify the address of the screen and the address of a register that it needs to read from within the screen, then second, to read that data. The resultant data is then sent to mmio so that it can be stored in memory.
+#### Testing
+- I2C has a testbench, with several sets of accompanying enum files for the module's states to make reading the testbench easier.
+- If testing on the FPGA without the screen connected, the clock speed can be dramatically reduced so that the I2C process itself can be seen.
+- To test with the screen connected though, scl must be at least 10 kHz. Also, a specific setup is needed for the bidirectional pins (sda and scl).
+![](images/bidirectional_pin_setup.png)
+- One means of testing with the screen connected is to display the output data_out, or particularly data_out[27:16] and data_out[11:0] (x-coordinate and y-coordinate) from the module on ss7-ss0. When the module is functional it will update in real time in response to screen touches in a way that makes sense coordinates-wise.
+- It can also be tested via oscilloscope using the I2C mode. When the module is functional the oscilloscope can analyze the protocol and report what data is being transferred.
+
+### SPI
+#### Module description
+CPU communicates with the display through SPI< this module sets up an approopriate format for the display. 
+It has two levels of state machine. First, it accepts and registers command and its parameters, then it starts transmitting it to the display.
+
+#### Testbenching
+for testing, we send different commands, some with required delay, some with not, and with different amount of parameters
+
+### CPU
+#### Instruction fetch/program counter
+#### Module description
+The module accepts an enable signal from memory handler and increments program counter either by standard '4' or by immediate.
+
+#### Testbenching
+Simulates different operations and makes sure program counter increments approopriately
+
+
+#### Control unit
+
+
+#### Memory handler
+#### Module description
+The module send data from the memory and to the memory. It handles all the timing between mmio and cpu by having a state machine with multiple 'wait' states, giving more time for load and store instructions. The last state is a program counter increment enable signal, making sure pc moves on only after we are done transmitting information
+
+#### Testbenching
+We test multiple load/ store/ branching operations to make sure CPU doe not skip anythings, correctly recieves information and does not fall behind wishbone manager.
+
+#### MMIO
+
+
+#### ALU
+Performs arithmetic and logical operations on the contents of registers and/or an immediate value and/or the program counter. Evaluates branch conditions.
+#### Registers
+A small and very easily accessible memory for the CPU.
+
+
 
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_08).
