@@ -28,9 +28,9 @@ module t07_program_counter (
 );
 logic [31:0] n_programCounter, n_linkAddress; // Next values for program counter and link address
 
-always_ff @(negedge nrst, negedge clk) begin //check if negedge works with fetch timing
+always_ff @(negedge nrst, posedge clk) begin //check if negedge works with fetch timing
     if (~nrst) begin
-        programCounter <= 32'b0; // Reset PC to 0
+        programCounter <= 32'b0/*11111111111111111111111111111100*/; // Reset PC to 0
         linkAddress <= 32'b0; // Reset link address to 0
     end else begin
         programCounter <= n_programCounter; // Default increment

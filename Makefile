@@ -49,8 +49,8 @@ endif
 export OPENLANE2_ROOT?=${HOME}/STARS2024/openlane2-2.0.7  # for nanoHUB
 # export OPENLANE2_ROOT?=~/openlane2  # working somewhere else
 export BUS_WRAP_ROOT?=$(PWD)/dependencies/BusWrap
-export PDK_ROOT?=/apps/share64/rocky8/openlane2/openlane2-stars2024-20240613/PDKS   # for nanoHUB
-# export PDK_ROOT?=$(PWD)/dependencies/pdks  # working somewhere else
+# export PDK_ROOT?=/apps/share64/rocky8/openlane2/openlane2-stars2024-20240613/PDKS   # for nanoHUB
+export PDK_ROOT?=$(PWD)/dependencies/pdks
 export DISABLE_LVS?=0
 
 export ROOTLESS

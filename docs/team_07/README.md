@@ -1,16 +1,15 @@
 # NEBULA III - Project Documentation
 
-## Team 07 - [Team Name]
-* **Peer Mentor:** [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Add more names, if needed]
+## Team 07 - NYC Finance Bros
+* **Peer Mentor:** Andy Hu
+* Rose Freedman
+* Tylar Sparks
+* Kameswari Mantha
+* Anna Dalton
+
 
 ## Project Overview
-Describe what your project is in 2-3 sentences. Do NOT mention functionality details, you will add those in the *Functionality Description and Testing* section.
-
+In the project, we designed a single cycle RISC-V CPU with a custom fixed-point extension that processes stock value data stored in SRAM and displays visual results on a TFT screen. The CPU interfaces with the display via memory-mapped I/O and integrates both fixed-point and floating-point operations to enable precise data processing and graphical output.
 ## Pin Layout
 Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
 The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
@@ -55,10 +54,16 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 37 [33]** - Input or Output? - Pin Function?
 
 ## External Hardware
-List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
-
+RA8875 Driver and Adafruit Product ID: 1680
 ## Functionality Description and Testing
-Describe in detail how your project works and how to test it.
+Detailed System Description:
 
+This project implements a custom single-cycle RISC-V CPU designed to process stock value data stored in SRAM and generate visual output on a TFT display. The CPU reads values encoded in fixed-point format, converts them to integers, and then casts them to single-precision floating-point using instructions from the RV32F standard extension, developed at the University of California, Berkeley. Each value is compared to the current minimum and maximum, and a color is selected to represent the result: green for a new maximum, red for a new minimum, and white if the value is unchanged. The selected color is sent as a command to the RA8875 TFT controller, which draws a 3×3 pixel block at a computed (x, y) location. The x-position increments with each data point to form a horizontal timeline, while the y-position is scaled proportionally to the value.
+
+The system integrates both integer and fixed-point computation: integer arithmetic unit handles control logic, address calculation, and screen positioning, while RV32F single-precision floating-point operations enable accurate comparison and scaling of stock values. Communication with the display is accomplished by memory-mapped I/O, where specific register addresses are written to in order to issue drawing commands to the RA8875.
+
+Testing Procedure:
+
+To verify system behavior, fixed-point stock value data must be preloaded into SRAM starting at address 0x0421 (decimal 1057) and continuing up to 0x0700 (decimal 1792). The final value in the data-set must be 0x0E0F0E0F, which signals to the CPU that all data has been read. When the program is executed, the CPU reads and processes each value, rendering a corresponding 3×3 pixel block on the TFT display. Proper functionality is confirmed by verifying that each block appears in the correct location and is color-coded according to the value’s relationship to the previously processed values. The output should display a continuous, color-coded timeline of the dataset.
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_07).

@@ -31,7 +31,7 @@ module t07_registers (
     logic [31:0] [31:0]registers ;
     
     // write logic
-    always_ff @(negedge nrst, posedge clk) begin
+    always_ff @(negedge nrst, negedge clk) begin
         if (~nrst) begin
             // Reset all registers to zero
             registers <= '0;

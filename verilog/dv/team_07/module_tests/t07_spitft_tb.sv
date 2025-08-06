@@ -52,11 +52,11 @@ initial begin
     // #40;
     delay = 1'b0;
 
-
+    #5
     nrst = 1;  // Deassert reset
-    #2;
+    #5;
     nrst = 0;
-    #2;
+    #5;
     nrst = 1;
 
     wi = 1;    // Now trigger transfer
@@ -70,39 +70,39 @@ initial begin
     //miso_in = 1;
     delay = 1'b0;
     in = 16'h4000;
+    #20;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 0;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 1;
+    #10;
+    miso_in = 0;
+    #10;
+    miso_in = 0;
+    #10;
+    miso_in = 0;
+    #10;
+    miso_in = 0;
     #40;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 0;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 1;
-    #10;
-    miso_in = 0;
-    #10;
-    miso_in = 0;
-    #10;
-    miso_in = 0;
-    #10;
-    miso_in = 0;
-    #10;
     delay = 1'b1;
     #100;
     delay = 1'b0;
