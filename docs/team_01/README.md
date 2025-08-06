@@ -68,9 +68,7 @@ The amplifier connects to the speaker and ground and FPGA itself.
 For speakers, we used a Logitech 
 
 ## Functionality Description and Testing
-This project is a recreation of Tetris, so all the same rules apply. The best way to test functionality is to wire up buttons and test if inputs are correspond and are valid. See presentation for demo video @ testbench example here:
-<link https://docs.google.com/presentation/d/e/2PACX-1vQ5J6eAg-fM0MYb9h2nug7m4cWLqn1QPYuZf28jpfTcCsExHs7RleSBiXM36svMkUjVlpEQlcR1J1pw/pub?start=false&loop=false&delayms=3000>
-
+This project is a recreation of Tetris, so all the same rules apply. The best way to test functionality is to wire up buttons and test if inputs are correspond and are valid. See presentation for demo video @ testbench example [Here]([url](https://docs.google.com/presentation/d/e/2PACX-1vQ5J6eAg-fM0MYb9h2nug7m4cWLqn1QPYuZf28jpfTcCsExHs7RleSBiXM36svMkUjVlpEQlcR1J1pw/pub?start=false&loop=false&delayms=3000))
 POINT SYSTEM:
 1 line - 1 point
 2 lines - 3 points
