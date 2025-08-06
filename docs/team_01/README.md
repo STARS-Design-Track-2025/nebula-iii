@@ -101,7 +101,6 @@ Not all RTLs will be showcased here. Visit our [Drive](https://drive.google.com/
 Overall RTL:
 
 <img width="1631" height="737" alt="FinalRTLTetris drawio" src="https://github.com/user-attachments/assets/13a0f349-db41-42a7-a5cb-3705e18e6a4d" />
-<img width="960" height="1282" alt="image" src="https://github.com/user-attachments/assets/af543cdc-757a-4307-af32-5899c12a93c6" />
 
 
 VGA: 
