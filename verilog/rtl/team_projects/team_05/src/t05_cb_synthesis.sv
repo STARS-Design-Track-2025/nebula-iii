@@ -12,7 +12,7 @@ module t05_cb_synthesis (
     output logic char_found,
     output logic [127:0] char_path,
     output logic [7:0] char_index,
-    output logic [3:0] curr_state,
+    output logic state_3,
     output logic [6:0] curr_index,
     output logic [127:0] curr_path,
     output logic finished,
@@ -39,7 +39,7 @@ logic [8:0] least1, least2;
 // next state logic
 logic [127:0] next_path; // store current path
 logic [6:0] next_index; // htree element index
-state_cb next_state; // current codebook state
+state_cb next_state, curr_state; // current codebook state
 logic [6:0] next_track_length; // current path length (for tracking state)
 logic wait_cycle, next_wait_cycle;
 logic [6:0] pos, next_pos;
@@ -63,6 +63,7 @@ logic [127:0] temp_path, temp_path_n;
 logic [6:0] i, i_n;
 logic pulse_first, pulse_first_n;
 logic char_found_n;
+logic state_3_n;
 
 always_ff @(posedge clk, posedge rst) begin
   if (rst) begin
@@ -90,6 +91,7 @@ always_ff @(posedge clk, posedge rst) begin
     temp_path <= 128'b1;
     i <= 0;
     pulse_first <= 0;
+    state_3 <= 0;
   end
   else if (en_state == 4) begin
     char_path <= char_path_n;
@@ -115,6 +117,7 @@ always_ff @(posedge clk, posedge rst) begin
     temp_path <= temp_path_n;
     i <= i_n;
     pulse_first <= pulse_first_n;
+    state_3 <= state_3_n;
   end
 end
 
@@ -126,9 +129,10 @@ always_comb begin
   char_index_n = char_index;
   finished = 0;
   pulse = 0;
+  state_3_n = state_3;
   end_cond_n = end_cond;
   setup_n = setup;
-  next_state = state_cb'(curr_state);
+  next_state = curr_state;
   next_path = curr_path;
   next_index = curr_index;
   next_track_length = track_length;
@@ -151,6 +155,7 @@ always_comb begin
 
   case (curr_state)
     INIT: begin 
+      state_3_n = 0;
       if (setup) begin
         next_state = SEND;
         next_index = max_index;
@@ -165,6 +170,7 @@ always_comb begin
       end
     end
     LEFT: begin // move left (add 0 to path)
+      state_3_n = 0;
       if (wait_cycle == 0 && !SRAM_enable) begin
         next_track_length = track_length + 1; // update total path length
         // next_state = state_cb'((least1[8] == 1'b0) ? SEND : LEFT);
@@ -203,6 +209,7 @@ always_comb begin
       end
     end
     SEND: begin // state after a character was found and waiting for char bits to be written through SPI
+      state_3_n = 0;
       char_found_n = 0;
       if (end_check) begin
         end_cnt_n = end_cnt - 1;
@@ -235,6 +242,7 @@ always_comb begin
       end
     end
     SEND_WAIT: begin 
+      state_3_n = 0;
       if (end_cond && write_complete) begin
         next_state = FINISH;
       end
@@ -257,6 +265,7 @@ always_comb begin
       end
     end
     TRACK: begin // after backtrack state when a character was found, use that backtracked path to start from the top of the tree and then retrieve the htree element
+        state_3_n = 0;
         if (wait_cycle == 0 && (read_complete || write_complete)) begin
           pulse = 1;
           if(pulse_first) begin
@@ -292,6 +301,7 @@ always_comb begin
         end
     end
     BACKTRACK: begin // after a char was found and bits were written through the spi (header portion) start to backtrack until you can move right again
+      state_3_n = 1;
       char_found_n = 0;
       next_wait_cycle = 1;
       // if the top of the tree has been reached and left and right have already been traversed, next state is FINISH
@@ -323,6 +333,7 @@ always_comb begin
       end
     end
     RIGHT: begin  // move right (add 1 to path)
+      state_3_n = 0;
       next_pos = 1;
       if (wait_cycle == 0 && !SRAM_enable) begin
         next_track_length = track_length + 1; // update total path length
@@ -361,9 +372,11 @@ always_comb begin
       end
     end
     FINISH: begin
+      state_3_n = 0;
       finished = 1; // FIN state sent to (CONTROLLER)
     end
     default: begin
+      state_3_n = 0;
       next_state = state_cb'(curr_state);
     end
   endcase

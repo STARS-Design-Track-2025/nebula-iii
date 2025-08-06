@@ -368,11 +368,12 @@ module t05_top (
     .over_complete(HT_over_complete)
     );
 
-  logic [3:0] curr_state;
+  //logic [3:0] curr_state;
   logic [127:0] curr_path;
   logic left;
   logic [7:0] num_lefts;
   logic [8:0] header;
+  logic state_3;
 
   //Curr_state should be changed to logic can not pass typedefs through instantiation
   t05_cb_synthesis cb_syn (
@@ -386,7 +387,7 @@ module t05_top (
     .char_path(char_path), 
     .char_index(char_index), 
     .curr_index(curr_index), 
-    .curr_state(curr_state),
+    .state_3(state_3),
     .curr_path(curr_path),
     .num_lefts(num_lefts),
     .left(left),
@@ -406,7 +407,7 @@ module t05_top (
     .char_found(char_found), 
     .curr_path(curr_path),
     .track_length(track_length),
-    .state(curr_state),
+    .state_3(state_3),
     .left(left),
     .num_lefts(num_lefts),
     .header(header),

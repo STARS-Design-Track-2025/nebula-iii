@@ -5,7 +5,7 @@ module t05_header_synthesis (
     input logic char_found,
     input logic [127:0] curr_path,
     input logic [6:0] track_length,
-    input logic [3:0] state,
+    input logic state_3,
     input logic left, // if the char found is a left char
     input logic [7:0] num_lefts, // num of lefts from htree
     output logic [8:0] header,
@@ -93,7 +93,7 @@ always_comb begin
       next_write_finish = 0;
       next_write_char_path = 1;
     end
-    if ((state == 3 && !char_added && !char_found && curr_path[0] == 1 && track_length > 0)) begin // send one zero for each backtrack (not while char is being added)
+    if ((state_3 && !char_added && !char_found && curr_path[0] == 1 && track_length > 0)) begin // send one zero for each backtrack (not while char is being added)
       next_write_zeroes = 1;
       next_enable = 1;
       next_write_finish = 0;
