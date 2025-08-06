@@ -14,9 +14,9 @@ module t05_sram_interface (
     input logic wipe_the_char_1,
     input logic wipe_the_char_2,
     //htree inputs
-    input logic [70:0] new_node,
+    input logic [71:0] new_node,
     input logic [6:0] htreeindex,
-    input logic [6:0] htree_write,
+    input logic [7:0] htree_write,
     input logic pulse_HTREE,
     input logic htree_r_wr,
     input logic [3:0] HT_state,
@@ -86,14 +86,14 @@ module t05_sram_interface (
 
     logic [31:0] HTREE_log;
 
-    assign ctrl_done = '0;
+    // assign ctrl_done = '0;
     assign cb_done = 0;
     assign ht_done = 0;
 
     assign HTREE_log = {23'd0, find_least} - 32'd128;
 
     logic [31:0] ht_write_1;
-    assign ht_write_1 = {25'd0, htree_write} + 32'd1;
+    assign ht_write_1 = {24'd0, htree_write} + 32'd1;
 
     logic [31:0] ht_index_1_over;
     assign ht_index_1_over = ({25'd0, htreeindex} * 2'd2) + 32'd1;
@@ -114,7 +114,7 @@ module t05_sram_interface (
     assign char_index_3 = ({25'd0, char_index[6:0]} * 3'd4) + 32'd3;
 
     logic [31:0] curr_index_1;
-    assign curr_index_1 = {25'd0, curr_index[6:0]} + 32'd1;
+    assign curr_index_1 = {24'd0, curr_index} + 32'd1;
 
     logic CB_read_counter, CB_read_counter_n;
     logic [1:0] CB_write_counter, CB_write_counter_n;
@@ -520,7 +520,7 @@ always_comb begin
                         word_cnt_n = 2;
                     end
                     else if (!cb_r_wr) begin
-                        addr = 32'h33000000 + (curr_index[6:0] * 4);
+                        addr = 32'h33000000 + (curr_index * 4);
                         r_en = 1;
                         word_cnt_n = 7;
                     end

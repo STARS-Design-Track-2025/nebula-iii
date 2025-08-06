@@ -27,7 +27,7 @@ logic wipe_the_char_1_n;
 logic wipe_the_char_2_n;
 
 always_ff @(posedge clk, posedge rst) begin
-    if(rst) begin
+    if(rst || HTREE_complete) begin
         least1 <= 9'b110000000;
         least2 <= 9'b110000000;
         histo_index <= 0;
@@ -65,11 +65,7 @@ always @(*) begin
     alternator_timer_n = alternator_timer;
     alt = 0;
 
-    if (HTREE_complete) begin
-        count_n = 0;
-        startup_n = 1;
-        alternator_timer_n = 0;
-    end else if(histo_index == 0) begin
+    if(histo_index == 0) begin
         if(alternator_timer < 5) begin
             alternator_timer_n = alternator_timer + 1;
         end else begin
@@ -119,18 +115,7 @@ always @(*) begin
     wipe_the_char_1_n = wipe_the_char_1;
     wipe_the_char_2_n = wipe_the_char_2;
 
-    if (HTREE_complete) begin
-        least1_n = 9'b110000000;
-        least2_n = 9'b110000000;
-        charWipe1_n = 0;
-        charWipe2_n = 0;
-        sum_n = 0;
-        val1_n = '1;
-        val2_n = '1;
-        fin_state_n = 0;
-        wipe_the_char_1_n = 0;
-        wipe_the_char_2_n = 0;
-    end else if(compVal != 0 && histo_index < 256 && fin_state != 1) begin //&& histo_index != 0) begin
+    if(compVal != 0 && histo_index < 256 && fin_state != 1) begin //&& histo_index != 0) begin
         if(val1 > compVal && histo_index < 128) begin
             least2_n = least1;
             charWipe2_n = charWipe1;

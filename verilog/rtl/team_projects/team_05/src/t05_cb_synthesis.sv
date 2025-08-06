@@ -2,7 +2,7 @@
 module t05_cb_synthesis (
     input logic clk,
     input logic rst,
-    input logic [6:0] max_index,
+    input logic [7:0] max_index,
     input logic [70:0] h_element,
     // input logic write_finish,
     input logic [3:0] en_state,
@@ -13,7 +13,7 @@ module t05_cb_synthesis (
     output logic [127:0] char_path,
     output logic [7:0] char_index,
     output logic state_3,
-    output logic [6:0] curr_index,
+    output logic [7:0] curr_index,
     output logic [127:0] curr_path,
     output logic finished,
     output logic [6:0] track_length,
@@ -38,7 +38,7 @@ typedef enum logic [3:0] {
 // next state logic
 logic [8:0] least1, least2;
 logic [127:0] next_path;              // store current path
-logic [6:0] next_index;               // htree element index
+logic [7:0] next_index;               // htree element index
 state_cb next_state, curr_state;      // current codebook state
 logic [6:0] next_track_length;        // current path length (for tracking state)
 logic wait_cycle, next_wait_cycle;

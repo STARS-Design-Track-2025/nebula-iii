@@ -9,6 +9,7 @@ module t05_translation (
     input logic ser_pulse,                          //Coming from sd_spi_tx 
     input logic head_bit,                           //Write bit from header
     input logic head_write_en,                      //Header write enable
+    input logic write_complete_HS,                  //Header Synthesis has either completed writing or not
     output logic writeBin, nextCharEn, writeEn,     //writeBin == bit being written into file, nextCharEn calls for the next character, writeEn means to write to file 
     output logic pulse,                             //Goes to SRAM interface
     output logic input_valid,                       //Going to sd_spi_tx
@@ -63,6 +64,10 @@ module t05_translation (
                     writeBin = head_bit;
                     input_valid = 1;
                     writeEn_n = 0;
+                end
+                else if(write_complete_HS) begin
+                    input_valid = 0;
+                    writeBin = 0;
                 end
             end else if(resEn == 1) begin 
                 totalEn_n = 0;

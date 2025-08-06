@@ -9,10 +9,10 @@ module t05_top (
     // input logic [31:0] sram_in,
     // output logic [31:0] sram_out,
     // output logic [7:0] hist_addr,
-    // output logic out_of_init,
-    // output logic busy_o,
-    // output logic nextChar,
-    // output logic init,
+    output logic out_of_init,
+    output logic busy_o,
+    output logic nextChar,
+    output logic init,
 
     //SPI
     output logic mosi, 
@@ -30,7 +30,6 @@ module t05_top (
     //input logic pulse_in
 );
   logic serial_clk;
-  logic sclk;
 
   //FLV hTREE
   logic [8:0] least1_FLV, least2_FLV;
@@ -44,10 +43,10 @@ module t05_top (
   logic [31:0] sram_in;
   logic [31:0] sram_out;
   logic [7:0] hist_addr;
-  logic out_of_init;
-  logic busy_o;
-  logic nextChar;
-  logic init;
+  // logic out_of_init;
+  // logic busy_o;
+  // logic nextChar;
+  // logic init;
 
   assign mosi = 0;
   //Controller
@@ -64,12 +63,12 @@ module t05_top (
   logic [31:0] totChar;
 
   //HTREE CB
-  logic [6:0] max_index;
+  logic [7:0] max_index;
 
   //HTREE SRAM
   logic [63:0] nulls;
   logic SRAM_finished;
-  logic [70:0] node_reg;
+  logic [71:0] node_reg;
   logic [6:0] nullSumIndex;
   logic WorR;
 
@@ -96,7 +95,7 @@ module t05_top (
   //logic readEn;
 
   //CB SRAM
-  logic [6:0] curr_index;
+  logic [7:0] curr_index;
   logic SRAM_enable;
   logic cb_r_wr;
   //assign cb_r_wr = 0;
@@ -104,7 +103,7 @@ module t05_top (
   //SPI
   logic writeBit_HS, writeBit_TL;
   logic flag;
-  logic [6:0] read_out;
+  logic [6:0] read_out, read_out_n;
 
   //SOMETHING
   logic HT_fin_reg;
@@ -190,7 +189,7 @@ module t05_top (
     .least1_HTREE(least1_FLV),
     .least2_HTREE(least2_FLV),
     //CB INPUTS
-    .curr_index({1'd0, curr_index}),
+    .curr_index(curr_index),
     .char_index(char_index),
     .codebook_path(char_path),
     .cb_r_wr(cb_r_wr),
@@ -281,11 +280,19 @@ module t05_top (
         .leftover_count(leftover_count)     //number of valid leftover bits (0..7)
     );
 
+  always_ff @(posedge hwclk, posedge reset) begin
+    if(reset) begin
+      read_out <= '0;
+    end else begin
+      read_out <= read_out_n;
+    end
+  end
+
   always_comb begin
-    read_out = '0;
+    read_out_n = read_out;
     // eof_check = 0;
     if(read_in_pulse) begin
-      read_out = in;
+      read_out_n = in;
     end
     // if(out_valid) begin
     //   if(out == 8'h1A) begin
@@ -351,7 +358,7 @@ module t05_top (
     .HT_en(en_state), 
     .SRAM_finished(SRAM_finished),
     .node_reg(node_reg),
-    .clkCount(max_index), 
+    .clkCount(max_index),
     .nullSumIndex(nullSumIndex), 
     .WriteorRead(WorR),
     .HT_Finished(fin_state_HT),
@@ -397,22 +404,25 @@ module t05_top (
     .cb_r_wr(cb_r_wr)
     );
 
+  logic write_complete_HS;
+
   // TODO: Had to uncomment this because it's cooked
-  // t05_header_synthesis header_synthesis (
-  //   .clk(hwclk), 
-  //   .rst(reset), 
-  //   .char_index(char_index), 
-  //   .char_found(char_found), 
-  //   .curr_path(curr_path[0]),
-  //   .track_length(track_length),
-  //   .state_3(state_3),
-  //   .left(left),
-  //   .num_lefts(num_lefts),
-  //   .header(header),
-  //   .enable(writeEn_HS), 
-  //   .bit1(writeBit_HS)
+  t05_header_synthesis header_synthesis (
+    .clk(hwclk), 
+    .rst(reset), 
+    .char_index(char_index), 
+    .char_found(char_found), 
+    .curr_path(curr_path[0]),
+    .track_length(track_length),
+    .state_3(state_3),
+    .left(left),
+    .num_lefts(num_lefts),
+    .enable(writeEn_HS), 
+    .bit1(writeBit_HS),
+    .ser_pulse(ser_pulse),
+    .write_complete()
     // .write_finish(write_finish)
-    // );
+    );
 
   t05_translation translation (
     .clk(hwclk), 
@@ -429,10 +439,41 @@ module t05_top (
     .sram_complete(TRN_sram_complete),
     .char_index(TRN_char_index),
     .word_cnt(word_cnt),
-    .ser_pulse(),
-    .head_bit(),
-    .head_write_en(),
-    .input_valid()
+    .ser_pulse(ser_pulse),
+    .head_bit(writeBit_HS),
+    .head_write_en(writeEn_HS),
+    .input_valid(input_valid_TL),
+    .write_complete_HS(write_complete_HS)
     );
+
+    logic ser_pulse;
+    assign ser_pulse = 1;
+    logic sclk;
+    logic busy;
+    logic cs_n;
+    logic done;
+    logic input_valid_TL;
+
+    /*
+
+    t05_sd_spi_tx spi (
+    .clk(),                                             // System clock
+    .rst_n(!reset),                                     // Active low reset
+    .start(),                                           // Start transmission (pulse) - SPI Controller
+    .command(),                                         // 6-bit command to SD card - SPI Controller
+    .argument(),                                        // 32-bit command argument - SPI Controller
+    .crc(),                                             // 7-bit cyclic redundancy check - SPI Controller
+    .write_mode(writeEn_TL | writeEn_HS),               // 0: Command, 1: continuous write
+    .ser_w_data(writeBit_TL),                           // Serial write data from translation
+    .input_valid(input_valid_TL),                       // Provided serial input is valid
+    .ser_pulse(ser_pulse),                              // Pulse to request new serial data
+    .sdo(mosi),                                         // Serial data out (MOSI)
+    .sclk(sclk),                                            // SPI clock
+    .cs_n(cs_n),                                            // Chip select (active low)
+    .busy(busy),                                            // Transmission in progress
+    .done(done)                                             // Transmission complete (pulse)
+    );
+
+    */
 
 endmodule

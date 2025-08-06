@@ -2,9 +2,8 @@
 module t05_top_tb;
 
     logic hwclk, reset, miso;
-    logic mosi, cont_en;
+    logic mosi;
     //logic SRAM_finished;
-    logic [5:0] op_fin; // when SRAM finishes
     logic [6:0] read_out;
     //logic [63:0] compVal, nulls;
     logic [8:0] fin_State;      // Output from top module        // outputs from modules
@@ -47,12 +46,12 @@ module t05_top_tb;
     .reset(reset),
     .mosi(mosi),
     .miso(miso),
-    .spi_confirm_out(confirm),
+    // .spi_confirm_out(confirm),
     .nextChar(nextChar),
     .init(init),
     .in(in),
     .read_in_pulse(read_in_pulse),
-    .readEn(histo_complete),
+    // .readEn(histo_complete),
     .out_of_init(out_of_init),
     .busy_o(busy_o),
 
@@ -112,7 +111,7 @@ module t05_top_tb;
     //     #37000 $finish;
     // end
 
-    logic [5:0] index, index_n;
+    logic [12:0] index, index_n;
     
     logic alt, alt_n;
 
@@ -120,11 +119,11 @@ module t05_top_tb;
 
     //logic [6:0] mem [135:0];
     // logic [6:0] mem [23:0];
-    logic [6:0] mem [47:0];
-
+    //logic [6:0] mem [47:0];
+    logic [6:0] mem [4687:0];
 
     initial begin
-        $readmemb("test1.mem", mem);
+        $readmemb("7bitschunk.mem", mem);
     end
 
     always_ff @(posedge hwclk, posedge reset) begin
@@ -261,7 +260,7 @@ module t05_top_tb;
         //     pulseit (, i);
         // end
         // pulseit (1, 8'h1A);
-
+//        #104380 $finish;
         #930000 $finish;
     end
 

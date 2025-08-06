@@ -24,8 +24,9 @@ module t05_hTree (
   input logic sum_2,
   
   // Output data to other modules
-  output logic [70:0] node_reg,                         // nodes to be written to SRAM
-  output logic [6:0] clkCount, nullSumIndex,            // to Sram (nullSumIndex for addressing), To Codebook (clkCount for indexing)
+  output logic [71:0] node_reg,                         // nodes to be written to SRAM
+  output logic [7:0] clkCount,
+  output logic [6:0] nullSumIndex,            // to Sram (nullSumIndex for addressing), To Codebook (clkCount for indexing)
   
   //output logic [3:0] op_fin,                          // to controller - operation completion status
   output logic HT_fin_reg, HT_Finished,
@@ -55,12 +56,13 @@ module t05_hTree (
 
     // Internal register declarations
     state_t /* state, */ next_state;                                      // Current state register
-    logic [70:0] node;
-    logic [6:0] clkCount_reg, nullSumIndex_reg;                     // Clock counter and SRAM address index
+    logic [71:0] node;
+    logic [7:0] clkCount_reg;
+    logic [6:0] nullSumIndex_reg;                     // Clock counter and SRAM address index
     logic [8:0] least1_reg, least2_reg;                             // Registered input node values
     logic [63:0] sum_reg;                                           // Registered sum value
-    logic [70:0] null1, null2, null1_reg, null2_reg;                // Null node structures for sum nodes
-    logic [70:0] tree, tree_reg;                                    // Current tree node being constructed
+    logic [71:0] null1, null2, null1_reg, null2_reg;                // Null node structures for sum nodes
+    logic [71:0] tree, tree_reg;                                    // Current tree node being constructed
     logic HT_fin;                                                   // Huffman tree operation finished flag
     logic HT_finished;                                              // Huffman tree completely finished (both inputs null)
     logic [2:0] nullsum_delay_counter, nullsum_delay_counter_reg;   // Counter for NULLSUM state delays
@@ -75,9 +77,9 @@ always_ff @(posedge clk, posedge rst_n) begin
         state <= NEWNODE;
         nullSumIndex <= 0;
         HT_fin_reg <= 0;
-        null1_reg <= 71'b0;
-        null2_reg <= 71'b0;
-        tree_reg <= 71'b0;
+        null1_reg <= 72'b0;
+        null2_reg <= 72'b0;
+        tree_reg <= 72'b0;
         clkCount <= 0;
         HT_Finished <= 1'b0;   
         nullsum_delay_counter_reg <= 3'b0;   
@@ -174,7 +176,7 @@ end
                             end else if (least2[8] && least2 != 9'b110000000) begin
                                 next_state = L2SRAM;
                             // Neither node needs SRAM access, go to finish
-                            end else if (sram_complete) begin
+                            end else if (sram_complete) begin // if (sram_complete) begin
                                 clkCount_reg = clkCount + 2;                                        // Output current count (will be incremented next cycle)
                                 next_state = FIN;
                             end
@@ -213,7 +215,7 @@ end
                     NULLSUM1: begin
                         // Process SRAM data for least1 and prepare null1
                         WorR = 1'b0;
-                        null1 = {least1[6:0], nulls[63:46], 46'b0};
+                        null1 = {least1[7:0], nulls[63:46], 46'b0};
                         //nullSumIndex_reg = 7'b0;
                         
                         // // Multi-cycle delay within NULLSUM1 state
@@ -229,7 +231,7 @@ end
                             next_state = L2SRAM;
                         end else if (sram_complete) begin
                             clkCount_reg = clkCount + 2;
-                            next_state = FIN;
+                            next_state = FIN;//NEWNODE;
                         end
                         // end
                         node = null1;                                                   // null1 was most recently updated
@@ -265,7 +267,7 @@ end
                     NULLSUM2: begin
                         // Process SRAM data for least2 and prepare null2
                         WorR = 1'b0;
-                        null2 = {least2[6:0], nulls[63:46], 46'b0};
+                        null2 = {least2[7:0], nulls[63:46], 46'b0};
                         //nullSumIndex_reg = 7'b0;
                         
                         // Multi-cycle delay within NULLSUM2 state
@@ -303,6 +305,9 @@ end
                     end
                 endcase
             end
+        end
+        else begin
+            next_state = NEWNODE;    
         end// end else begin
         //     if(HT_en == 0) begin
         //         // When HT_en is low, reset to NEWNODE for next operation
