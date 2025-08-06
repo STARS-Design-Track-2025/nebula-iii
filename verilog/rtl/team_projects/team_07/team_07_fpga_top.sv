@@ -23,12 +23,34 @@ module top (
 
   logic wi;
   logic newclk, newclk_n; 
-  logic [4:0] count, count_n;
-  logic [15:0] in;
+  logic [8:0] count, count_n;
+  logic [31:0] in;
   logic delay;
 
-  always_ff @(posedge hwclk, posedge reset) begin //
-    if (reset) begin
+  logic invalError;
+  logic [6:0] FPUFlag; 
+
+  logic [31:0] dataArToWM, ackToWM, dataDecToAr;
+
+  //for SRAM & wishbone
+  logic [31:0] dataWMToAr, addrWMToAr;
+  logic [3:0] selToAr;
+  logic weToAr, stbToAr, cycToAr, ackToAr;
+  logic cycToDec, stbToDec, weToDec;
+  logic [31:0] addrToDec, dataToDec; 
+  logic [3:0] selToDec;
+  logic [6 + 3:0] cyc_out;
+  logic [6 + 3:0] stb_out;
+  logic [6 + 3:0] we_out;
+  logic [(32 * (10)) - 1:0] addr_out; 
+  logic [(32 * (10)) - 1:0] data_out;
+  logic [(4 * (10)) - 1:0] sel_out;
+  logic [6 + 3:0] ackDec_in; //acknowledge
+  logic [(32 * (10)) - 1:0] dataDec_in; //data from SRAM to WB Dec
+
+
+  always_ff @(posedge hwclk, negedge reset) begin //
+    if (!reset) begin
       count <= '0;
       newclk <= '0;
     end else begin
@@ -40,7 +62,7 @@ module top (
   always_comb begin
     count_n = count;
     newclk_n = newclk;
-    if (count < 5'd18) begin //clock divider
+    if (count < 9'd50) begin //clock divider to 250 kHz
       count_n = count + 1;
     end else begin
       count_n = '0;
@@ -48,11 +70,18 @@ module top (
     end
   end
 
-  t07_display tft (.clk(newclk), .nrst(~reset), .out(in), .delay(delay));
-  t07_spitft spitft (.clk(newclk), .nrst(~reset), .in(in), .wi(wi), .delay(delay), .ack(right[7]), .bitData(right[1]), .chipSelect(right[3]), .sclk(right[2]));
-  
-  // assign wi = 1'b1;  
+  t07_top top0(.clk(newclk), .nrst(reset), .FPUFlag(FPUFlag), .invalError(invalError), .chipSelectTFT(right[3]), .bitDataTFT(right[1]), .sclkTFT(right[2]), .misoDriver_i(pb[4]),
+  .dataArToWM(dataArToWM), .ackToWM(ackToWM), .dataWMToAr(dataWMToAr), .addrWMToAr(addrWMToAr), .selToAr(sel_out), .weToAr(we_out), .stbToAr(stb_out), .cycToAr(cyc_out));
 
+  //t07_spiTFTHu spitft (.clk(newclk), .nrst(reset), .MOSI_data(in), .read_in(1'b0), .write_in(1'b1), .MISO_out(), .ack(right[7]), .bitData(right[1]), .chipSelect(right[3]), .sclk(right[2]), .MISO_in(pb[4])); 
+
+  
+  //spitft (.clk(newclk), .nrst(~reset), .in(in), .wi(wi), .miso_in(pb[4]), .miso_out(right[4]), .ack(right[7]), .bitData(right[1]), .chipSelect(right[3]), .sclk(right[2]));
+  
+  assign wi = 1'b1;  
+
+  sram_WB_Wrapper sramWrapper(.wb_clk_i(newclk), .wb_rst_i(reset), .wbs_stb_i(stb_out), .wbs_cyc_i(cyc_out), .wbs_we_i(we_out), .wbs_sel_i(sel_out),
+  .wbs_dat_i(dataWMToAr), .wbs_adr_i(addrWMToAr), .wbs_ack_o(ackToWM), .wbs_dat_o(dataArToWM)); 
   // //fsm to draw
   // //states: 
   // logic [2:0] state, next_state;
