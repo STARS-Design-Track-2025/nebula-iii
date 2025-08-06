@@ -169,7 +169,9 @@ module t08_I2C_and_interrupt(
     logic sda_out_n;
     logic sda_oeb_n;
     logic scl_out_n;
-    logic scl_oeb_n;
+    // logic scl_oeb_n;
+    assign scl_oeb = '0;
+
     logic [31:0] data_out_n;
     logic bit_to_send_ack;
 
@@ -182,14 +184,14 @@ module t08_I2C_and_interrupt(
             sda_out      <= 1;
             sda_oeb      <= 0;
             scl_out      <= 1;
-            scl_oeb      <= 0;
+            // scl_oeb      <= 0;
             data_out     <= 0;
         end else begin
             output_state <= output_state_n;
             sda_out     <= sda_out_n;
             sda_oeb     <= sda_oeb_n;
             scl_out     <= scl_out_n;
-            scl_oeb     <= scl_oeb_n;
+            // scl_oeb     <= scl_oeb_n;
             data_out    <= data_out_n;
         end
     end

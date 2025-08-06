@@ -118,7 +118,7 @@ module t08_top(
 
         .DAT_I(wb_dat_i), .ACK_I(wb_ack_i),                         //"input from wishbone interconnect"
                                                                   
-        .CPU_DAT_I(mmio_data_to_wb), .ADR_I(mmio_address_to_wb),    //"input from user design"
+        .CPU_DAT_I(mmio_data_to_wb), .ADR_I({8'h33, mmio_address_to_wb[23:0]}),    //"input from user design"
         .SEL_I(mmio_select_to_wb),  
         .WRITE_I(mmio_write_to_wb), .READ_I(mmio_read_to_wb),    
 

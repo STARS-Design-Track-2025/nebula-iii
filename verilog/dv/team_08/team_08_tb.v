@@ -35,6 +35,10 @@ module team_08_tb;
 	assign mprj_io[3] = (CSB == 1'b1) ? 1'b1 : 1'bz;
 	assign clock_in = clock;
 
+	// Pins for Team 08 specifically
+	reg touchscreen_interrupt;
+	assign mprj_io[0] = touchscreen_interrupt;
+
 	// External clock generation
 	always #50 clock <= (clock === 1'b0);
 	// Initialize the clock at 0
@@ -144,7 +148,7 @@ module team_08_tb;
 		$dumpvars(0, team_08_tb.mprj_io, team_08_tb.uut.chip_core.mprj);
 
 		// Repeat cycles of 1000 clock edges as needed to complete testbench
-		repeat (1000) begin
+		repeat (100000) begin
 			repeat (1000) @(posedge clock);
 		end
 		$display("%c[1;31m",27);
@@ -160,13 +164,23 @@ module team_08_tb;
 	// Main Test Bench Process
 	initial begin
 
+		// Initialize inputs
 		touchscreen_interrupt = 1;
 
-        repeat (10000) @ (negedge clk);
+		// Wait until design is enabled
+		wait(uut.chip_core.mprj.mprj.team_08_Wrapper.team_08_WB.instance_to_wrap.en == 1);
+		$display("\nDesign Enabled!\n");
 
-        touchscreen_interrupt = 0; #4; @(negedge clk); touchscreen_interrupt = 1;
+        // Wait
+		repeat (10000) @(negedge clock);
 
-        #20000000
+        // Assert interrupt
+		touchscreen_interrupt = 0; @(negedge clock);
+		touchscreen_interrupt = 1;
+
+
+		// // Wait until testbench finishes
+		repeat(500000) @(negedge clock);
 		
 		$display("%c[1;32m",27);
 		`ifdef GL

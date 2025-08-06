@@ -74,8 +74,8 @@ module team_08 (
     t08_top top(
         .clk(clk), .nRst(nrst && en),
         .touchscreen_interrupt(gpio_in[0]), 
-        .sda_in(gpio_in[1]), .sda_out(gpio_out[1]), .sda_oeb(gpio_oeb[1]), 
-        .scl_in(gpio_in[2]), .scl_out(gpio_out[2]), .scl_oeb(gpio_oeb[2]),
+        .I2C_sda_in(gpio_in[1]), .I2C_sda_out(gpio_out[1]), .I2C_sda_oeb(gpio_oeb[1]), 
+        .I2C_scl_in(gpio_in[2]), .I2C_scl_out(gpio_out[2]), .I2C_scl_oeb(gpio_oeb[2]),
 
         .spi_outputs(gpio_out[10:3]), 
         .spi_wrx(gpio_out[11]), .spi_rdx(gpio_out[12]), .spi_csx(gpio_out[13]), .spi_dcx(gpio_out[14]),

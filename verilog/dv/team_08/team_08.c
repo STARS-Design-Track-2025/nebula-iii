@@ -148,7 +148,7 @@ void main()
 	reg_gpio_PIN_32TO37 = 0x888888;
 
 	// Load instructions to RAM
-	team_08_sram_init();
+	team_08_sram_init(&sram_space);
 	
 	// Enable your design
 	reg_team_08_EN = 1;
