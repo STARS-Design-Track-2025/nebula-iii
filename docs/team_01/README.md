@@ -21,19 +21,19 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 02 [--]** - NOT ALLOWED
 * **Pin 03 [--]** - NOT ALLOWED
 * **Pin 04 [--]** - NOT ALLOWED
-* **Pin 05 [01]** - Input - MOVE LEFT
-* **Pin 06 [02]** - Input - MOVE RIGHT
-* **Pin 07 [03]** - Input - ROTATE LEFT
-* **Pin 08 [04]** - Input - ROTATE RIGHT
-* **Pin 09 [05]** - Input - SOFT DROP
-* **Pin 10 [06]** - Input - PLAYER START
-* **Pin 11 [07]** - Input - AI START
-* **Pin 12 [08]** - Output - VGA HSYNC
-* **Pin 13 [09]** - Output - VGA VSYNC
-* **Pin 14 [10]** - Output - VGA RED
-* **Pin 15 [11]** - Output - VGA GREEN
-* **Pin 16 [12]** - Output - VGA BLUE
-* **Pin 17 [13]** - Output - SPEAKER
+* **Pin 05 [pb[3]** - Input - MOVE LEFT
+* **Pin 06 [pb[0]]** - Input - MOVE RIGHT
+* **Pin 07 [pb[7]]** - Input - ROTATE LEFT
+* **Pin 08 [pb[4]]** - Input - ROTATE RIGHT
+* **Pin 09 [pb[8] || pb [11]]** - Input - SOFT DROP
+* **Pin 10 [pb[19]]** - Input - PLAYER START
+* **Pin 11 [pb[16]]** - Input - AI START
+* **Pin 12 [left[7]]** - Output - VGA HSYNC
+* **Pin 13 [left[6]]** - Output - VGA VSYNC
+* **Pin 14 [red]** - Output - VGA RED
+* **Pin 15 [green]** - Output - VGA GREEN
+* **Pin 16 [blue]** - Output - VGA BLUE
+* **Pin 17 [left[5]]** - Output - SPEAKER
 * **Pin 18 [14]** - Input or Output? - Pin Function? 
 * **Pin 19 [15]** - Input or Output? - Pin Function? 
 * **Pin 20 [16]** - Input or Output? - Pin Function? 
