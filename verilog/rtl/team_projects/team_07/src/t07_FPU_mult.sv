@@ -2,7 +2,7 @@ module t07_FPU_mult(
     input logic clk, nrst,
     input logic [31:0] inA, inB,
     input logic busy,
-    input logic signA, signB,
+    input logic signA, signB, 
     output logic [31:0] result,
     output logic sign, overflow
 );

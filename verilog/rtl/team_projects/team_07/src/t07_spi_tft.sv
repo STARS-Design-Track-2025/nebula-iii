@@ -12,6 +12,7 @@
 //     8 bit of address sent and then 8 bits of data send 
 // */
 
+<<<<<<< HEAD
 // typedef enum logic [2:0] {
 //     IDLE = 0,
 //     LOAD = 1,
@@ -23,6 +24,9 @@
 // spi_state state, next_state;
 
 // module t07_spi_tft (
+=======
+module t07_spi_tft (
+>>>>>>> 1547289101454f7c499da60d41d66a006666ece7
 
 //     input logic [31:0] data,
 //     input logic [31:0] address,
@@ -37,8 +41,25 @@
 //     output logic sclk,
 //     output logic chipSelect // chip select
 
+<<<<<<< HEAD
 // );
 // assign sclk = clk; // synchronous with driver
+=======
+);
+
+typedef enum logic [2:0] {
+    IDLE = 0,
+    LOAD = 1,
+    SHIFT = 2,
+    CS_HIGH = 3,
+    DONE = 4
+} spi_state;
+
+spi_state state, next_state;
+
+
+assign sclk = clk; // synchronous with driver
+>>>>>>> 1547289101454f7c499da60d41d66a006666ece7
 
 // logic [15:0] shiftReg, n_shiftReg;
 // logic [63:0] dataforOutput;

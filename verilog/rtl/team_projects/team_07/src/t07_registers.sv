@@ -22,22 +22,20 @@ module t07_registers (
     input logic [31:0] write_data, // from memory handler
     input logic reg_write, // from control unit
     input logic enable, // from control unit
+    input logic freeze_i,
 
     output logic [31:0] read_data1, read_data2
-
 );
 
     // Register file: 32 registers, each 32 bits wide
-    logic [31:0] registers [31:0];
+    logic [31:0] [31:0]registers ;
     
     // write logic
     always_ff @(negedge nrst, posedge clk) begin
         if (~nrst) begin
             // Reset all registers to zero
-            for (int i = 0; i < 32; i++) begin
-                registers[i] <= 32'b0;
-            end
-        end else if (enable) begin
+            registers <= '0;
+        end else if (enable & freeze_i == '0) begin
             if (reg_write && write_reg != 5'b0) begin
                 registers[write_reg] <= write_data;
             end 
