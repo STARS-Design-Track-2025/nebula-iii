@@ -68,7 +68,14 @@ The amplifier connects to the speaker and ground and FPGA itself.
 For speakers, we used a Logitech 
 
 ## Functionality Description and Testing
-Describe in detail how your project works and how to test it.
+This project is a recreation of Tetris, so all the same rules apply. The best way to test functionality is to wire up buttons and test if inputs are correspond and are valid. See presentation for demo video @ testbench example here:
+<link https://docs.google.com/presentation/d/e/2PACX-1vQ5J6eAg-fM0MYb9h2nug7m4cWLqn1QPYuZf28jpfTcCsExHs7RleSBiXM36svMkUjVlpEQlcR1J1pw/pub?start=false&loop=false&delayms=3000>
+
+POINT SYSTEM:
+1 line - 1 point
+2 lines - 3 points
+3 lines - 5 points
+4 lines (TETRIS) - 8 points
 
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_01).
