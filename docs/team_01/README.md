@@ -72,7 +72,8 @@ For speakers, we used a Logitech z150, but any speaker should work theoretically
 BREADBOARD AND BUTTONS - 
 You can wire up the buttons how ever you please. here is our layout we used throughout the design process:
 
-![BreadboardLayout](https://github.com/user-attachments/assets/f3047b13-919f-45e8-81a7-d4fd98f6ba3e)
+![BreadboardLayout(1)](https://github.com/user-attachments/assets/8f298f1e-9397-4156-a574-a37716747b02)
+
 
 
 ## Functionality Description and Testing
