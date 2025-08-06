@@ -35,8 +35,6 @@ module t05_header_synthesis (
 	reg next_enable;
 	reg [7:0] count;
 	reg [7:0] next_count;
-	reg [8:0] path_count;
-	reg [8:0] next_path_count;
 	reg next_bit1;
 	reg next_char_added;
 	reg next_write_finish;
@@ -64,7 +62,6 @@ module t05_header_synthesis (
 			start <= 0;
 			zero_sent <= 0;
 			write_char_path <= 0;
-			path_count <= 0;
 			write_num_lefts <= 0;
 		end
 		else begin
@@ -79,7 +76,6 @@ module t05_header_synthesis (
 			start <= next_start;
 			zero_sent <= next_zero_sent;
 			write_char_path <= next_write_char_path;
-			path_count <= next_path_count;
 			write_num_lefts <= next_write_num_lefts;
 		end
 	always @(*) begin
@@ -95,7 +91,6 @@ module t05_header_synthesis (
 		next_write_zeroes = write_zeroes;
 		next_start = start;
 		next_write_char_path = write_char_path;
-		next_path_count = path_count;
 		next_write_num_lefts = write_num_lefts;
 		next_zero_sent = 0;
 		if (char_found == 1'b1) begin
@@ -141,7 +136,6 @@ module t05_header_synthesis (
 					next_bit1 = 0;
 					next_char_added = 0;
 					next_zero_sent = 0;
-					next_path_count = 0;
 					next_write_char_path = 0;
 					if ((num_lefts != 0) && left) begin
 						next_write_num_lefts = 1;
@@ -172,7 +166,6 @@ module t05_header_synthesis (
 				next_bit1 = 0;
 				next_write_num_lefts = 0;
 				next_write_finish = 1;
-				next_path_count = 0;
 			end
 		end
 	end

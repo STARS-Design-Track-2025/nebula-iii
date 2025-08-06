@@ -20,8 +20,8 @@ logic [7:0] next_zeroes;
 logic next_enable;
 logic [7:0] count;
 logic [7:0] next_count;
-logic [8:0] path_count;
-logic [8:0] next_path_count;
+// logic [8:0] path_count;
+// logic [8:0] next_path_count;
 logic next_bit1;
 logic next_char_added;
 logic next_write_finish;
@@ -49,7 +49,7 @@ always_ff @(posedge clk, posedge rst) begin
       start <= 0;
       zero_sent <= 0;
       write_char_path <= 0;
-      path_count <= 0;
+      // path_count <= 0;
       write_num_lefts <= 0;
     end
     else begin
@@ -64,7 +64,7 @@ always_ff @(posedge clk, posedge rst) begin
       start <= next_start;
       zero_sent <= next_zero_sent; 
       write_char_path <= next_write_char_path;
-      path_count <= next_path_count;
+      // path_count <= next_path_count;
       write_num_lefts <= next_write_num_lefts;
     end
 end
@@ -80,7 +80,7 @@ always_comb begin
     next_write_zeroes = write_zeroes;
     next_start = start;
     next_write_char_path = write_char_path;
-    next_path_count = path_count;
+    // next_path_count = path_count;
     next_write_num_lefts = write_num_lefts;
 
     next_zero_sent = 0;
@@ -129,7 +129,7 @@ always_comb begin
                 next_bit1 = 0;
                 next_char_added = 0;
                 next_zero_sent = 0;
-                next_path_count = 0;
+                // next_path_count = 0;
               	next_write_char_path = 0;
               if (num_lefts != 0 && left) begin
                   next_write_num_lefts = 1;
@@ -160,7 +160,7 @@ always_comb begin
       next_bit1 = 0;
       next_write_num_lefts = 0;
       next_write_finish = 1;
-      next_path_count = 0;
+      // next_path_count = 0;
     end
   end
     
