@@ -54,7 +54,7 @@ module team_08 (
     assign gpio_oeb[0] = 1;
 
     // Setting unused outputs to 0 (just cause)
-    assign gpio_out[33:15] = '0;
+    assign {gpio_out[33:15], gpio_out[0]} = '0;
 
     /*
     List of pins used: 

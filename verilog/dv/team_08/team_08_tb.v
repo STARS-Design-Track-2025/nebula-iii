@@ -36,8 +36,10 @@ module team_08_tb;
 	assign clock_in = clock;
 
 	// Pins for Team 08 specifically
-	reg touchscreen_interrupt;
+	reg touchscreen_interrupt, I2C_sda_in, I2C_scl_in;
 	assign mprj_io[0] = touchscreen_interrupt;
+	assign mprj_io[5] = (uut.chip_core.mprj.io_oeb[5]) ? I2C_sda_in : 1'bz;
+	assign mprj_io[6] = (uut.chip_core.mprj.io_oeb[6]) ? I2C_scl_in : 1'bz;
 
 	// External clock generation
 	always #50 clock <= (clock === 1'b0);
@@ -166,6 +168,8 @@ module team_08_tb;
 
 		// Initialize inputs
 		touchscreen_interrupt = 1;
+		I2C_scl_in = 1;
+		I2C_sda_in = 1;
 
 		// Wait until design is enabled
 		wait(uut.chip_core.mprj.mprj.team_08_Wrapper.team_08_WB.instance_to_wrap.en == 1);
@@ -177,10 +181,15 @@ module team_08_tb;
         // Assert interrupt
 		touchscreen_interrupt = 0; @(negedge clock);
 		touchscreen_interrupt = 1;
+		$display("\nInterrupt Sent!!\n");
 
+		// Wait for loop?
+		// while($time != 26367699) begin
+		// end
+		// $display("\nNo loop (maybe)!\n");
 
-		// // Wait until testbench finishes
-		repeat(500000) @(negedge clock);
+		// Wait until testbench finishes
+		repeat(50000) @(negedge clock);
 		
 		$display("%c[1;32m",27);
 		`ifdef GL
