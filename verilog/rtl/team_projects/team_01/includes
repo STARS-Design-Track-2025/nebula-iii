@@ -18,6 +18,8 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_tetrisFSM.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_tetrisGrid.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_vgadriver.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_debounce.sv
+
 
 # AI
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_feature_extract.sv
