@@ -1086,12 +1086,14 @@ module t08_I2C_and_interrupt(
             end
 
            I2C_SEND_ACK_BIT: begin
+               sda_oeb_n = 1;
                bit_to_send_ack = 1; //Technically, it isn't going to send an ack bit because it ACTUALLY WASN'T SUPPOSED TO
                initiate_send_single_bit = 1;
            end
 
 
            I2C_SEND_ACK_BIT_WAIT: begin
+               sda_oeb_n = 1;
                bit_to_send_ack = 1;
            end
 
