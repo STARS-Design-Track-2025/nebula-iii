@@ -165,14 +165,11 @@ end
 //=================================================================================
 
   logic right_i, left_i, rotate_r, rotate_l;
-  logic human_player, ai_player; 
 
   t01_debounce NIRAJMENONFANCLUB (.clk(clk_25m), .pb(pb[0]), .button(right_i));
   t01_debounce BENTANAYAYAYAYAYAY (.clk(clk_25m), .pb(pb[3]), .button(left_i));
   t01_debounce nandyhu (.clk(clk_25m), .pb(pb[4]), .button(rotate_r));
   t01_debounce benmillerlite (.clk(clk_25m), .pb(pb[7]), .button(rotate_l));
-  t01_debounce tetris_human_game (.clk(clk_25m), .pb(J39_b15), .button(human_player));
-  t01_debounce tetris_ai_game (.clk(clk_25m), .pb(J39_b20), .button(ai_player));
 
     //=============================================================================
     // tetris game !!!
@@ -600,7 +597,7 @@ t01_ai_MMU mmu (
   // );
 
   // tmp 
-    t01_ai_ofm_tmp ofm_tmp (
+    t01_ai_agi  ofm_tmp (
     .clk(clk_25m), 
     .rst(rst || (ai_new_spawn && gamestate == 'd1)), 
     .gamestate(gamestate), 

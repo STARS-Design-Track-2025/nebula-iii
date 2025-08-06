@@ -33,6 +33,8 @@
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_systolic_array.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_tetrisFSM.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_at_wb_load.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_agi.sv
+
 
 
 # -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
