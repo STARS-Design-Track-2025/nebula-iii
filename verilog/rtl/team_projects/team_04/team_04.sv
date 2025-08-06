@@ -48,6 +48,11 @@ module team_04 (
     // You can also have input registers controlled by the Caravel Harness's on chip processor
 );
 
+    
+    // Reset Signal
+    logic real_rst;
+    assign real_rst = ~nrst | ~en;  // Takes en into account
+    
     // === Keypad ===
     logic [3:0] row;
     logic [3:0] column; // good boy (can I have this column be named the same as an internal signal)
@@ -81,54 +86,59 @@ module team_04 (
     logic [31:0] mem_store_display;
     logic WEN;
     logic d_ack_display;
-    logic [9:0] cnt, ncnt;
+    // logic [9:0] cnt, ncnt;
 
     assign pc = final_address[7:0];
     assign acks = {d_ack, d_ack_display};
 
     // === GPIO Pin Assignments ===
-    assign gpio_oeb = 34'b1111000011111111111111111111111111;
+    assign {gpio_oeb[33:20], gpio_oeb[0]} = '1;  // Unused pins set to inputs (just cause)
+    assign {gpio_oeb[19:9], gpio_oeb[4:1]} = '0;  // Outputs
+    assign gpio_oeb[8:5] = '1;  // Inputs
 
-    assign column[0] = gpio_out[01];
-    assign column[1] = gpio_out[02];
-    assign column[2] = gpio_out[03];
-    assign column[3] = gpio_out[04];
+    // Set unused outputs to 0
+    assign {gpio_out[33:20], gpio_out[8:5], gpio_out[0]} = '0;
+
+    assign gpio_out[01] = column[0];
+    assign gpio_out[02] = column[1];
+    assign gpio_out[03] = column[2];
+    assign gpio_out[04] = column[3];
     assign row[0] = gpio_in[05];
     assign row[1] = gpio_in[06];
     assign row[2] = gpio_in[07];
     assign row[3] = gpio_in[08];
-    assign screenCsx = gpio_out[09];
-    assign screenDcx = gpio_out[10];
-    assign screenWrx = gpio_out[11];
-    assign screenData[0] = gpio_out[12];
-    assign screenData[1] = gpio_out[13];
-    assign screenData[2] = gpio_out[14];
-    assign screenData[3] = gpio_out[15];
-    assign screenData[4] = gpio_out[16];
-    assign screenData[5] = gpio_out[17];
-    assign screenData[6] = gpio_out[18];
-    assign screenData[7] = gpio_out[19];
+    assign gpio_out[09] = screenCsx;
+    assign gpio_out[10] = screenDcx;
+    assign gpio_out[11] = screenWrx;
+    assign gpio_out[12] = screenData[0];
+    assign gpio_out[13] = screenData[1];
+    assign gpio_out[14] = screenData[2];
+    assign gpio_out[15] = screenData[3];
+    assign gpio_out[16] = screenData[4];
+    assign gpio_out[17] = screenData[5];
+    assign gpio_out[18] = screenData[6];
+    assign gpio_out[19] = screenData[7];
 
-    always_ff @(posedge clk, posedge rst) begin
-        if(rst) begin
-        cnt <= '0;
-        end else begin
-        cnt <= ncnt;
-        end
-    end
+    // always_ff @(posedge clk, negedge nrst) begin
+    //     if (~nrst) begin
+    //     cnt <= '0;
+    //     end else begin
+    //     cnt <= ncnt;
+    //     end
+    // end
 
-    always_comb begin
-        if(cnt == 1000) begin
-        ncnt = 0;
-        end else begin
-        ncnt = cnt + 1;
-        end
-    end
+    // always_comb begin
+    //     if(cnt == 1000) begin
+    //     ncnt = 0;
+    //     end else begin
+    //     ncnt = cnt + 1;
+    //     end
+    // end
 
     // === Instantiate Datapath ===
     t04_datapath datapath (
         .clk(clk),
-        .rst(rst),
+        .rst(real_rst),
         .i_ack(i_ack),
         .d_ack(d_ack),
         .instruction(instruction),
@@ -144,7 +154,7 @@ module team_04 (
     // === Instantiate MMIO ===
     t04_mmio mmio (
         .clk(clk),
-        .reset(rst), 
+        .reset(real_rst), 
         .final_address(final_address),
         .mem_store(mem_store),
         .MemRead(MemRead),
@@ -163,24 +173,24 @@ module team_04 (
         .d_ack_display(d_ack_display),
         .WEN(WEN),
         .ack(ACK_I),
-        .dat_i(DAT_O),
+        .dat_i(DAT_I),
         .stb(STB_O),
         .cyc(CYC_O),
         .we(WE_O),
         .sel(SEL_O),
         .adr(ADR_O),
-        .dat_o(DAT_I)
+        .dat_o(DAT_O)
     );
 
     // === KEYPAD INTERFACE ===
     t04_counter_column columns (
-        .clk(clk), .rst(rst),
+        .clk(clk), .rst(real_rst),
         .column(column),
         .pulse_e(pulse_e)
     );
 
     t04_keypad_interface keypad (
-        .clk(clk), .rst(rst),
+        .clk(clk), .rst(real_rst),
         .column(column),
         .row(row),
         .pulse(pulse_e),
@@ -192,7 +202,7 @@ module team_04 (
     // === DISPLAY INTERFACE ===
     t04_screen_top screen (
         .clk(clk),
-        .rst(rst),
+        .rst(real_rst),
         .WEN(WEN),
         .mem_store_display(mem_store_display),
         .display_address(display_address),
@@ -200,7 +210,7 @@ module team_04 (
         .dcx(screenDcx),
         .csx(screenCsx),
         .wrx(screenWrx),
-        .screenData(screenData),
+        .screenData(screenData)
     );
 
 endmodule

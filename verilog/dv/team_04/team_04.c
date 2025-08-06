@@ -18,7 +18,7 @@
 // This include is relative to $CARAVEL_PATH (see Makefile)
 #include <defs.h>
 #include <stub.c>
-// #include "team_04_cpu.h"  // Uncomment if you're a CPU team and need to load instructions to RAM
+#include "team_04_sram_init.c"  // Uncomment if you're a CPU team and need to load instructions to RAM
 
 // List of Wishbone Slave Addresses
 
@@ -72,40 +72,25 @@ void main()
 	// all of the GPIO pins to be used for user functions.
 
 	// Configure IO[0] and IO[37:5] to outputs
-	reg_mprj_io_0 =  GPIO_MODE_USER_STD_OUTPUT;
-	reg_mprj_io_5 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_6 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_7 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_8 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_9 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_10 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_11 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_12 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_13 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_14 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_15 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_16 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_17 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_18 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_19 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_20 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_21 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_22 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_23 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_24 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_25 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_26 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_27 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_28 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_29 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_30 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_31 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_32 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_33 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_34 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_35 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_36 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_37 = GPIO_MODE_USER_STD_OUTPUT;
+	reg_mprj_io_5 = GPIO_MODE_USER_STD_OUTPUT;	// column[0]
+    reg_mprj_io_6 = GPIO_MODE_USER_STD_OUTPUT;	// column[1]
+    reg_mprj_io_7 = GPIO_MODE_USER_STD_OUTPUT;	// column[2]
+    reg_mprj_io_8 = GPIO_MODE_USER_STD_OUTPUT;	// column[3]
+    reg_mprj_io_9 = GPIO_MODE_USER_STD_INPUT_PULLDOWN;	// row[0]
+    reg_mprj_io_10 = GPIO_MODE_USER_STD_INPUT_PULLDOWN;	// row[1]
+    reg_mprj_io_11 = GPIO_MODE_USER_STD_INPUT_PULLDOWN;	// row[2]
+    reg_mprj_io_12 = GPIO_MODE_USER_STD_INPUT_PULLDOWN;	// row[3]
+    reg_mprj_io_13 = GPIO_MODE_USER_STD_OUTPUT;	// screenCsx
+    reg_mprj_io_14 = GPIO_MODE_USER_STD_OUTPUT; // screenDcx
+    reg_mprj_io_15 = GPIO_MODE_USER_STD_OUTPUT;	// screenWrx
+    reg_mprj_io_16 = GPIO_MODE_USER_STD_OUTPUT;	// screenData[0]
+    reg_mprj_io_17 = GPIO_MODE_USER_STD_OUTPUT;	// screenData[1]
+    reg_mprj_io_18 = GPIO_MODE_USER_STD_OUTPUT;	// screenData[2]
+    reg_mprj_io_19 = GPIO_MODE_USER_STD_OUTPUT;	// screenData[3]
+    reg_mprj_io_20 = GPIO_MODE_USER_STD_OUTPUT;	// screenData[4]
+    reg_mprj_io_21 = GPIO_MODE_USER_STD_OUTPUT;	// screenData[5]
+    reg_mprj_io_22 = GPIO_MODE_USER_STD_OUTPUT;	// screenData[6]
+    reg_mprj_io_23 = GPIO_MODE_USER_STD_OUTPUT;	// screenData[7]
 
 	// Now, apply configuration
 	reg_mprj_xfer = 1;
@@ -116,16 +101,22 @@ void main()
 	// ****************************************
 
 	// Set PLL enable, no DCO mode
-    reg_hkspi_pll_ena = 0x1;
+    // reg_hkspi_pll_ena = 0x1;
 
 	// Set both PLL output dividers to 4
-    reg_hkspi_pll_source = 0x24;
+    // reg_hkspi_pll_source = 0x24;
 
 	// Write 16 to feedback divider
-    reg_hkspi_pll_divider = 0x10;
+    // reg_hkspi_pll_divider = 0x10;
 
 	// Disable PLL bypass
-    reg_hkspi_pll_bypass = 0x0;
+    // reg_hkspi_pll_bypass = 0x0;
+
+	// ******************************************
+	// NOTE: We're running the design at 10 MHz,
+	// the crystal frequency, so no need of PLL
+	// yet.
+	// ******************************************
 
 	// Configure All LA probes as inputs to the cpu 
 	reg_la0_oenb = reg_la0_iena = 0x00000000;    // [31:0]
@@ -146,18 +137,8 @@ void main()
 	reg_gpio_PIN_32TO37 = 0x444444;
 
 	// Load instructions to RAM - CPU teams: uncomment this!
-	// int num_instr = sizeof(instructions) / sizeof(instructions[0]);
-	// for (int i = 0; i < num_instr; i++) {
-    //     *(&sram_space + i) = instructions[i];
-    // }
-
-	// Read instructions from RAM (check that they were loaded properly) - CPU teams: uncomment this!
-	// for (int i = 0; i < num_instr; i++) {
-	// 	while(*(&sram_space + i) != instructions[i]);
-	// }
+	team_04_sram_init(&sram_space);
 	
 	// Enable your design
 	reg_team_04_EN = 1;
-	
-	// If using SRAM, you can add more reads and writes here
 }

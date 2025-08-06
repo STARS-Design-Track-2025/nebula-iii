@@ -28,14 +28,14 @@ module t04_mmio (
     // === Wishbone Interface ===
 
     // These signals are coming from the Wishbone bus.
-    input logic stb,
-    input logic cyc,
-    input logic we,
-    input logic [3:0] sel,
-    input logic [31:0] adr,
-    input logic [31:0] dat_i,
-    output logic ack,
-    output logic [31:0] dat_o
+    output logic stb,
+    output logic cyc,
+    output logic we,
+    output logic [3:0] sel,
+    output logic [31:0] adr,
+    output logic [31:0] dat_o,
+    input logic ack,
+    input logic [31:0] dat_i
 );
 
     // === Internal Signals ===

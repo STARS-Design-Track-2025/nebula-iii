@@ -35,6 +35,10 @@ module team_04_tb;
 	assign mprj_io[3] = (CSB == 1'b1) ? 1'b1 : 1'bz;
 	assign clock_in = clock;
 
+	// Row bits
+	reg [3:0] row_bits;
+	assign mprj_io[12:9] = row_bits;
+
 	// External clock generation
 	always #50 clock <= (clock === 1'b0);
 	// Initialize the clock at 0
@@ -148,7 +152,7 @@ module team_04_tb;
 		$dumpvars(0, team_04_tb.mprj_io, team_04_tb.uut.chip_core.mprj);
 
 		// Repeat cycles of 1000 clock edges as needed to complete testbench
-		repeat (1000) begin
+		repeat (100000) begin
 			repeat (1000) @(posedge clock);
 		end
 		$display("%c[1;31m",27);
@@ -164,12 +168,17 @@ module team_04_tb;
 	// Main Test Bench Process
 	initial begin
 
-		// *******************************
-		// WRITE TESTBENCH HERE!!
-		// 
-		// Wait for design to be enabled
-		// before doing any checks
-		// *******************************
+		// Initialize inputs
+		row_bits = '0;
+
+		// Wait for Team 4 to be enabled
+		wait(uut.chip_core.mprj.mprj.team_04_Wrapper.team_04_WB.instance_to_wrap.en == 1);
+		$display("\nTeam 04 enabled, starting test...\n");
+
+
+		// Wait until testbench is done
+		repeat (1000000) @(negedge clock);
+
 		
 		$display("%c[1;32m",27);
 		`ifdef GL
