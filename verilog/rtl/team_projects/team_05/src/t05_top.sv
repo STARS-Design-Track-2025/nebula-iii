@@ -53,7 +53,6 @@ module t05_top (
   logic init;
 
   assign mosi = 0;
-  assign read_out = '0;
   //Controller
   // logic [3:0] en_state;
   //logic [3:0] fin_state;
@@ -286,6 +285,7 @@ module t05_top (
     );
 
   always_comb begin
+    read_out = '0;
     // eof_check = 0;
     if(read_in_pulse) begin
       read_out = in;
