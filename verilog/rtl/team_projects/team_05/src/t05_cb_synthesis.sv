@@ -43,8 +43,7 @@ state_cb next_state; // current codebook state
 logic [6:0] next_track_length; // current path length (for tracking state)
 logic wait_cycle, next_wait_cycle;
 logic [6:0] pos, next_pos;
-logic sent;
-logic next_sent;
+logic sent, next_sent;
 logic [7:0] next_num_lefts;
 logic next_left;
 logic [127:0] char_path_n;
@@ -63,7 +62,7 @@ logic cb_enable, cb_enable_n;
 logic [127:0] temp_path, temp_path_n;
 logic [6:0] i, i_n;
 logic pulse_first, pulse_first_n;
-logic pulse_counter, pulse_counter_n;
+logic char_found_n;
 
 always_ff @(posedge clk, posedge rst) begin
   if (rst) begin
@@ -71,6 +70,7 @@ always_ff @(posedge clk, posedge rst) begin
     curr_path <= 128'b1; // control bit
     curr_index <= '0; // top of tree
     track_length <= 7'b0; // set current path length to 0
+    char_found <= 0;
     pos <= 7'b1;
     wait_cycle <= 1;
     sent <= 0;
@@ -90,11 +90,11 @@ always_ff @(posedge clk, posedge rst) begin
     temp_path <= 128'b1;
     i <= 0;
     pulse_first <= 0;
-    pulse_counter <= 1;
   end
   else if (en_state == 4) begin
     char_path <= char_path_n;
     curr_path <= next_path;
+    char_found <= char_found_n;
     curr_state <= next_state;
     track_length <= next_track_length;
     curr_index <= next_index;
@@ -115,14 +115,13 @@ always_ff @(posedge clk, posedge rst) begin
     temp_path <= temp_path_n;
     i <= i_n;
     pulse_first <= pulse_first_n;
-    pulse_counter <= pulse_counter_n;
   end
 end
 
 always_comb begin
   least2 = h_element[54:46];
   least1 = h_element[63:55];
-  char_found = 1'b0;
+  char_found_n = char_found;
   char_path_n = char_path;
   char_index_n = char_index;
   finished = 0;
@@ -149,7 +148,6 @@ always_comb begin
   temp_path_n = temp_path;
   i_n = i;
   pulse_first_n = pulse_first;
-  pulse_counter_n = pulse_counter;
 
   case (curr_state)
     INIT: begin 
@@ -173,7 +171,7 @@ always_comb begin
         if (least1[8] == 1'b0 || least1 == 9'b110000000) begin // if LSE is a char (or there is no element)
           if (least1 != 9'b110000000 && (read_complete || write_complete)) begin // if there is a char (not no element)
             char_index_n = least1[7:0]; // set output character (index) to LSE, NOT to tracking index
-            char_found = 1'b1;
+            char_found_n = 1;
             next_state = SEND;
             next_wait_cycle = 1;
             next_left = 1;
@@ -190,6 +188,7 @@ always_comb begin
           end
         end
         else if (least1[8] == 1'b1 && (read_complete || write_complete)) begin // if LSE is a sum
+          char_found_n = 0;
           pulse = 1;
           next_path = {curr_path[126:0], 1'b0}; // left shift and add 0 (left) to next path
           next_num_lefts = num_lefts + 1; // store {1'b1, number of lefts} after the left char to aid in decompression
@@ -204,6 +203,7 @@ always_comb begin
       end
     end
     SEND: begin // state after a character was found and waiting for char bits to be written through SPI
+      char_found_n = 0;
       if (end_check) begin
         end_cnt_n = end_cnt - 1;
         if(cb_enable) begin
@@ -282,7 +282,6 @@ always_comb begin
             else if(i == cb_length) begin
                 next_path = {1'b0, curr_path[127:1]}; // right shift path to remove last move to "backtrack"
                 cb_length_n = cb_length - 1;
-                //left_check_n = 1;
                 next_state = RIGHT;
                 i_n = 0;
             end
@@ -293,6 +292,7 @@ always_comb begin
         end
     end
     BACKTRACK: begin // after a char was found and bits were written through the spi (header portion) start to backtrack until you can move right again
+      char_found_n = 0;
       next_wait_cycle = 1;
       // if the top of the tree has been reached and left and right have already been traversed, next state is FINISH
       //next_state = state_cb'(track_length < 7'b1 && curr_path[0] == 1'b1 ? FINISH : (curr_path[0] == 1'b1 ? BACKTRACK : TRACK)); 
@@ -334,7 +334,7 @@ always_comb begin
             end_track_n = 0;
             end_cnt_n = 127;
             char_index_n = least2[7:0]; // set output character (index) to LSE, NOT to tracking index
-            char_found = 1'b1;
+            char_found_n = 1;
             next_state = SEND;
             if(left_check) begin
               next_path = {curr_path[126:0], 1'b1}; // right shift and add 0 (right) to next path
@@ -345,6 +345,7 @@ always_comb begin
           end
         end
         else if (least2[8] == 1'b1 && (read_complete || write_complete)) begin // if RSE is a sum
+          char_found_n = 0;
           pulse = 1;
           next_path = {curr_path[126:0], 1'b1}; // right shift and add 0 (right) to next path
           next_index = least2[6:0] * 2; // set next index to get from htree to the sum

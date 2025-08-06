@@ -20,8 +20,8 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 02 [--]** - NOT ALLOWED
 * **Pin 03 [--]** - NOT ALLOWED
 * **Pin 04 [--]** - NOT ALLOWED
-* **Pin 05 [01]** - Input or Output? - Pin Function?
-* **Pin 06 [02]** - Input or Output? - Pin Function? 
+* **Pin 05 [01]** - Output - MOSI
+* **Pin 06 [02]** - Input - MISO 
 * **Pin 07 [03]** - Input or Output? - Pin Function? 
 * **Pin 08 [04]** - Input or Output? - Pin Function? 
 * **Pin 09 [05]** - Input or Output? - Pin Function? 

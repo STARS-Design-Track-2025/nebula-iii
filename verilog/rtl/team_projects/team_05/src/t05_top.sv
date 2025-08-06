@@ -3,39 +3,20 @@ module t05_top (
 
     input logic hwclk, reset,
 
-    //CONTROLLER
-    input logic cont_en,
-    input logic [5:0] op_fin,
-    output logic finished_signal,
-
     //HISTOGRAM
-    input logic read_in_pulse,
-    input logic [6:0] in,
-    input logic [31:0] sram_in,
-    output logic [31:0] sram_out,
-    output logic [7:0] hist_addr,
-    output logic [1:0] wr,
-    output logic readEn,
-    output logic out_of_init,
-    output logic busy_o,
-
-    //FLV
-    //input logic [63:0] compVal,
-    //output logic [8:0] histo_index,
-
-    //HTREE
-    //input logic SRAM_finished,
-    //input logic [63:0] nulls,
-
-    //CB
-    //input logic [70:0] h_element,
+    // input logic read_in_pulse,
+    // input logic [6:0] in,
+    // input logic [31:0] sram_in,
+    // output logic [31:0] sram_out,
+    // output logic [7:0] hist_addr,
+    // output logic out_of_init,
+    // output logic busy_o,
+    // output logic nextChar,
+    // output logic init,
 
     //SPI
     output logic mosi, 
     input logic miso,
-
-    //Starting states
-    output logic [3:0] en_state,
 
     //WRAPPER
     output logic wbs_stb_o,
@@ -44,9 +25,6 @@ module t05_top (
     output logic [3:0] wbs_sel_o,
     output logic [31:0] wbs_dat_o,
     output logic [31:0] wbs_adr_o,
-    output spi_confirm_out,
-    output logic nextChar,
-    output logic init,
     input logic wbs_ack_i,
     input logic [31:0] wbs_dat_i
     //input logic pulse_in
@@ -57,6 +35,22 @@ module t05_top (
   //FLV hTREE
   logic [8:0] least1_FLV, least2_FLV;
   logic [63:0] sum;
+  logic [5:0] op_fin;
+  logic cont_en;
+  logic finished_signal;
+  logic [3:0] en_state;
+  logic [1:0] wr;
+  logic readEn;
+  logic spi_confirm_out;
+  logic read_in_pulse;
+  logic [6:0] in;
+  logic [31:0] sram_in;
+  logic [31:0] sram_out;
+  logic [7:0] hist_addr;
+  logic out_of_init;
+  logic busy_o;
+  logic nextChar;
+  logic init;
 
   assign mosi = 0;
   //Controller

@@ -38,30 +38,30 @@ logic write_num_lefts, next_write_num_lefts;
 
 always_ff @(posedge clk, posedge rst) begin
     if (rst) begin
-        header <= 9'b0;
-        zeroes <= 0;
-        enable <= 0;
-        count <= 0;
-        bit1 <= 0;
-        char_added <= 0;
-        write_finish <= 0;
-        write_zeroes <= 0;
-        start <= 0;
+      header <= 9'b0;
+      zeroes <= 0;
+      enable <= 0;
+      count <= 0;
+      bit1 <= 0;
+      char_added <= 0;
+      write_finish <= 0;
+      write_zeroes <= 0;
+      start <= 0;
       zero_sent <= 0;
       write_char_path <= 0;
       path_count <= 0;
       write_num_lefts <= 0;
     end
     else begin
-        header <= next_header;
-        zeroes <= next_zeroes;
-        enable <= next_enable;
-        count <= next_count;
-        bit1 <= next_bit1;
-        char_added <= next_char_added;
-        write_finish <= next_write_finish;
-        write_zeroes <= next_write_zeroes;
-        start <= next_start;
+      header <= next_header;
+      zeroes <= next_zeroes;
+      enable <= next_enable;
+      count <= next_count;
+      bit1 <= next_bit1;
+      char_added <= next_char_added;
+      write_finish <= next_write_finish;
+      write_zeroes <= next_write_zeroes;
+      start <= next_start;
       zero_sent <= next_zero_sent; 
       write_char_path <= next_write_char_path;
       path_count <= next_path_count;
@@ -86,26 +86,26 @@ always_comb begin
     next_zero_sent = 0;
     
     if ((char_found == 1'b1)) begin
-        next_header = {1'b1, char_index}; // add control bit, beginning 1, and character index for header
-        next_char_added = 1;
-        next_enable = 0;
-        next_start = 1;
-        next_write_finish = 0;
-      	next_write_char_path = 1;
+      next_header = {1'b1, char_index}; // add control bit, beginning 1, and character index for header
+      next_char_added = 1;
+      next_enable = 0;
+      next_start = 1;
+      next_write_finish = 0;
+      next_write_char_path = 1;
     end
-  if ((state == 3 && !char_added && !char_found && curr_path[0] == 1 && track_length > 0)) begin // send one zero for each backtrack (not while char is being added)
-        next_write_zeroes = 1;
-        next_enable = 1;
-        next_write_finish = 0;
-        next_bit1 = 0;
-        next_zeroes = zeroes + 1;
+    if ((state == 3 && !char_added && !char_found && curr_path[0] == 1 && track_length > 0)) begin // send one zero for each backtrack (not while char is being added)
+      next_write_zeroes = 1;
+      next_enable = 1;
+      next_write_finish = 0;
+      next_bit1 = 0;
+      next_zeroes = zeroes + 1;
     end
-  else if (write_zeroes) begin // reset variables when state is no longer backtrack
-    next_write_finish = 1;
-    next_write_zeroes = 0;
-    next_enable = 0;
-    next_zeroes = 0;
-  end
+    else if (write_zeroes) begin // reset variables when state is no longer backtrack
+      next_write_finish = 1;
+      next_write_zeroes = 0;
+      next_enable = 0;
+      next_zeroes = 0;
+    end
 
     if (write_char_path) begin
         if (start) begin
@@ -116,7 +116,6 @@ always_comb begin
             next_count = count + 1;
             next_char_added = 1;
         end
-
         else if (enable && char_added) begin // if {1'b1, char} is now in the header, send the 9 bits to the SPI bit by bit
             if (count < 9) begin
                 next_bit1 = header[8];
@@ -128,7 +127,6 @@ always_comb begin
                 next_enable = 0;
                 next_write_finish = 1;
                 next_bit1 = 0;
-                next_count = 0;
                 next_char_added = 0;
                 next_zero_sent = 0;
                 next_path_count = 0;
@@ -145,7 +143,7 @@ always_comb begin
         end
     end
   else if (write_num_lefts) begin // write the number of lefts after going right in the tree for left chars after their header portion
-     if(count == 0) begin // add 1 as first bit
+    if(count == 0) begin // add 1 as first bit
         next_bit1 = 1'b1;
         next_count = count + 1;
         next_write_char_path = 0;

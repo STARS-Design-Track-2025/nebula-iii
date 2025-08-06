@@ -47,12 +47,6 @@ module t05_top_tb;
     .reset(reset),
     .mosi(mosi),
     .miso(miso),
-    .op_fin(op_fin),
-    //.read_out(read_out),
-    .finished_signal(finished_signal),
-    .en_state(en_state),
-    .cont_en(cont_en),
-    //.pulse_in(pulse),
     .spi_confirm_out(confirm),
     .nextChar(nextChar),
     .init(init),
@@ -118,7 +112,7 @@ module t05_top_tb;
     //     #37000 $finish;
     // end
 
-    logic [7:0] index, index_n;
+    logic [5:0] index, index_n;
     
     logic alt, alt_n;
 
@@ -170,8 +164,6 @@ module t05_top_tb;
         miso = 0;
         read_out = '0;
         //compVal = '0;
-        op_fin = '0;
-        cont_en = 0;
         test_num = '0;
         pulse = 0;
         //nulls = '0;
