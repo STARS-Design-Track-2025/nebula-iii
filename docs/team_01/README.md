@@ -69,6 +69,12 @@ SPEAKER  & AMPLIFIER -
 The amplifier connects to the speaker and ground and FPGA itself.
 For speakers, we used a Logitech z150, but any speaker should work theoretically.
 
+BREADBOARD AND BUTTONS - 
+You can wire up the buttons how ever you please. here is our layout we used throughout the design process:
+
+![BreadboardLayout](https://github.com/user-attachments/assets/f3047b13-919f-45e8-81a7-d4fd98f6ba3e)
+
+
 ## Functionality Description and Testing
 This project is a recreation of Tetris, so all the same rules apply. The best way to test functionality is to wire up buttons and test if inputs are correspond and are valid. 
 See presentation for demo video @ testbench example [HERE](https://docs.google.com/presentation/d/e/2PACX-1vQ5J6eAg-fM0MYb9h2nug7m4cWLqn1QPYuZf28jpfTcCsExHs7RleSBiXM36svMkUjVlpEQlcR1J1pw/pub?start=false&loop=false&delayms=3000#slide=id.g372a1441054_2_34)
