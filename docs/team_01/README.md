@@ -8,7 +8,8 @@
 * Mixuan Pan
 
 ## Project Overview
-Describe what your project is in 2-3 sentences. Do NOT mention functionality details, you will add those in the *Functionality Description and Testing* section.
+Welcome to Tetris! This version of tetris was created by STARS 2025 Team 1 by Cristian, Safa, Mixuan, and Myles. 
+This document will go over button layouts, features/hardware, and general gameplay.
 
 ## Pin Layout
 Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
@@ -19,19 +20,19 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 02 [--]** - NOT ALLOWED
 * **Pin 03 [--]** - NOT ALLOWED
 * **Pin 04 [--]** - NOT ALLOWED
-* **Pin 05 [01]** - Input or Output? - Pin Function?
-* **Pin 06 [02]** - Input or Output? - Pin Function? 
-* **Pin 07 [03]** - Input or Output? - Pin Function? 
-* **Pin 08 [04]** - Input or Output? - Pin Function? 
-* **Pin 09 [05]** - Input or Output? - Pin Function? 
-* **Pin 10 [06]** - Input or Output? - Pin Function?
-* **Pin 11 [07]** - Input or Output? - Pin Function?
-* **Pin 12 [08]** - Input or Output? - Pin Function?
-* **Pin 13 [09]** - Input or Output? - Pin Function? 
-* **Pin 14 [10]** - Input or Output? - Pin Function? 
-* **Pin 15 [11]** - Input or Output? - Pin Function? 
-* **Pin 16 [12]** - Input or Output? - Pin Function? 
-* **Pin 17 [13]** - Input or Output? - Pin Function? 
+* **Pin 05 [01]** - Input - MOVE LEFT
+* **Pin 06 [02]** - Input - MOVE RIGHT
+* **Pin 07 [03]** - Input - ROTATE LEFT
+* **Pin 08 [04]** - Input - ROTATE RIGHT
+* **Pin 09 [05]** - Input - SOFT DROP
+* **Pin 10 [06]** - Input - PLAYER START
+* **Pin 11 [07]** - Input - AI START
+* **Pin 12 [08]** - Output - VGA HSYNC
+* **Pin 13 [09]** - Output - VGA VSYNC
+* **Pin 14 [10]** - Output - VGA RED
+* **Pin 15 [11]** - Output - VGA GREEN
+* **Pin 16 [12]** - Output - VGA BLUE
+* **Pin 17 [13]** - Output - SPEAKER
 * **Pin 18 [14]** - Input or Output? - Pin Function? 
 * **Pin 19 [15]** - Input or Output? - Pin Function? 
 * **Pin 20 [16]** - Input or Output? - Pin Function? 
@@ -54,7 +55,11 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 37 [33]** - Input or Output? - Pin Function?
 
 ## External Hardware
-List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
+VGA BREAKOUT BOARD & CABLE - Easy access to wires necessary for display
+MONITOR - Compatible VGA Display (needs to support 640 x 480 @ 60 Hz, 25 MHz clock)
+SPEAKER  & AMPLIFIER -
+<img width="2205" height="2015" alt="image" src="https://github.com/user-attachments/assets/6204af3d-272e-4158-bbe0-0e92222c4fcc" />
+The amplifier connects to the speaker and ground and FPGA itself.
 
 ## Functionality Description and Testing
 Describe in detail how your project works and how to test it.
