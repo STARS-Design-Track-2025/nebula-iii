@@ -13,7 +13,7 @@ module t07_fp_fcsr (
     input logic clk,
     input logic nrst,
     input logic [2:0] frm, // write = 00 read = 01 idle = 10 || rounding mode
-    input logic [4:0] fflags, // floating point exception flags
+    input logic [6:0] fflags, // floating point exception flags
     input logic [1:0] rwSignal, // read/write signal
 
     output logic [31:0] fcsr_out // output FPSCR value
@@ -26,7 +26,7 @@ always_ff @(posedge clk or negedge nrst) begin
         fcsr <= 32'b0; // reset fpscr to zero
     end else begin
         case (rwSignal)
-            2'b01: fcsr <= {24'b0, fflags, frm}; // write operation
+            2'b01: fcsr <= {22'b0, fflags, frm}; // write operation
             2'b10: fcsr <= fcsr; // read operation, keep current value
             default: fcsr <= fcsr; // idle state, keep current value
         endcase

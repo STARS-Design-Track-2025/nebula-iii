@@ -8,7 +8,7 @@ output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, FPUSrc, regEnabl
 output logic [2:0] regWriteSrc, //regWriteSrc goes to mux outside PC/memory handler/ALU/FPU/ImmGen -> registers, 000 = PC, 001 = MH, 010 = ALU, 011 = FPU, 100 = ImmGen
 output logic [4:0] FPUOp, //to FPU
 output logic [2:0] FPURnd, //to FPU
-output logic [1:0] FPUWrite, //to FPUReg
+output logic FPUWrite, //to FPUReg
 output logic [4:0] rs3, //to FPU registers
 output logic [3:0] memOp, //to internal memory
 output logic invalid_Op, memSrc

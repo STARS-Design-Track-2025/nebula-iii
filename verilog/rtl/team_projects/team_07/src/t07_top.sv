@@ -91,6 +91,5 @@ sram_WB_Wrapper sramWrapper(.wb_clk_i(clk), .wb_rst_i(nrst), .wbs_stb_i(stb_out)
 // t07_spitft display(.in(dataToTFT), .clk(clk), .nrst(nrst), .wi(displayWrite), .miso_in(misoDriver_i), .miso_out(misoTFT_o), .ack(busyTFT_o), 
 // .chipSelect(chipSelectTFT), .bitData(bitDataTFT), .sclk(sclkTFT));
 
-//t07_quadSPI espSPI(.ESPData_i(ESP_in), .sclk_i(clk), .nrst(nrst), .enable_i(), .MMIOData_o(), .sclk_o(), .enable_o(espSPI_en), .ack_o());
 
 endmodule

@@ -2,7 +2,8 @@ module t07_FPURegisters(
     input logic clk, nrst,
     input logic [4:0] rs1, rs2, rd,
     input logic [31:0] data_i,
-    input logic regEnable_i, FPUregWrite_i, 
+    input logic regEnable_i, 
+    input logic FPUregWrite_i, 
     input logic freeze_i,
     output logic [31:0] FPUreg1_o, FPUreg2_o
 );
@@ -13,7 +14,7 @@ module t07_FPURegisters(
         if(~nrst) begin
             registers <= '0;
         end else if (regEnable_i & freeze_i == '0) begin
-            if(FPUregWrite_i && rd != '0) begin
+            if(FPUregWrite_i ==  'd1 && rd != '0) begin
                 registers[rd] <= data_i;
             end
         end

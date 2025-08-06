@@ -17,7 +17,7 @@ module t07_CPU(
     logic [3:0] ALUOp, memOp;
     logic ALUSrc, regWrite, branch, jump, memWrite, memRead, FPUSrc, regEnable, memSource;
     logic [4:0] FPUOp;
-    logic [1:0] FPUWrite;
+    logic FPUWrite;
     logic [2:0] regWriteSrc, FPURnd;
     //PC output
     logic [31:0] pc_out, linkAddress;
@@ -43,10 +43,10 @@ module t07_CPU(
     logic freezeToReg;
     logic [31:0] addrComb; //for addr mux
     //FPU I/O
-    logic [31:0] fcsr_out, reg1FPU_o, reg2FPU_o, //FPU register out
-    logic [31:0] FPUResult,
+    logic [31:0] fcsr_out, reg1FPU_o, reg2FPU_o; //FPU register out
+    logic [31:0] FPUResult;
     logic [31:0] FPUValA_i, FPUValB_i, FPUfcsr_i;
-    logic regEn_FPU;
+    logic regEn_FPU, fcsrEn;
 
 
     //t07_fetch fetch_inst(.busy_o_edge(busy_edge_o), .clk(clk), .nrst(nrst), .ExtInstruction(exInst), .programCounter(pc_out), .Instruction_out(inst), .PC_out(pcData_out), .busy_o(busy));
@@ -81,15 +81,15 @@ module t07_CPU(
     t07_muxAddr muxAddr(.memAddr_i(intMemAddr), .memAddr_comb_i(addrComb), .pc_i(pcData_out), .control(addrControl), .clk(clk), .nrst(nrst), .addr_o(externalMemAddr));
     
     //FPU
-    //t07_FPURegisters FPUReg(.clk(clk), .nrst(nrst), .rs1(rs1), .rs2(rs2), .rd(rd), .data_i(/*add this*/), .regEnable_i(regEn_FPU), .FPUregWrite_i(FPUWrite), .freeze_i(freezeToReg), 
-    // .FPUreg1_o(reg1FPU_o), .FPUreg2_o(reg2FPU_o);
+    // t07_FPURegisters FPUReg(.clk(clk), .nrst(nrst), .rs1(rs1), .rs2(rs2), .rd(rd), .data_i(FPUResult), .regEnable_i(regEn_FPU), .FPUregWrite_i(FPUWrite), .freeze_i(freezeToReg), 
+    // .FPUreg1_o(reg1FPU_o), .FPUreg2_o(reg2FPU_o));
 
-    // t07_muxFPU muxFPU(.regValA_i(dataRead1), .regValB_i(dataRead2), .regValC_i(rs3), .fpuRegValA_i(reg1FPU_o), .fpuRegValB_i(reg2FPU_o), .fpuRegValC_i(reg3FPU_o), .FPUOp(FPUOp), 
-    // .FPUValA_o(FPUValA_i), .FPUValB_o(FPUValB_i));
+    // t07_muxFPU muxFPU(.regValA_i(dataRead1), .regValB_i(dataRead2), .fpuRegValA_i(reg1FPU_o), .fpuRegValB_i(reg2FPU_o), .FPUOp(FPUOp), 
+    // .FPUValA_o(FPUValA_i), .FPUValB_o(FPUValB_i), .fcsrEnable_o(fcsrEn));
 
-    // t07_FPU FPUmanager(.clk(clk), .nrst(nrst), .valA(FPUValA_i), .valB(FPUValB_i), .fcsr_in(FPUfcsr_i), .FPUOp(FPUOp), .result(FPUResult), 
+    // t07_FPU FPUmanager(.clk(clk), .nrst(nrst), .valA(FPUValA_i), .valB(FPUValB_i), .fcsr_in(FPUfcsr_i), .FPUOp(FPUOp), .result(FPUResult), .valC('0), 
     // .FPUflags(FPUFlags), .overflowFlag(FPU_overflowFlag), .carryout(FPUcarryout), .busy(FPUbusy_o));
 
-    // t07_fp_fcsr fcsr(.clk(clk), .nrst(nrst), .frm(FPURnd), .fflags(FPUFlags), .rwSignal(FPUWrite), .fcsr_out(FPUfcsr_i));
+    // t07_fp_fcsr fcsr(.clk(clk), .nrst(nrst), .frm(FPURnd), .fflags(FPUFlags), .rwSignal(fcsrEn), .fcsr_out(FPUfcsr_i));
 
 endmodule
