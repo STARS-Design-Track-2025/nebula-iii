@@ -64,7 +64,7 @@ module team_01_fpga_top (
   assign clk_25m = hwclk;
   logic  J40_n4;
   logic [9:0] x, y;
-  logic [2:0] grid_color, score_color, starboy_color, final_color, grid_color_movement, grid_color_hold, credits;  
+  logic [2:0] grid_color, score_color, starboy_color, final_color, grid_color_movement, grid_color_hold, credits, next_block_color;  
   logic onehuzz;
   logic [9:0] current_score;
   logic finish, gameover;
@@ -76,11 +76,14 @@ module team_01_fpga_top (
   
 logic [19:0][9:0][2:0] final_display_color;
 // Color priority logic: starboy and score display take priority over grid
+//Color priority logic: starboy and score display take priority over grid
 always_comb begin
   if (starboy_color != 3'b000) begin  // If starboy display has color (highest priority)
     final_color = starboy_color;
   end else if (score_color != 3'b000) begin  // If score display has color
     final_color = score_color;
+  end else if (next_block_color != 3'b000) begin  // If next block display has color
+    final_color = next_block_color;
   end else if (credits != 3'b000) begin
     final_color = credits;
   end else begin
@@ -125,7 +128,6 @@ end
       .rst(rst), 
       .newclk(onehuzz), 
       .speed_up(speed_mode_o),
-      .top_level_state(top_level_state), 
       .scoremod(scoremod)
     );
 
@@ -140,7 +142,6 @@ end
     
     // Game Logic
     t01_tetrisFSM plait (
-      .c_top_state(c_top_state),
       .clk(clk_25m), 
       .reset(rst), 
       .onehuzz(onehuzz), 

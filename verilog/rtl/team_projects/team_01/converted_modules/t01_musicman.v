@@ -42,6 +42,8 @@ module t01_musicman (
 	always @(posedge clk or posedge rst)
 		if (rst)
 			sample <= 1'sb0;
+		else if (gameover)
+			sample <= 1'sb0;
 		else if (newclk)
 			sample <= sample_next;
 	reg [6:0] count_val;
@@ -61,6 +63,8 @@ module t01_musicman (
 	always @(posedge clk or posedge rst)
 		if (rst)
 			square_count1 <= 0;
+		else if (gameover)
+			square_count1 <= 1'sb0;
 		else
 			square_count1 <= square_count_next1;
 	reg [22:0] square_count2;
@@ -68,6 +72,8 @@ module t01_musicman (
 	always @(posedge clk or posedge rst)
 		if (rst)
 			square_count2 <= 0;
+		else if (gameover)
+			square_count2 <= 1'sb0;
 		else
 			square_count2 <= square_count_next2;
 	reg [22:0] max_count1;

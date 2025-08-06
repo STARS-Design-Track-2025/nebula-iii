@@ -17,7 +17,7 @@ module team_01_fpga_top (
 	input wire [20:0] pb;
 	input wire J39_b15;
 	input wire J39_c15;
-	input wire left;
+	input wire [7:0] left;
 	output wire [1:0] right;
 	output wire red;
 	output wire green;
@@ -38,6 +38,7 @@ module team_01_fpga_top (
 	wire [2:0] grid_color_movement;
 	wire [2:0] grid_color_hold;
 	wire [2:0] credits;
+	wire [2:0] next_block_color;
 	wire onehuzz;
 	wire [9:0] current_score;
 	wire finish;
@@ -54,6 +55,8 @@ module team_01_fpga_top (
 			final_color = starboy_color;
 		else if (score_color != 3'b000)
 			final_color = score_color;
+		else if (next_block_color != 3'b000)
+			final_color = next_block_color;
 		else if (credits != 3'b000)
 			final_color = credits;
 		else
@@ -63,7 +66,6 @@ module team_01_fpga_top (
 	wire left_i;
 	wire rotate_r;
 	wire rotate_l;
-	wire start_i;
 	t01_debounce NIRAJMENONFANCLUB(
 		.clk(clk_25m),
 		.pb(pb[0]),
@@ -91,8 +93,8 @@ module team_01_fpga_top (
 		.red(red),
 		.green(green),
 		.blue(blue),
-		.hsync(right[0]),
-		.vsync(right[1]),
+		.hsync(left[7]),
+		.vsync(left[6]),
 		.x_out(x),
 		.y_out(y)
 	);
@@ -114,13 +116,12 @@ module team_01_fpga_top (
 		.clk(clk_25m),
 		.reset(rst),
 		.onehuzz(onehuzz),
-		.en_newgame(J39_b15),
-		.right_i(right),
-		.left_i(left),
-		.start_i(J39_b15),
+		.right_i(right_i),
+		.left_i(left_i),
+		.start_i(pb[19]),
 		.rotate_r(rotate_r),
 		.rotate_l(rotate_l),
-		.speed_up_i(J39_c15),
+		.speed_up_i(pb[8]),
 		.display_array(new_block_array),
 		.final_display_color(final_display_color),
 		.gameover(gameover),
@@ -145,13 +146,6 @@ module team_01_fpga_top (
 		.y(y),
 		.shape_color(score_color)
 	);
-	wire [2:0] next_block_color;
-	t01_lookahead justinjiang(
-		.x(x),
-		.y(y),
-		.next_block_data(next_block_preview),
-		.display_color(next_block_color)
-	);
 	t01_starboyDisplay silly(
 		.clk(onehuzz),
 		.rst(rst),
@@ -163,6 +157,12 @@ module team_01_fpga_top (
 		.x(x),
 		.y(y),
 		.text_color(credits)
+	);
+	t01_lookahead justinjiang(
+		.x(x),
+		.y(y),
+		.next_block_data(next_block_preview),
+		.display_color(next_block_color)
 	);
 	wire [15:0] lfsr_reg;
 	wire clk10k;
