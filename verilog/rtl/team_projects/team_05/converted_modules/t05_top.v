@@ -59,7 +59,6 @@ module t05_top (
 	wire char_found;
 	wire [7:0] char;
 	wire [7:0] char_index;
-	wire write_finish;
 	wire [127:0] char_path;
 	wire [6:0] track_length;
 	wire [8:0] least1_CB;
@@ -317,7 +316,7 @@ module t05_top (
 		.rst(reset),
 		.max_index(max_index),
 		.h_element(h_element),
-		.write_finish(write_finish),
+		.write_finish(),
 		.en_state(en_state),
 		.char_found(char_found),
 		.char_path(char_path),
@@ -334,21 +333,6 @@ module t05_top (
 		.write_complete(CB_write_complete),
 		.pulse(pulse_CB),
 		.cb_r_wr(cb_r_wr)
-	);
-	t05_header_synthesis header_synthesis(
-		.clk(hwclk),
-		.rst(reset),
-		.char_index(char_index),
-		.char_found(char_found),
-		.curr_path(curr_path),
-		.track_length(track_length),
-		.state_3(state_3),
-		.left(left),
-		.num_lefts(num_lefts),
-		.header(header),
-		.enable(writeEn_HS),
-		.bit1(writeBit_HS),
-		.write_finish(write_finish)
 	);
 	t05_translation translation(
 		.clk(hwclk),
