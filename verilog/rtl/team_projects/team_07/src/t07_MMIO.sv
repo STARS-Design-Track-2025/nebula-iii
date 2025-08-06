@@ -22,27 +22,11 @@ module t07_MMIO(
 
     //SPI for TFT
     input logic busyTFT_i, 
-    input logic [7:0] dataTFT_i,
+    input logic [31:0] dataTFT_i,
     output logic [31:0] displayData, // data to write to SPT TFT
-    output logic displayWrite, // write or idle to SPI FTF
+    output logic displayWrite, displayRead
 
-    //SPI for ESP32
-    input logic [31:0] SPIData_i,
-    input logic SPIack_i, //high when SPI has full word
-    output logic espSPI_en
 );
-
-//registers - for holding SPI-ESP32 data
-logic [31:0] SPIregisters;
-
-//sequential logic for registers
-always_ff @(negedge nrst, posedge clk) begin
-    if (~nrst) begin
-        SPIregisters <= '0;
-    end else if (SPIack_i) begin //check 
-        SPIregisters <= SPIData_i;
-    end
-end
 
 always_comb begin
     //error cases
@@ -56,7 +40,6 @@ always_comb begin
     WBData_out = 'hDEADBEEF; 
     displayData = 'hDEADBEEF;
     displayWrite = '0;
-    espSPI_en = '0;
 
     //busy signal logic -- based on WB busy, SPI busy, Reg busy
     if (busyTFT_i || WB_busy_i || FPUbusy_i) begin 
@@ -69,18 +52,39 @@ always_comb begin
     if(WB_busy_edge_i) begin
         WB_read_o = 0;
         WB_write_o = 0;
+        displayWrite = 0;
+        displayRead = 0;
     end else if(rwi_in == 'b11) begin //fetch
         WB_read_o = 1;
         WB_write_o = 0;
+        displayWrite = 0;
+        displayRead = 0;
     end else if(rwi_in == 'b10 & addr_in > 32'd1056 & addr_in <= 32'd1792) begin //read, // address
         WB_read_o = 1;
         WB_write_o = 0;
+        displayWrite = 0;
+        displayRead = 0;
     end else if(rwi_in == 'b01 & addr_in > 32'd1056 & addr_in <= 32'd1792) begin //write
         WB_read_o = 0;
         WB_write_o = 1;
-    end else begin 
+        displayWrite = 0;
+        displayRead = 0;
+    end else if(rwi_in == 'b10 & addr_in > 32'd1792 & addr_in < 32'd2048) begin //read from screen
+        displayWrite = 0;
+        displayRead = 1;
         WB_read_o = 0;
         WB_write_o = 0;
+    end else if (rwi_in == 'b01 & addr_in > 32'd1792 & addr_in < 32'd2048) begin //write to screen
+        displayWrite = 1;
+        displayRead = 0;
+        WB_read_o = 0;
+        WB_write_o = 0;
+    end
+    else begin 
+        WB_read_o = 0;
+        WB_write_o = 0;
+        displayWrite = 0;
+        displayRead = 0;
     end
 
     if(addr_in <= 32'd1024) begin //fetch instruction
@@ -98,16 +102,13 @@ always_comb begin
         end
     end else if (addr_in > 32'd1792 & addr_in < 32'd2048) begin //SPI-TFT command
         if(rwi_in == 2'b01) begin //store
-            displayWrite = 1'b1; //write data to SPI TFT
+            //displayWrite = 1'b1; //write data to SPI TFT
             displayData = memData_i; 
         end
         if(rwi_in == 2'b10) begin //load
-            CPUData_out = {24'b0, dataTFT_i};
-        end
-    end else if(addr_in > 32'd1024 & addr_in <= 32'd1056 & rwi_in == 2'b10) begin //read from spi
-        espSPI_en = '1;
-        CPUData_out = SPIregisters;
-    end
+            CPUData_out = dataTFT_i;
+        end 
     end
 
+end
 endmodule
