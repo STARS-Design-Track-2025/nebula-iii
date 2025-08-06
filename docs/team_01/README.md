@@ -9,6 +9,7 @@
 
 ## Project Overview
 Welcome to Tetris! This version of tetris was created by STARS 2025 Team 1 by Cristian, Safa, Mixuan, and Myles. 
+
 This document will go over button layouts, features/hardware, and general gameplay.
 
 ## Pin Layout
@@ -56,7 +57,9 @@ The first number represents the GPIO on the physical chip, while the second numb
 
 ## External Hardware
 VGA BREAKOUT BOARD & CABLE - Easy access to wires necessary for display
+
 MONITOR - Compatible VGA Display (needs to support 640 x 480 @ 60 Hz, 25 MHz clock)
+
 SPEAKER  & AMPLIFIER -
 <img width="2205" height="2015" alt="image" src="https://github.com/user-attachments/assets/6204af3d-272e-4158-bbe0-0e92222c4fcc" />
 The amplifier connects to the speaker and ground and FPGA itself.
