@@ -135,10 +135,10 @@ ifeq ($(OPENLANE2_ROOT),)
 endif
 
 # Add quotations to command if NOT running in nanoHUB
+# If NOT in nanoHUB, add this to command: --pdk-root $(PDK_ROOT)
 openlane_cmd = \
 	openlane \
 	--run-tag $(OPENLANE_RUN_TAG) \
-	--pdk-root $(PDK_ROOT) \
 	$*/config.json
 openlane_cmd_interactive = "flow.tcl -it -file $$(realpath ./$*/interactive.tcl)"
 
