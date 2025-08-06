@@ -1,13 +1,31 @@
-`default_nettype none
-module t01_tetrisFSM (
+`default_nettype none 
+/////////////////////////////////////////////////////////////////
+// HEADER 
+//
+// Module : t01_tetrisFSM
+// Description : main FSM for game logic
+// 
+//
+/////////////////////////////////////////////////////////////////
+module t01_ai_tetrisFSM (
     input logic clk, reset, onehuzz,
-    input logic right_i, left_i, start_i, rotate_r, rotate_l, speed_up_i,
+    input logic right_i, left_i, start_i, rotate_r, rotate_l, speed_up_i, ai_done,  
+    input logic ai_new_spawn, // ai finished comparing all possible moves of the current piece 
+    input logic [3:0] ofm_blockX,
+    input logic ai_need_rotate, 
+    input logic [4:0] ai_block_type, ofm_block_type, 
+    input logic [1:0] top_level_state, 
+    output logic ai_rotated, 
+    output logic [3:0] ai_blockX, 
+    output logic [4:0] ofm_block_type_input, // the input to ofm for comparing  
     output logic [19:0][9:0] display_array,
     output logic [19:0][9:0][2:0] final_display_color,
     output logic gameover,
     output logic [9:0] score,
     output logic speed_mode_o,
-    output logic [3:0] gamestate,
+    output logic [3:0] gamestate, 
+    output logic [4:0] current_block_type, 
+    output logic ai_col_right, ai_col_left, 
     output logic [4:0] next_block_type_o,          // Output next block type
     output logic [3:0][3:0][2:0] next_block_preview // Output next block preview colors
 );
@@ -100,7 +118,10 @@ module t01_tetrisFSM (
         LANDED = 'd6,
         EVAL = 'd7,    
         GAMEOVER = 'd8,
-        RESTART = 'd9 
+        RESTART = 'd9, 
+        AI_WAIT = 'd10, 
+        AI_SPAWN = 'd11, 
+        AI_FALLING = 'd12
     } game_state_t;
 
     // state variables
@@ -109,16 +130,17 @@ module t01_tetrisFSM (
     assign gamestate = current_state;
 
     // game board arrays
-    logic [19:0][9:0] stored_array;
+    logic [19:0][9:0] stored_array, ai_stored_array;
     logic [19:0][9:0] cleared_array;
 
     // block Position and type
     logic [4:0] blockY;
-    logic [3:0] blockX;
-    logic [4:0] current_block_type;
+    logic [3:0] blockX, blockX_init;
+    assign blockX_init = top_level_state == 2'b10 ? 0 : 'd3; 
     logic [3:0][3:0] current_block_pattern;
     logic [3:0][3:0] next_rotation_pattern;
-
+    assign ai_blockX = blockX; // for output
+    
     // control signals
     logic eval_complete;
     // logic rotate_direction;
@@ -127,6 +149,8 @@ module t01_tetrisFSM (
 
     // collision detection
     logic collision_bottom, collision_left, collision_right;
+    assign ai_col_left = collision_left; 
+    assign ai_col_right = collision_right; 
 
     // delayed sticking logic 
     logic collision_bottom_prev;
@@ -238,29 +262,68 @@ module t01_tetrisFSM (
     // block positioning and type management !!!
     //=============================================================================
     
-    logic [4:0] next_current_block_type;
+    logic [4:0] next_current_block_type, ai_last_block_type;
+    logic ai_spawner; 
+    logic [4:0] ai_counter;
+    assign ofm_block_type_input = ai_counter;  
 
     always_ff @(posedge clk, posedge reset) begin
         if (reset) begin
-            blockY <= 5'd0;
-            blockX <= 4'd3;
+            blockY <= 0;
+            blockX <= 0;
             current_block_type <= 5'd0;
+            ai_last_block_type <= 0; 
+            ai_spawner <= 0; 
+            ai_counter <= 0; 
+            ai_rotated <= 0; 
         end else if (current_state == RESTART) begin
             blockY <= 5'd0;
-            blockX <= 4'd3;
+            blockX <= blockX_init;
             current_block_type <= 5'd0;
+            ai_spawner <= 0; 
+            ai_counter <= 0; 
+            ai_rotated <= 0; 
         end
         else if (current_state == SPAWN) begin
             blockY <= 5'd0;
-            blockX <= 4'd3;
-            if (first_spawn) begin
-                // First spawn: use counter for current block
-                current_block_type <= {2'b0, current_state_counter};
-            end else begin
-                // Subsequent spawns: use the next_block_type for current block
-                current_block_type <= next_block_type;
-            end
+            blockX <= blockX_init;
+            ai_spawner <= 1'b1;
+            ai_rotated <= 0;  
+            ai_counter <= {2'b0, current_state_counter};
+
+            if (top_level_state == 'b10) begin
+                current_block_type <= {2'b0, current_state_counter}; // AI, look ahead dont matter fr
+            end else if (top_level_state == 'b1) begin
+            //Player
+                    if (first_spawn) begin
+                        current_block_type <= {2'b0, current_state_counter};
+                    end else begin
+                        current_block_type <= next_block_type;  
+                    end
+                end
         end 
+    
+        else if (current_state == AI_SPAWN) begin 
+            blockY <= 0; 
+            if (~ai_spawner) begin 
+                if (ai_need_rotate) begin 
+                    current_block_type <= ai_block_type; 
+                    ai_counter <= ai_block_type; 
+                    ai_rotated <= 1;  
+                end else begin 
+                    current_block_type <= ai_counter; 
+                    ai_rotated <= 0; 
+                end 
+            end else begin 
+                current_block_type <= current_block_type; 
+            end
+            if (ai_new_spawn) begin 
+                blockX <= ofm_blockX; 
+                current_block_type <= ofm_block_type; 
+            end else if (ai_need_rotate) begin 
+                blockX <= 0; 
+            end
+        end
         else if (current_state == FALLING) begin
             // vertical movement
             if (drop_tick && !collision_bottom) begin
@@ -274,6 +337,23 @@ module t01_tetrisFSM (
                 blockX <= blockX + 4'd1;
             end
         end 
+        else if (current_state == AI_WAIT) begin  
+            if (ai_need_rotate) begin 
+                current_block_type <= ai_block_type; 
+                ai_counter <= ai_block_type;
+                blockX <= 0; 
+                ai_rotated <= 1; 
+            end else begin 
+                current_block_type <= {2'b0, current_state_counter};
+                if (ai_new_spawn) begin 
+                    blockX <= ofm_blockX; 
+                end else begin 
+                    blockX <= ai_blockX; 
+                    blockY <= 0; 
+                end
+            end
+            ai_spawner <= ai_new_spawn; 
+        end
         else if (current_state == ROTATE || current_state == ROTATE_L) begin
             if (rotation_valid) begin
                 current_block_type <= next_current_block_type;
@@ -291,81 +371,82 @@ module t01_tetrisFSM (
         next_current_block_type = current_block_type;
         
         if (current_state == ROTATE) begin
-            case (current_block_type)
-                // I-piece: 2 orientations
-                5'd0:  next_current_block_type = 5'd7;   // Vertical → Horizontal
-                5'd7:  next_current_block_type = 5'd0;   // Horizontal → Vertical
+            // if (rotate_pulse_l) begin // Clockwise rotation
+                case (current_block_type)
+                    // I-piece: 2 orientations
+                    5'd0:  next_current_block_type = 5'd7;   // Vertical → Horizontal
+                    5'd7:  next_current_block_type = 5'd0;   // Horizontal → Vertical
 
-                // O-piece: No rotation needed
-                5'd1:  next_current_block_type = 5'd1;
+                    // O-piece: No rotation needed
+                    5'd1:  next_current_block_type = 5'd1;
 
-                // S-piece: 2 orientations
-                5'd2:  next_current_block_type = 5'd9;   // Horizontal → Vertical
-                5'd9:  next_current_block_type = 5'd2;   // Vertical → Horizontal
+                    // S-piece: 2 orientations
+                    5'd2:  next_current_block_type = 5'd9;   // Horizontal → Vertical
+                    5'd9:  next_current_block_type = 5'd2;   // Vertical → Horizontal
 
-                // Z-piece: 2 orientations
-                5'd3:  next_current_block_type = 5'd8;   // Horizontal → Vertical
-                5'd8:  next_current_block_type = 5'd3;   // Vertical → Horizontal
+                    // Z-piece: 2 orientations
+                    5'd3:  next_current_block_type = 5'd8;   // Horizontal → Vertical
+                    5'd8:  next_current_block_type = 5'd3;   // Vertical → Horizontal
 
-                // L-piece: 4 orientations (0° → 90° → 180° → 270°)
-                5'd5:  next_current_block_type = 5'd13;  // 0° → 90°
-                5'd13: next_current_block_type = 5'd14;  // 90° → 180°
-                5'd14: next_current_block_type = 5'd15;  // 180° → 270°
-                5'd15: next_current_block_type = 5'd5;   // 270° → 0°
+                    // L-piece: 4 orientations (0° → 90° → 180° → 270°)
+                    5'd5:  next_current_block_type = 5'd13;  // 0° → 90°
+                    5'd13: next_current_block_type = 5'd14;  // 90° → 180°
+                    5'd14: next_current_block_type = 5'd15;  // 180° → 270°
+                    5'd15: next_current_block_type = 5'd5;   // 270° → 0°
 
-                // J-piece: 4 orientations
-                5'd4:  next_current_block_type = 5'd10;  // 0° → 90°
-                5'd10: next_current_block_type = 5'd11;  // 90° → 180°
-                5'd11: next_current_block_type = 5'd12;  // 180° → 270°
-                5'd12: next_current_block_type = 5'd4;   // 270° → 0°
+                    // J-piece: 4 orientations
+                    5'd4:  next_current_block_type = 5'd10;  // 0° → 90°
+                    5'd10: next_current_block_type = 5'd11;  // 90° → 180°
+                    5'd11: next_current_block_type = 5'd12;  // 180° → 270°
+                    5'd12: next_current_block_type = 5'd4;   // 270° → 0°
 
-                // T-piece: 4 orientations
-                5'd6:  next_current_block_type = 5'd18;  // 0° → 90°
-                5'd18: next_current_block_type = 5'd17;  // 90° → 180°
-                5'd17: next_current_block_type = 5'd16;  // 180° → 270°
-                5'd16: next_current_block_type = 5'd6;   // 270° → 0°
+                    // T-piece: 4 orientations
+                    5'd6:  next_current_block_type = 5'd18;  // 0° → 90°
+                    5'd18: next_current_block_type = 5'd17;  // 90° → 180°
+                    5'd17: next_current_block_type = 5'd16;  // 180° → 270°
+                    5'd16: next_current_block_type = 5'd6;   // 270° → 0°
 
-                default: next_current_block_type = current_block_type;
-            endcase
-        end else if (current_state == ROTATE_L) begin // Counter-clockwise rotation
-            case (current_block_type)
-                // I-piece: Same as clockwise (only 2 states)
-                5'd0:  next_current_block_type = 5'd7;
-                5'd7:  next_current_block_type = 5'd0;
+                    default: next_current_block_type = current_block_type;
+                endcase
+            end else if (current_state == ROTATE_L) begin // Counter-clockwise rotation
+                case (current_block_type)
+                    // I-piece: Same as clockwise (only 2 states)
+                    5'd0:  next_current_block_type = 5'd7;
+                    5'd7:  next_current_block_type = 5'd0;
 
-                // O-piece: No rotation
-                5'd1:  next_current_block_type = 5'd1;
+                    // O-piece: No rotation
+                    5'd1:  next_current_block_type = 5'd1;
 
-                // S-piece: Same as clockwise (only 2 states)
-                5'd2:  next_current_block_type = 5'd9;
-                5'd9:  next_current_block_type = 5'd2;
+                    // S-piece: Same as clockwise (only 2 states)
+                    5'd2:  next_current_block_type = 5'd9;
+                    5'd9:  next_current_block_type = 5'd2;
 
-                // Z-piece: Same as clockwise (only 2 states)
-                5'd3:  next_current_block_type = 5'd8;
-                5'd8:  next_current_block_type = 5'd3;
+                    // Z-piece: Same as clockwise (only 2 states)
+                    5'd3:  next_current_block_type = 5'd8;
+                    5'd8:  next_current_block_type = 5'd3;
 
-                // L-piece: Reverse direction (0° → 270° → 180° → 90°)
-                5'd5:  next_current_block_type = 5'd15;  // 0° → 270°
-                5'd15: next_current_block_type = 5'd14;  // 270° → 180°
-                5'd14: next_current_block_type = 5'd13;  // 180° → 90°
-                5'd13: next_current_block_type = 5'd5;   // 90° → 0°
+                    // L-piece: Reverse direction (0° → 270° → 180° → 90°)
+                    5'd5:  next_current_block_type = 5'd15;  // 0° → 270°
+                    5'd15: next_current_block_type = 5'd14;  // 270° → 180°
+                    5'd14: next_current_block_type = 5'd13;  // 180° → 90°
+                    5'd13: next_current_block_type = 5'd5;   // 90° → 0°
 
-                // J-piece: Reverse direction
-                5'd4:  next_current_block_type = 5'd12;  // 0° → 270°
-                5'd12: next_current_block_type = 5'd11;  // 270° → 180°
-                5'd11: next_current_block_type = 5'd10;  // 180° → 90°
-                5'd10: next_current_block_type = 5'd4;   // 90° → 0°
+                    // J-piece: Reverse direction
+                    5'd4:  next_current_block_type = 5'd12;  // 0° → 270°
+                    5'd12: next_current_block_type = 5'd11;  // 270° → 180°
+                    5'd11: next_current_block_type = 5'd10;  // 180° → 90°
+                    5'd10: next_current_block_type = 5'd4;   // 90° → 0°
 
-                // T-piece: Reverse direction
-                5'd6:  next_current_block_type = 5'd16;  // 0° → 270°
-                5'd16: next_current_block_type = 5'd17;  // 270° → 180°
-                5'd17: next_current_block_type = 5'd18;  // 180° → 90°
-                5'd18: next_current_block_type = 5'd6;   // 90° → 0°
+                    // T-piece: Reverse direction
+                    5'd6:  next_current_block_type = 5'd16;  // 0° → 270°
+                    5'd16: next_current_block_type = 5'd17;  // 270° → 180°
+                    5'd17: next_current_block_type = 5'd18;  // 180° → 90°
+                    5'd18: next_current_block_type = 5'd6;   // 90° → 0°
 
-                default: next_current_block_type = current_block_type;
-            endcase
+                    default: next_current_block_type = current_block_type;
+                endcase
+            end
         end
-    end
 
     //=============================================================================
     // stored array management !!! 
@@ -376,10 +457,15 @@ module t01_tetrisFSM (
         if (reset) begin
             stored_array <= '0;
             color_array <= '0;
+            ai_stored_array <= 0; 
         end else if (current_state == RESTART) begin
             stored_array <= '0;
             color_array <= '0;
+            ai_stored_array <= 0; 
         end
+        // else if (current_state == AI_WAIT) begin 
+        //     stored_array <= ai_stored_array; 
+        // end 
         else if (current_state == STUCK) begin
             stored_array <= stored_array | falling_block_display;
             
@@ -413,7 +499,7 @@ module t01_tetrisFSM (
         collision_right = 1'b0;
         falling_block_display = '0;
         rotation_valid = 1'b1;
-        
+
         // Generate falling block display AND collision detection
         for (int row = 0; row < 4; row++) begin
             for (int col = 0; col < 4; col++) begin
@@ -471,7 +557,7 @@ module t01_tetrisFSM (
             end
         end
     end
-    
+
     //=============================================================================
     // fsm next state logic !!!
     //=============================================================================
@@ -495,11 +581,18 @@ module t01_tetrisFSM (
                 next_state = FALLING;
                 display_array = falling_block_display | stored_array;
             end
-
+            AI_SPAWN: begin 
+                next_state = FALLING; 
+                display_array = falling_block_display | stored_array; 
+            end
             FALLING: begin
                 // Transition to STUCK only after delay period
                 if (collision_bottom && stick_delay_active && drop_tick) begin
-                    next_state = STUCK;
+                    if (top_level_state == 2'b10 && !ai_new_spawn) begin // ai play 
+                        next_state = AI_WAIT;
+                    end else begin 
+                        next_state = STUCK; 
+                    end 
                 end 
                 // Handle rotation (O-piece doesn't rotate)
                 else if (current_block_type != 5'd1 && rotate_pulse) begin
@@ -509,7 +602,16 @@ module t01_tetrisFSM (
                 end
                 display_array = falling_block_display | stored_array;
             end
-
+            AI_WAIT: begin 
+                display_array = falling_block_display | stored_array; // the array for feature extract 
+                if (ai_done) begin 
+                    if (ai_new_spawn) begin 
+                        next_state = FALLING; // show the chosen move 
+                    end else begin 
+                        next_state = AI_SPAWN; 
+                    end 
+                end 
+            end
             STUCK: begin
                 // Check for game over condition
                 if (|stored_array[0])
@@ -518,7 +620,6 @@ module t01_tetrisFSM (
                     next_state = LANDED;
                 display_array = falling_block_display | stored_array;
             end
-
             ROTATE: begin
                 display_array = falling_block_display | stored_array;
                 next_state = FALLING;
@@ -527,22 +628,19 @@ module t01_tetrisFSM (
                 display_array = falling_block_display | stored_array;
                 next_state = FALLING;
             end
-
             LANDED: begin
-                next_state = EVAL;
                 display_array = stored_array;
+                next_state = EVAL;
                 start_line_eval = 1'b1;
                 line_clear_input = stored_array;
-                line_clear_input_color = color_array;  // Pass colors for evaluation
+                line_clear_input_color = color_array;
             end
-
             EVAL: begin
                 if (line_eval_complete) begin
                     next_state = SPAWN;
                 end
                 display_array = line_clear_output;
             end
-
             GAMEOVER: begin
                 if (right_i) begin
                     next_state = RESTART;
@@ -560,7 +658,6 @@ module t01_tetrisFSM (
                     next_state = RESTART;
                 end
             end
-
             default: begin
                 next_state = INIT;
                 display_array = stored_array;
