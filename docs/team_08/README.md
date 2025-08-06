@@ -15,47 +15,52 @@ Describe what your project is in 2-3 sentences. Do NOT mention functionality det
 Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
 The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
 
-* **Pin 00 [00]** - Input or Output? - Pin Function?
+* **Pin 00 [00]** - input - interrupt from touchscreen 
 * **Pin 01 [--]** - NOT ALLOWED
 * **Pin 02 [--]** - NOT ALLOWED
 * **Pin 03 [--]** - NOT ALLOWED
 * **Pin 04 [--]** - NOT ALLOWED
-* **Pin 05 [01]** - Input or Output? - Pin Function?
-* **Pin 06 [02]** - Input or Output? - Pin Function? 
-* **Pin 07 [03]** - Input or Output? - Pin Function? 
-* **Pin 08 [04]** - Input or Output? - Pin Function? 
-* **Pin 09 [05]** - Input or Output? - Pin Function? 
-* **Pin 10 [06]** - Input or Output? - Pin Function?
-* **Pin 11 [07]** - Input or Output? - Pin Function?
-* **Pin 12 [08]** - Input or Output? - Pin Function?
-* **Pin 13 [09]** - Input or Output? - Pin Function? 
-* **Pin 14 [10]** - Input or Output? - Pin Function? 
-* **Pin 15 [11]** - Input or Output? - Pin Function? 
-* **Pin 16 [12]** - Input or Output? - Pin Function? 
-* **Pin 17 [13]** - Input or Output? - Pin Function? 
-* **Pin 18 [14]** - Input or Output? - Pin Function? 
-* **Pin 19 [15]** - Input or Output? - Pin Function? 
-* **Pin 20 [16]** - Input or Output? - Pin Function? 
-* **Pin 21 [17]** - Input or Output? - Pin Function? 
-* **Pin 22 [18]** - Input or Output? - Pin Function? 
-* **Pin 23 [19]** - Input or Output? - Pin Function? 
-* **Pin 24 [20]** - Input or Output? - Pin Function? 
-* **Pin 25 [21]** - Input or Output? - Pin Function? 
-* **Pin 26 [22]** - Input or Output? - Pin Function? 
-* **Pin 27 [23]** - Input or Output? - Pin Function? 
-* **Pin 28 [24]** - Input or Output? - Pin Function? 
-* **Pin 29 [25]** - Input or Output? - Pin Function?
-* **Pin 30 [26]** - Input or Output? - Pin Function?
-* **Pin 31 [27]** - Input or Output? - Pin Function?
-* **Pin 32 [28]** - Input or Output? - Pin Function?
-* **Pin 33 [29]** - Input or Output? - Pin Function?
-* **Pin 34 [30]** - Input or Output? - Pin Function?
-* **Pin 35 [31]** - Input or Output? - Pin Function?
-* **Pin 36 [32]** - Input or Output? - Pin Function?
-* **Pin 37 [33]** - Input or Output? - Pin Function?
+* **Pin 05 [01]** - input and output - SDA, line for I2C with touchscreen 
+* **Pin 06 [02]** - input and output - SCL, line for I2C with touchscreen 
+* **Pin 07 [03]** - output - SPI D0(7 bit bus data) 
+* **Pin 08 [04]** - output - SPI D1 
+* **Pin 09 [05]** - output - SPI D2 
+* **Pin 10 [06]** - output - SPI D3 
+* **Pin 11 [07]** - output - SPI D4 
+* **Pin 12 [08]** - output - SPI D5 
+* **Pin 13 [09]** - output - SPI D6  
+* **Pin 14 [10]** - output - SPI D7 
+* **Pin 15 [11]** - output - SPI WR (write clock)
+* **Pin 16 [12]** - output - SPI RD (read clock)
+* **Pin 17 [13]** - output - SPI CS (chip select, active low)
+* **Pin 18 [14]** - output - SPI C/D (data or command signal)
+* **Pin 19 [15]** - not used 
+* **Pin 20 [16]** - not used 
+* **Pin 21 [17]** - not used 
+* **Pin 22 [18]** - not used 
+* **Pin 23 [19]** - not used 
+* **Pin 24 [20]** - not used 
+* **Pin 25 [21]** - not used 
+* **Pin 26 [22]** - not used 
+* **Pin 27 [23]** - not used 
+* **Pin 28 [24]** - not used 
+* **Pin 29 [25]** - not used
+* **Pin 30 [26]** - not used
+* **Pin 31 [27]** - not used
+* **Pin 32 [28]** - not used
+* **Pin 33 [29]** - not used
+* **Pin 34 [30]** - not used
+* **Pin 35 [31]** - not used
+* **Pin 36 [32]** - not used
+* **Pin 37 [33]** - not used
 
 ## External Hardware
 List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
+
+We are using a capacitive touchscreen+display component
+Link: https://learn.adafruit.com/adafruit-2-8-and-3-2-color-tft-touchscreen-breakout-v2/overview
+
+To connect screen with the chip, follow the pinmap and conect IM ports of the screen to GND. Here s the picture: ![screen](<bro breadboard.png>)
 
 ## Functionality Description and Testing
 Describe in detail how your project works and how to test it.
