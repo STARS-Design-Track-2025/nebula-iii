@@ -24,6 +24,7 @@ module t07_top_tb();
         $dumpvars(0, t07_top_tb);
         clk = 0;
         nrst = 1;
+        misoDriver_i = 1;
         ESP_in = '0;
         reset();
         #500

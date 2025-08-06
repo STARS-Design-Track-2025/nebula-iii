@@ -8,7 +8,8 @@
         LOAD_WAIT = 5,
         STORE = 6,
         PRELOAD = 7,
-        INC_WAIT = 8
+        INC_WAIT = 8,
+        STORETFT = 9
     } state_t0;
 
 module t07_memoryHandler (
@@ -98,6 +99,21 @@ module t07_memoryHandler (
     assign pcOut = pc_i;
     //state machine
     always_comb begin
+        rwi = '0;
+        addrControl = '0;
+        freeze_o = '0;
+        dataMMIO_o = '0;
+        addrMMIO_comb_o = 0;
+        addrMMIO_o_n = '0;
+        regData_o_n = '0;
+        instr_n = '0;
+        pc_n = '0;
+        loadCt_n = '0;
+        load2Ct_n = '0; 
+        load3Ct_n = '0;
+        storeCt_n = '0;
+        state_n = FETCH;
+
         case(state)
             INC: //state 0 - 1 cycle
                 begin
@@ -192,7 +208,9 @@ module t07_memoryHandler (
                     dataMMIO_o = 'hDEADBEEF;
                     addrMMIO_comb_o = '0;
 
-                    if(memWrite) begin 
+                    if(memWrite & ALU_address > 'd1792) begin 
+                        state_n = STORETFT;
+                    end else if(memWrite & ALU_address < 'd1792) begin
                         state_n = STORE;
                     end else if (memRead) begin
                         state_n = PRELOAD;
@@ -356,6 +374,53 @@ module t07_memoryHandler (
                         state_n = STORE;
                     end
                 end
+            STORETFT: begin //state 9
+                freeze_o = 1;
+                addrControl = 0;
+                rwi = 'b01;
+
+                loadCt_n = '0;
+                load2Ct_n = '0;
+                load3Ct_n = '0;
+                //storeCt_n = storeCt + 1;
+
+
+                addrMMIO_o_n = ALU_address; 
+                addrMMIO_comb_o = ALU_address;
+                regData_o_n = regData_o; 
+
+                pc_n = pcOut;
+                instr_n = instructionOut;
+                if(memSource) begin //memSrc determines if data is from FPU reg or normal reg
+                //FPU registers
+                    if (memOp == 4'd6) begin // store byte
+                        dataMMIO_o = {24'b0, FPU_data_i[7:0]}; 
+                    end else if (memOp == 4'd7) begin // store half-word 
+                        dataMMIO_o = {16'b0, FPU_data_i[15:0]}; 
+                    end else if (memOp == 4'd8) begin // store word 
+                        dataMMIO_o = FPU_data_i; 
+                    end else begin
+                        dataMMIO_o = 32'b0; 
+                    end
+                //registers
+                end else begin
+                    if (memOp == 4'd6) begin // store byte
+                        dataMMIO_o = {24'b0, regData_i[7:0]}; 
+                    end else if (memOp == 4'd7) begin // store half-word
+                        dataMMIO_o = {16'b0, regData_i[15:0]}; 
+                    end else if (memOp == 4'd8) begin // store word
+                            dataMMIO_o = regData_i; 
+                    end else begin
+                        dataMMIO_o = 32'b0; // Default case, no valid operation
+                    end 
+                end
+                
+                
+                if(busy_o_edge) begin
+                    state_n = INC;
+                end else begin state_n = STORETFT; end
+                
+            end
             INC_WAIT: begin
                     freeze_o = 1;
 

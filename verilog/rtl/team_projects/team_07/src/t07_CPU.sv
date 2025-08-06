@@ -52,7 +52,7 @@ module t07_CPU(
     //t07_fetch fetch_inst(.busy_o_edge(busy_edge_o), .clk(clk), .nrst(nrst), .ExtInstruction(exInst), .programCounter(pc_out), .Instruction_out(inst), .PC_out(pcData_out), .busy_o(busy));
     t07_decoder decoder(.instruction(inst), .Op(Op), .funct7(funct7), .funct3(funct3), .rs1(rs1), .rs2(rs2), .rd(rd));
 
-    t07_control_unit control(.memSrc(memSource), .invalid_Op(invalError), .rs3(rs3), .memOp(memOp), .rs2(rs2), .regWriteSrc(regWriteSrc), .Op(Op), 
+    t07_control_unit control(.memSrc(memSource), .invalid_Op(invalError), .memOp(memOp), .rs2(rs2), .regWriteSrc(regWriteSrc), .Op(Op), 
     .funct7(funct7), .funct3(funct3), .ALUOp(ALUOp), .ALUSrc(ALUSrc), .regWrite(regWrite), .branch(branch), .jump(jump), 
     .memWrite(memWrite), .memRead(memRead), .FPUSrc(FPUSrc), .regEnable(regEnable), .FPUOp(FPUOp), .FPURnd(FPURnd), .FPUWrite(FPUWrite), .regEnable_FPU(regEn_FPU));
 

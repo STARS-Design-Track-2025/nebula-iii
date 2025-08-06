@@ -8,8 +8,7 @@ output logic ALUSrc, regWrite, branch, jump, memWrite, memRead, FPUSrc, regEnabl
 output logic [2:0] regWriteSrc, //regWriteSrc goes to mux outside PC/memory handler/ALU/FPU/ImmGen -> registers, 000 = PC, 001 = MH, 010 = ALU, 011 = FPU, 100 = ImmGen
 output logic [4:0] FPUOp, //to FPU
 output logic [2:0] FPURnd, //to FPU
-output logic FPUWrite, //to FPUReg
-output logic [4:0] rs3, //to FPU registers
+output logic FPUWrite, //to rs3
 output logic [3:0] memOp, //to internal memory
 output logic invalid_Op, memSrc
 
@@ -44,21 +43,24 @@ always_comb begin
             FPURnd = '0;
             FPUWrite = '0;
             regEnable_FPU = 0;
+            ALUOp = 'd10; //check
             case(funct3) 
-                3'b000: if(funct7 == 'b0000000) begin ALUOp = 4'd0; end //add
-                else if (funct7 == 'b0100000) begin ALUOp = 4'd8; end //sub
-                3'b001: ALUOp = 4'd3; //sll
-                3'b010: ALUOp = 4'd4; //slt
-                3'b011: ALUOp = 4'd5; //sltu
-                3'b100: ALUOp = 4'd9; //xor
-                3'b101: if(funct7 == 0000000) begin ALUOp = 4'd7; end //srl
-                else if (funct7 == 'b0100000) begin ALUOp = 4'd6; end //sra
-                3'b110: ALUOp = 4'd2; //or
-                3'b111: ALUOp = 4'd1; //and
+                3'b000: begin if(funct7 == 'b0000000) begin ALUOp = 4'd0; end //add
+                else if (funct7 == 'b0100000) begin ALUOp = 4'd8; end end //sub
+                3'b001: begin ALUOp = 4'd3; end //sll
+                3'b010: begin ALUOp = 4'd4; end //slt
+                3'b011: begin ALUOp = 4'd5; end //sltu
+                3'b100: begin ALUOp = 4'd9; end //xor
+                3'b101: begin if(funct7 == 0000000) begin ALUOp = 4'd7; end //srl
+                else if (funct7 == 'b0100000) begin ALUOp = 4'd6; end end //sra
+                3'b110: begin ALUOp = 4'd2; end //or
+                3'b111: begin ALUOp = 4'd1; end //and
+                default: begin ALUOp = 'd10;end
             endcase
         end
 
         7'b 0000011: begin /*(I-Type)*/
+            memOp = '0;
             ALUOp = 4'd00; //add rs1 + imm
             memSrc = 0;
             invalid_Op = 0;
@@ -86,6 +88,7 @@ always_comb begin
         end
 
         7'b0010011: begin /*I-Type*/
+            ALUOp = 'd10;
             memOp = '0;
             memSrc = 0;
             invalid_Op = 0;
@@ -140,6 +143,7 @@ always_comb begin
             if(funct3 == 'b010) begin memOp = 4'd8; end //sw - store word
         end
         7'b1100011: begin /*(B-Type)*/
+            regWriteSrc = 'b101; //error
             memOp = '0;
             ALUOp = 4'd10; //ALU default
             memSrc = 0;
@@ -152,7 +156,7 @@ always_comb begin
             //memToReg = 0; //X
             jump = 0;
             regEnable = 1;
-            //FPU outputs - all 0 when ALU op code
+            //FPU outputs - all 0 wh6;en ALU op code
             FPUOp = '0;
             FPUSrc = 0;
             FPURnd = '0;
@@ -168,7 +172,6 @@ always_comb begin
             ALUSrc = 0;
             regWrite = 1;
             FPUSrc = 0;
-            FPURnd = '0;
             branch = 0;
             memWrite = 0;
             memRead = 0;
@@ -248,6 +251,10 @@ always_comb begin
 
         //FPU Cases
         7'b0000111: begin//(FLW - load word)
+            regWriteSrc = 'b101; //error
+            jump = 0;
+            branch = '0;
+            regWrite = '0;
             memOp = '0;
             memWrite = 0;
             memRead = 0;
@@ -263,6 +270,10 @@ always_comb begin
             FPUWrite = 1;
         end 
         7'b0100111: begin //(FSW - store word)
+            regWriteSrc = 'b101; //error
+            jump = 0;
+            branch = '0;
+            regWrite = '0;
             memOp = '0;
             memWrite = 0;
             memRead = 0;
@@ -278,6 +289,11 @@ always_comb begin
             FPUWrite = 0; //reading value from register -> goes to internal mem
         end
         7'b1000011: begin //(FMADD.S) rs1 x rs2 + rs3
+            FPURnd = '0;
+            regWriteSrc = 'b101; //error
+            jump = 0;
+            branch = '0;
+            regWrite = '0;
             memOp = '0;
             memWrite = 0;
             memRead = 0;
@@ -290,10 +306,14 @@ always_comb begin
             regEnable = 0;
             FPUWrite = 1;
             regEnable_FPU = 1;
-            rs3 = funct7[6:2];
 
         end
         7'b1000111: begin //(FMSUB.S) rs1 x rs2 - rs3
+            FPURnd = '0;
+            regWriteSrc = 'b101; //error
+            jump = 0;
+            branch = '0;
+            regWrite = '0;
             memOp = '0;
             memWrite = 0;
             memRead = 0;
@@ -306,9 +326,13 @@ always_comb begin
             regEnable = 0;
             FPUWrite = 1;
             regEnable_FPU = 1;
-            rs3 = funct7[6:2];
         end
         7'b1001011: begin //(FNMSUB.S) -(rs1 x rs2 - rs3)
+            FPURnd = '0;
+            regWriteSrc = 'b101; //error
+            jump = 0;
+            branch = '0;
+            regWrite = '0;
             memOp = '0;
             memWrite = 0;
             memRead = 0;
@@ -321,9 +345,13 @@ always_comb begin
             regEnable = 0;
             FPUWrite = 1;
             regEnable_FPU = 1;
-            rs3 = funct7[6:2];
         end 
         7'b1001111: begin //(FNMADD.S) -(rs1 x rs2 + rs3)
+            FPURnd = '0;
+            regWriteSrc = 'b101; //error
+            jump = 0;
+            branch = '0;
+            regWrite = '0;
             memOp = '0;
             memWrite = 0;
             memRead = 0;
@@ -336,9 +364,14 @@ always_comb begin
             regEnable = 0;
             FPUWrite = 1;
             regEnable_FPU = 1;
-            rs3 = funct7[6:2];
         end
         7'b1010011: begin //Math
+            FPURnd = '0;
+            regWriteSrc = 'b101; //error
+            FPUOp = '0;
+            jump = 0;
+            branch = '0;
+            regWrite = '0;
             memOp = '0;
             memWrite = 0;
             memRead = 0;
@@ -350,6 +383,7 @@ always_comb begin
             FPUWrite = 1;
             FPUSrc = 1;
             regEnable_FPU = 1;
+
             case(funct7)
                 'b0000000: begin FPUOp = 5'd7; end //ADD
                 'b0000100: begin FPUOp = 5'd8; end //SUB
@@ -386,7 +420,27 @@ always_comb begin
                 
             endcase
         end 
-        default: invalid_Op = 1;
+        default: begin 
+            regWriteSrc = 'b101; //error
+            jump = 0;
+            branch = '0;
+            regWrite = '0;
+            invalid_Op = 1;
+            ALUOp = 'd10;
+            memOp = '0;
+            memWrite = 0;
+            memRead = 0;
+            ALUSrc = 0;
+            ALUOp = 4'd10; //ALU default
+            memSrc = 0;
+            invalid_Op = 0;
+            FPUOp = 5'd0;
+            FPUSrc = 0;
+            regEnable = 0;
+            FPUWrite = 0;
+            regEnable_FPU = 1;
+            FPURnd = '0;
+        end
     endcase
 end
 endmodule
