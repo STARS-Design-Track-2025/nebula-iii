@@ -9,7 +9,7 @@
 * Van Brown
 
 ## Project Overview
-This project implements file compression and decompression in hardware with the Huffman Encoding/Decoding Algorithm. Given an input text file from an SD card peripheral, it may be compressed or decompressed based on the user's input. A physical interface which displays the file compression and decompression processes is implemented with LCD and VGA peripherals.  
+This project implements file compression and decompression in hardware with the Huffman Encoding/Decoding Algorithm. Given an input text file from an SD card peripheral, it may be compressed or decompressed based on the user's input. A physical interface which displays the file compression and decompression processes is implemented with LCD peripherals.  
 
 ## Pin Layout
 Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
