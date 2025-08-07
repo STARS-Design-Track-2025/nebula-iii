@@ -48,11 +48,11 @@ module team_05 (
 
     
     // Set unused outputs to 0
-    assign {gpio_out[33:2], gpio_out[0]} = '0;
+    assign {gpio_out[33:2], gpio_out[1:0]} = '0;
 
     // Se OEBs
     assign gpio_oeb[10:2] = '1;  //Inputs
-    assign gpio_oeb[1] = '0;  //Outputs
+   // assign gpio_oeb[1] = '0;  //Outputs
     assign {gpio_oeb[33:11], gpio_oeb[0]} = '1;  //Unused set to all 1s (doesn't really matter)
     
     // T05 Top Instantiation
