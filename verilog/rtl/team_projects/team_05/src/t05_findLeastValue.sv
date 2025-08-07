@@ -27,7 +27,21 @@ logic wipe_the_char_1_n;
 logic wipe_the_char_2_n;
 
 always_ff @(posedge clk, posedge rst) begin
-    if(rst || HTREE_complete) begin
+    if(rst) begin
+        least1 <= 9'b110000000;
+        least2 <= 9'b110000000;
+        histo_index <= 0;
+        charWipe1 <= 0;
+        charWipe2 <= 0;
+        sum <= 0;
+        val1 <= '1;
+        val2 <= '1;
+        fin_state <= 0;
+        startup <= 1;
+        alternator_timer <= 0;
+        wipe_the_char_1 <= 0;
+        wipe_the_char_2 <= 0;
+    end else if (HTREE_complete) begin
         least1 <= 9'b110000000;
         least2 <= 9'b110000000;
         histo_index <= 0;
