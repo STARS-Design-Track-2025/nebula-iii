@@ -54,7 +54,7 @@ module t07_spiTFTHu (
             MISO_Reg <= next_miso;
             delayctr <= next_delayctr;
             reading_flag <= next_reading_flag;
-            // delay_flag <= next_delay_flag;
+            delay_flag <= next_delay_flag;
         end
     end
 
@@ -75,7 +75,7 @@ module t07_spiTFTHu (
                 next_ctr = 0;
                 next_delayctr = 0;
                 next_reading_flag = 0;
-                // next_delay_flag = 0;
+                next_delay_flag = 0;
 
                 //next state logic
                 if (write_in) begin
@@ -100,7 +100,7 @@ module t07_spiTFTHu (
                 next_miso = MISO_Reg;
 
                 next_data = MOSI_data[15:0];
-                next_delayctr = MOSI_data;
+                next_delayctr = {1'b0, MOSI_data[30:0]};
 
                 if (MOSI_data[15:8] == 8'h40 && MOSI_data[31] != 1'b1) begin
                     next_reading_flag = 1;
@@ -108,11 +108,11 @@ module t07_spiTFTHu (
                     next_reading_flag = 0;
                 end
 
-                // if (MOSI_data[31] == 1'b1) begin
-                //     next_delay_flag = 1;
-                // end else begin
-                //     next_delay_flag = 0;
-                // end
+                if (MOSI_data[31] == 1'b1) begin
+                    next_delay_flag = 1;
+                end else begin
+                    next_delay_flag = 0;
+                end
 
                 //next state logic
                 if (MOSI_data[31] == 1'b1) begin
@@ -141,7 +141,11 @@ module t07_spiTFTHu (
                 if (reading_flag) begin
                     if (counter >= 5'd8 && counter <= 5'd16) begin
                         next_miso = {MISO_Reg[6:0], MISO_in};
+                    end else begin
+                        next_miso = MISO_Reg;
                     end
+                end else begin
+                    next_miso = MISO_Reg;
                 end
 
                 //next state logic
@@ -185,7 +189,7 @@ module t07_spiTFTHu (
                 next_data = dataforOutput;
                 next_ctr = 0;
                 next_miso = MISO_Reg;
-                // next_delay_flag = 0;
+                next_delay_flag = delay_flag;
                 next_reading_flag = 0;
 
                 next_delayctr = delayctr - 1;
@@ -211,7 +215,7 @@ module t07_spiTFTHu (
                 next_miso = MISO_Reg;
                 next_ctr = 0;
                 next_delayctr = 0;
-                // next_delay_flag = delay_flag;
+                next_delay_flag = delay_flag;
                 next_reading_flag = reading_flag;
 
                 //next state logic
