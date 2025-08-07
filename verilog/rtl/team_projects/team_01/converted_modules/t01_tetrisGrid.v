@@ -4,6 +4,7 @@ module t01_tetrisGrid (
 	y,
 	final_display_color,
 	gameover,
+	top_level_state,
 	shape_color
 );
 	reg _sv2v_0;
@@ -11,11 +12,13 @@ module t01_tetrisGrid (
 	input wire [9:0] y;
 	input wire [599:0] final_display_color;
 	input wire gameover;
+	input wire [1:0] top_level_state;
 	output reg [2:0] shape_color;
 	localparam BLOCK_SIZE = 15;
 	localparam BLACK = 3'b000;
 	localparam WHITE = 3'b111;
 	localparam RED = 3'b100;
+	localparam BLUE = 3'b001;
 	reg in_grid;
 	reg [9:0] temp_x;
 	reg [9:0] temp_y;
@@ -32,7 +35,9 @@ module t01_tetrisGrid (
 		grid_y = temp_y[4:0];
 		on_grid_line = (((((x - 10'd245) % BLOCK_SIZE) == 0) || (((y - 10'd90) % BLOCK_SIZE) == 0)) || (x == 10'd394)) || (y == 10'd389);
 		if (in_grid) begin
-			if (on_grid_line && !gameover)
+			if (on_grid_line && ((top_level_state == 2'b10) || (top_level_state == 2'b11)))
+				shape_color = BLUE;
+			else if (on_grid_line && !gameover)
 				shape_color = WHITE;
 			else if (on_grid_line && gameover)
 				shape_color = RED;

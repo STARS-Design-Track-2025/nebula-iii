@@ -11,6 +11,7 @@ module t01_tetrisGrid(
     input logic [9:0] x, y,
     input logic [19:0][9:0][2:0] final_display_color,
     input logic gameover,
+    input logic [1:0] top_level_state, 
     output logic [2:0] shape_color
 );
 
@@ -21,6 +22,7 @@ module t01_tetrisGrid(
     localparam BLACK   = 3'b000;
     localparam WHITE   = 3'b111;
     localparam RED   = 3'b100;
+    localparam BLUE = 3'b001;
 
     logic in_grid;
     logic [9:0] temp_x, temp_y;
@@ -39,9 +41,11 @@ module t01_tetrisGrid(
         on_grid_line = ((x - 10'd245) % BLOCK_SIZE == 0) || ((y - 10'd90) % BLOCK_SIZE == 0) || (x == 10'd394) || (y == 10'd389);
         
     if (in_grid) begin
-        if (on_grid_line && !gameover) begin
+        if (on_grid_line && (top_level_state == 2'b10 || top_level_state == 2'b11)) begin // ai player state  
+            shape_color = BLUE; 
+        end else if (on_grid_line && !gameover) begin // IDLE or human player state 
             shape_color = WHITE; 
-        end else if (on_grid_line && gameover) begin
+        end else if (on_grid_line && gameover) begin // gameover state 
             shape_color = RED;
         end else begin
             if (grid_y < 5'd20 && grid_x < 4'd10) begin
