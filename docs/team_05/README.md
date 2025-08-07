@@ -124,3 +124,5 @@ Describe in detail how your project works and how to test it.
 
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_05).
+
+![cool_im](RTL_Diagrams/decompression_module.png)
