@@ -5,22 +5,26 @@ module t05_cb_synthesis (
     input logic [7:0] max_index,
     input logic [70:0] h_element,
     // input logic write_finish,
+    //input logic new_zeroes,
     input logic [3:0] en_state,
     input logic SRAM_enable,
     input logic read_complete,
     input logic write_complete,
+    input logic [7:0] zero_count,
     output logic char_found,
     output logic [127:0] char_path,
     output logic [7:0] char_index,
-    output logic state_3,
+    output logic state8,
+    output logic state6,
     output logic [7:0] curr_index,
     output logic [127:0] curr_path,
     output logic finished,
-    output logic [6:0] track_length,
+    output logic [6:0] cb_length,
     output logic [7:0] num_lefts,
     output logic left,
     output logic pulse,
-    output logic cb_r_wr
+    output logic cb_r_wr,
+    output logic [7:0] zeroes
 );
 
 typedef enum logic [3:0] {
@@ -31,11 +35,15 @@ typedef enum logic [3:0] {
     FINISH = 4,
     INIT = 5,
     SEND = 6,
-    SEND_WAIT = 7
+    SEND_WAIT = 7,
+    WRITE_ZEROES = 8
 } state_cb;
 
 
 // next state logic
+logic next_state8;
+logic next_state6;
+logic [7:0] next_zeroes;
 logic [8:0] least1, least2;
 logic [127:0] next_path;              // store current path
 logic [7:0] next_index;               // htree element index
@@ -52,7 +60,7 @@ logic left_check, left_check_n;
 logic check_right, check_right_n;
 logic [7:0] char_index_n;
 
-logic [6:0] cb_length, cb_length_n;
+logic [6:0] cb_length_n;
 logic [6:0] end_cnt, end_cnt_n;
 logic end_cond, end_cond_n;
 logic end_check, end_check_n;
@@ -63,13 +71,14 @@ logic [127:0] temp_path, temp_path_n;
 logic [6:0] i, i_n;
 logic pulse_first, pulse_first_n;
 logic char_found_n;
+logic [7:0] count, next_count;
 
 always_ff @(posedge clk, posedge rst) begin
   if (rst) begin
     curr_state <= INIT; // initial state
     curr_path <= 128'b1; // control bit
     curr_index <= '0; // top of tree
-    track_length <= 7'b0; // set current path length to 0
+   //track_length <= 7'b0; // set current path length to 0
     char_found <= 0;
     pos <= 7'b1;
     wait_cycle <= 1;
@@ -90,13 +99,17 @@ always_ff @(posedge clk, posedge rst) begin
     temp_path <= 128'b1;
     i <= 0;
     pulse_first <= 0;
+    zeroes <= 0;
+    state8 <= 0;
+    state6 <= 0;
+    count <= 0;
   end
   else if (en_state == 4) begin
     char_path <= char_path_n;
     curr_path <= next_path;
     char_found <= char_found_n;
     curr_state <= next_state;
-    track_length <= next_track_length;
+    //track_length <= next_track_length;
     curr_index <= next_index;
     pos <= next_pos;
     wait_cycle <= next_wait_cycle;
@@ -115,6 +128,10 @@ always_ff @(posedge clk, posedge rst) begin
     temp_path <= temp_path_n;
     i <= i_n;
     pulse_first <= pulse_first_n;
+    zeroes <= next_zeroes;
+    state8 <= next_state8;
+    state6 <= next_state6;
+    count <= next_count;
   end
 end
 
@@ -126,13 +143,13 @@ always_comb begin
   char_index_n = char_index;
   finished = 0;
   pulse = 0;
-  state_3 = 0;
+  //state_3 = 0;
   end_cond_n = end_cond;
   setup_n = setup;
   next_state = curr_state;
   next_path = curr_path;
   next_index = curr_index;
-  next_track_length = track_length;
+  //next_track_length = track_length;
   next_pos = pos;
   next_wait_cycle = wait_cycle;
   next_sent = sent;
@@ -149,6 +166,10 @@ always_comb begin
   temp_path_n = temp_path;
   i_n = i;
   pulse_first_n = pulse_first;
+  next_zeroes = zeroes;
+  next_state6 = state6;
+  next_state8 = state8;
+  next_count = count;
 
   case (curr_state)
     INIT: begin 
@@ -167,12 +188,13 @@ always_comb begin
     end
     LEFT: begin // move left (add 0 to path)
       if (wait_cycle == 0 && !SRAM_enable) begin
-        next_track_length = track_length + 1; // update total path length
+        //next_track_length = track_length + 1; // update total path length
         if (least1[8] == 1'b0 || least1 == 9'b110000000) begin // if LSE is a char (or there is no element)
           if (least1 != 9'b110000000 && (read_complete || write_complete)) begin // if there is a char (not no element)
             char_index_n = least1[7:0]; // set output character (index) to LSE, NOT to tracking index
             char_found_n = 1;
             next_state = SEND;
+            //next_zeroes = zeroes + 1;
             next_wait_cycle = 1;
             next_left = 1;
             if(check_right) begin
@@ -196,6 +218,13 @@ always_comb begin
           next_index = least1[6:0] * 2; // set next index to get from htree to the sum
           next_wait_cycle = 1;
           cb_length_n = cb_length + 1;
+          
+          // next_zeroes = zeroes + 1;
+          // // if (write_complete) begin
+          //   next_state = WRITE_ZEROES;
+          //   next_state8 = 1;
+          //next_zeroes = zeroes + 1;
+          //num zeros plus 1
         end
       end
       else begin
@@ -231,17 +260,26 @@ always_comb begin
       end
       else begin
         pulse = 1;
+        // if (curr_path[0]) begin // if char found is right, add one to the zeroes to be written to header
+        //   next_zeroes = zeroes + 1;
+        // end
         next_state = SEND_WAIT;
+        // if (!setup) begin
+        //   next_state6 = 1;
+        // end
       end
     end
     SEND_WAIT: begin 
       if (end_cond && write_complete) begin
         next_state = FINISH;
+        next_state6 = 0;
       end
       else if (write_complete) begin
         next_state = BACKTRACK;
+        next_state6 = 0;
         next_wait_cycle = 1;
         next_num_lefts = 0;
+        next_zeroes = 0;
         next_left = 0;
       end
       else if(!read_complete && !setup) begin
@@ -250,6 +288,7 @@ always_comb begin
       else if((setup && read_complete)) begin
         setup_n = 0;
         next_state = INIT;
+        next_state6 = 0;
       end
       else begin
         next_sent = 1;
@@ -266,8 +305,11 @@ always_comb begin
           else begin
             if(i < cb_length) begin
                 if(!least1[8]) begin
-                  next_state = LEFT;
-                  check_right_n = 1;
+                  next_zeroes = zeroes + 1;
+                  next_state = WRITE_ZEROES;
+                  next_state8 = 1;
+                  // next_state = LEFT;
+                  // check_right_n = 1;
                 end
                 else if(!curr_path[(cb_length) - i] && least1[8]) begin
                     next_index = least1[6:0] * 2;
@@ -280,10 +322,22 @@ always_comb begin
                 i_n = i + 1;
             end
             else if(i == cb_length) begin
-                next_path = {1'b0, curr_path[127:1]}; // right shift path to remove last move to "backtrack"
-                cb_length_n = cb_length - 1;
-                next_state = RIGHT;
-                i_n = 0;
+                next_zeroes = zeroes + 1;
+                next_state = WRITE_ZEROES;
+                next_state8 = 1;
+                // next_path = {1'b0, curr_path[127:1]}; // right shift path to remove last move to "backtrack"
+                // cb_length_n = cb_length - 1;
+                // next_state = RIGHT;
+                // //state_3 = 1;
+                // i_n = 0;
+
+                //next_zeroes = 0;
+                //next_state = WRITE_ZEROES;
+                // next_path = {1'b0, curr_path[127:1]}; // right shift path to remove last move to "backtrack"
+                // cb_length_n = cb_length - 1;
+                // next_state = RIGHT;
+                // //state_3 = 1;
+                // i_n = 0;
             end
           end
         end
@@ -292,7 +346,7 @@ always_comb begin
         end
     end
     BACKTRACK: begin // after a char was found and bits were written through the spi (header portion) start to backtrack until you can move right again
-      state_3 = 1;
+      //state_3 = 1;
       char_found_n = 0;
       next_wait_cycle = 1;
       // if the top of the tree has been reached and left and right have already been traversed, next state is FINISH
@@ -305,6 +359,7 @@ always_comb begin
         temp_path_n = curr_path;
         pulse_first_n = 1;
         if(next_path[0] && cb_length > 0) begin
+          next_zeroes = zeroes + 1;
           next_state = BACKTRACK;
         end else begin
           next_state = TRACK;
@@ -326,7 +381,7 @@ always_comb begin
     RIGHT: begin  // move right (add 1 to path)
       next_pos = 1;
       if (wait_cycle == 0 && !SRAM_enable) begin
-        next_track_length = track_length + 1; // update total path length
+        //next_track_length = track_length + 1; // update total path length
         next_wait_cycle = 1;
         if (least2[8] == 1'b0 || least2 == 9'b110000000 ) begin // if RSE is a char or there is no chracter
           if (least2 != 9'b110000000 && (read_complete || write_complete)) begin
@@ -336,7 +391,11 @@ always_comb begin
             end_cnt_n = 127;
             char_index_n = least2[7:0]; // set output character (index) to LSE, NOT to tracking index
             char_found_n = 1;
+            // if (!least1[8]) begin
+            //   next_zeroes = zeroes + 1;
+            // end
             next_state = SEND;
+            //next_zeroes = zeroes + 1;
             if(left_check) begin
               next_path = {curr_path[126:0], 1'b1}; // right shift and add 0 (right) to next path
               char_path_n = next_path;
@@ -355,11 +414,66 @@ always_comb begin
           next_state = LEFT;
           check_right_n = 1;
           cb_length_n = cb_length + 1;
+          // next_zeroes = zeroes + 1;
+          // // if (write_complete) begin
+          //   next_state = WRITE_ZEROES;
+          //   next_state8 = 1;
+          //end
+          // else begin
+          //   char_found_n = 0;
+          //   pulse = 1;
+          //   next_path = {curr_path[126:0], 1'b1}; // right shift and add 0 (right) to next path
+          //   next_index = least2[6:0] * 2; // set next index to get from htree to the sum
+          //   char_path_n = next_path;
+          //   next_num_lefts = 0; // reset lefts counted to only count lefts after going right
+          //   next_state = LEFT;
+          //   check_right_n = 1;
+          //   cb_length_n = cb_length + 1;
+          //   next_zeroes = 0;
+          //   next_state8 = 0;
+          // end
+          //num_zeros plus 1
         end
       end
       else begin
         next_wait_cycle = 0;
       end
+    end
+    WRITE_ZEROES: begin
+      if (count >= zeroes || zero_count == zeroes) begin
+        if(!least1[8]) begin
+          next_state = LEFT;
+          next_state8 = 0;
+          next_zeroes = 0;
+          next_count = 0;
+        end
+        if(i == cb_length) begin
+          next_path = {1'b0, curr_path[127:1]}; // right shift path to remove last move to "backtrack"
+          cb_length_n = cb_length - 1;
+          next_state = RIGHT;
+          next_state8 = 0;
+          //state_3 = 1;
+          i_n = 0;
+          next_zeroes = 0;
+          next_count = 0;
+        end
+    end
+    else begin
+      next_count = count + 1;
+    end
+      //  if (least2[8] == 1'b1 && (read_complete || write_complete)) begin // if RSE is a sum and zero has been written
+      //     char_found_n = 0;
+      //     pulse = 1;
+      //     next_path = {curr_path[126:0], 1'b1}; // right shift and add 0 (right) to next path
+      //     next_index = least2[6:0] * 2; // set next index to get from htree to the sum
+      //     char_path_n = next_path;
+      //     next_num_lefts = 0; // reset lefts counted to only count lefts after going right
+      //     next_state = LEFT;
+      //     check_right_n = 1;
+      //     cb_length_n = cb_length + 1;
+      //     next_zeroes = 0;
+      //     next_state8 = 0;
+      //  end
     end
     FINISH: begin
       finished = 1; // FIN state sent to (CONTROLLER)

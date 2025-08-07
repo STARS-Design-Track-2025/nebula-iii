@@ -48,11 +48,11 @@ module team_05 (
 
     
     // Set unused outputs to 0
-    assign {gpio_out[33:2], gpio_out[1:0]} = '0;
+    assign {gpio_out[33:2], gpio_out[0]} = '0;
 
     // Se OEBs
     assign gpio_oeb[10:2] = '1;  //Inputs
-   // assign gpio_oeb[1] = '0;  //Outputs
+    assign gpio_oeb[1] = '0;  //Outputs
     assign {gpio_oeb[33:11], gpio_oeb[1:0]} = '1;  //Unused set to all 1s (doesn't really matter)
     
     // T05 Top Instantiation
@@ -64,6 +64,7 @@ module team_05 (
         .read_in_pulse(gpio_in[3]),
         .in(gpio_in[10:4]),
         .esp_ack(gpio_in[2]),
+        .writeBit_TL(gpio_out[1]),
 
         //WRAPPER
         .wbs_stb_o(STB_O),

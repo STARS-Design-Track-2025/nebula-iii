@@ -12,10 +12,11 @@ module t05_top (
     // input logic [31:0] sram_in,
     // output logic [31:0] sram_out,
     // output logic [7:0] hist_addr,
-    output logic out_of_init,
-    output logic busy_o,
-    output logic nextChar,
-    output logic init,
+    // output logic out_of_init,
+    // output logic busy_o,
+    // output logic nextChar,
+    // output logic init,
+    output logic writeBit_TL,
 
     //SPI
     // output logic mosi, 
@@ -46,10 +47,10 @@ module t05_top (
   logic [31:0] sram_in;
   logic [31:0] sram_out;
   logic [7:0] hist_addr;
-  // logic out_of_init;
-  // logic busy_o;
-  // logic nextChar;
-  // logic init;
+  logic out_of_init;
+  logic busy_o;
+  logic nextChar;
+  logic init;
 
 //   assign mosi = 0;
   //Controller
@@ -104,11 +105,11 @@ module t05_top (
   //assign cb_r_wr = 0;
 
   //SPI
-  logic writeBit_HS, writeBit_TL;
+  logic writeBit_HS;// writeBit_TL;
   logic flag;
   logic [6:0] read_out, read_out_n;
-  assign writeBit_HS = 0;
-  assign writeEn_HS = 0;
+  // assign writeBit_HS = 0;
+  //assign writeEn_HS = 0;
   
   //SOMETHING
   logic HT_fin_reg;
@@ -382,7 +383,10 @@ module t05_top (
   logic left;
   logic [7:0] num_lefts;
   logic [8:0] header;
-  logic state_3;
+  logic state6;
+  logic state8;
+  logic [7:0] zeroes;
+  logic [7:0] zero_count;
 
   //Curr_state should be changed to logic can not pass typedefs through instantiation
   t05_cb_synthesis cb_syn (
@@ -396,12 +400,15 @@ module t05_top (
     .char_path(char_path), 
     .char_index(char_index), 
     .curr_index(curr_index), 
-    .state_3(state_3),
+    .state6(state6),
+    .state8(state8),
+    .zero_count(zero_count),
+    .zeroes(zeroes),
     .curr_path(curr_path),
     .num_lefts(num_lefts),
     .left(left),
     .finished(fin_state_CB),
-    .track_length(track_length),
+    .cb_length(track_length),
     .SRAM_enable(SRAM_enable),
     .read_complete(CB_read_complete),
     .write_complete(CB_write_complete),
@@ -414,16 +421,19 @@ module t05_top (
   // TODO: Had to uncomment this because it's cooked
   t05_header_synthesis header_synthesis (
     .clk(hwclk), 
-    .rst(reset) 
-    // .char_index(char_index), 
-    // .char_found(char_found), 
-    // .curr_path(curr_path[0]),
-    // .track_length(track_length),
-    // .state_3(state_3),
-    // .left(left),
-    // .num_lefts(num_lefts),
-    // .enable(writeEn_HS), 
-    // .bit1(writeBit_HS)
+    .rst(reset), 
+    .char_index(char_index), 
+    .char_found(char_found),
+    .curr_path(curr_path[0]),
+    .cb_length(track_length),
+    .state6(state6),
+    .state8(state8),
+    .left(left),
+    .zeroes(zeroes),
+    .zero_count(zero_count),
+    .num_lefts(num_lefts),
+    .enable(writeEn_HS), 
+    .bit1(writeBit_HS)
     );
 
   t05_translation translation (
