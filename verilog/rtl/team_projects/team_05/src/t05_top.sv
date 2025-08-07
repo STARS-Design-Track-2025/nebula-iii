@@ -412,16 +412,16 @@ module t05_top (
   // TODO: Had to uncomment this because it's cooked
   t05_header_synthesis header_synthesis (
     .clk(hwclk), 
-    .rst(reset), 
-    .char_index(char_index), 
-    .char_found(char_found), 
-    .curr_path(curr_path[0]),
-    .track_length(track_length),
-    .state_3(state_3),
-    .left(left),
-    .num_lefts(num_lefts),
-    .enable(writeEn_HS), 
-    .bit1(writeBit_HS)
+    .rst(reset) 
+    // .char_index(char_index), 
+    // .char_found(char_found), 
+    // .curr_path(curr_path[0]),
+    // .track_length(track_length),
+    // .state_3(state_3),
+    // .left(left),
+    // .num_lefts(num_lefts),
+    // .enable(writeEn_HS), 
+    // .bit1(writeBit_HS)
     );
 
   t05_translation translation (
