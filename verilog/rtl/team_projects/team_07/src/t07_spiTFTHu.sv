@@ -21,7 +21,7 @@ module t07_spiTFTHu (
 
     typedef enum logic[2:0] { 
         IDLE = 0,
-        SETUP = 1,
+        LOAD = 1,
         SHIFT = 2,
         READ = 3,
         DELAY = 4
@@ -34,7 +34,8 @@ module t07_spiTFTHu (
     logic [15:0] dataforOutput, next_data;
 
     logic [4:0] counter, next_ctr;
-    logic [15:0] delayctr, next_delayctr;
+
+    logic [31:0] delayctr, next_delayctr;
 
     assign MISO_out = {24'b0, MISO_Reg};
 
@@ -53,7 +54,7 @@ module t07_spiTFTHu (
             MISO_Reg <= next_miso;
             delayctr <= next_delayctr;
             reading_flag <= next_reading_flag;
-            delay_flag <= next_delay_flag;
+            // delay_flag <= next_delay_flag;
         end
     end
 
@@ -74,18 +75,18 @@ module t07_spiTFTHu (
                 next_ctr = 0;
                 next_delayctr = 0;
                 next_reading_flag = 0;
-                next_delay_flag = 0;
+                // next_delay_flag = 0;
 
                 //next state logic
-                if (write_in == 1'b1) begin
-                    next_state = SETUP;
-                end else if (read_in == 1'b1) begin
+                if (write_in) begin
+                    next_state = LOAD;
+                end else if (read_in) begin
                     next_state = READ;
                 end else begin
                     next_state = IDLE;
                 end
             end 
-            SETUP: begin 
+            LOAD: begin 
                 //SPI signals
                 sclk = 1;
                 bitData = 1;
@@ -99,22 +100,27 @@ module t07_spiTFTHu (
                 next_miso = MISO_Reg;
 
                 next_data = MOSI_data[15:0];
-                next_delayctr = MOSI_data[31:16];
+                next_delayctr = MOSI_data;
 
-                if (MOSI_data[15:8] == 8'h40) begin
+                if (MOSI_data[15:8] == 8'h40 && MOSI_data[31] != 1'b1) begin
                     next_reading_flag = 1;
                 end else begin
                     next_reading_flag = 0;
                 end
 
-                if (MOSI_data[31:16] != 16'b0) begin
-                    next_delay_flag = 1;
-                end else begin
-                    next_delay_flag = 0;
-                end
+                // if (MOSI_data[31] == 1'b1) begin
+                //     next_delay_flag = 1;
+                // end else begin
+                //     next_delay_flag = 0;
+                // end
 
                 //next state logic
-                next_state = SHIFT;
+                if (MOSI_data[31] == 1'b1) begin
+                    next_state = DELAY;
+                end else begin
+                    next_state = SHIFT;
+                end
+
             end
             SHIFT: begin
                 //SPI signals
@@ -126,32 +132,26 @@ module t07_spiTFTHu (
                 ack = 1;
 
                 //internal signals
+                next_data = {dataforOutput[14:0], 1'b0};
+                next_ctr = counter + 1;
                 next_delayctr = delayctr;
                 next_reading_flag = reading_flag;
                 next_delay_flag = delay_flag;
 
-                next_data = {dataforOutput[14:0], 1'b0};
-                next_ctr = counter + 1;
-                
                 if (reading_flag) begin
                     if (counter >= 5'd8 && counter <= 5'd16) begin
                         next_miso = {MISO_Reg[6:0], MISO_in};
-                    end else begin
-                        next_miso = MISO_Reg;
                     end
-                end else begin
-                    next_miso = MISO_Reg;
                 end
 
                 //next state logic
-                if (counter <= 5'd14) begin
+                if (counter <= 5'd15) begin
                     next_state = SHIFT;
-                end else if (delay_flag) begin
-                    next_state = DELAY;
                 end else begin
                     next_state = IDLE;
                 end
             end 
+
             READ: begin 
                 //spi signals
                 sclk = 1;
@@ -185,7 +185,7 @@ module t07_spiTFTHu (
                 next_data = dataforOutput;
                 next_ctr = 0;
                 next_miso = MISO_Reg;
-                next_delay_flag = 0;
+                // next_delay_flag = 0;
                 next_reading_flag = 0;
 
                 next_delayctr = delayctr - 1;
@@ -211,7 +211,7 @@ module t07_spiTFTHu (
                 next_miso = MISO_Reg;
                 next_ctr = 0;
                 next_delayctr = 0;
-                next_delay_flag = delay_flag;
+                // next_delay_flag = delay_flag;
                 next_reading_flag = reading_flag;
 
                 //next state logic
