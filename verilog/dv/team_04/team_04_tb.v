@@ -177,7 +177,7 @@ module team_04_tb;
 
 
 		// Wait until testbench is done
-		repeat (5000000) @(negedge clock);
+		repeat (100000) @(negedge clock);
 
 		
 		$display("%c[1;32m",27);

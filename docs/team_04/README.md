@@ -1,20 +1,18 @@
 # NEBULA III - Project Documentation
 
-## Team 04 - [ADRIAN]
-* **Peer Mentor:** [Adrian Buczkowski]
-* [Omar Habli]
-* [Jeff Liu]
-* [Owen Yao]
-* [Darren Huang]
-* [Ethan Peyton]
+## Team 04 - ADRIAN
+* **Peer Mentor:** Adrian Buczkowski
+* Omar Habli
+* Jeff Liu
+* Owen Yao
+* Darren Huang
+* Ethan Peyton
 
 ## Project Overview
-Describe what your project is in 2-3 sentences. Do NOT mention functionality details, you will add those in the *Functionality Description and Testing* section.
-Our project is a graphing calculator that is powered by a CPU. The user types in an equation using the keypad and the graph of the equation will be displayed.
+Our project is a single-cycle RISC-V CPU for a graphing calculator. The user types in an equation using the keypad and the graph of the equation will be displayed.
 
 ## Pin Layout
-Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
-The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
+The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function. Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
 
 * **Pin 00 [00]** - Not Used
 * **Pin 01 [--]** - NOT ALLOWED
@@ -56,13 +54,10 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 37 [33]** - Not Used
 
 ## External Hardware
-List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
-4x4 matrix keypad
-TFT LCD screen
+This project uses a 4x4 matrix keypad and a TFT LCD screen
 
 ## Functionality Description and Testing
-Describe in detail how your project works and how to test it.
-The user will first interact with the keypad which will send a binary number to the CPU from 1:32 depending on the alpha state. The CPU will then read the value sent from the keypad and either display the corresponding value, operator, or swtich apps. After an equation is typed into the calculator, the graph will be displayed. 
+The user will first interact with the keypad by pressing the buttons, which will send a binary number to the CPU from 1:32 depending on the "alpha" state. The CPU will then read the value sent from the keypad and either display the corresponding value, operator, or switch from an equation state to a graphing state. After the user switches to a graphing state, the equation entered in the equation state is graphed and displayed on the LCD screen.
 
 ## RTL Diagrams
-Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_04).
+All block diagrams, sub-block diagrams, state-transition diagrams, and flowcharts used for this project are inside this folder (docs/team_04).
