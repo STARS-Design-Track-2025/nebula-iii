@@ -67,7 +67,7 @@ always_comb begin
     next_start = start;
     next_write_char_path = write_char_path;
     next_write_num_lefts = write_num_lefts;
-    write_complete = 0;
+    // write_complete = 0;
     
     if ((char_found == 1'b1)) begin
       next_header = {1'b1, char_index}; // add control bit, beginning 1, and character index for header
@@ -112,7 +112,7 @@ always_comb begin
               next_write_num_lefts = 1;
               end
             if (num_lefts == 0) begin
-              write_complete = 1;
+              // write_complete = 1;
             end
           end
       end
@@ -127,7 +127,7 @@ always_comb begin
         next_count = count + 1;
         next_write_char_path = 0;
         next_enable = 1;
-        write_complete = 1;
+        // write_complete = 1;
       end
     else if (count < 9) begin // write 8 bit # of lefts and a leading 1
       next_enable = 1;
