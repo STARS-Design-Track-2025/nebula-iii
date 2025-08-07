@@ -55,7 +55,7 @@ module t05_hTree (
     } state_t;
 
     // Internal register declarations
-    state_t /* state, */ next_state;                                      // Current state register
+    logic [3:0] /* state, */ next_state;                                      // Current state register
     logic [71:0] node;
     logic [7:0] clkCount_reg;
     logic [6:0] nullSumIndex_reg;                     // Clock counter and SRAM address index
