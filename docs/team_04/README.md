@@ -1,7 +1,7 @@
 # NEBULA III - Project Documentation
 
 ## Team 04 - ADRIAN
-* **Peer Mentor:** Adrian Buczkowski
+**Peer Mentor:** Adrian Buczkowski
 * Omar Habli
 * Jeff Liu
 * Owen Yao
