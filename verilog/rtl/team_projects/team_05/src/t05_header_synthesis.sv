@@ -56,90 +56,90 @@ always_ff @(posedge clk) begin
     // end
 end
 
-always_comb begin
-    next_header = header;
-    next_zeroes = zeroes;
-    next_enable = enable;
-    next_count = count;
-    next_bit1 = bit1;
-    next_char_added = char_added;
-    next_write_zeroes = write_zeroes;
-    next_start = start;
-    next_write_char_path = write_char_path;
-    next_write_num_lefts = write_num_lefts;
-    // write_complete = 0;
+// always_comb begin
+//     next_header = header;
+//     next_zeroes = zeroes;
+//     next_enable = enable;
+//     next_count = count;
+//     next_bit1 = bit1;
+//     next_char_added = char_added;
+//     next_write_zeroes = write_zeroes;
+//     next_start = start;
+//     next_write_char_path = write_char_path;
+//     next_write_num_lefts = write_num_lefts;
+//     // write_complete = 0;
     
-    if ((char_found == 1'b1)) begin
-      next_header = {1'b1, char_index}; // add control bit, beginning 1, and character index for header
-      next_char_added = 1;
-      next_enable = 0;
-      next_start = 1;
-      next_write_char_path = 1;
-    end
-    if ((state_3 && !char_added && !char_found && curr_path == 1 && track_length > 0)) begin // send one zero for each backtrack (not while char is being added)
-      next_write_zeroes = 1;
-      next_enable = 1;
-      next_bit1 = 0;
-      next_zeroes = zeroes + 1;
-    end
-    else if (write_zeroes) begin // reset variables when state is no longer backtrack
-      next_write_zeroes = 0;
-      next_enable = 0;
-      next_zeroes = 0;
-    end
-    if (write_char_path) begin
-      if (start) begin
-          next_enable = 1;
-          next_start = 0;
-          next_bit1 = header[8];
-          next_header = {header[7:0], 1'b0}; // shift out msb to write (first occurrence)
-          next_count = count + 1;
-          next_char_added = 1;
-      end
-      else if (enable && char_added) begin // if {1'b1, char} is now in the header, send the 9 bits to the SPI bit by bit
-          if (count < 9) begin
-              next_bit1 = header[8];
-              next_header = {header[7:0], 1'b0};
-              next_count = count + 1;
-          end
-          else begin // once all bits are sent, reset all intermediate variables and set write_finish to 1
-              next_count = 0;
-              next_enable = 0;
-              next_bit1 = 0;
-              next_char_added = 0;
-              next_write_char_path = 0;
-            if (num_lefts != 0 && left) begin
-              next_write_num_lefts = 1;
-              end
-            if (num_lefts == 0) begin
-              // write_complete = 1;
-            end
-          end
-      end
-      else begin
-          next_bit1 = 1'b0;
-          next_count = 0;
-      end
-  end
-  else if (write_num_lefts) begin // write the number of lefts after going right in the tree for left chars after their header portion
-    if(count == 0) begin // add 1 as first bit
-        next_bit1 = 1'b1;
-        next_count = count + 1;
-        next_write_char_path = 0;
-        next_enable = 1;
-        // write_complete = 1;
-      end
-    else if (count < 9) begin // write 8 bit # of lefts and a leading 1
-      next_enable = 1;
-      next_bit1 = num_lefts[8-count];
-      next_count = count + 1;
-    end
-    else begin
-      next_count = 0;
-      next_enable = 0;
-      next_bit1 = 0;
-      next_write_num_lefts = 0;
-    end
-  end
-end
-endmodule
+//     if ((char_found == 1'b1)) begin
+//       next_header = {1'b1, char_index}; // add control bit, beginning 1, and character index for header
+//       next_char_added = 1;
+//       next_enable = 0;
+//       next_start = 1;
+//       next_write_char_path = 1;
+//     end
+//     if ((state_3 && !char_added && !char_found && curr_path == 1 && track_length > 0)) begin // send one zero for each backtrack (not while char is being added)
+//       next_write_zeroes = 1;
+//       next_enable = 1;
+//       next_bit1 = 0;
+//       next_zeroes = zeroes + 1;
+//     end
+//     else if (write_zeroes) begin // reset variables when state is no longer backtrack
+//       next_write_zeroes = 0;
+//       next_enable = 0;
+//       next_zeroes = 0;
+//     end
+//     if (write_char_path) begin
+//       if (start) begin
+//           next_enable = 1;
+//           next_start = 0;
+//           next_bit1 = header[8];
+//           next_header = {header[7:0], 1'b0}; // shift out msb to write (first occurrence)
+//           next_count = count + 1;
+//           next_char_added = 1;
+//       end
+//       else if (enable && char_added) begin // if {1'b1, char} is now in the header, send the 9 bits to the SPI bit by bit
+//           if (count < 9) begin
+//               next_bit1 = header[8];
+//               next_header = {header[7:0], 1'b0};
+//               next_count = count + 1;
+//           end
+//           else begin // once all bits are sent, reset all intermediate variables and set write_finish to 1
+//               next_count = 0;
+//               next_enable = 0;
+//               next_bit1 = 0;
+//               next_char_added = 0;
+//               next_write_char_path = 0;
+//             if (num_lefts != 0 && left) begin
+//               next_write_num_lefts = 1;
+//               end
+//             if (num_lefts == 0) begin
+//               // write_complete = 1;
+//             end
+//           end
+//       end
+//       else begin
+//           next_bit1 = 1'b0;
+//           next_count = 0;
+//       end
+//   end
+//   else if (write_num_lefts) begin // write the number of lefts after going right in the tree for left chars after their header portion
+//     if(count == 0) begin // add 1 as first bit
+//         next_bit1 = 1'b1;
+//         next_count = count + 1;
+//         next_write_char_path = 0;
+//         next_enable = 1;
+//         // write_complete = 1;
+//       end
+//     else if (count < 9) begin // write 8 bit # of lefts and a leading 1
+//       next_enable = 1;
+//       next_bit1 = num_lefts[8-count];
+//       next_count = count + 1;
+//     end
+//     else begin
+//       next_count = 0;
+//       next_enable = 0;
+//       next_bit1 = 0;
+//       next_write_num_lefts = 0;
+//     end
+//   end
+// end
+// endmodule
