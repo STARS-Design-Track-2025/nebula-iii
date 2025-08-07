@@ -12,10 +12,10 @@ module t05_top (
     // input logic [31:0] sram_in,
     // output logic [31:0] sram_out,
     // output logic [7:0] hist_addr,
-    // output logic out_of_init,
-    // output logic busy_o,
-    // output logic nextChar,
-    // output logic init,
+    output logic out_of_init,
+    output logic busy_o,
+    output logic nextChar,
+    output logic init,
 
     //SPI
     // output logic mosi, 
@@ -46,10 +46,10 @@ module t05_top (
   logic [31:0] sram_in;
   logic [31:0] sram_out;
   logic [7:0] hist_addr;
-  logic out_of_init;
-  logic busy_o;
-  logic nextChar;
-  logic init;
+  // logic out_of_init;
+  // logic busy_o;
+  // logic nextChar;
+  // logic init;
 
 //   assign mosi = 0;
   //Controller
