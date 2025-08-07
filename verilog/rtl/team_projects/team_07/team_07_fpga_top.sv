@@ -30,7 +30,8 @@ module top (
   logic invalError;
   logic [6:0] FPUFlag; 
 
-  logic [31:0] dataArToWM, ackToWM, dataDecToAr;
+  logic [31:0] dataArToWM, dataDecToAr;
+  logic ackToWM;
 
   //for SRAM & wishbone
   logic [31:0] dataWMToAr, addrWMToAr;
@@ -75,8 +76,8 @@ module top (
   assign left[5] = reset;
 
   t07_top top0(.clk(newclk), .nrst(reset), .invalError(invalError), .chipSelectTFT(right[3]), .bitDataTFT(right[1]), .sclkTFT(right[2]), .misoDriver_i(pb[4]),
-  .dataArToWM(dataArToWM), .ackToWM(ackToWM), .dataWMToAr(dataWMToAr), .addrWMToAr(addrWMToAr), .selToAr(selToAr), .weToAr(weToAr), .stbToAr(stbToAr), .cycToAr(cycToAr), 
-  .busyTFT_o(right[7]), .pc2(left[1]), .pc3(left[2]), .freezePC(left[3]), .busyToMMIO(left[6]));
+  .dataArToWM(dataArToWM), .ackToWM(ackToWM), .dataWMToAr(dataWMToAr), .addrWMToAr(addrWMToAr), .selToAr(selToAr), .weToAr(weToAr), .stbToAr(stbToAr), .cycToAr(cycToAr)
+  );
 
   // t07_display tft (.clk(newclk), .nrst(reset), .out(in), .ack(left[3]));
   // t07_spiTFTHu spitft (.clk(newclk), .nrst(reset), .MOSI_data(in), .read_in(1'b0), .write_in(1'b1), .MISO_out(), .ack(right[7]), .bitData(right[1]), .chipSelect(right[3]), .sclk(right[2]), .MISO_in(pb[4])); 

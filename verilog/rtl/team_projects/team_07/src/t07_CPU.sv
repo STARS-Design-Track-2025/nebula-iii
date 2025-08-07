@@ -5,14 +5,14 @@ module t07_CPU(
     output logic [1:0] rwi,
     output logic busy_edge_o, //FPUbusy_o,
     //output logic FPU_overflowFlag, FPUcarryout, 
-    output logic invalError, //to GPIO
+    output logic invalError //to GPIO
     //output logic [6:0] FPUFlags,
     //FPGA testing
-    output logic [31:0] pc_out,
-    output logic freeze_o
+    // output logic [31:0] pc_out,
+    // output logic freeze_o
 );
     logic [31:0] inst;
-    //logic freeze; //to external memory 
+    logic freeze_o; //to external memory 
     //decoder out
     logic [6:0] Op, funct7;
     logic [2:0] funct3;
@@ -24,7 +24,7 @@ module t07_CPU(
     logic FPUWrite;
     logic [2:0] regWriteSrc, FPURnd;
     //PC output
-    logic [31:0] /*pc_out,*/ linkAddress;
+    logic [31:0] pc_out, linkAddress;
     //ALU output
     logic [6:0] ALUFlags;
     logic [31:0] ALUResult;

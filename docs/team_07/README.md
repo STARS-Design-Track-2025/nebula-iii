@@ -14,7 +14,7 @@ In the project, we designed a single cycle RISC-V CPU with a custom fixed-point 
 Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
 The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
 
-* **Pin 00 [00]** - Input or Output? - Pin Function?
+* **Pin 00 [00]** - Not Used
 * **Pin 01 [--]** - NOT ALLOWED
 * **Pin 02 [--]** - NOT ALLOWED
 * **Pin 03 [--]** - NOT ALLOWED
@@ -23,35 +23,35 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 06 [02]** - Input - MISO line for the RA8875 driver
 * **Pin 07 [03]** - Output - MOSI line for the RA8875 driver
 * **Pin 08 [04]** - Output - Chip Select (CS) for the RA8875 driver
-* **Pin 09 [05]** - Output - Screen Reset, RA8875
-* **Pin 10 [06]** - Output - FPU Flags (zeroFlag)
-* **Pin 11 [07]** - Output - FPU Flags (greaterThanOrEqualFlag, signed)
-* **Pin 12 [08]** - Output - FPU Flags (greaterThanOrEqualFlag, unsigned)
-* **Pin 13 [09]** - Output - FPU Flags (lessThanFlag, signed)
-* **Pin 14 [10]** - Output - FPU Flags (lessThanFlag, unsigned)
-* **Pin 15 [11]** - Output - FPU Flags (notEqualFlag)
-* **Pin 16 [12]** - Output - FPU Flags (equalFlag)
-* **Pin 17 [13]** - Input or Output? - Pin Function? 
-* **Pin 18 [14]** - Input or Output? - Pin Function? 
-* **Pin 19 [15]** - Input or Output? - Pin Function? 
-* **Pin 20 [16]** - Input or Output? - Pin Function? 
-* **Pin 21 [17]** - Input or Output? - Pin Function? 
-* **Pin 22 [18]** - Input or Output? - Pin Function? 
-* **Pin 23 [19]** - Input or Output? - Pin Function? 
-* **Pin 24 [20]** - Input or Output? - Pin Function? 
-* **Pin 25 [21]** - Input or Output? - Pin Function? 
-* **Pin 26 [22]** - Input or Output? - Pin Function? 
-* **Pin 27 [23]** - Input or Output? - Pin Function? 
-* **Pin 28 [24]** - Input or Output? - Pin Function? 
-* **Pin 29 [25]** - Input or Output? - Pin Function?
-* **Pin 30 [26]** - Input or Output? - Pin Function?
-* **Pin 31 [27]** - Input or Output? - Pin Function?
-* **Pin 32 [28]** - Input or Output? - Pin Function?
-* **Pin 33 [29]** - Input or Output? - Pin Function?
-* **Pin 34 [30]** - Input or Output? - Pin Function?
-* **Pin 35 [31]** - Input or Output? - Pin Function?
-* **Pin 36 [32]** - Input or Output? - Pin Function?
-* **Pin 37 [33]** - Input or Output? - Pin Function?
+* **Pin 09 [05]** - Output - invalError debugging LED
+* **Pin 10 [06]** - Not Used
+* **Pin 11 [07]** - Not Used
+* **Pin 12 [08]** - Not Used 
+* **Pin 13 [09]** - Not Used 
+* **Pin 14 [10]** - Not Used 
+* **Pin 15 [11]** - Not Used 
+* **Pin 16 [12]** - Not Used 
+* **Pin 17 [13]** - Not Used 
+* **Pin 18 [14]** - Not Used 
+* **Pin 19 [15]** - Not Used 
+* **Pin 20 [16]** - Not Used 
+* **Pin 21 [17]** - Not Used 
+* **Pin 22 [18]** - Not Used 
+* **Pin 23 [19]** - Not Used 
+* **Pin 24 [20]** - Not Used 
+* **Pin 25 [21]** - Not Used 
+* **Pin 26 [22]** - Not Used 
+* **Pin 27 [23]** - Not Used 
+* **Pin 28 [24]** - Not Used 
+* **Pin 29 [25]** - Not Used
+* **Pin 30 [26]** - Not Used
+* **Pin 31 [27]** - Not Used
+* **Pin 32 [28]** - Not Used
+* **Pin 33 [29]** - Not Used
+* **Pin 34 [30]** - Not Used
+* **Pin 35 [31]** - Not Used
+* **Pin 36 [32]** - Not Used
+* **Pin 37 [33]** - Not Used
 
 ## External Hardware
 RA8875 Driver and Adafruit Product ID: 1680

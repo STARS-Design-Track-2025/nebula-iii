@@ -30,21 +30,25 @@ module team_07_tb;
 	wire [33:0] check_bits;
 	reg [37:0] mprj_io_in;
 
+	// Input pin
+	reg miso_in;
+	assign mprj_io[6] = miso_in;
+
 	// Signals assignments
 	assign check_bits = {mprj_io[37:5], mprj_io[0]};
 	assign mprj_io[3] = (CSB == 1'b1) ? 1'b1 : 1'bz;
 	assign clock_in = clock;
 
-	// External clock generation
+	// External clock generation (10 MHz)
 	always #50 clock <= (clock === 1'b0);
 	// Initialize the clock at 0
 	initial begin
 		clock = 0;
 	end
 
-	// NOTE: The external clock is 10 MHz, but the clock for the user 
-	// project will be configured to 40 MHz using the digital PLL.
-	// Hence, your design will be clocked at 40 MHz.
+	// Real clock operating design (the one divided internally)
+	reg clk;
+	assign clk = uut.chip_core.mprj.mprj.team_07_Wrapper.team_07_WB.instance_to_wrap.newclk;
 
 	// STUDENTS: This block here is important, don't erase it! However, don't worry about trying to understand it
 	`ifdef ENABLE_SDF
@@ -164,12 +168,16 @@ module team_07_tb;
 	// Main Test Bench Process
 	initial begin
 
-		// *******************************
-		// WRITE TESTBENCH HERE!!
-		// 
-		// Wait for design to be enabled
-		// before doing any checks
-		// *******************************
+		// Initialize inputs
+		miso_in = 1;
+
+		// Wait for Design Enabled
+		wait(uut.chip_core.mprj.mprj.team_07_Wrapper.team_07_WB.instance_to_wrap.en == 1);
+
+
+		// Wait a few clock cycles
+		repeat (50000) @(negedge clk);
+
 		
 		$display("%c[1;32m",27);
 		`ifdef GL

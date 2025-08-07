@@ -23,14 +23,14 @@ module team_07 (
 
 
     // Wishbone master interface
-    // output wire [31:0] ADR_O,
-    // output wire [31:0] DAT_O,
-    // output wire [3:0]  SEL_O,
-    // output wire        WE_O,
-    // output wire        STB_O,
-    // output wire        CYC_O,
-    // input wire [31:0]  DAT_I,
-    // input wire         ACK_I,
+    output wire [31:0] ADR_O,
+    output wire [31:0] DAT_O,
+    output wire [3:0]  SEL_O,
+    output wire        WE_O,
+    output wire        STB_O,
+    output wire        CYC_O,
+    input wire [31:0]  DAT_I,
+    input wire         ACK_I,
 
     // 34 out of 38 GPIOs (Note: if you need up to 38 GPIO, discuss with a TA)
     input  logic [33:0] gpio_in, // Breakout Board Pins
@@ -46,7 +46,44 @@ module team_07 (
     // You can also have input registers controlled by the Caravel Harness's on chip processor
 );
 
-    assign gpio_out = '0;
-    assign gpio_oeb = '0;
+    logic newclk, newclk_n; 
+    logic [22:0] count, count_n;
+    
+    // Some registers 
+    always_ff @(posedge clk, negedge nrst) begin
+    if (~nrst) begin
+      count <= '0;
+      newclk <= '0;
+    end else begin
+      count <= count_n;
+      newclk <= newclk_n;
+    end
+  end
+
+  // 125 kHz clock  divider 
+  always_comb begin
+    count_n = count;
+    newclk_n = newclk;
+    if (count < 23'd40) begin
+      count_n = count + 1;
+    end else begin
+      count_n = '0;
+      newclk_n = !newclk;
+    end
+
+  end
+   
+   // Top Instantiation
+   t07_top top0(.clk(newclk), .nrst(nrst & en), .invalError(gpio_out[5]), .chipSelectTFT(gpio_out[4]), .bitDataTFT(gpio_out[3]), .sclkTFT(gpio_out[1]), .misoDriver_i(gpio_in[2]),
+   .dataArToWM(DAT_I), .ackToWM(ACK_I), .dataWMToAr(DAT_O), .addrWMToAr(ADR_O), .selToAr(SEL_O), .weToAr(WE_O), .stbToAr(STB_O), .cycToAr(CYC_O));
+
+
+   // Unused Outputs are set to 0
+   assign {gpio_out[33:6], gpio_out[2], gpio_out[0]} = '0;
+
+   // OEBs
+   assign {gpio_oeb[5:3], gpio_oeb[1]} = '0; // Outputs
+   assign gpio_oeb[2] = '1; // Inputs
+   assign {gpio_oeb[33:6], gpio_oeb[0]} = '1; // Unused pins set to inputs (doesn't really matter)
 
 endmodule

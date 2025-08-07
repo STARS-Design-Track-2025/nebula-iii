@@ -1,15 +1,12 @@
 module t07_top (
     input logic clk, nrst,
     input logic misoDriver_i, //for SPITFT from RA8875
-    output logic invalError, chipSelectTFT, bitDataTFT, sclkTFT, busyTFT_o, //GPIO
+    output logic invalError, chipSelectTFT, bitDataTFT, sclkTFT, //GPIO
     //output logic [6:0] FPUFlags,
-    //FPGA testing
-    output logic pc2,
-    output logic pc3,
-    output logic freezePC, busyToMMIO,
 
     //inputs & outputs for SRAM
-    input logic [31:0] dataArToWM, ackToWM,
+    input logic [31:0] dataArToWM,
+    input logic ackToWM,
 
     output logic [31:0] dataWMToAr, addrWMToAr, 
     output logic [3:0] selToAr,
@@ -53,7 +50,8 @@ logic [31:0] dataDecToAr;
 
 //wishbone manager output to user design
 logic [31:0] dataToMMIO;
-// logic busyToMMIO;
+logic busyToMMIO;
+logic busyTFT_o;
 
 //outputs of WB decoder
 logic cyc_out;
@@ -71,13 +69,12 @@ logic [31:0] dataDec_in; //data from SRAM to WB Dec
 logic [31:0] dataToTFT, addrToTFT, MISOtoMMIO;
 logic displayWrite, displayRead;
 
-assign pc2 = programCounter_o[2];
-assign pc3 = programCounter_o[3];
+// assign pc2 = programCounter_o[2];
+// assign pc3 = programCounter_o[3];
 
 
 t07_CPU CPU(.busy(busyCPU), .externalMemAddr(exMemAddr_CPU), .exMemData_out(exMemData_CPU), .exInst(instr), .memData_in(memData_in), 
-.rwi(rwi_in), .invalError(invalError), .clk(clk), .nrst(nrst), .busy_edge_o(busy_edge), 
-.pc_out(programCounter_o), .freeze_o(freezePC));
+.rwi(rwi_in), .invalError(invalError), .clk(clk), .nrst(nrst), .busy_edge_o(busy_edge));
 
 t07_MMIO MMIO(.clk(clk), .nrst(nrst), .addr_in(exMemAddr_CPU), .memData_i(exMemData_CPU), .rwi_in(rwi_in), .WBData_i(dataToMMIO), 
  .busyTFT_i(busyTFT_o), .CPUData_out(memData_in), .CPU_busy_o(busyCPU), .instr_out(instr), 
