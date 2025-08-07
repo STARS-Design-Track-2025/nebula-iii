@@ -443,26 +443,24 @@ module t07_memoryHandler (
 
                     state_n = FETCH;
             end
-            // default: begin 
-            //     freeze_o = 0; //only state where pc can increment
-            //     pc_n = pcOut;
-            //     instr_n = instructionOut;
+            default: begin 
+                freeze_o = 0;
 
-            //     addrControl = 1;
-            //     rwi = 'b00;
+                addrControl = 1;
+                rwi = 'b11;
+                loadCt_n = '0;
+                load2Ct_n = '0;
+                load3Ct_n = '0;
+                storeCt_n = '0;
+                instr_n = instructionOut;
+                pc_n = pc_i;
+                regData_o_n = regData_o;
+                addrMMIO_o_n = addrMMIO_o;
+                dataMMIO_o = 'hDEADBEEF;
+                addrMMIO_comb_o = '0;
 
-            //     loadCt_n = '0;
-            //     load2Ct_n = '0;
-            //     load3Ct_n = '0;
-            //     storeCt_n = '0;
-
-            //     regData_o_n = regData_o;
-            //     addrMMIO_o_n = addrMMIO_o;
-            //     dataMMIO_o = 'hDEADBEEF;
-            //     addrMMIO_comb_o = '0;
-
-            //     state_n = FETCH;
-            // end
+                state_n = FETCH;
+            end
         endcase
     end
 endmodule

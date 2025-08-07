@@ -71,11 +71,11 @@ always_comb begin
     end
     //lui
     7'b0110111: begin // u-type
-        immediate = {12'b0, instruction[31:12]};
+        immediate = {instruction[31:12], 12'b0};
     end
     //auipc
     7'b0010111: begin // u-type
-        immediate = {12'b0, instruction[31:12]};
+        immediate = {instruction[31:12] ,12'b0};
     end
     default: begin
         immediate = 32'b0;

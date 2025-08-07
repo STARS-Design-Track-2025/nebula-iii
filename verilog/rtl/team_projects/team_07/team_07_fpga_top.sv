@@ -23,7 +23,7 @@ module top (
 
   logic wi;
   logic newclk, newclk_n; 
-  logic [8:0] count, count_n;
+  logic [22:0] count, count_n;
   logic [31:0] in;
   logic delay;
 
@@ -62,26 +62,35 @@ module top (
   always_comb begin
     count_n = count;
     newclk_n = newclk;
-    if (count < 9'd50) begin //clock divider to 250 kHz
+    if (count < 23'd40) begin //clock divider to 200 kHz
       count_n = count + 1;
     end else begin
       count_n = '0;
       newclk_n = !newclk;
     end
+
   end
 
-  t07_top top0(.clk(newclk), .nrst(reset), .FPUFlag(FPUFlag), .invalError(invalError), .chipSelectTFT(right[3]), .bitDataTFT(right[1]), .sclkTFT(right[2]), .misoDriver_i(pb[4]),
-  .dataArToWM(dataArToWM), .ackToWM(ackToWM), .dataWMToAr(dataWMToAr), .addrWMToAr(addrWMToAr), .selToAr(sel_out), .weToAr(we_out), .stbToAr(stb_out), .cycToAr(cyc_out));
+  assign left[4] = newclk; 
+  assign left[5] = reset;
 
-  //t07_spiTFTHu spitft (.clk(newclk), .nrst(reset), .MOSI_data(in), .read_in(1'b0), .write_in(1'b1), .MISO_out(), .ack(right[7]), .bitData(right[1]), .chipSelect(right[3]), .sclk(right[2]), .MISO_in(pb[4])); 
+  t07_top top0(.clk(newclk), .nrst(reset), .invalError(invalError), .chipSelectTFT(right[3]), .bitDataTFT(right[1]), .sclkTFT(right[2]), .misoDriver_i(pb[4]),
+  .dataArToWM(dataArToWM), .ackToWM(ackToWM), .dataWMToAr(dataWMToAr), .addrWMToAr(addrWMToAr), .selToAr(selToAr), .weToAr(weToAr), .stbToAr(stbToAr), .cycToAr(cycToAr), 
+  .busyTFT_o(right[7]), .pc2(left[1]), .pc3(left[2]), .freezePC(left[3]), .busyToMMIO(left[6]));
+
+  // t07_display tft (.clk(newclk), .nrst(reset), .out(in), .ack(left[3]));
+  // t07_spiTFTHu spitft (.clk(newclk), .nrst(reset), .MOSI_data(in), .read_in(1'b0), .write_in(1'b1), .MISO_out(), .ack(right[7]), .bitData(right[1]), .chipSelect(right[3]), .sclk(right[2]), .MISO_in(pb[4])); 
 
   
   //spitft (.clk(newclk), .nrst(~reset), .in(in), .wi(wi), .miso_in(pb[4]), .miso_out(right[4]), .ack(right[7]), .bitData(right[1]), .chipSelect(right[3]), .sclk(right[2]));
   
   assign wi = 1'b1;  
 
-  sram_WB_Wrapper sramWrapper(.wb_clk_i(newclk), .wb_rst_i(reset), .wbs_stb_i(stb_out), .wbs_cyc_i(cyc_out), .wbs_we_i(we_out), .wbs_sel_i(sel_out),
-  .wbs_dat_i(dataWMToAr), .wbs_adr_i(addrWMToAr), .wbs_ack_o(ackToWM), .wbs_dat_o(dataArToWM)); 
+  sram_WB_Wrapper sramWrapper(.wb_clk_i(newclk), .wb_rst_i(~reset), .wbs_stb_i(stbToAr), .wbs_cyc_i(cycToAr), .wbs_we_i(weToAr), .wbs_sel_i(selToAr),
+  .wbs_dat_i(dataWMToAr), .wbs_adr_i(addrWMToAr), .wbs_ack_o(ackToWM), .wbs_dat_o(dataArToWM));
+
+  // sram_WB_Wrapper sramWrapper(.wb_clk_i(newclk), .wb_rst_i(reset), .wbs_stb_i(stb_out), .wbs_cyc_i(cyc_out), .wbs_we_i(we_out), .wbs_sel_i(sel_out),
+  // .wbs_dat_i(dataWMToAr), .wbs_adr_i(addrWMToAr), .wbs_ack_o(ackToWM), .wbs_dat_o(dataArToWM)); 
   // //fsm to draw
   // //states: 
   // logic [2:0] state, next_state;

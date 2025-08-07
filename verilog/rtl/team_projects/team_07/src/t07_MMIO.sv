@@ -1,9 +1,7 @@
 module t07_MMIO(
-
     input logic clk, nrst,
     //CPU
     input logic [31:0] addr_in, //addr for instruction fetch
-    input logic FPUbusy_i,
     output logic [31:0] instr_out, //instr sent to fetch
     output logic CPU_busy_o, //to CPU internal memory handler
 
@@ -25,7 +23,6 @@ module t07_MMIO(
     input logic [31:0] dataTFT_i,
     output logic [31:0] displayData, // data to write to SPT TFT
     output logic displayWrite, displayRead
-
 );
 
 always_comb begin
@@ -42,7 +39,7 @@ always_comb begin
     displayWrite = '0;
 
     //busy signal logic -- based on WB busy, SPI busy, Reg busy
-    if (busyTFT_i || WB_busy_i || FPUbusy_i) begin 
+    if (busyTFT_i || WB_busy_i) begin 
         CPU_busy_o = '1; 
         end else begin 
             CPU_busy_o = 0; 

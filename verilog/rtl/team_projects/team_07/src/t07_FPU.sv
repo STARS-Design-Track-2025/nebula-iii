@@ -18,13 +18,14 @@ module t07_FPU (
     logic divDone;
 
     //all two input mult and div combinations within the FPU are instantiated here
-    logic [31:0] prodAB, quotAB, intFloatRes, floatIntRes;
-    logic [63:0] remAB;
-    logic signABmult, signABdiv;
+    //logic [31:0] prodAB, quotAB, 
+    logic [31:0] intFloatRes, floatIntRes;
+    //logic [63:0] remAB;
+    //logic signABmult, signABdiv;
     logic signSignal, invalid;
 
     //t07_FPU_mult mult(.clk(clk), .nrst(nrst), .inA(valA), .inB(valB), .busy(busy), .signA(valA[31]), .signB(valB[31]), .result(prodAB), .sign(signABmult), .overflow(overflowFlag));
-    t07_FPU_div div(.clk(clk), .nrst(nrst), .inA({1'b0, valA[30:0]}), .inB({1'b0, valB[30:0]}), .signA(valA[31]), .signB(valB[31]), .op(FPUOp), .quotient(quotAB), .remainder(remAB), .sign(signABdiv), .busy(busy));
+    //t07_FPU_div div(.clk(clk), .nrst(nrst), .inA({1'b0, valA[30:0]}), .inB({1'b0, valB[30:0]}), .signA(valA[31]), .signB(valB[31]), .op(FPUOp), .quotient(quotAB), .remainder(remAB), .sign(signABdiv), .busy(busy));
     t07_FPU_inttofloat intFloat (.in(valA), .signSignal(signSignal), .out(intFloatRes), .overflow(overflowFlag));
     t07_FPU_floattoint floatInt (.in(valA), .signSignal(signSignal), .out(floatIntRes), .frm(fcsr_in[7:5]), .invalidFlag(invalid));
 
