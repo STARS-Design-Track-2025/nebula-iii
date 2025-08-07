@@ -116,7 +116,7 @@ end
         null2 = null2_reg;
         clkCount_reg = clkCount;                            // Output current count value
         nullSumIndex_reg = nullSumIndex;
-        next_state = state_t'(state);
+        next_state = state;
         HT_fin = HT_fin_reg;
         HT_finished = 1'b0;
         WorR = 1'b0;                                        // Default write operation
