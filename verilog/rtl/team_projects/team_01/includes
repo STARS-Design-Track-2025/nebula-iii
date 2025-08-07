@@ -24,20 +24,15 @@
 
 # AI
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_feature_extract.v
-# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_feature_extract_new.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_game_engine.v
-# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_MMU_new.sv
-# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_MMU_optimized.sv
-# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_MMU.sv
-# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_ofm_tmp.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_ofm.v
-# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_systolic_array.sv
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_tetrisFSM.v
 # -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_wb_load.sv
 # -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_agi.sv
 
 
 -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_fpga_top.sv
+
 # -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
 # -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
 # -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_1_param0_int4.mem
