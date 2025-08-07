@@ -29,20 +29,20 @@ logic write_char_path;
 logic next_write_char_path;
 logic write_num_lefts, next_write_num_lefts;
 
-always_ff @(posedge clk or posedge rst) begin
-    if (rst) begin
-      header <= 9'b0;
-      zeroes <= 0;
-      enable <= 0;
-      count <= 0;
-      bit1 <= 0;
-      char_added <= 0;
-      write_zeroes <= 0;
-      start <= 0;
-      write_char_path <= 0;
-      write_num_lefts <= 0;
-    end
-    else begin
+always_ff @(posedge clk) begin
+    // if (rst) begin
+    //   header <= 9'b0;
+    //   zeroes <= 0;
+    //   enable <= 0;
+    //   count <= 0;
+    //   bit1 <= 0;
+    //   char_added <= 0;
+    //   write_zeroes <= 0;
+    //   start <= 0;
+    //   write_char_path <= 0;
+    //   write_num_lefts <= 0;
+    // end
+    // else begin
       header <= next_header;
       zeroes <= next_zeroes;
       enable <= next_enable;
@@ -53,7 +53,7 @@ always_ff @(posedge clk or posedge rst) begin
       start <= next_start;
       write_char_path <= next_write_char_path;
       write_num_lefts <= next_write_num_lefts;
-    end
+    // end
 end
 
 always_comb begin
