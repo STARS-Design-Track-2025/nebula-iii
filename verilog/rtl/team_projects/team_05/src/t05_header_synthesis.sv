@@ -29,7 +29,7 @@ logic write_char_path;
 logic next_write_char_path;
 logic write_num_lefts, next_write_num_lefts;
 
-always_ff @(posedge clk, posedge rst) begin
+always_ff @(posedge clk or posedge rst) begin
     if (rst) begin
       header <= 9'b0;
       zeroes <= 0;
