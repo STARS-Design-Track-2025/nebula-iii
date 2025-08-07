@@ -44,8 +44,8 @@ module t05_top_tb;
     t05_top top (
     .hwclk(hwclk),
     .reset(reset),
-    .mosi(mosi),
-    .miso(miso),
+    // .mosi(mosi),
+    // .miso(miso),
     // .spi_confirm_out(confirm),
     .nextChar(nextChar),
     .init(init),

@@ -107,7 +107,9 @@ module t05_top (
   logic writeBit_HS, writeBit_TL;
   logic flag;
   logic [6:0] read_out, read_out_n;
-
+  assign writeBit_HS = 0;
+  assign writeEn_HS = 0;
+  
   //SOMETHING
   logic HT_fin_reg;
   logic fin_state_idle, fin_state_HG, fin_state_FLV, fin_state_HT, fin_state_CB, fin_state_TL, fin_state_SPI;
