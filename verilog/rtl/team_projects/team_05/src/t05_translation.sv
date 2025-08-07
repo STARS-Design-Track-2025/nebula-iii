@@ -6,13 +6,12 @@ module t05_translation (
     input logic [127:0] path,                       //Path obtained from SRAM
     input logic sram_complete,                      //SRAM reading path is complete
     input logic [3:0] word_cnt,                     //SRAM State
-    input logic ser_pulse,                          //Coming from sd_spi_tx 
     input logic head_bit,                           //Write bit from header
     input logic head_write_en,                      //Header write enable
-    input logic write_complete_HS,                  //Header Synthesis has either completed writing or not
+    // input logic write_complete_HS,                  //Header Synthesis has either completed writing or not
+    input logic esp_ack,
     output logic writeBin, nextCharEn, writeEn,     //writeBin == bit being written into file, nextCharEn calls for the next character, writeEn means to write to file 
     output logic pulse,                             //Goes to SRAM interface
-    output logic input_valid,                       //Going to sd_spi_tx
     output logic [7:0] char_index,                  //Goes to SRAM
     output logic fin_state                          //Finish State
 );
@@ -56,19 +55,19 @@ module t05_translation (
         writeBin = 0;
         fin_state = 0;
         pulse = 0;
-        input_valid = 0;
+        // input_valid = 0;
 
-        if(ser_pulse) begin
+        if(esp_ack) begin
             if (en_state == 4) begin
                 if(head_write_en) begin
                     writeBin = head_bit;
-                    input_valid = 1;
-                    writeEn_n = 0;
+                    // input_valid = 1;
+                    writeEn_n = 1;
                 end
-                else if(write_complete_HS) begin
-                    input_valid = 0;
-                    writeBin = 0;
-                end
+                // else if(write_complete_HS) begin
+                //     // input_valid = 0;
+                //     writeBin = 0;
+                // end
             end else if(resEn == 1) begin 
                 totalEn_n = 0;
                 index_n = 7'd127;
@@ -78,7 +77,7 @@ module t05_translation (
             end else if(totalEn == 1) begin
                 writeEn_n = 1;
                 writeBin = totChar[index[4:0]];
-                input_valid = 1;
+                // input_valid = 1;
                 index_n = index - 1;  
                 if(index == 0 && index_n == 127) begin
                     resEn_n = 1;
@@ -103,7 +102,7 @@ module t05_translation (
                         end
                         if(writeEn == 1) begin
                             writeBin = path[index];
-                            input_valid = 1;
+                            // input_valid = 1;
                         end
                         if(index == 0 && index_n == 127) begin
                             writeEn_n = 0;

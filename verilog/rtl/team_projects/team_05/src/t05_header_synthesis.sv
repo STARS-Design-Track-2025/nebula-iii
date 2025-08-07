@@ -8,8 +8,6 @@ module t05_header_synthesis (
     input logic state_3,
     input logic left,                 //if the char found is a left char
     input logic [7:0] num_lefts,      //num of lefts from htree
-    input logic ser_pulse,            //Pulse from sd_spi_tx
-    output logic write_complete,      //Going out to translation
     output logic enable,              //Going to translation
     output logic bit1                 //Going to translation
     // output logic write_finish
@@ -70,7 +68,6 @@ always_comb begin
     next_write_char_path = write_char_path;
     next_write_num_lefts = write_num_lefts;
     write_complete = 0;
-
     
     if ((char_found == 1'b1)) begin
       next_header = {1'b1, char_index}; // add control bit, beginning 1, and character index for header
@@ -90,41 +87,40 @@ always_comb begin
       next_enable = 0;
       next_zeroes = 0;
     end
-
-    if (ser_pulse) begin
-        if (start) begin
-            next_enable = 1;
-            next_start = 0;
-            next_bit1 = header[8];
-            next_header = {header[7:0], 1'b0}; // shift out msb to write (first occurrence)
-            next_count = count + 1;
-            next_char_added = 1;
-        end
-        else if (enable && char_added) begin // if {1'b1, char} is now in the header, send the 9 bits to the SPI bit by bit
-            if (count < 9) begin
-                next_bit1 = header[8];
-                next_header = {header[7:0], 1'b0};
-                next_count = count + 1;
-            end
-            else begin // once all bits are sent, reset all intermediate variables and set write_finish to 1
-                next_count = 0;
-                next_enable = 0;
-                next_bit1 = 0;
-                next_char_added = 0;
-              	next_write_char_path = 0;
-              if (num_lefts != 0 && left) begin
-                next_write_num_lefts = 1;
-                end
-              if (num_lefts == 0) begin
-                write_complete = 1;
+    if (write_char_path) begin
+      if (start) begin
+          next_enable = 1;
+          next_start = 0;
+          next_bit1 = header[8];
+          next_header = {header[7:0], 1'b0}; // shift out msb to write (first occurrence)
+          next_count = count + 1;
+          next_char_added = 1;
+      end
+      else if (enable && char_added) begin // if {1'b1, char} is now in the header, send the 9 bits to the SPI bit by bit
+          if (count < 9) begin
+              next_bit1 = header[8];
+              next_header = {header[7:0], 1'b0};
+              next_count = count + 1;
+          end
+          else begin // once all bits are sent, reset all intermediate variables and set write_finish to 1
+              next_count = 0;
+              next_enable = 0;
+              next_bit1 = 0;
+              next_char_added = 0;
+              next_write_char_path = 0;
+            if (num_lefts != 0 && left) begin
+              next_write_num_lefts = 1;
               end
+            if (num_lefts == 0) begin
+              write_complete = 1;
             end
-        end
-        else begin
-            next_bit1 = 1'b0;
-            next_count = 0;
-        end
-    end
+          end
+      end
+      else begin
+          next_bit1 = 1'b0;
+          next_count = 0;
+      end
+  end
   else if (write_num_lefts) begin // write the number of lefts after going right in the tree for left chars after their header portion
     if(count == 0) begin // add 1 as first bit
         next_bit1 = 1'b1;
