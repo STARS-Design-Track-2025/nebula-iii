@@ -1,6 +1,6 @@
 # NEBULA III - Project Documentation
 
-## Team 07 - NYC Finance Bros
+## Team 07 - NYC Finance Bros - CPU for Stock Pattern Recognition
 * **Peer Mentor:** Andy Hu
 * Rose Freedman
 * Tylar Sparks
