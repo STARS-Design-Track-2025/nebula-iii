@@ -43,12 +43,12 @@ always_ff @(posedge clk) begin
     //   write_num_lefts <= 0;
     // end
     // else begin
-      header <= next_header;
-      zeroes <= next_zeroes;
-      enable <= next_enable;
-      count <= next_count;
-      bit1 <= next_bit1;
-      char_added <= next_char_added;
+      // header <= next_header;
+      // zeroes <= next_zeroes;
+      // enable <= next_enable;
+      // count <= next_count;
+      // bit1 <= next_bit1;
+      // char_added <= next_char_added;
       write_zeroes <= next_write_zeroes;
       start <= next_start;
       write_char_path <= next_write_char_path;
