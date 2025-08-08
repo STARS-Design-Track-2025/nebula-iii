@@ -57,8 +57,6 @@ The layout pins will be in the form of the ICE40 FPGA. Note that this is only fu
 ![image0](IMG_4426.jpeg)
 ![image1](IMG_4424.jpeg)
 ![image2](IMG_4427.jpeg)
-![image3](breadboard.jpg)
-![image4](lcd.jpeg)
 
 
 
@@ -75,6 +73,8 @@ Level Shifter: SNx4HC125 Quadruple Buffers with 3-State Outputs
 https://www.ti.com/lit/ds/symlink/sn74hc125.pdf?ts=1754597629858&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FSN74HC125 
 
 Breadboarding / Wiring
+![image3](breadboard.jpg)
+![image4](lcd.jpg)
  
 
 
