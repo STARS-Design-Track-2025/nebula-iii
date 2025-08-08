@@ -8,11 +8,16 @@ module t02_top (
   output logic [7:0] left, right, ss0,
 
   // UART ports
-  output logic [7:0] txdata,
-  input  logic [7:0] rxdata,
-  output logic txclk, rxclk,
-  input  logic txready, rxready
+//   output logic [7:0] txdata,
+//   input  logic [7:0] rxdata,
+//   output logic txclk, rxclk,
+//   input  logic txready, rxready
 );
+    
+    // Unsigned unused ports (to make Yosys happy)
+    assign left[6:3] = '0;
+    assign {right[7:6], right[1]} = '0;
+    assign {ss0[6:2], ss0[0]} = '0;
     
     logic reset_n;          // Active-low reset
     logic clk_en, pid_en;           // 1kHz clock enable
