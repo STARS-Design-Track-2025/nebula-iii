@@ -52,6 +52,8 @@ module t07_CPU(
     logic [31:0] FPUValA_i, FPUValB_i, FPUfcsr_i;
     logic regEn_FPU, fcsrEn;
 
+    // Not using FPUResult for now
+    assign FPUResult = '0;
 
     //t07_fetch fetch_inst(.busy_o_edge(busy_edge_o), .clk(clk), .nrst(nrst), .ExtInstruction(exInst), .programCounter(pc_out), .Instruction_out(inst), .PC_out(pcData_out), .busy_o(busy));
     t07_decoder decoder(.instruction(inst), .Op(Op), .funct7(funct7), .funct3(funct3), .rs1(rs1), .rs2(rs2), .rd(rd));
