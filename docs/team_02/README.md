@@ -57,8 +57,8 @@ The layout pins will be in the form of the ICE40 FPGA. Note that this is only fu
 ![image0](IMG_4426.jpeg)
 ![image1](IMG_4424.jpeg)
 ![image2](IMG_4427.jpeg)
-![image2](breadboard.jpg)
-![image2](lcd.jpeg)
+![image3](breadboard.jpg)
+![image4](lcd.jpeg)
 
 
 
