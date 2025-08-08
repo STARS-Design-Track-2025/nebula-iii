@@ -53,6 +53,10 @@ module team_01_fpga_top (
 
   // );
 
+  // Unused pins
+  assign left[4:0] = '0;
+  assign right[1:0] = '0;
+
   // New signals for next block preview
   logic [4:0] next_block_type;
   logic [3:0][3:0][2:0] next_block_preview;

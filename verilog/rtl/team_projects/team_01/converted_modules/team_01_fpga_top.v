@@ -22,6 +22,8 @@ module team_01_fpga_top (
 	output wire red;
 	output wire green;
 	output wire blue;
+	assign left[4:0] = 1'sb0;
+	assign right[1:0] = 1'sb0;
 	wire [4:0] next_block_type;
 	wire [47:0] next_block_preview;
 	wire clk_25m;
