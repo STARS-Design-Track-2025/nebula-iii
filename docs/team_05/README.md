@@ -76,13 +76,14 @@ This project consists of both modules with implement the Huffman Algorithm, and 
 
 ### LCD Interface
 #### Driver Module (t05_driver_1602.sv)
-
+The Driver Module sets up all the components of the LCD display
 
 #### LCD Module (t05_lcd.sv)
-
+The LCD Module changes what is being displayed on the LCD display. 
 
 ### SPI
 The Serial Peripheral Interface (SPI) is a standard protocol for interacting with microcontrollers/peripherals. This module is necessary to interface with this design's main peripheral: an SD card. It stores and sends SD file data to and from the working modules. MISO (Master in Slave out) is used to send data outputted from the SD to the SPI (read). This read data is sent from the SPI to the modules in parallel (8 bits at a time). MOSI (Master our Slave in) is used to send data outputted from the working modules and SPI to the SD card (write). This write data is sent from the modules to the SPI serially.
+
 ### Compression Modules
   
 All src modules may be found in ~/verilog/rtl/team_projects/team_05/src. All testbench modules may be found in ~/verilog/dv/team_05/module_tests.
@@ -91,14 +92,14 @@ All src modules may be found in ~/verilog/rtl/team_projects/team_05/src. All tes
 
 An explicit state for each of the following modules (except header synthesis) is created for storing and retrieving information from the SRAM.
 
-- Histogram Module - [256][32] array to store the occurrences for each ASCII character from the input file. Memory Allocation is 256 (words).
+- Histogram Module - [128][32] array to store the occurrences for each ASCII character from the input file. Memory Allocation is 128 (words).
 - Find Least Value - Does not store data in SRAM. Retrieves elements from the histogram array stored in SRAM.
 - HTree - [128][64] array to store the Huffman Binary Tree 256 (words).
-- Codebook Synthesis - Retrieves HTree elements from SRAM. A [256][128] array to store a maximum of 256 paths and a maximum height of 128 bits.
+- Codebook Synthesis - Retrieves HTree elements from SRAM. A [128][128] array to store a maximum of 128 paths and a maximum height of 128 bits.
 - Translation - Does not store data in SRAM. Retrieves path elements from the codebook array stored in SRAM.
 
 #### Histogram Module (t05_histogram.sv)
-Reads each 1 byte character from the SD card via the SPI, retrieves the stored occurrences of each character in SRAM, and updates the occurrences for that character. After reading through the file, an array of occurrences with 256 elements. Each index of the array corresponds to its ASCII character.
+Reads each 1 byte character from the SD card via the SPI, retrieves the stored occurrences of each character in SRAM, and updates the occurrences for that character. After reading through the file, an array of occurrences with 128 elements. Each index of the array corresponds to its 7-bit input.
 
 #### Find Least Value Module (t05_findLeastValue.sv)
 Works in parallel with the Huffman Tree Creation Module (HTree). It searches through the character occurrences of the histogram array stored in SRAM and the sums of characters from the Huffman Tree stored in SRAM to output the two character or sum indexes with the lowest values. The character indexes that are found have their occurrence values nullified so they are skipped in the next search. These two indexes are sent to Htree. 
@@ -107,7 +108,7 @@ Works in parallel with the Huffman Tree Creation Module (HTree). It searches thr
 Constructs a binary tree where each node consists of two children: either a leaf (character) or a nonleaf (sum of multiple characters) node based on the output of the find least value module. the sum of the 2 children is also stored in that node. Each node is a concatenated bitstream with the format {9'bCHILD1, 9'bCHILD2, 46'bSUM}. CHILD1 and CHILD2 consist of a leading bit "0" as the MSB followed by the 8 bit ASCII character representation, or if the child is a SUM: a leading bit of "1" and an 8 bit index that "points to" the element that has that sum. HTree will also nullify the sum of a node if that sum was found as one of the least occurrences in the find least value module.
 
 #### Codebook Synthesis Module (t05_cb_synthesis.sv)
-Traverses the Huffman Binary Tree stored in SRAM by accessing the children of each node and keeping track of the current path with a bitstream. The tree traversal follows a consistent post-order traversal algorithm: start at the top of the tree to move left by shifting in a "0" as the LSB until a leaf node is encountered. Once a character node is encountered (indicated by the leaf's MSB being a 0), store that path in SRAM and "backtrack" by shifting out the least significant bit until it is a 0, indicating that the right subtree has not been traversed. Then, use the backtracked path to retrieve the hTree element from SRAM with the current path. Tracking accesses the node of the left child if the bit in the path is a 0 and the right child if the bit in the path is a 1. Move right once by shifting in a "1" as the LSB of the path, and then move left until another character node is found. The tree is fully traversed when the path length is 1 (the top of the tree has been reached, and the only bit in the path is a 1 (the root's left and right subtrees have been traversed). 
+Traverses the Huffman Binary Tree stored in SRAM by accessing the children of each node and keeping track of the current path with a bitstream. The tree traversal follows a consistent post-order traversal algorithm: start at the top of the tree to move left by shifting in a "0" as the LSB until a leaf node is encountered. Once a character node is encountered (indicated by the leaf's MSB being a 0), store that path in SRAM and "backtrack" by shifting out the least significant bit until it is a 0, indicating that the right subtree has not been traversed. Then, use the backtracked path to retrieve the hTree element from SRAM with the current path. Tracking accesses the node of the left child if the bit in the path is a 0 and the right child if the bit in the path is a 1. Move right once by shifting in a "1" as the LSB of the path, and then move left until another character node is found. The tree is fully traversed when the path length is 1, the top of the tree has been reached, and the only bit in the path is a 1, the root's left and right subtrees have been traversed. 
 
 #### Header Synthesis Module (t05_header_synthesis.sv)
 Works in parallel with Codebook synthesis. The header is a 1 dimensional version of the Huffman Tree written at the top of the compressed file to aid in decompression. Portions of the header are sent to the SPI either when a character path is found by codebook, or when both children have been visited (backtracking state). a control bit "1" and the 8 bit character are written to the file header when a character is found, and a 0 is written when the codebook synthesis is backtracking to a previously visited parent node. 
@@ -118,11 +119,55 @@ Reads 8 bit characters from the input file via the SPI, sends the ASCII characte
 #### Controller Module (t05_controller.sv)
 A state machine that controls which module is active during the compression process. Each main module has a controller state. The controller will also activate the SRAM module and deactivate the current working module if a request to store or retrieve data is received. These states are also displayed on the LCD peripherals when selecting to compress a file.
 
-
 ### Decompression Modules:  
-Describe in detail how your project works and how to test it.
+
+#### Header Decoder
+Bits are read in using SPI until the end of the compressed file header is read in. The header decoder then creates a path for each of the 7 bit indentifiers in the header. Once a path has been created that replicates the paths used in compression the paths are sent to the decompression SRAM interface.
+
+#### Translation Decoder
+Bits are read in one at a time using SPI until a path is found. Once a path is found, Translation Decoder calls for SRAM to send the saved 7 bit number associated with the path just read in. Then the 7-bit number is sent out through the SPI and the process repeats.
 
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_05).
 
+### Compression Top
+![cool_im](RTL_Diagrams/CompressionTop.png)
+
+### Compression Module Interaction
+![cool_im](RTL_Diagrams/CompressTop.png)
+
+### Decompression Module Interaction
 ![cool_im](RTL_Diagrams/decompression_module.png)
+
+### Controller
+![cool_im](RTL_Diagrams/Cont_rtl.png)
+![cool_im](RTL_Diagrams/cont_states.png)
+
+### Histogram
+![cool_im](RTL_Diagrams/histogram.png)
+
+### Find Least Value
+![cool_im](RTL_Diagrams/FindLeastValue.png)
+
+### HTREE
+![cool_im](RTL_Diagrams/exampleTree.png)
+![cool_im](RTL_Diagrams/hTREEpng.png)
+
+### Codebook Synthesis
+![cool_im](RTL_Diagrams/CBS_FSM.png)
+![cool_im](RTL_Diagrams/CBS_TOP.png)
+
+### Header Synthesis
+![cool_im](RTL_Diagrams/HDS.png)
+
+### Translation
+![cool_im](RTL_Diagrams/TRN.png)
+
+### SRAM Interface
+![cool_im](RTL_Diagrams/sram.png)
+
+### Header Decode
+![cool_im](RTL_Diagrams/head_dec.png)
+
+### Translation Decode
+![cool_im](RTL_Diagrams/TRN_DEC.png)
