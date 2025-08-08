@@ -79,51 +79,73 @@ module t02_top (
     assign left[7] = en;
     // assign en = pb[18];
 
-    t02_imu_addr test_imu (
-        .hz100(hz100),
-        .clk_en(clk_en),
-        .n_rst(reset_n),
-        .sdo(sdo),
-        .en(en),
-        .cs(cs),
-        .sdi(sdi),
-        .sclk(sclk_imu),
-        .data_out(data_out),
-        .filter_ready(1'b1),
-        .data_ready(data_ready)
-    );
+    // imu_addr test_imu (
+    //     .hz100(hz100),
+    //     .clk_en(clk_en),
+    //     .n_rst(~reset),
+    //     .sdo(sdo),
+    //     .en(en),
+    //     .cs(cs),
+    //     .sdi(sdi),
+    //     .sclk(sclk_imu),
+    //     .data_out(data_out),
+    //     .filter_ready(1'b1),
+    //     .data_ready(data_ready)
+    // );
 
     // assign filter_ready = 1'b1;
 
-    t02_sensor_decoder formatRawData (
-        .data_out(data_out),
-        .accel_x(accel_x_raw),
-        .accel_y(accel_y_raw),
-        .accel_z(accel_z_raw),
-        .gyro_x(gyro_x_raw),
-        .gyro_y(gyro_y_raw)
-    );
+    // sensor_decoder formatRawData (
+    //     .data_out(data_out),
+    //     .accel_x(accel_x_raw),
+    //     .accel_y(accel_y_raw),
+    //     .accel_z(accel_z_raw),
+    //     .gyro_x(gyro_x_raw),
+    //     .gyro_y(gyro_y_raw)
+    // );
 
 
+    // old complementary filter
+    // complementary_filter fuseData(
+    //     .clk(hz100), 
+    //     .n_rst(~reset), 
+    //     .data_ready(data_ready),
+    //     .pid_ready(1'b1),    // complementary_filter fuseData(
+    //     .raw_accel_x(accel_x_raw),
+    //     .raw_accel_y(accel_y_raw),
+    //     .raw_accel_z(accel_z_raw),
+    //     .raw_gyro_x(gyro_x_raw),
+    //     .raw_gyro_y(gyro_y_raw),
+    //     .timestep_q8(timestep),
+    //     .tilt_roll(tilt_roll),
+    //     .tilt_pitch(tilt_pitch),
+    //     .state_out(state_filter),
+    //     .angle_valid(angle_valid),
+    //     .filter_ready(filter_ready),
+    //     .calculate_out(calculate_out),
+    //     .first_run(first_run),
+    //     .pitch_prev(pitch_prev),
+    //     .roll_prev(roll_prev)
+    // );
 
-    logic signed [15:0] dbg_accel_x, dbg_accel_y, dbg_accel_z;
+    // logic signed [15:0] dbg_accel_x, dbg_accel_y, dbg_accel_z;
 
-    t02_complementary_filter fuseData(
-        .clk(hz100),
-        .n_rst(reset_n),
-        .data_ready(data_ready),
-        .accel_x_raw(accel_x_raw),
-        .accel_y_raw(accel_y_raw),
-        .accel_z_raw(accel_z_raw),
-        .gyro_x_raw(gyro_x_raw),
-        .gyro_y_raw(gyro_y_raw),
-        .tilt_roll_out(tilt_roll),
-        .tilt_pitch_out(tilt_pitch),
-        .angle_valid(angle_valid)
-        // .dbg_accel_x(dbg_accel_x),
-        // .dbg_accel_y(dbg_accel_y),
-        // .dbg_accel_z(dbg_accel_z)
-    );
+    // complementary_filter fuseData(
+    //     .clk(hz100),
+    //     .n_rst(~reset),
+    //     .data_ready(data_ready),
+    //     .accel_x_raw(accel_x_raw),
+    //     .accel_y_raw(accel_y_raw),
+    //     .accel_z_raw(accel_z_raw),
+    //     .gyro_x_raw(gyro_x_raw),
+    //     .gyro_y_raw(gyro_y_raw),
+    //     .tilt_roll_out(tilt_roll),
+    //     .tilt_pitch_out(tilt_pitch),
+    //     .angle_valid(angle_valid)
+    //     // .dbg_accel_x(dbg_accel_x),
+    //     // .dbg_accel_y(dbg_accel_y),
+    //     // .dbg_accel_z(dbg_accel_z)
+    // );
 
 
 
@@ -182,7 +204,7 @@ module t02_top (
         .clk_en(clk_en),
         .reset_n(reset_n),
         .angle_valid(angle_valid),
-        .tilt(tilt_roll),       // X-axis tilt
+        .tilt(tilt_x),       // X-axis tilt
         .setpoint(setpoint_x), // X setpoint
         .duty_a(duty_x)     // X-axis motor
         // .pid_en(pid_en)
@@ -196,7 +218,7 @@ module t02_top (
         .clk_en(clk_en),
         .reset_n(reset_n),
         .angle_valid(angle_valid),
-        .tilt(tilt_pitch),       // X-axis tilt
+        .tilt(tilt_y),       // X-axis tilt
         .setpoint(setpoint_y), // X setpoint
         .duty_a(duty_y)     // X-axis motor
         // .pid_en(pid_en)
