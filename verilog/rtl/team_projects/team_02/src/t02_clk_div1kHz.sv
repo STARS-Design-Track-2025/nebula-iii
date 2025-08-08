@@ -21,8 +21,8 @@ always_ff @(posedge clk_12mhz or negedge reset_n) begin
         // Default assignment
         pid_clk_en <= 0;
         
-        // Count to 11,999 (0-11,999 = 12,000 cycles for 12MHz/1kHz)
-        if (counter == 17'd5999) begin
+        // 2kHz clock divider (for enabling other modules)
+        if (counter == 17'd4999) begin
             counter <= 0;
             pid_clk_en <= 1; // Single-cycle enable pulse
         end else begin

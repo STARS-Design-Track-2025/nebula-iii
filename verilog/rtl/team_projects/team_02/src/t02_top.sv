@@ -60,6 +60,7 @@ module t02_top (
     );
 
     logic sdo, en, cs, sdi, sclk, sclk_imu, data_ready;
+    assign {cs, sclk_imu, sdi} = '1;
 
     t02_edge_detector en_edge (
         .clk_en(clk_en),
@@ -193,7 +194,7 @@ module t02_top (
 
   
     // assign pid_en = 1'b1;
-    // assign angle_valid = 1'b1;
+    assign angle_valid = 1'b1;
 
     // assign setpoint_y = 16'd0;
 
@@ -283,8 +284,8 @@ module t02_top (
     logic [7:0] ball_x_lcd, ball_y_lcd;
 
     t02_lcd_decoder getASCII (
-        .tilt_x(tilt_roll),
-        .tilt_y(tilt_pitch),
+        .tilt_x(tilt_x),
+        .tilt_y(tilt_y),
         .ball_x_pos(ball_pos_x),
         .ball_y_pos(ball_pos_y),
         .out_x(tilt_x_ascii),
