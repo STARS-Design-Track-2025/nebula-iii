@@ -11,7 +11,7 @@ module t07_top_tb();
     logic weToAr, stbToAr, cycToAr;
 
     t07_top top0(.clk(clk), .nrst(nrst), .invalError(invalError), .chipSelectTFT(chipSelectTFT), .bitDataTFT(bitDataTFT), .sclkTFT(sclkTFT), .misoDriver_i(misoDriver_i),
-        .busyTFT_o(ackSPI), .dataArToWM(dataArToWM), .ackToWM(ackToWM), .dataWMToAr(dataWMToAr), .addrWMToAr(addrWMToAr),
+        .dataArToWM(dataArToWM), .ackToWM(ackToWM), .dataWMToAr(dataWMToAr), .addrWMToAr(addrWMToAr),
         .selToAr(selToAr), .weToAr(weToAr), .stbToAr(stbToAr), .cycToAr(cycToAr));
 
     // SRAM Wrapper

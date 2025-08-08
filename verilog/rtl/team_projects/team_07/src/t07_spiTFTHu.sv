@@ -21,7 +21,7 @@ module t07_spiTFTHu (
 
     typedef enum logic[2:0] { 
         IDLE = 0,
-        LOAD = 1,
+        SETUP = 1,
         SHIFT = 2,
         READ = 3,
         DELAY = 4
@@ -79,14 +79,14 @@ module t07_spiTFTHu (
 
                 //next state logic
                 if (write_in) begin
-                    next_state = LOAD;
+                    next_state = SETUP;
                 end else if (read_in) begin
                     next_state = READ;
                 end else begin
                     next_state = IDLE;
                 end
             end 
-            LOAD: begin 
+            SETUP: begin 
                 //SPI signals
                 sclk = 1;
                 bitData = 1;

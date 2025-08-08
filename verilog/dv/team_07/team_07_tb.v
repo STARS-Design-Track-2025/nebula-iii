@@ -46,10 +46,6 @@ module team_07_tb;
 		clock = 0;
 	end
 
-	// Real clock operating design (the one divided internally)
-	reg clk;
-	assign clk = uut.chip_core.mprj.mprj.team_07_Wrapper.team_07_WB.instance_to_wrap.newclk;
-
 	// STUDENTS: This block here is important, don't erase it! However, don't worry about trying to understand it
 	`ifdef ENABLE_SDF
 		initial begin
@@ -176,7 +172,7 @@ module team_07_tb;
 
 
 		// Wait a few clock cycles
-		repeat (50000) @(negedge clk);
+		repeat (50000) @(negedge clock);
 
 		
 		$display("%c[1;32m",27);

@@ -45,36 +45,9 @@ module team_07 (
 
     // You can also have input registers controlled by the Caravel Harness's on chip processor
 );
-
-    logic newclk, newclk_n; 
-    logic [22:0] count, count_n;
-    
-    // Some registers 
-    always_ff @(posedge clk, negedge nrst) begin
-    if (~nrst) begin
-      count <= '0;
-      newclk <= '0;
-    end else begin
-      count <= count_n;
-      newclk <= newclk_n;
-    end
-  end
-
-  // 125 kHz clock  divider 
-  always_comb begin
-    count_n = count;
-    newclk_n = newclk;
-    if (count < 23'd40) begin
-      count_n = count + 1;
-    end else begin
-      count_n = '0;
-      newclk_n = !newclk;
-    end
-
-  end
    
    // Top Instantiation
-   t07_top top0(.clk(newclk), .nrst(nrst & en), .invalError(gpio_out[5]), .chipSelectTFT(gpio_out[4]), .bitDataTFT(gpio_out[3]), .sclkTFT(gpio_out[1]), .misoDriver_i(gpio_in[2]),
+   t07_top top0(.clk(clk), .nrst(nrst & en), .invalError(gpio_out[5]), .chipSelectTFT(gpio_out[4]), .bitDataTFT(gpio_out[3]), .sclkTFT(gpio_out[1]), .misoDriver_i(gpio_in[2]),
    .dataArToWM(DAT_I), .ackToWM(ACK_I), .dataWMToAr(DAT_O), .addrWMToAr(ADR_O), .selToAr(SEL_O), .weToAr(WE_O), .stbToAr(STB_O), .cycToAr(CYC_O));
 
 
