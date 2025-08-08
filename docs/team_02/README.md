@@ -83,4 +83,8 @@ This project is automatic! All the user has to do is turn it on with the “enab
 
 
 ## RTL Diagrams
-Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_02).
+Only the top level and SPI RTLs are shown here. Click [here](https://drive.google.com/file/d/1eGJFjpFtNKYYbWGMnWZV2Z53K3y8pnwY/view?usp=sharing) for the full RTL diagram.
+
+Top Level RTL:
+![image5](Stabilizer-Top-Level RTL(1).jpg)
+![image[6](Stabilizer-IMU Interface(4).jpg)
