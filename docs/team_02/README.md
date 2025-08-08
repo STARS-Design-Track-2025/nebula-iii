@@ -55,7 +55,7 @@ The layout pins will be in the form of the ICE40 FPGA. Note that this is only fu
 ## External Hardware
 
 
-
+![image1](IMG_4424.jpeg)
 
 
 
