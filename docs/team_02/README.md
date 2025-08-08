@@ -87,4 +87,4 @@ Only the top level and SPI RTLs are shown here. Click [here](https://drive.googl
 
 Top Level RTL:
 ![image5](Stabilizer-Top-Level%RTL(1).jpg)
-![image[6](Stabilizer-IMU&Interface(4).jpg)
+![image6](Stabilizer-IMU%Interface(4).jpg)
