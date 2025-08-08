@@ -1,19 +1,17 @@
 # NEBULA III - Project Documentation
 
-## Team 02 - [Team Name]
-* **Peer Mentor:** [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Name]
-* [Add more names, if needed]
+## Team 02 - STARS Stabilizers
+* **Peer Mentor:** Johnny Hazboun
+* Vikash Gunalan
+* Soumil Verma
 
 ## Project Overview
-Describe what your project is in 2-3 sentences. Do NOT mention functionality details, you will add those in the *Functionality Description and Testing* section.
+We present Polaris! Polaris is a 2D Ball Balancer that was designed by STARS 2025 Team 2 by Vikash and Soumil.
+
 
 ## Pin Layout
-Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
-The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
+Note that on the final chip, there are 38 GPIO pins of which you have access to 34. The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
+The layout pins will be in the form of the ICE40 FPGA. Note that this is only functional with the shield off.
 
 * **Pin 00 [00]** - Not used
 * **Pin 01 [--]** - NOT ALLOWED
@@ -55,10 +53,32 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 37 [33]** - Not used
 
 ## External Hardware
-List all the required external hardware components and upload a breadboard with the equipment set up (recommend using Tinkercad circuits if possible).
+
+
+
+
+
+
+
+3D Printed Components: Seen above.
+LCD Display: TFT 1602, Seen above.
+Custom PCB:
+
+IMU: ICM-20948
+https://invensense.tdk.com/wp-content/uploads/2024/03/DS-000189-ICM-20948-v1.6.pdf 
+IR Sensor: MH Flying Fish
+Shift Registers: SNx4AHC125 Quadruple Bus Buffer Gates With 3-State Outputs                                                                                                                                              
+https://www.ti.com/lit/ds/symlink/sn74ahc125.pdf 
+Level Shifter: SNx4HC125 Quadruple Buffers with 3-State Outputs
+https://www.ti.com/lit/ds/symlink/sn74hc125.pdf?ts=1754597629858&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FSN74HC125 
+
+Breadboarding / Wiring
+ 
+
 
 ## Functionality Description and Testing
-Describe in detail how your project works and how to test it.
+This project is automatic! All the user has to do is turn it on with the “enable” button and reset it if they want to. After that simply, place a ping pong ball on the platform (or lightly lob it onto the platform) and the platform will adjust to try to bring it to the center. If it is unable to, adjust the setpoint and PID gains. 
+
 
 ## RTL Diagrams
 Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams. Please include any images or documents of these inside this folder (docs/team_02).
