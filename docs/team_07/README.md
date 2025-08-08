@@ -9,7 +9,8 @@
 
 
 ## Project Overview
-In the project, we designed a single cycle RISC-V CPU with a custom fixed-point extension that processes stock value data stored in SRAM and displays visual results on a TFT screen. The CPU interfaces with the display via memory-mapped I/O and integrates both fixed-point and floating-point operations to enable precise data processing and graphical output.
+In the project, we built a single cycle 32-bit RISC-V CPU with a custom fixed-point extension that processes stock value data stored in SRAM and outputs a graph of the data on a TFT display screen. The CPU interfaces with the display via memory-mapped I/O and bi-directional SPI. The custom fixed point extension allows us to  integrate both fixed-point and floating-point operations to enable precise data processing and graphical output.
+**The fixed point unit was not taped out but all files are included in the src folder. 
 ## Pin Layout
 Note that on the final chip, there are 38 GPIO pins of which you have access to 34.
 The first number represents the GPIO on the physical chip, while the second number (in brackets) represents the number in your Verilog code. For each pin, mention if it is an input, output, or both and describe the pin function.
@@ -54,7 +55,8 @@ The first number represents the GPIO on the physical chip, while the second numb
 * **Pin 37 [33]** - Not Used
 
 ## External Hardware
-RA8875 Driver and Adafruit Product ID: 1680
+RA8875 Driver and TFT Display Screen Adafruit Product ID: 1680
+
 ## Functionality Description and Testing
 Detailed System Description:
 
