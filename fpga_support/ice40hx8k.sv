@@ -68,8 +68,8 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
         .SHIFTREG_DIV_MODE(1'b0), // 0 => div-by-4; 1 => div-by-7
         .FDA_FEEDBACK(4'b0000),
         .FDA_RELATIVE(4'b0000),
-        .DIVR(4'd5),
-        .DIVF(7'd4),
+        .DIVR(4'd2),
+        .DIVF(7'd9),
         .DIVQ(3'd0),
         .FILTER_RANGE(3'b001), // 1
     ) pll (
@@ -122,7 +122,7 @@ module ice40hx8k (hwclk,pb,ss7,ss6,ss5,ss4,ss3,ss2,ss1,ss0,left,right,red,green,
         recv <= 1;
 
     wire reset;
-    reset_on_start ros (reset, hz40M, pb[3] && pb[0] && pb[16]);
+    reset_on_start ros (reset, hz100, pb[3] && pb[0] && pb[16]);
     top top_inst(
       hz40M, reset, pb,
       left, right, ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0,
