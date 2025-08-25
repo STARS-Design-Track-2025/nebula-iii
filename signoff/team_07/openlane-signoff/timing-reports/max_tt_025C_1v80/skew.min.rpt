@@ -5,10 +5,10 @@ Clock Skew (Hold)
 ======================= max_tt_025C_1v80 Corner ===================================
 
 Clock clk
-1.040782 source latency _11955_/CLK ^
--1.525602 target latency _12628_/CLK ^
+1.046743 source latency _12433_/CLK ^
+-1.356834 target latency _11459_/CLK ^
 -0.250000 clock uncertainty
 0.000000 CRPR
 --------------
--0.734820 hold skew
+-0.560091 hold skew
 
