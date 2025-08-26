@@ -107,7 +107,7 @@ for team, team_folder in zip(teams, team_folders):
                 continue  # skip comments/empty lines
             if line.startswith("-v "):
                 # keep only the portion starting at "team_projects"
-                m = re.search(r"team_projects/.*", path)
+                m = re.search(r"team_projects/.*", line)
                 if m:
                     relative_path = m.group(0)
                     # replace "team_projects" with placeholder
@@ -142,6 +142,7 @@ if(error_count > 0):
     print("Exiting with nonzero number of naming issues")
 
     sys.exit(1)
+
 
 
 
