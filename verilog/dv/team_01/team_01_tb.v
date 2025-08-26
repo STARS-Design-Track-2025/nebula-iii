@@ -50,6 +50,9 @@ module team_01_tb;
 	reg clk;
 	assign clk = uut.chip_core.mprj.wb_clk_i;
 
+	// Assign input buttons
+	assign mprj_io[11:5] = mprj_io_in[11:5];
+
 	// STUDENTS: This block here is important, don't erase it! However, don't worry about trying to understand it
 	`ifdef ENABLE_SDF
 		initial begin
@@ -167,9 +170,19 @@ module team_01_tb;
 
 	// Main Test Bench Process
 	initial begin
+		// Initialize inputs
+		mprj_io_in[11:5] = '0;
 
 		// Wait for Design to be enabled
 		wait(uut.chip_core.mprj.mprj.team_01_Wrapper.team_01_WB.instance_to_wrap.en == 1);
+		$display("\nTeam 01 Enabled!\n");
+
+		// Enable AI START
+		repeat (100) @(negedge clk);
+		mprj_io_in[11] = 1;
+		repeat (100) @(negedge clk);
+		mprj_io_in[11] = 0;
+		$display("\nAI start pressed!\n");
 
 		// Wait a bit more
 		repeat (100000) @(negedge clk);
