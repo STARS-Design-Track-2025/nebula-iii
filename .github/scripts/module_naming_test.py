@@ -83,18 +83,38 @@ print("Found verilog for Teams: ", teams)
 for team, team_folder in zip(teams, team_folders):
     print(f"Checking files for: {team}")
     
-    team_files = glob.glob(f'{team_folder}/**/*.v', recursive=True) + glob.glob(f'{team_folder}/**/*.sv', recursive=True)
+    # team_files = glob.glob(f'{team_folder}/**/*.v', recursive=True) + glob.glob(f'{team_folder}/**/*.sv', recursive=True)
 
-    file_map = {}
-    for f in team_files:
-        base, ext = os.path.splitext(f)
-        if base not in file_map:
-            file_map[base] = f
-        else:
-            if ext == ".v":
-                file_map[base] = f
+    # file_map = {}
+    # for f in team_files:
+    #     base, ext = os.path.splitext(f)
+    #     if base not in file_map:
+    #         file_map[base] = f
+    #     else:
+    #         if ext == ".v":
+    #             file_map[base] = f
 
-    team_files = list(file_map.values())
+    # team_files = list(file_map.values())
+
+    includes_file = f"{team_folder}/includes"
+
+    team_files = []
+
+    with open(includes_file) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue  # skip comments/empty lines
+            if line.startswith("-v "):
+                # keep only the portion starting at "team_projects"
+                m = re.search(r"team_projects/.*", path)
+                if m:
+                    relative_path = m.group(0)
+                    # replace "team_projects" with placeholder
+                    relative_path = relative_path.replace("team_projects", f"{team_project_directory}", 1)
+                    team_files.append(relative_path)
+    
+    print(team_files)
     
     # Find the names of each module.
     module_pattern = re.compile(r'\bmodule\s+(\w+)\s*#?\(')
@@ -122,5 +142,6 @@ if(error_count > 0):
     print("Exiting with nonzero number of naming issues")
 
     sys.exit(1)
+
 
 
