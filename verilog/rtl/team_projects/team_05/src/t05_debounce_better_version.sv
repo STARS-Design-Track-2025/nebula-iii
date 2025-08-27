@@ -1,5 +1,5 @@
 
-module debounce_better_version(input pb_1,clk,output pb_out);
+module t05_debounce_better_version(input pb_1,clk,output pb_out);
 wire slow_clk_en;
 wire Q1,Q2,Q2_bar,Q0;
 clock_enable u1(clk,slow_clk_en);
