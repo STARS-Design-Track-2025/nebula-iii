@@ -1,4 +1,4 @@
-module driver #(parameter clk_div = 24_000)(
+module t05_driver #(parameter clk_div = 24_000)(
     input clk,
     input rst,
     // Data to be displayed
