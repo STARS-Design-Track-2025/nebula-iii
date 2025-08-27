@@ -537,15 +537,6 @@ tb-module-%: nebula
 	cd $(PWD)/verilog/dv/$(firstword $(subst -, ,$*))/module_tests &&\
 	make sim_$(lastword $(subst -, ,$*))_src
 
-.PHONY: tb-rose-%
-tb-rose-%: nebula
-	@echo "\n------------"
-	@echo "Team Folder: $(firstword $(subst -, ,$*))"
-	@echo "Module Name: $(lastword $(subst -, ,$*))"
-	@echo "------------\n"
-	export USER_PROJECT_VERILOG=$(PWD)/verilog &&\
-	cd $(PWD)/verilog/dv/$(firstword $(subst -, ,$*))/module_tests &&\
-	make sim_$(lastword $(subst -, ,$*))_src_verilator
 
 # Compilation and Simulation with Synopsys VCS
 # The testbenches must live within the dv/team_##/module_tests directory and will output there too
@@ -581,7 +572,7 @@ cram_%:
 		$$USER_PROJECT_VERILOG/rtl/wishbone_manager/wishbone_manager.sv $$SRAM_WRAPPER \
 		$$USER_PROJECT_VERILOG/rtl/sram/sram_for_FPGA.v; \
 		synth_ice40 -top ice40hx8k -json $$BUILD/$$FPGA_TOP.json" &&\
-	nextpnr-ice40 --hx8k --freq 10 --package ct256 --pcf $$PINMAP --asc $$BUILD/$$FPGA_TOP.asc --json $$BUILD/$$FPGA_TOP.json &&\
+	nextpnr-ice40 --hx8k --package ct256 --pcf $$PINMAP --asc $$BUILD/$$FPGA_TOP.asc --json $$BUILD/$$FPGA_TOP.json &&\
 	icepack $$BUILD/$$FPGA_TOP.asc $$BUILD/$$FPGA_TOP.bin &&\
 	iceprog -S $$BUILD/$$FPGA_TOP.bin &&\
 	sed -i 's/sram_for_FPGA/sky130_sram_8kbyte_1r1w_32x2048_8/' $$SRAM_WRAPPER
