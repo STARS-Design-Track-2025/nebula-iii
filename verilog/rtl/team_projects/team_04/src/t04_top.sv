@@ -31,7 +31,7 @@ module t04_top(
 
     logic pulse_e;
     assign pc = final_address[7:0];
-    logic [4:0] button;
+    //logic [4:0] button;
     logic [1:0] app;
     logic rising;
 

@@ -23,21 +23,26 @@ module t04_mmio (
     output logic [31:0] display_address,
     output logic [31:0] mem_store_display,
     input logic d_ack_display,
-    output logic WEN
+    output logic WEN,
+
+    // === Wishbone Interface ===
+
+    // These signals are coming from the Wishbone bus.
+    output logic stb,
+    output logic cyc,
+    output logic we,
+    output logic [3:0] sel,
+    output logic [31:0] adr,
+    output logic [31:0] dat_o,
+    input logic ack,
+    input logic [31:0] dat_i
 );
+
     // === Internal Signals ===
     logic [31:0] memload_or_instruction;
     logic busy;
     logic RAM_en, key_en, key_en1, key_en2, key_en3;
     logic [31:0] key_data;
-    logic stb;
-    logic cyc;
-    logic we;
-    logic [31:0] dat_o;
-    logic ack;
-    logic [31:0] dat_i;
-    logic [3:0] sel;
-    logic [31:0] adr;
     logic MemRead_Wishbone;
     logic WEN1;
     logic WEN2;
@@ -75,18 +80,18 @@ module t04_mmio (
 
     
     //FOR TEST BENCHING
-    sram_WB_Wrapper sram (
-    .wb_clk_i(clk),
-    .wb_rst_i(reset),
-    .wbs_stb_i(stb),
-    .wbs_cyc_i(cyc),
-    .wbs_we_i(we),
-    .wbs_sel_i(sel),
-    .wbs_dat_i(dat_o),
-    .wbs_adr_i(adr),
-    .wbs_ack_o(ack),
-    .wbs_dat_o(dat_i)
-    );
+    // sram_WB_Wrapper sram (
+    // .wb_clk_i(clk),
+    // .wb_rst_i(reset),
+    // .wbs_stb_i(stb),
+    // .wbs_cyc_i(cyc),
+    // .wbs_we_i(we),
+    // .wbs_sel_i(sel),
+    // .wbs_dat_i(dat_o),
+    // .wbs_adr_i(adr),
+    // .wbs_ack_o(ack),
+    // .wbs_dat_o(dat_i)
+    // );
 
 
     // === Address Decoder ===
