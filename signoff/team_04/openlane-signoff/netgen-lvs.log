@@ -288,8 +288,8 @@ No property perim found for device sky130_fd_pr__special_pfet_01v8_hvt
 No property topography found for device sky130_fd_pr__special_pfet_01v8_hvt
 No property value found for device sky130_fd_pr__diode_pw2nd_05v5
 No property mult found for device sky130_fd_pr__diode_pw2nd_05v5
-Comparison output logged to file /home/misrrael2003/nebula-iii-team-04/openlane/team_04/runs/25_08_07_04_32/69-netgen-lvs/reports/lvs.netgen.rpt
-Logging to file "/home/misrrael2003/nebula-iii-team-04/openlane/team_04/runs/25_08_07_04_32/69-netgen-lvs/reports/lvs.netgen.rpt" enabled
+Comparison output logged to file /home/misrrael2003/nebula-iii-team-04/openlane/team_04/runs/25_08_28_00_25/69-netgen-lvs/reports/lvs.netgen.rpt
+Logging to file "/home/misrrael2003/nebula-iii-team-04/openlane/team_04/runs/25_08_28_00_25/69-netgen-lvs/reports/lvs.netgen.rpt" enabled
 
 Contents of circuit 1:  Circuit: 'sky130_fd_sc_hd__fill_1'
 Circuit sky130_fd_sc_hd__fill_1 contains 0 device instances.
@@ -3027,5 +3027,5 @@ Circuit 1 contains 11212 nets,    Circuit 2 contains 11212 nets.
 Final result: 
 Circuits match uniquely.
 .
-Logging to file "/home/misrrael2003/nebula-iii-team-04/openlane/team_04/runs/25_08_07_04_32/69-netgen-lvs/reports/lvs.netgen.rpt" disabled
+Logging to file "/home/misrrael2003/nebula-iii-team-04/openlane/team_04/runs/25_08_28_00_25/69-netgen-lvs/reports/lvs.netgen.rpt" disabled
 LVS Done.
