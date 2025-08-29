@@ -3,7 +3,7 @@ import sys
 import re
 
 # Integration mode flag — set to True to allow multiple teams' files (only do this during post-program integration phase)
-INTEGRATION_MODE = False
+INTEGRATION_MODE = True
 
 # Define allowed (non-team) directories
 ALLOWED_DIRECTORIES = {".github", "def", "docs", "gds", "lef", "lib", "mag", "sdc", "signoff", "spef", "spi", "verilog/rtl/team_projects", "spi", "verilog/gl"}
