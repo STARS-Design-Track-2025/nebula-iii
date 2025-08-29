@@ -1,0 +1,71 @@
+{
+    "DESIGN_NAME": "team_07",
+    "DESIGN_IS_CORE": 0,
+    "VERILOG_FILES": [
+        "dir::../../verilog/rtl/wb_wrapper.vh",
+        "dir::../../verilog/rtl/team_projects/team_07/team_07.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_program_counter.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_memoryHandler.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_muxes.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_ExternalRegister.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_control_unit.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_decoder.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_muxForPC.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_MuxWD.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_ALU.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_registers.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_FPURegisters.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_immGen.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_fp_fcsr.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_MMIO.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_CPU.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_FPU.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_FPU_fixtofloat.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_FPU_floattofix.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_FPU_floattoint.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_FPU_inttofloat.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_top.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_FPU_mult.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_FPU_div.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_muxAddr.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_muxFPU.sv",
+        "dir::../../verilog/rtl/team_projects/team_07/src/t07_spiTFTHu.sv",
+        "dir::../../verilog/rtl/wishbone_manager/wishbone_manager.sv"
+    ],
+    "CLOCK_PERIOD": 100,
+    "CLOCK_PORT": "clk",
+    "PL_TARGET_DENSITY": 0.64,
+    "RUN_HEURISTIC_DIODE_INSERTION": true,
+    "VDD_NETS": "vccd1",
+    "GND_NETS": "vssd1",
+    "FP_PDN_CORE_RING": 0,
+    "FP_SIZING": "absolute",
+    "DIE_AREA": "0 0 400 400",
+    "pdk::sky130*": {
+        "FP_CORE_UTIL": 15,
+        "RT_MAX_LAYER": "met4",
+        "scl::sky130_fd_sc_hd": {
+            "CLOCK_PERIOD": 100
+        },
+        "scl::sky130_fd_sc_hdll": {
+            "CLOCK_PERIOD": 10
+        },
+        "scl::sky130_fd_sc_hs": {
+            "CLOCK_PERIOD": 8
+        },
+        "scl::sky130_fd_sc_ls": {
+            "CLOCK_PERIOD": 10,
+            "SYNTH_MAX_FANOUT": 5
+        },
+        "scl::sky130_fd_sc_ms": {
+            "CLOCK_PERIOD": 10
+        }
+    },
+    "pdk::gf180mcu*": {
+        "CLOCK_PERIOD": 24.0,
+        "FP_CORE_UTIL": 30,
+        "RT_MAX_LAYER": "Metal4",
+        "SYNTH_MAX_FANOUT": 4,
+        "PL_TARGET_DENSITY": 0.5
+    }
+}

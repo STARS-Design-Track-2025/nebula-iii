@@ -1,0 +1,31 @@
+# Team 07
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/team_07_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/team_07_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/team_07.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_program_counter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_memoryHandler.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxes.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_ExternalRegister.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_control_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_decoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxForPC.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_MuxWD.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_ALU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_registers.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPURegisters.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_immGen.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_fp_fcsr.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_MMIO.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_CPU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_fixtofloat.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_floattofix.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_floattoint.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_inttofloat.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_mult.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_div.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxAddr.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxFPU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_spiTFTHu.sv
+
