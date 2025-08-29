@@ -1,0 +1,43 @@
+# Team 01
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01.sv
+
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_blockgen.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_button_sync.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_clkdiv1hz.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_clkdiv10k.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_counter.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_lineclear.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_lookahead.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_musicman.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_scoredisplay.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_starboyDisplay.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_speed_controller.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_synckey.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisCredits.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisFSM.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisGrid.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_vgadriver.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_debounce.v
+
+
+# AI
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_feature_extract.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_game_engine.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_ofm.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_tetrisFSM.v
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_wb_load.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_agi.sv
+
+
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_fpga_top.sv
+
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_1_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_1_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_2_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_2_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_3_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_3_param0_int4.mem

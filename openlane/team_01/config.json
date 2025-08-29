@@ -1,0 +1,66 @@
+{
+    "DESIGN_NAME": "team_01",
+    "DESIGN_IS_CORE": 0,
+    "VERILOG_FILES": [
+        "dir::../../verilog/rtl/wb_wrapper.vh",
+        "dir::../../verilog/rtl/team_projects/team_01/team_01.sv",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/team_01_fpga_top.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_blockgen.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_button_sync.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_clkdiv1hz.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_clkdiv10k.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_counter.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_debounce.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_lineclear.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_lookahead.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_musicman.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_scoredisplay.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_speed_controller.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_starboyDisplay.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_synckey.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_tetrisCredits.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_tetrisFSM.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_tetrisGrid.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_vgadriver.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_ai_feature_extract.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_ai_game_engine.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_ai_ofm.v",
+        "dir::../../verilog/rtl/team_projects/team_01/converted_modules/t01_ai_tetrisFSM.v"
+    ],
+    "CLOCK_PERIOD": 40,
+    "CLOCK_PORT": "clk",
+    "PL_TARGET_DENSITY": 0.55,
+    "RUN_HEURISTIC_DIODE_INSERTION": true,
+    "VDD_NETS": "vccd1",
+    "GND_NETS": "vssd1",
+    "FP_PDN_CORE_RING": 0,
+    "FP_SIZING": "absolute",
+    "DIE_AREA": "0 0 800 800",
+    "pdk::sky130*": {
+        "FP_CORE_UTIL": 20,
+        "RT_MAX_LAYER": "met4",
+        "scl::sky130_fd_sc_hd": {
+            "CLOCK_PERIOD": 40
+        },
+        "scl::sky130_fd_sc_hdll": {
+            "CLOCK_PERIOD": 10
+        },
+        "scl::sky130_fd_sc_hs": {
+            "CLOCK_PERIOD": 8
+        },
+        "scl::sky130_fd_sc_ls": {
+            "CLOCK_PERIOD": 10,
+            "SYNTH_MAX_FANOUT": 5
+        },
+        "scl::sky130_fd_sc_ms": {
+            "CLOCK_PERIOD": 10
+        }
+    },
+    "pdk::gf180mcu*": {
+        "CLOCK_PERIOD": 24.0,
+        "FP_CORE_UTIL": 30,
+        "RT_MAX_LAYER": "Metal4",
+        "SYNTH_MAX_FANOUT": 4,
+        "PL_TARGET_DENSITY": 0.5
+    }
+}
