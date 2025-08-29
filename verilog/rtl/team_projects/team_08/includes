@@ -1,0 +1,17 @@
+# Team 08
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/team_08_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/team_08_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/team_08.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_alu.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_registers.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_I2C_and_interrupt.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_control_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_CPU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_fetch.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_handler.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_mmio.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_spi.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_ssdec.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_display.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/team_08_display_top.sv
