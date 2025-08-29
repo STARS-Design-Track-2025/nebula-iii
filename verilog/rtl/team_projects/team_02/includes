@@ -1,0 +1,21 @@
+# Team 02
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/team_02_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/team_02_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/team_02.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_ball_balancer_pid_x.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_ball_balancer_pid_y.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_clk_div1kHz.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_complementary_filter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_edge_detector.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_filter_IR.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_imu_addr.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_lcd_decoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_microstepping.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_pid_controller.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_q8_8_to_ascii
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_sensor_decoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_servo_pwm.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_setpoint_control.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_1602_spi.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_driver_1602.sv
