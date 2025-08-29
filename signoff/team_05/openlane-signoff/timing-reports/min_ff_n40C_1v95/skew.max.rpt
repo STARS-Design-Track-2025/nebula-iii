@@ -5,9 +5,10 @@ Clock Skew (Setup)
 ======================= min_ff_n40C_1v95 Corner ===================================
 
 Clock clk
-0.656286 source latency _10856_/CLK ^
--0.760771 target latency _10793_/CLK ^
+0.745547 source latency _11758_/CLK ^
+-0.708992 target latency _11431_/CLK ^
+0.250000 clock uncertainty
 0.000000 CRPR
 --------------
--0.104485 setup skew
+0.286555 setup skew
 
