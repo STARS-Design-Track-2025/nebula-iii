@@ -124,7 +124,7 @@ openlane2: check-openlane2-env
 	nix-env -f "<nixpkgs>" -iA cachix
 	sudo env PATH="$$PATH" cachix use openlane
 	-sudo pkill nix-daemon
-	git clone https://github.com/efabless/openlane2/ $(OPENLANE2_ROOT)
+	git clone https://github.com/librelane/librelane/ $(OPENLANE2_ROOT)
 	nix-shell --run "openlane --log-level ERROR --condensed --show-progress-bar --smoke-test" --pure $(OPENLANE2_ROOT)/shell.nix 
 
 .PHONY: check-openlane2-env
@@ -134,9 +134,9 @@ ifeq ($(OPENLANE2_ROOT),)
 	@exit 1
 endif
 
-# Add quotations to command if not running in nanoHUB
+# If running in nanoHUB, remove quotations and replace librelane with openlane
 openlane_cmd = \
-	"openlane \
+	"librelane \
 	--run-tag $(OPENLANE_RUN_TAG) \
 	--pdk-root $(PDK_ROOT) \
 	$*/config.json"
@@ -147,7 +147,7 @@ list:
 
 .PHONY: enable-openlane-pdk
 enable-openlane-pdk:
-	$(UPRJ_ROOT)/venv/bin/volare enable $(OPEN_PDKS_COMMIT)
+	$(UPRJ_ROOT)/venv/bin/ciel enable $(OPEN_PDKS_COMMIT)
 
 .PHONY: $(designs)
 $(designs) : export current_design=$@
