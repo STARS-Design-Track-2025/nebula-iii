@@ -1,0 +1,252 @@
+# SPDX-FileCopyrightText: 2020 Efabless Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
+
+# Caravel user project includes
+-v $(USER_PROJECT_VERILOG)/rtl/user_project_wrapper.v
+#-v $(USER_PROJECT_VERILOG)/rtl/user_proj_example.v
+-v $(USER_PROJECT_VERILOG)/rtl/nebula.v
+
+# Wishbone Bus Wrap includes
+-v $(USER_PROJECT_VERILOG)/rtl/wb_wrapper.vh
+-v $(USER_PROJECT_VERILOG)/dv/tb_macros.vh
+#-v $(USER_PROJECT_VERILOG)/dv/wb_tasks.vh
+
+# Wishbone Interconnect  
+-v $(USER_PROJECT_VERILOG)/rtl/wishbone_interconnect/wishbone_arbitrator.sv
+-v $(USER_PROJECT_VERILOG)/rtl/wishbone_interconnect/wishbone_decoder.sv
+
+# Wishbone Manager Control
+-v $(USER_PROJECT_VERILOG)/rtl/wishbone_manager/wishbone_manager.sv
+
+# GPIO Control
+-v $(USER_PROJECT_VERILOG)/rtl/gpio_control/gpio_control_WB.sv
+-v $(USER_PROJECT_VERILOG)/rtl/gpio_control/gpio_control_Wrapper.v
+-v $(USER_PROJECT_VERILOG)/rtl/gpio_control/gpio_control.sv
+
+# LA Control
+-v $(USER_PROJECT_VERILOG)/rtl/la_control/la_control_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/la_control/la_control_Wrapper.v
+-v $(USER_PROJECT_VERILOG)/rtl/la_control/la_control.sv
+
+# FFRAM
+# -v $(USER_PROJECT_VERILOG)/rtl/ffram/ffram_WB_Wrapper.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/ffram/ffram.sv
+
+# SRAM
+-v $(USER_PROJECT_VERILOG)/rtl/sram/sram_WB_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/sram/sky130_sram_8kbyte_1r1w_32x2048_8.v
+
+# Team 04
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/team_04_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/team_04_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/team_04.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_ALU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_fa32.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_fa.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_datapath.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_control_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_PC.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_register_file.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_request_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_mmio.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_addressDecoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_acknowledgement_center.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_keypad_register.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_datapathxmmio.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_request_unit_old.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_datapathxmmioxkeypad.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_keypad_interface.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_app_alpha_fsm.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_button_debounce.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_button_decoder_edge_detector.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_counter_column.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_multiplication.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screen_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screenCounter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screenEnableEdge.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screenRegister.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_04/src/t04_screensignalLogic.sv
+# Team 03
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/team_03_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/team_03_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/team_03.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_alphabet_decoder.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_alu.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_bin4_to_bcd_decoder.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_branchControl.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_clock_divider.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_color_out_logic.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_comparator.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_control.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_cputop.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_DPUtop.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_dpuxmmio.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_eight_bit_shift.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_hardware_clock.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_horizontal_counter.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_imm_gen.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_instrHolder.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_MMIO.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_MMIOInterface.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_NES_clkdiv_counter.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_NESControllers.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_pc.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_player_1_display.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_player_2_display.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_player_FSM_new.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_player_lut.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_registerFile.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_requestUnitCached.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_text_display.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_text_lut.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_vertical_counter.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_wishbone_manager.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_03/src/t03_instruction_cache.v
+# Team 01
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01.sv
+
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_blockgen.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_button_sync.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_clkdiv1hz.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_clkdiv10k.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_counter.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_lineclear.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_lookahead.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_musicman.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_scoredisplay.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_starboyDisplay.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_speed_controller.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_synckey.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisCredits.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisFSM.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_tetrisGrid.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_vgadriver.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_debounce.v
+
+
+# AI
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_feature_extract.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_game_engine.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_ofm.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/converted_modules/t01_ai_tetrisFSM.v
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_wb_load.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/src/t01_ai_agi.sv
+
+
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/team_01_fpga_top.sv
+
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_0_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_1_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_1_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_2_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_2_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_3_param0_int4.mem
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_01/dense_3_param0_int4.mem
+# Team 08
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/team_08_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/team_08_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/team_08.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_alu.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_registers.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_I2C_and_interrupt.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_control_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_CPU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_fetch.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_handler.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_mmio.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_spi.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_ssdec.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/t08_display.sv
+# -v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_08/src/team_08_display_top.sv
+# Team 07
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/team_07_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/team_07_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/team_07.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_program_counter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_memoryHandler.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxes.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_ExternalRegister.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_control_unit.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_decoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxForPC.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_MuxWD.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_ALU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_registers.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPURegisters.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_immGen.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_fp_fcsr.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_MMIO.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_CPU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_fixtofloat.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_floattofix.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_floattoint.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_inttofloat.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_mult.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_FPU_div.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxAddr.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_muxFPU.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_07/src/t07_spiTFTHu.sv
+
+
+# Team 02
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/team_02_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/team_02_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/team_02.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_ball_balancer_pid_x.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_ball_balancer_pid_y.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_clk_div1kHz.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_complementary_filter.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_edge_detector.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_filter_IR.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_imu_addr.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_lcd_decoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_microstepping.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_pid_controller.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_q8_8_to_ascii
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_sensor_decoder.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_servo_pwm.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_setpoint_control.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_1602_spi.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_02/src/t02_driver_1602.sv
+# Team 05
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/team_05_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/team_05_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/team_05.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_findLeastValue.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_translation.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_cb_synthesis.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_controller.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_header_synthesis.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_histogram.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_hTree.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_SPI.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_top.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_spiClockDivider.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_sram_interface.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_05/src/t05_bytecount.sv
+# Team 00
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_00/team_00_WB.v
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_00/team_00_Wrapper.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_00/team_00.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_00/src/t00_decoder_for_GPIO.sv
+-v $(USER_PROJECT_VERILOG)/rtl/team_projects/team_00/src/t00_flex_counter.sv
