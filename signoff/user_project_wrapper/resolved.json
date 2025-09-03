@@ -129,7 +129,7 @@
     "PDK_ROOT": "/home/misrrael2003/nebula-iii/dependencies/pdks/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af",
     "DESIGN_NAME": "user_project_wrapper",
     "PDK": "sky130A",
-    "CLOCK_PERIOD": 25,
+    "CLOCK_PERIOD": 100,
     "CLOCK_PORT": "wb_clk_i",
     "CLOCK_NET": "wb_clk_i",
     "VDD_NETS": [
@@ -431,7 +431,7 @@
     "ERROR_ON_PDN_VIOLATIONS": true,
     "DIODE_PADDING": null,
     "GRT_ALLOW_CONGESTION": false,
-    "GRT_ANTENNA_ITERS": 3,
+    "GRT_ANTENNA_ITERS": 150,
     "GRT_OVERFLOW_ITERS": 50,
     "GRT_ANTENNA_MARGIN": 10,
     "PL_OPTIMIZE_MIRRORING": true,
