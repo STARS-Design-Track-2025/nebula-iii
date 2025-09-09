@@ -493,6 +493,20 @@ $(clean-targets): clean-% :
 	rm -f ./maglef/*.maglef
 
 
+# Define individual drc-<block> targets
+BLOCKS = $(shell cd gds && find *.gds -maxdepth 0 -type f | sed 's/.gds//')
+DRC_BLOCKS = $(foreach block, $(BLOCKS), drc-$(block))
+$(DRC_BLOCKS): drc-% : gds/%.gds check-pdk check-precheck
+	@mkdir -p drc/logs
+	@$(eval INPUT_DIRECTORY := $(shell pwd))
+	@echo "Running DRC check for $*..."
+	@cd $(PRECHECK_ROOT) && \
+	docker run -d -v $(PRECHECK_ROOT):$(PRECHECK_ROOT) \
+	-v $(INPUT_DIRECTORY):$(INPUT_DIRECTORY) \
+	-v $(PDK_ROOT):$(PDK_ROOT) \
+	-u $(shell id -u $(USER)):$(shell id -g $(USER)) \
+	efabless/mpw_precheck:latest bash -c "export PYTHONPATH=$(PRECHECK_ROOT) ; cd $(PRECHECK_ROOT) ; python3 checks/drc_checks/klayout/klayout_gds_drc_check.py --pdk $(PDK) --gds_input_file_path $(INPUT_DIRECTORY)/gds/$*.gds --output_directory $(INPUT_DIRECTORY)/drc --feol --beol --off_grid"
+
 #***************************************************************************
 # Purdue-Only Targets Below
 #***************************************************************************

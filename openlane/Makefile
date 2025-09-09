@@ -177,6 +177,7 @@ $(designs) : % : ./%/config.json enable-openlane-pdk
 	@mkdir -p $(PROJECT_ROOT)/signoff/$*/openlane-signoff/timing-reports
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*openroad-checkantennas-*/reports/antenna_summary.rpt $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*magic-drc/reports/* $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
+	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*klayout-drc/reports/* $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*netgen-lvs/reports/lvs.netgen.rpt $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
 	@cp $(PROJECT_ROOT)/openlane/$*/runs/$*/*netgen-lvs/netgen-lvs.log $(PROJECT_ROOT)/signoff/$*/openlane-signoff/
 	@cp -r $(PROJECT_ROOT)/openlane/$*/runs/$*/*openroad-stapostpnr/summary.rpt $(PROJECT_ROOT)/signoff/$*/openlane-signoff/timing-reports
