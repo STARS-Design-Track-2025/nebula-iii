@@ -308,6 +308,7 @@ ir__voltage__worst,-4070000
 ir__drop__avg,33.2000000000000028421709430404007434844970703125
 ir__drop__worst,4070000
 design__xor_difference__count,0
+klayout__drc_error__count,1
 magic__illegal_overlap__count,0
 design__lvs_device_difference__count,0
 design__lvs_net_difference__count,0

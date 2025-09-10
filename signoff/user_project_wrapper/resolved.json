@@ -217,7 +217,7 @@
     "RUN_MAGIC_WRITE_LEF": true,
     "RUN_KLAYOUT_XOR": true,
     "RUN_MAGIC_DRC": false,
-    "RUN_KLAYOUT_DRC": false,
+    "RUN_KLAYOUT_DRC": true,
     "RUN_EQY": false,
     "RUN_LINTER": false,
     "VERILOG_FILES": [

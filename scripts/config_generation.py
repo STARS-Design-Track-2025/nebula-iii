@@ -178,8 +178,7 @@ f"""
     "QUIT_ON_SYNTH_CHECKS": 0,
     "FP_PDN_CHECK_NODES": 1,
 
-    "//": "Added to skip DRC, because of SRAM (will remove later)",
-    "RUN_KLAYOUT_DRC": 0,
+    "//": "Added to skip Magic DRC, because of SRAM (will remove later)",
     "RUN_MAGIC_DRC": 0,
     "MAGIC_DRC_USE_GDS": 0,
     "QUIT_ON_MAGIC_DRC": 0,
