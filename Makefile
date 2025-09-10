@@ -588,6 +588,7 @@ cram_%:
 # KLayout Command
 klayout_cmd = \
 	"klayout $(PROJECT_ROOT)/gds/$*.gds \
+	-nn $(PDKPATH)/libs.tech/klayout/tech/$(PDK).lyt \
 	-l $(PDKPATH)/libs.tech/klayout/tech/$(PDK).lyp"
 
 # Open GDSII of design in KLayout
