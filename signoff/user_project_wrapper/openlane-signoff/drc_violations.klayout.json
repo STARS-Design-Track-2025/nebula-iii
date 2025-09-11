@@ -113,6 +113,7 @@
     "via.4a_a": 0,
     "via.5a": 0,
     "m2.1": 0,
+    "m2.2": 0,
     "m2.3ab": 0,
     "m2.6": 0,
     "m2.7": 0,
@@ -246,6 +247,5 @@
     "pwell_rs_OFFGRID": 0,
     "pwell_rs_angle": 0,
     "areaid_re_OFFGRID": 0,
-    "m2.2": 1,
-    "total": 1
+    "total": 0
 }
