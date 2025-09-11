@@ -80,7 +80,7 @@ library (team_04) {
   }
 
   cell ("team_04") {
-    area : 156354.547 
+    area : 140979.109 
     is_macro_cell : true;
     pin("ACK_I") {
       direction : input;
