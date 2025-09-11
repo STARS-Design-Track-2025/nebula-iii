@@ -931,7 +931,7 @@ MACRO team_01
   END vssd1
   OBS
       LAYER nwell ;
-        RECT 5.330 10.795 794.610 788.885 ;
+        RECT 5.330 10.760 794.610 788.920 ;
       LAYER li1 ;
         RECT 5.520 10.795 794.420 788.885 ;
       LAYER met1 ;
