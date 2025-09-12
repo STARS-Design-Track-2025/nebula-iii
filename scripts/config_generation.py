@@ -70,7 +70,7 @@ f"""
         "dir::../../verilog/rtl/user_project_wrapper.v"
     ],
     "ROUTING_CORES": 6,
-    "CLOCK_PERIOD": 25,
+    "CLOCK_PERIOD": 100,
     "CLOCK_PORT": "wb_clk_i",
     "CLOCK_NET": "wb_clk_i",
     "ERROR_ON_KLAYOUT_DRC": false,
@@ -178,8 +178,7 @@ f"""
     "QUIT_ON_SYNTH_CHECKS": 0,
     "FP_PDN_CHECK_NODES": 1,
 
-    "//": "Added to skip DRC, because of SRAM (will remove later)",
-    "RUN_KLAYOUT_DRC": 0,
+    "//": "Added to skip Magic DRC, because of SRAM (will remove later)",
     "RUN_MAGIC_DRC": 0,
     "MAGIC_DRC_USE_GDS": 0,
     "QUIT_ON_MAGIC_DRC": 0,
@@ -200,6 +199,7 @@ f"""
     "DPL_CELL_PADDING": 20,
     "FP_PDN_ENABLE_RAILS": 1,
     "GRT_REPAIR_ANTENNAS": 1,
+    "GRT_ANT_ITERS": 150,
     "RUN_FILL_INSERTION": 1,
     "RUN_TAP_DECAP_INSERTION": 1,
     "RUN_HEURISTIC_DIODE_INSERTION": true,

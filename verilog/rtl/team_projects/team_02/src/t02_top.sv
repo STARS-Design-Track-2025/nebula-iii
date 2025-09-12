@@ -5,7 +5,7 @@ module t02_top (
   // I/O ports
   input  logic hz100, reset,
   input  logic [20:0] pb,
-  output logic [7:0] left, right, ss0,
+  output logic [7:0] left, right, ss0
 
   // UART ports
 //   output logic [7:0] txdata,
