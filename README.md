@@ -73,3 +73,4 @@ project_info:
 * `make gdsview_team_##_klayout` - This will open a visualizer of your design's GDS layout using KLayout.
 * `make sv2v_team_##` - Our open-source tools don't fully support SystemVerilog syntax and structures. `sv2v` is a great tool that allows you to convert your SystemVerilog code to Verilog code and make it compatible with all tools. If you run into a compilation error due to SystemVerilog syntax, feel free to use `sv2v`, but ask your PM if you have questions.
 * `make assemble_team_##` - Converts RISC-V assembly into a HEX memory file and creates a C header file. These can be used for RTL simulations or other sub-module tesbenches. You must create an assembly file called `team_##_cpu.asm` under `verilog/dv/team_##` before using the target.
+# CI2605_NEBULA
